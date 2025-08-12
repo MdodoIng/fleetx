@@ -1,15 +1,8 @@
 import { storageKeys } from '@/shared/lib/storageKeys';
 import { configService } from '@/shared/services/app-config';
+import { DecodedToken, UserRole } from '@/shared/types/auth';
 import { jwtDecode } from 'jwt-decode';
 
-export interface DecodedToken {
-  userId: string;
-  user: string;
-  roles: string[];
-  token: string;
-  orig_iat?: number;
-  exp?: number;
-}
 
 const userApiUrl = configService.userServiceApiUrl();
 
@@ -39,7 +32,7 @@ const isAuthenticated = (): boolean => {
 };
 
 const setUserContext = (token: string) => {
-  localStorage.setItem(storageKeys.userContext, JSON.stringify({ token }));
+  localStorage.setItem(storageKeys.authAppToken, JSON.stringify({ token }));
   localStorage.setItem(storageKeys.refreshTime, new Date().toString());
 };
 

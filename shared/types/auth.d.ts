@@ -1,4 +1,4 @@
-type UserRole =
+export type UserRole =
   | 'OPERATION_MANAGER'
   | 'VENDOR_USER'
   | 'FINANCE_MANAGER'
@@ -20,7 +20,14 @@ export interface User {
   first_name: string;
   last_name: string;
   supplier_admin: null;
-  vendor: null;
+  user_id: string;
+  roles: UserRole[];
+  vendor?: {
+    vendor_id: string;
+    branch_id: string;
+    sla_accepted: boolean;
+    password_reset_by_user: boolean;
+  } | null;
 }
 
 interface AuthState {
@@ -56,4 +63,13 @@ type ResetPassword = {
 interface ChangePassword extends ResetPassword {
   old_password: string;
   user_id: string;
+}
+
+export interface DecodedToken {
+  userId: string;
+  user: User;
+  roles: UserRole[];
+  token: string;
+  orig_iat?: number;
+  exp?: number;
 }
