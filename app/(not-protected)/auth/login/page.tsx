@@ -18,7 +18,8 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
 import Link from 'next/link';
-import { useRTL } from '@/shared/lib/utils';
+import { useRTL } from '@/shared/lib/hooks';
+
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -33,14 +34,8 @@ export default function Login() {
   }, [isAuthenticated, push]);
 
   const formSchema = z.object({
-    email: z.literal([
-      'vendor.user@example.com',
-      'op.manager@example.com',
-      'finance.manager@example.com',
-      'vendor.account@example.com',
-      'sales.head@example.com',
-    ]),
-    password: z.literal('password'),
+    email: z.string().email(),
+    password: z.string().min(1, 'Password is required'),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,7 +68,7 @@ export default function Login() {
   return (
     <div
       style={{
-        direction: isRtl ? 'rtl' : 'ltr',
+        direction: isRtl,
       }}
       className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-8"
     >

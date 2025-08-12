@@ -10,25 +10,25 @@ const SideBar = () => {
   const { user } = useAuthStore();
   const t = useTranslations();
 
-  function filterMenuByRole(menu: typeof APP_SIDEBAR_MENU, role: UserRole) {
+  function filterMenuByRole(menu: typeof APP_SIDEBAR_MENU, roles: UserRole[] = []) {
     return menu
-      .filter((item) => !item.roles || item.roles.includes(role))
+      .filter((item) => !item.roles || item.roles.some((role) => roles.includes(role)))
       .map((item) => ({
         ...item,
         children: item.children
           ? item.children.filter(
-              (child) => !child.roles || child.roles.includes(role)
-            )
+            (child) => !child.roles || child.roles.some((role) => roles.includes(role))
+          )
           : undefined,
       }));
   }
 
-  const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU, user?.role!);
+  const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU, user?.roles ?? []);
 
   return (
     <aside className="bg-green-700 text-white flex flex-col gap-10  min-h-[-webkit-fill-available] h-full overflow-y-auto w-[min(100%,230px)] px-4 pb-10">
       <div className="flex justify-center items-center bg-amber-300 w-full px-4 py-2 mt-3.5 text-black text-pretty text-xs">
-        {user && <span>{user.name}</span>}
+        {user && <span>{user.user.first_name}</span>}
       </div>
       <div className="gap-6 grid">
         {filteredMenu.map((item, index) => (

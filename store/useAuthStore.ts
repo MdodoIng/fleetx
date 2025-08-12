@@ -1,5 +1,12 @@
-import { MOCK_USERS } from '@/shared/constants/dummi';
-import type { AuthStore, User, UserRole } from '@/shared/types/auth';
+import { authenticate } from '@/app/(not-protected)/auth/services/user';
+import { storageKeys } from '@/shared/lib/storageKeys';
+import type {
+  AuthRoot,
+  AuthStore,
+  User,
+  UserLogin,
+  UserRole,
+} from '@/shared/types/auth';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
@@ -14,15 +21,22 @@ export const useAuthStore = create<AuthStore>()(
       login: async (email: string, password: string): Promise<boolean> => {
         set({ isLoading: true });
 
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const userLogin: UserLogin = {
+          email: email,
+          password: password,
+          confirmPassword: '',
+          oldPassword: '',
+        };
 
         try {
-          const mockUser = MOCK_USERS[email.toLowerCase()];
+          const res = await authenticate(userLogin);
 
-          if (mockUser && mockUser.password === password) {
+          if (res.ok) {
+            const json =  await res.json() as unknown as AuthRoot;
+            console.log(json)
+            localStorage.setItem(storageKeys.authAppToken, json.data.token);
             set({
-              user: mockUser.user,
+              user: json.data,
               isAuthenticated: true,
               isLoading: false,
             });
@@ -63,7 +77,11 @@ export const useAuthStore = create<AuthStore>()(
           SALES_HEAD: 5,
         };
 
-        return roleHierarchy[user.role] >= roleHierarchy[role];
+        return Array.isArray(user.roles)
+          ? user.roles.some(
+              (userRole) => roleHierarchy[userRole] >= roleHierarchy[role]
+            )
+          : false;
       },
 
       hasAnyRole: (roles: UserRole[]): boolean => {

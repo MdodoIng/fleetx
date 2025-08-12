@@ -27,7 +27,7 @@ export function withAuth<P extends object>(
               Please log in to access this page.
             </p>
             <Link
-              href="/login"
+              href="/auth/login"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
             >
               Go to Login

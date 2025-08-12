@@ -53,3 +53,6 @@ export class AppConfigService {
     return environment.AWS_API_GATEWAY_BASE_URL;
   }
 }
+
+
+export const configService = new AppConfigService();

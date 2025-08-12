@@ -36,7 +36,7 @@ export default function Home() {
             Logout
           </Button>
         ) : (
-          <Link href="/login">
+          <Link href="/auth/login">
             <Button variant="default" className="">
               Go to Login
             </Button>

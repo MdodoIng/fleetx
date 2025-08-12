@@ -1,6 +1,6 @@
 'use client';
 
-import { withAuth } from '@/shared/services/withAuth';
+import { withAuth } from '@/shared/components/Layout/withAuth';
 import ProtectedLayout from '@/shared/components/Layout/ProtectedLayout';
 import Header from '@/shared/components/Layout/ProtectedLayout/Header';
 import SideBar from '@/shared/components/Layout/ProtectedLayout/Sidebar';
