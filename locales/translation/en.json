@@ -1,0 +1,55 @@
+{
+  "HomePage": {
+    "title": "Hello world!"
+  },
+  "menuItems": {
+    "dashboard": "Dashboard",
+    "order": "Order",
+    "orderSubMenu": {
+      "newOrder": "New Order",
+      "bulkOrder": "Bulk Order",
+      "orderStatus": "Order Status",
+      "liveOrder": "Active Order",
+      "history": "History",
+      "bulkInsights": "Bulk Insights"
+    },
+    "vendor": "Vendor",
+    "vendorSubMenu": {
+      "vendorList": "Vendor List",
+      "addNewVendor": "Add New Vendor",
+      "users": "Users",
+      "accountManager": "Account Manager"
+    },
+    "wallet": "Wallet",
+    "walletSubMenu": {
+      "myWallet": "My Wallet",
+      "history": "History",
+      "paymentHistory": "Payment History",
+      "manualPayment": "Manual Payment",
+      "balanceReport": "Balance Report"
+    },
+    "billing": "Billing",
+    "billingSubMenu": {
+      "editProfile": "Edit Profile",
+      "invoice": "Invoice"
+    },
+    "insights": "Insights",
+    "insightsSubMenu": {
+      "overview": "Overview",
+      "churnReasons": "Churn Reasons",
+      "firstOrderExperience": "First Order Experience",
+      "referrals": "Affiliator Referrals",
+      "zoneGrowth": "Zone Growth",
+      "userReferrals": "User Referrals"
+    },
+    "salesFunnel": "Sales Funnel",
+    "rating": "Rating",
+    "changePassword": "Change Password",
+    "logout": "Logout",
+    "systemConfiguration": "Configuration",
+    "busyModeHistory": "Busy Mode History",
+    "zoneBusyModeHistory": "Zone Busy Mode History",
+    "integration": "Integration",
+    "editPickUp": "Edit Pick up"
+  }
+}

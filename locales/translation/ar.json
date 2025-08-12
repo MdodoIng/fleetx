@@ -1,0 +1,55 @@
+{
+  "HomePage": {
+    "title": "مرحباً بالعالم!"
+  },
+  "menuItems": {
+    "dashboard": "الصفحةالرئيسية",
+    "order": "الطلب",
+    "orderSubMenu": {
+      "newOrder": "طلب جديد",
+      "bulkOrder": "مجموعة طلبات أكثر من ١٠",
+      "orderStatus": "مجموعة طلبات أقل من ١٠",
+      "liveOrder": "الطلبات الفعالة",
+      "history": "سجل الطلبات",
+      "bulkInsights": "بيانات مجموعات الطلبات أكثر من ١٠"
+    },
+    "vendor": "البائع",
+    "vendorSubMenu": {
+      "vendorList": "قائمة البائعين",
+      "addNewVendor": "أضف بائع",
+      "users": "المستحدمين",
+      "addAccountManager": "Add Account Manager"
+    },
+    "wallet": "المحفظة",
+    "walletSubMenu": {
+      "myWallet": "محفظتي",
+      "history": "السجل",
+      "paymentHistory": "سجل المدفوعات",
+      "manualPayment": "الدفعات اليدوية",
+      "balanceReport": "تقرير الحساب"
+    },
+    "billing": "الفواتير",
+    "billingSubMenu": {
+      "editProfile": "تعديل الحساب",
+      "invoice": "الفاتورة"
+    },
+    "insights": "البيانات",
+    "insightsSubMenu": {
+      "overview": "نظرة عامة",
+      "churnReasons": "أسباب التوقف",
+      "firstOrderExperience": "تقييم أول تجربة",
+      "referrals": "التوصيات",
+      "zoneGrowth": "نطاق التوسع",
+      "userReferrals": "User Referrals"
+    },
+    "salesFunnel": "مركز المبيعات",
+    "rating": "التقييم",
+    "changePassword": "تغيير كلمة المرور",
+    "logout": "تسجيل الخروج",
+    "systemConfiguration": "الإعدادات",
+    "busyModeHistory": "سجل وضع الذروة",
+    "zoneBusyModeHistory": "سجل نطاق وضع الذروة",
+    "integration": "الربط",
+    "editPickUp": "تعديل عنوان الاستلام"
+  }
+}
