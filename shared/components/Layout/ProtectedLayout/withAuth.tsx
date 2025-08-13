@@ -14,13 +14,18 @@ export function withAuth<P extends object>(
   if (!isMounted) <LoadingPage />;
 
   return function AuthenticatedComponent(props: P) {
-    const { isAuthenticated, isLoading, hasAnyRole, isAuthenticatedCheck, user } =
-      useAuthStore();
-    
+    const {
+      isAuthenticated,
+      isLoading,
+      hasAnyRole,
+      isAuthenticatedCheck,
+      user,
+    } = useAuthStore();
+
     useEffect(() => {
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
-    
+
     console.log(user);
     if (isLoading) {
       return <LoadingPage />;

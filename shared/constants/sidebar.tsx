@@ -1,4 +1,5 @@
 import { UserRole } from '@/shared/types/auth';
+import { SUB_MENU } from './routes';
 
 export interface MenuItem {
   labelKey: string;
@@ -22,7 +23,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     children: [
       {
         labelKey: 'menuItems.orderSubMenu.newOrder',
-        route: '/order/new',
+        route: SUB_MENU.NEW_ORDER_OLD.LINK,
         icon: 'icon-new-order',
       },
       {

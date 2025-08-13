@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { COOKIE_AFF_REF_CODE } from '@/shared/constants/storageConstants';
 
 import { isMounted } from '@/shared/lib/hooks';
- 
+
 import { authenticate } from '@/shared/services/user';
 import type {
   AuthRoot,
@@ -37,6 +37,7 @@ type AuthState = {
 
 function getInitialAuthState(): boolean {
   if (!isMounted) return false;
+  useAuthStore.setState({ isLoading: true });
   try {
     const userStr = localStorage.getItem(storageKeys.userContext);
     if (!userStr) return false;
@@ -50,15 +51,17 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     }
+    useAuthStore.setState({ isLoading: false });
     return isTokenValid;
   } catch {
+    useAuthStore.setState({ isLoading: false });
     return false;
   }
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  isLoading: false,
+  isLoading: true,
   isAuthenticated: false,
   hasRole: (role) => {
     const decoded = get().getDecodedAccessToken();
@@ -223,8 +226,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   isAuthenticatedCheck: () => {
+    set({ isLoading: true });
     const isAuth = getInitialAuthState();
     set({ isAuthenticated: isAuth });
+    set({ isLoading: false });
+
     return isAuth;
   },
 }));
