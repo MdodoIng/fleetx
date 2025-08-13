@@ -35,7 +35,7 @@ const Header: React.FC = () => {
         </Link>
         {isAuthenticated && (
           <>
-            <Link href="/order" className={navLinkClass('/order')}>
+            <Link suppressHydrationWarning href="/order" className={navLinkClass('/order')}>
               order
             </Link>
             {hasRole('FINANCE_MANAGER') && (

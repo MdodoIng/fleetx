@@ -1,17 +1,27 @@
 'use client';
 import LoadingPage from '@/app/loading';
+import { isMounted } from '@/shared/lib/hooks';
 import type { UserRole } from '@/shared/types/auth';
 import { useAuthStore } from '@/store';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 // HOC for role-based access control
 export function withAuth<P extends object>(
   Component: React.ComponentType<P>,
   requiredRoles?: UserRole[]
 ) {
-  return function AuthenticatedComponent(props: P) {
-    const { isAuthenticated, isLoading, hasAnyRole } = useAuthStore();
+  if (!isMounted) <LoadingPage />;
 
+  return function AuthenticatedComponent(props: P) {
+    const { isAuthenticated, isLoading, hasAnyRole, isAuthenticatedCheck, user } =
+      useAuthStore();
+    
+    useEffect(() => {
+      isAuthenticatedCheck();
+    }, [isAuthenticatedCheck]);
+    
+    console.log(user);
     if (isLoading) {
       return <LoadingPage />;
     }

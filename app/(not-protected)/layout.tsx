@@ -1,3 +1,4 @@
+'use client';
 import BaseLayout from '@/shared/components/Layout/BaseLayout';
 
 function Layout({ children }: { children: React.ReactNode }) {

@@ -44,19 +44,19 @@ function ProtectedContent(): JSX.Element {
               </h3>
               <div className="space-y-2 text-sm">
                 <p>
-                  <strong>Name:</strong> {user?.name}
+                  <strong>Name:</strong> {user?.user.first_name}
                 </p>
                 <p>
-                  <strong>Email:</strong> {user?.email}
+                  <strong>Email:</strong> {user?.user.email}
                 </p>
                 <p>
                   <strong>Role:</strong>{' '}
                   <span className="capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {user?.role}
+                    {user?.roles.join(', ')}
                   </span>
                 </p>
                 <p>
-                  <strong>User ID:</strong> {user?.id}
+                  <strong>User ID:</strong> {user?.user.user_id}
                 </p>
               </div>
             </div>

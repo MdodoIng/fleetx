@@ -37,7 +37,7 @@ interface AuthState {
 }
 
 interface AuthActions {
-  login: (email: string, password: string) => Promise<boolean>;
+  // login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   setLoading: (loading: boolean) => void;
   hasRole: (role: UserRole) => boolean;

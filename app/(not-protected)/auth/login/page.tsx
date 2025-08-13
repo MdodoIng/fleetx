@@ -19,13 +19,14 @@ import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
 import Link from 'next/link';
 import { useRTL } from '@/shared/lib/hooks';
-
+import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
 
 export default function Login() {
   const [error, setError] = useState('');
-  const { login, isAuthenticated, isLoading, setLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, login } = useAuthStore();
   const isRtl = useRTL();
   const { push } = useRouter();
+   const redirectToHome = useRedirectToHome();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -41,27 +42,19 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'vendor.user@example.com',
-      password: 'password',
+      email: 'test_vendor1@gmail.com',
+      password: '123456',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setError('');
-    setLoading(true);
+    const success = await login(values.email, values.password);
 
-    try {
-      const success = await login(values.email, values.password);
-      console.log(success, isAuthenticated);
-      if (success) {
-        push('/order');
-      } else {
-        setError('Invalid email or password');
-      }
-    } catch (err) {
-      setError('Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+    if (success) {
+      redirectToHome();
+    } else {
+      setError('Invalid email or password');
     }
   }
 
