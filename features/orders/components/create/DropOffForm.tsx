@@ -16,20 +16,23 @@ import {
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
-import {  TypePickUpSchema,  } from '../../validations/order';
+import { TypeDropOffSchema } from '../../validations/order';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
+import { Dispatch, SetStateAction } from 'react';
 
 interface SenderFormProps {
-  recipientForm: UseFormReturn<dropOffSchema>;
-  onRecipientSubmit: (data: dropOffSchema) => void;
+  recipientForm: UseFormReturn<TypeDropOffSchema>;
+  onRecipientSubmit: (data: TypeDropOffSchema) => void;
   shallCollectCash: boolean;
+  setIsCOD: Dispatch<SetStateAction<boolean>>;
 }
 
 const DropoffForm: React.FC<SenderFormProps> = ({
   recipientForm,
   onRecipientSubmit,
   shallCollectCash,
+  setIsCOD,
 }) => {
   return (
     <Form {...recipientForm}>
@@ -48,7 +51,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Recipient Name */}
             <FormField
               control={recipientForm.control}
-              name="recipientName"
+              name="customerName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel> Recipient Names</FormLabel>
@@ -79,7 +82,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Address */}
             <FormField
               control={recipientForm.control}
-              name="address"
+              name="landmark"
               render={({ field }) => (
                 <FormItem className="col-span-1 md:col-span-2 lg:col-span-3">
                   <FormLabel>Address</FormLabel>
@@ -109,7 +112,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Apt */}
             <FormField
               control={recipientForm.control}
-              name="apt"
+              name="roomNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Apt</FormLabel>
@@ -139,10 +142,11 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <input
                     type="radio"
                     value="yes"
-                    checked={shallCollectCash === true}
-                    onChange={() =>
-                      recipientForm.setValue('shallCollectCash', true)
-                    }
+                    checked={shallCollectCash}
+                    onChange={() => {
+                      setIsCOD(true);
+                      recipientForm.setValue('paymentType', 'cash');
+                    }}
                     className="accent-cyan-500 w-4 h-4"
                   />
                   YES
@@ -160,10 +164,11 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <input
                     type="radio"
                     value="no"
-                    checked={shallCollectCash === false}
-                    onChange={() =>
-                      recipientForm.setValue('shallCollectCash', false)
-                    }
+                    checked={!shallCollectCash}
+                    onChange={() => {
+                      setIsCOD(false);
+                      recipientForm.setValue('paymentType', 'card');
+                    }}
                     className="accent-cyan-500 w-4 h-4"
                   />
                   NO
@@ -191,7 +196,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Additional Address */}
             <FormField
               control={recipientForm.control}
-              name="additionalAddress"
+              name="vendorOrderNumber"
               render={({ field }) => (
                 <FormItem className="col-span-1 md:col-span-2 lg:col-span-2">
                   <FormLabel>Additional Address</FormLabel>
@@ -209,7 +214,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Order Number */}
             <FormField
               control={recipientForm.control}
-              name="orderNumber"
+              name="vendorOrderNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Order Number</FormLabel>

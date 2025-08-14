@@ -31,7 +31,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      push('/');
+      push('/order');
     }
   }, [isAuthenticated, push]);
 

@@ -14,19 +14,25 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
-import { TypePickUpSchema, pickUpSchema } from '../../validations/order';
+import { classForInput, Input } from '@/shared/components/ui/input';
+import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { TypePickUpSchema } from '../../validations/order';
+import { Fragment, useEffect, useRef } from 'react';
+import { cn } from '@/shared/lib/utils';
+import { fi } from 'zod/v4/locales';
+import { LandmarkFields } from '../ui/LandmarkFields';
 
 interface SenderFormProps {
-  senderForm: UseFormReturn<pickUpSchema>;
-  onSenderSubmit: (data: pickUpSchema) => void;
+  senderForm: UseFormReturn<TypePickUpSchema>;
+  onSenderSubmit: (data: TypePickUpSchema) => void;
 }
 
 const PickUpForm: React.FC<SenderFormProps> = ({
   senderForm,
   onSenderSubmit,
 }) => {
+  const { register, control, watch } = senderForm;
+
   return (
     <Form {...senderForm}>
       <form
@@ -49,7 +55,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
                 <FormItem>
                   <FormLabel> Sender Names</FormLabel>
                   <FormControl>
-                    <Input placeholder="Sender Name" {...field} />
+                    <Input placeholder="Cafe cafe, jabariya" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -89,19 +95,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             />
 
             {/* Address */}
-            <FormField
-              control={senderForm.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem className="col-span-1 md:col-span-2 lg:col-span-3">
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="House No, Street, City" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <LandmarkFields form={senderForm} name="landmark" />
 
             {/* Floor */}
             <FormField
