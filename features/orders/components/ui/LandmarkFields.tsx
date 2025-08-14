@@ -1,16 +1,8 @@
 'use client';
 
-import {
-  useState,
-  useEffect,
-  ChangeEvent,
-  Fragment,
-  useRef,
-  useMemo,
-} from 'react';
+import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
-import AsyncSelect from 'react-select/async';
-import axios from 'axios';
+
 import {
   FormControl,
   FormField,
@@ -21,89 +13,46 @@ import {
 import { classForInput } from '@/shared/components/ui/input';
 import { cn } from '@/shared/lib/utils';
 import { getArea, getBlock, getStreet } from '@/store/sharedStore';
-import { TypePickUpSchema } from '../../validations/order';
-
-type AddressItem = {
-  id: string | number;
-  name_en: string;
-  latitude?: number;
-  longitude?: number;
-  type: 'area' | 'block' | 'street';
-  area_id?: string | number;
-  block_id?: string | number;
-};
+import { TypeLandMarkScema, TypePickUpSchema } from '../../validations/order';
 
 interface AddressLandmarkProps {
-  form: UseFormReturn<TypePickUpSchema>;
-  addressFieldName: string; // e.g., "address"
-  landmarkFieldName: 'landmark'; // e.g., "landmark"
+  form: UseFormReturn<any>;
+  landmarkFieldName: 'landmark';
   isDisabled?: boolean;
 }
 
 export default function AddressLandmarkFields({
   form,
-  addressFieldName,
   landmarkFieldName,
-  isDisabled = false,
 }: AddressLandmarkProps) {
-  const { control, register, watch, getValues } = form;
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  // Address state
-  const [selectedItems, setSelectedItems] = useState<AddressItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState<'area' | 'block' | 'street'>(
-    'area'
-  );
-  const [parentId, setParentId] = useState<string | number | null>(null);
-  const [searchData, setSearchData] = useState<TypePickUpSchema['landmark']>(
-    []
-  );
-  const [isInputVals, setIsInputVals] = useState<TypePickUpSchema['landmark']>([
-    {
-      name_ar: '',
-      name_en: '',
-      id: undefined,
-      latitude: undefined,
-      longitude: undefined,
-      governorate_id: undefined,
-      loc_type: '',
-      nhood_id: undefined,
-      block_id: undefined,
-      area_id: undefined,
-    },
-  ]);
-
-  const { fields, append, remove } = useFieldArray({
+  const { control, watch } = form;
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: landmarkFieldName,
   });
 
-  const [widths, setWidths] = useState<string[]>(fields.map(() => 'min-width'));
-
-  const updateWidth = (index: number, value: string) => {
-    const chWidth = Math.max(value.length + 1, 2) + 'ch';
-    setWidths((prev) => {
-      const copy = [...prev];
-      copy[index] = chWidth;
-      return copy;
-    });
+  const [loading, setLoading] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState<'area' | 'block' | 'street'>(
+    'area'
+  );
+  const [parentId, setParentId] = useState<string | number | undefined>(
+    undefined
+  );
+  type TypeSearchData = NonNullable<TypePickUpSchema['landmark']>[number] & {
+    value: string;
+    label: string;
+    type: typeof currentLevel;
   };
+  const [searchData, setSearchData] = useState<TypeSearchData[] | undefined>(
+    undefined
+  );
+  const [isInputVal, setIsInputVal] = useState<string>('');
+  const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (fields.length === 0) append({});
-  }, [fields, append]);
-
-  const landmarkValues = watch(landmarkFieldName) || [];
-  // useEffect(() => {
-  //   const lastValue = landmarkValues[landmarkValues.length - 1];
-  //   if (lastValue?.name_en?.trim() && fields.length === landmarkValues.length) {
-  //     append({});
-  //   }
-  // }, [landmarkValues, fields.length, append]);
+  const landmarkValues: TypeLandMarkScema = watch(landmarkFieldName) || [];
 
   useMemo(async () => {
-    if (!landmarkValues) return;
+    if (!isInputBlur) return;
 
     try {
       setLoading(true);
@@ -132,25 +81,19 @@ export default function AddressLandmarkFields({
             currentLevel === 'block' ? `Block-${el.name_en}` : el.name_en,
           type: currentLevel,
         }))
-        .filter((item: AddressItem) =>
-          landmarkValues && landmarkValues.length > 0
-            ? item.name_en
-                .toLocaleLowerCase()
-                .includes(
-                  landmarkValues[
-                    landmarkValues.length - 1
-                  ]?.name_en?.toLocaleLowerCase() || ''
-                )
-            : true
+        .filter((item: TypeSearchData) =>
+          item.name_en
+            ?.toLocaleLowerCase()
+            .includes(isInputVal.toLocaleLowerCase())
         )
-        .map((item: AddressItem) => ({
-          value: item.id,
-          label: item.name_en,
+        .map((item: TypeSearchData) => ({
           ...item,
+          value: item.id!,
+          label: item.name_en!,
         }));
 
       setSearchData(items);
-      setLoading(false);
+
       return items;
     } catch (err) {
       console.error(err);
@@ -158,168 +101,137 @@ export default function AddressLandmarkFields({
     } finally {
       setLoading(false);
     }
-  }, [landmarkValues]);
+  }, [isInputVal, currentLevel, isInputBlur]);
+
+  const updateFormData = (data: TypeSearchData) => {
+    switch (data.type) {
+      case 'area':
+        setCurrentLevel('block');
+        update(0, data);
+        append({});
+        setParentId(data.id);
+        break;
+      case 'block':
+        setCurrentLevel('street');
+        update(1, data);
+        append({});
+        setParentId(data.id);
+        break;
+      case 'street':
+        update(2, data);
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleAddressClick = (selected: any) => {
     if (!selected) return;
 
-    append(selected);
-    setIsInputVals((prev) => {
-      const newVals = [...prev!, selected];
+    if (selected) {
+      updateFormData(selected);
+      setIsInputVal('');
+      setSearchData(undefined);
+    }
+  };
 
-      return newVals;
-    });
+  const handleRemoveAddress = (removedItem: TypeSearchData, index: number) => {
+    remove([...Array(fields.length - index).keys()].map((_, i) => index + i));
 
-    if (selected.type === 'area') {
+    if (removedItem.type === 'area') {
+      setCurrentLevel('area');
+      setParentId(undefined);
+    } else if (removedItem.type === 'block') {
       setCurrentLevel('block');
-      setParentId(selected.id);
-    } else if (selected.type === 'block') {
+      setParentId(removedItem.area_id || undefined);
+    } else if (removedItem.type === 'street') {
       setCurrentLevel('street');
-      setParentId(selected.id);
-    }
-    setSearchData(undefined);
-  };
-
-  const handleRemoveAddress = (removedItem: AddressItem) => {
-    const index = selectedItems.findIndex((i) => i.id === removedItem.id);
-    if (index !== -1) {
-      const newSelection = selectedItems.slice(0, index);
-      setSelectedItems(newSelection);
-
-      if (removedItem.type === 'area') {
-        setCurrentLevel('area');
-        setParentId(null);
-      } else if (removedItem.type === 'block') {
-        setCurrentLevel('block');
-        setParentId(removedItem.area_id || null);
-      } else if (removedItem.type === 'street') {
-        setCurrentLevel('street');
-        setParentId(removedItem.block_id || null);
-      }
+      setParentId(removedItem.block_id || undefined);
     }
   };
 
-  const handleEnter = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const inputs =
-        containerRef.current?.querySelectorAll<HTMLInputElement>('input');
-      const isDataSame =
-        searchData &&
-        searchData?.length > 0 &&
-        searchData[0].name_en?.toLocaleLowerCase() ===
-          isInputVals?.[index].name_en;
-      let thatData =
+
+      const isDataSame = searchData && searchData?.length > 0;
+      const thatData =
         isDataSame &&
-        searchData?.reduce(
+        searchData?.find(
           (item) =>
             item.name_en?.toLocaleLowerCase() === isInputVal.toLocaleLowerCase()
         );
 
-      if (!inputs) return;
-
-      if (index === fields.length - 1 && thatData) {
-        append(thatData);
-        setTimeout(() => {
-          const newInputs =
-            containerRef.current?.querySelectorAll<HTMLInputElement>('input');
-          newInputs?.[newInputs.length - 1]?.focus();
-        }, 0);
-        setSearchData(undefined);
-        thatData = undefined;
-      } else {
-        inputs[index + 1]?.focus();
+      if (thatData) {
+        updateFormData(thatData);
       }
     }
   };
 
   return (
     <div className="flex flex-col gap-4 w-full col-span-3">
-      {/* Address Step Selector */}
-      {/*<div>
-        <AsyncSelect
-          isDisabled={isDisabled}
-          isMulti={false}
-          cacheOptions
-          loadOptions={loadOptions}
-          defaultOptions
-          isLoading={loading}
-          placeholder={`Select ${currentLevel}...`}
-          onChange={handleAddressClick}
-        />
-
-        {selectedItems.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {selectedItems.map((item) => (
-              <span
-                key={item.id}
-                className="px-2 py-1 bg-gray-200 rounded cursor-pointer"
-                onClick={() => handleRemoveAddress(item)}
-              >
-                {item.name_en} ✕
-              </span>
-            ))}
-          </div>
-        )}
-      </div>*/}
-
       {/* Landmark Inputs */}
       <FormField
         control={control}
         name={landmarkFieldName}
         render={() => (
-          <FormItem>
+          <FormItem
+            onBlur={() => setTimeout(() => setIsInputBlur(false), 1000)}
+            onFocus={() => setIsInputBlur(true)}
+          >
             <FormLabel>Landmarks</FormLabel>
             <FormControl className="relative z-0">
-              <div
-                ref={containerRef}
-                className={cn('flex gap-3 flex-wrap', classForInput)}
-              >
-                {fields.map((item, index) => (
-                  <Fragment key={item.id}>
+              <div className={cn('flex gap-3 items-center ', classForInput)}>
+                {typeof landmarkValues !== 'undefined' &&
+                  landmarkValues.map((item, index) => (
                     <button
+                      hidden={!item?.name_en}
+                      key={index}
                       type="button"
                       onClick={() =>
-                        remove(
-                          [...Array(fields.length - index)].map(
-                            (_, i) => index + i
-                          )
-                        )
+                        handleRemoveAddress(item as TypeSearchData, index)
                       }
-                      className="cursor-pointer text-red-500"
+                      className="cursor-pointer text-red-500 shrink-0"
                     >
-                      X
+                      X, {item.name_en}
                     </button>
+                  ))}
+                <input
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setIsInputVal(e.target.value);
+                  }}
+                  value={isInputVal}
+                  disabled={
+                    typeof landmarkValues !== 'undefined' &&
+                    landmarkValues.length === 3
+                      ? landmarkValues[2].name_en
+                        ? true
+                        : false
+                      : false
+                  }
+                  placeholder={`Landmark `}
+                  className="outline-0 border-none bg-yellow-500 w-full flex disabled:hidden"
+                  onKeyDown={(e) => handleEnter(e)}
+                />
 
-                    <input
-                      {...register(`${landmarkFieldName}.${index}.name_en`, {
-                        onChange: (e: ChangeEvent<HTMLInputElement>) =>
-                          updateWidth(index, e.target.value),
-                      })}
-                      placeholder={`Landmark ${index + 1}`}
-                      style={{ width: widths[index] }}
-                      className="outline-0 border-none bg-transparent"
-                      onKeyDown={(e) => handleEnter(e, index)}
-                    />
-
-                    <span className="last:hidden">,</span>
-                  </Fragment>
-                ))}
-
-                {searchData && searchData?.length > 0 && (
-                  <div className=" grid px-10 py-4  gap-2 absolute w-full bg-yellow-300 top-full left-0 ">
-                    {searchData.map((item) => (
-                      <span
-                        key={item.id}
-                        className="px-2 py-1 bg-gray-200 rounded cursor-pointer"
-                        onClick={() => handleAddressClick(item)}
-                      >
-                        {item.name_en} ✕
-                      </span>
-                    ))}
+                {searchData && isInputBlur && searchData?.length > 0 && (
+                  <div className="mt-2 grid px-10 py-4 gap-2 absolute w-full bg-yellow-300 top-full left-0 ">
+                    {' '}
+                    {loading ? (
+                      '...'
+                    ) : (
+                      <>
+                        {searchData.map((item) => (
+                          <span
+                            key={item.id}
+                            className="px-2 py-1 bg-gray-200 rounded cursor-pointer"
+                            onClick={() => handleAddressClick(item)}
+                          >
+                            {item.name_en}
+                          </span>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
               </div>

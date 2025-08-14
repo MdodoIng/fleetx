@@ -20,6 +20,7 @@ import { TypeDropOffSchema } from '../../validations/order';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
+import AddressLandmarkFields from '../ui/LandmarkFields';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
@@ -79,19 +80,9 @@ const DropoffForm: React.FC<SenderFormProps> = ({
               )}
             />
 
-            {/* Address */}
-            <FormField
-              control={recipientForm.control}
-              name="landmark"
-              render={({ field }) => (
-                <FormItem className="col-span-1 md:col-span-2 lg:col-span-3">
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="House No, Street, City" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <AddressLandmarkFields
+              form={recipientForm}
+              landmarkFieldName="landmark"
             />
 
             {/* Floor */}

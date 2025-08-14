@@ -20,7 +20,7 @@ import { TypePickUpSchema } from '../../validations/order';
 import { Fragment, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fi } from 'zod/v4/locales';
-import AddressLandmarkFields, { LandmarkFields } from '../ui/LandmarkFields';
+import AddressLandmarkFields from '../ui/LandmarkFields';
 
 interface SenderFormProps {
   senderForm: UseFormReturn<TypePickUpSchema>;
@@ -97,9 +97,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Address */}
             <AddressLandmarkFields
               form={senderForm}
-              addressFieldName="landmark"
-              landmarkFieldName="address"
-              
+              landmarkFieldName="landmark"
             />
 
             {/* Floor */}
