@@ -10,10 +10,24 @@ export const pickUpSchema = z.object({
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' })
     .optional(),
   floor: z.string().optional(),
-  landmark: z.array(z.string()).optional(),
+  landmark: z
+    .array(
+      z.object({
+        name_ar: z.string().optional(),
+        name_en: z.string().optional(),
+        id: z.number().optional(),
+        latitude: z.number().optional(),
+        longitude: z.number().optional(),
+        governorate_id: z.number().optional(),
+        loc_type: z.string().optional(),
+        nhood_id: z.number().optional(),
+        block_id: z.number().optional(),
+        area_id: z.number().optional(),
+      })
+    )
+    .optional(),
   mobileNumber: z.string().min(1, 'Mobile number is required'),
-  latitude: z.string().min(1, 'Latitude is required').optional(),
-  longitude: z.string().min(1, 'Longitude is required').optional(),
+  additionalAddress: z.string().optional(),
 });
 
 export const dropOffSchema = z.object({
@@ -44,8 +58,8 @@ export const dropOffSchema = z.object({
       }
     )
     .optional(),
-  latitude: z.string().min(1, 'Latitude is required').optional(),
-  longitude: z.string().min(1, 'Longitude is required').optional(),
+  additionalAddress: z.string().optional(),
+
   vendorOrderNumber: z.string().optional(),
 });
 

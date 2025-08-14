@@ -109,8 +109,7 @@ export default function ShippingForm() {
       floor: '',
       landmark: [''],
       mobileNumber: '',
-      latitude: '',
-      longitude: '',
+      additionalAddress: '',
     },
     mode: 'onBlur',
     reValidateMode: 'onBlur',
@@ -126,8 +125,7 @@ export default function ShippingForm() {
       landmark: '',
       mobileNumber: '',
       amount: '',
-      latitude: '',
-      longitude: '',
+      additionalAddress: '',
       vendorOrderNumber: '',
     },
     mode: 'onBlur',
@@ -286,8 +284,6 @@ export default function ShippingForm() {
       block_id: selectedAddressPickUp[1]?.id,
       street: selectedAddressPickUp[2]?.name_en,
       street_id: selectedAddressPickUp[2]?.id,
-      latitude: pickUpData.latitude,
-      longitude: pickUpData.longitude,
     };
   };
 
