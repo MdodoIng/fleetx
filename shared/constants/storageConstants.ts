@@ -205,6 +205,8 @@ export const BULK_INSIGHTS_TYPES = {
 }
 
 
+
+
 export const PAYMENTTYPE = {
   COD: '1',
   KNET: '2',

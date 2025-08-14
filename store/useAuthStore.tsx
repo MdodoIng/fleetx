@@ -64,15 +64,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   isAuthenticated: false,
   hasRole: (role) => {
-    const decoded = get().getDecodedAccessToken();
+    const { user } = get();
 
-    return Array.isArray(decoded?.roles) && decoded.roles.includes(role);
+    const roleHierarchy: Record<UserRole, number> = {
+      VENDOR_USER: 1,
+      OPERATION_MANAGER: 2,
+      FINANCE_MANAGER: 3,
+      VENDOR_ACCOUNT_MANAGER: 4,
+      SALES_HEAD: 5,
+    };
+
+    if (!user || !Array.isArray(user?.roles)) return false;
+
+    if (!user.roles || user.roles.length === 0) {
+      return false;
+    }
+
+    // Assuming the user has only one role for now; adjust logic if needed
+    const userRole = user.roles[0];
+
+    if (!(userRole in roleHierarchy) || !(role in roleHierarchy)) {
+      return false; // Handle cases where the role is not defined in the hierarchy
+    }
+
+    return roleHierarchy[userRole] >= roleHierarchy[role];
   },
 
-  hasAnyRole: (roles) => {
-    const decoded = get().getDecodedAccessToken();
-    if (!Array.isArray(decoded?.roles)) return false;
-    return roles.some((r) => decoded.roles.includes(r));
+  hasAnyRole: (roles: UserRole[]): boolean => {
+    const { hasRole } = get();
+    return roles.some((role) => hasRole(role));
   },
   login: async (email, password) => {
     set({ isLoading: true });

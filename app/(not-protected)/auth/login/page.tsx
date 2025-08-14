@@ -20,13 +20,14 @@ import { Button } from '@/shared/components/ui/button';
 import Link from 'next/link';
 import { useRTL } from '@/shared/lib/hooks';
 import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
+import { loginSchema } from '@/features/auth/validations/auth';
 
 export default function Login() {
   const [error, setError] = useState('');
   const { isAuthenticated, isLoading, login } = useAuthStore();
-  const isRtl = useRTL();
+  const {setRtl} = useRTL();
   const { push } = useRouter();
-   const redirectToHome = useRedirectToHome();
+  const redirectToHome = useRedirectToHome();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -34,20 +35,15 @@ export default function Login() {
     }
   }, [isAuthenticated, push]);
 
-  const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(1, 'Password is required'),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: 'test_vendor1@gmail.com',
       password: '123456',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     setError('');
     const success = await login(values.email, values.password);
 
@@ -61,7 +57,7 @@ export default function Login() {
   return (
     <div
       style={{
-        direction: isRtl,
+        direction: setRtl,
       }}
       className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-8"
     >
