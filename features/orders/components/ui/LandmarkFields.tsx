@@ -2,14 +2,14 @@
 
 import React, {
   ChangeEvent,
-  Key,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { useFieldArray, UseFormReturn, Field, useForm } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 
+import { Button } from '@/shared/components/ui/button';
 import {
   FormControl,
   FormField,
@@ -20,14 +20,13 @@ import {
 import { classForInput } from '@/shared/components/ui/input';
 import { cn } from '@/shared/lib/utils';
 import { getArea, getBlock, getStreet } from '@/store/sharedStore';
-import { TypeLandMarkScema, TypePickUpSchema } from '../../validations/order';
-import { Button } from '@/shared/components/ui/button';
-import { Map, MapPin } from 'lucide-react';
-const MyMap = React.lazy(() => import('@/shared/components/MyMap/Map'));
+import { MapPin } from 'lucide-react';
+import { TypeLandMarkScema } from '../../validations/order';
 import SearchResults from './searchList';
+const MyMap = React.lazy(() => import('@/shared/components/MyMap/Map'));
 
 interface AddressLandmarkProps {
-  form: UseFormReturn<TypePickUpSchema>;
+  form: UseFormReturn<any>;
   landmarkFieldName: 'address';
   isDisabled?: boolean;
   isMap?: boolean;
@@ -61,9 +60,10 @@ export default function AddressLandmarkFields({
   const [searchData, setSearchData] = useState<Locs[] | undefined>(undefined);
   const [isInputVal, setIsInputVal] = useState<string>('');
   const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
+  const once = useRef(false);
 
   useEffect(() => {
-    if (!landmarkValues) return;
+    if (!landmarkValues && !once.current) return;
 
     const items: Locs[] = [];
 
@@ -104,7 +104,8 @@ export default function AddressLandmarkFields({
     }
 
     setSelcectItems(items);
-  }, []);
+    once.current = true;
+  }, [landmarkValues, once]);
 
   useMemo(async () => {
     if (!isInputBlur) return;
@@ -176,24 +177,15 @@ export default function AddressLandmarkFields({
 
     setValue(`address.${key}`, data.name_en);
     setValue(`address.${key}_id`, data.id);
-    setValue('address.latitude', data.latitude!);
-    setValue('address.longitude', data.longitude!);
+    setValue('address.latitude', data.latitude);
+    setValue('address.longitude', data.longitude);
 
     setParentId(data.id);
 
     setSelcectItems((prev) => (prev ? [...prev, data] : [data]));
 
-    switch (key) {
-      case 'area':
-        setCurrentLevel('block');
-        break;
-      case 'block':
-        setCurrentLevel('street');
-        break;
-      case 'street':
-        setCurrentLevel('street'); // no next level
-        break;
-    }
+    if (key === 'area') setCurrentLevel('block');
+    if (key === 'block') setCurrentLevel('street');
   };
 
   const handleAddressClick = (selected: any) => {
@@ -206,44 +198,30 @@ export default function AddressLandmarkFields({
     }
   };
 
-  const handleRemoveAddress = (removedItem: Locs, index: any) => {
+  const handleRemoveAddress = (removed: Locs, index: number) => {
     setSelcectItems(selctedItems?.filter((_, key) => key < index));
-
-    switch (removedItem.loc_type) {
-      case 'area':
-        // clear area, block, street
-        setValue('address.area', '');
-        setValue('address.area_id', undefined);
-        setValue('address.block', '');
-        setValue('address.block_id', undefined);
-        setValue('address.street', '');
-        setValue('address.street_id', undefined);
-        setParentId(undefined);
-        setCurrentLevel('area');
-        break;
-
-      case 'block':
-        // clear block, street
-        setValue('address.block', '');
-        setValue('address.block_id', undefined);
-        setValue('address.street', '');
-        setValue('address.street_id', undefined);
-        setParentId(landmarkValues.area_id || undefined);
-        setCurrentLevel('block');
-        break;
-
-      case 'street':
-        // clear street only
-        setValue('address.street', '');
-        setValue('address.street_id', undefined);
-        setParentId(landmarkValues.block_id || undefined);
-        setCurrentLevel('street');
-        break;
-
-      default:
-        break;
+    if (removed.loc_type === 'area') {
+      clearValues(['area', 'block', 'street']);
+      setCurrentLevel('area');
+    } else if (removed.loc_type === 'block') {
+      clearValues(['block', 'street']);
+      setParentId(landmarkValues.area_id);
+      setCurrentLevel('block');
+    } else if (removed.loc_type === 'street') {
+      clearValues(['street']);
+      setParentId(landmarkValues.block_id);
+      setCurrentLevel('street');
     }
   };
+
+  function clearValues(keys: any[]) {
+    keys.forEach((key) => {
+      // @ts-ignore
+      setValue(`address.${key}`, '');
+      // @ts-ignore
+      setValue(`address.${key}_id`, undefined);
+    });
+  }
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -262,6 +240,8 @@ export default function AddressLandmarkFields({
       }
     }
   };
+
+  console.log(selctedItems);
 
   return (
     <>

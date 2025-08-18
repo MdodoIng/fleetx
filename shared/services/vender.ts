@@ -1,29 +1,6 @@
 import { storageKeys } from '../lib/storageKeys';
+import { apiFetch } from '../lib/utils';
 import { configService } from './app-config';
-
-async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-  };
-
-  const headers = {
-    ...defaultHeaders,
-    ...(options.headers || {}),
-  };
-
-  const res = await fetch(url, {
-    ...options,
-    headers: headers,
-    cache: 'no-store', // prevents Next.js caching
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`API error ${res.status}: ${errorText}`);
-  }
-
-  return await res.json();
-}
 
 export const VendorService = {
   create: (vendor: any) =>
@@ -60,11 +37,7 @@ export const VendorService = {
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),
-      ...{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem(storageKeys.authAppToken)}`,
-        },
-      },
+      ...options,
     }),
 
   createVendorUser: (user: any) =>
@@ -77,6 +50,7 @@ export const VendorService = {
     apiFetch(
       `${configService.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),
+    
 
   getVendorWalletBalance: (vendorId: string, branchId?: string) => {
     let url = `/${vendorId}`;

@@ -27,10 +27,13 @@ import {
   SelectedAddress,
 } from '@/shared/types/orders';
 import { VendorService } from '@/shared/services/vender';
+import { debounce } from 'lodash';
+import { useStorageStore } from '@/shared/services/storage';
 
 // Main component
 export default function ShippingForm() {
   const { user } = useAuthStore();
+  const { branchId, vendorId } = useStorageStore();
 
   // State
   const [isCOD, setIsCOD] = useState(false);
@@ -66,38 +69,45 @@ export default function ShippingForm() {
     reValidateMode: 'onBlur',
   });
 
-  // Debounced functions
-  const debouncedMobileNumberSearch = useDebounce((value: string) => {
-    searchAddressByMobileNumber(value);
-  }, 400);
-
   // Effects
   useEffect(() => {
-    // Initialize component
     updatePickUpDetailsForBranchUser();
-
     return () => {};
   }, []);
 
   useEffect(() => {
-    const mobileNumberSubscription = dropOffForm.watch((value, { name }) => {
+    // memoize the debounced fn so it doesn't recreate on each render
+    const debouncedSearch = debounce((val: string) => {
+      searchAddressByMobileNumber(val);
+    }, 400);
+
+    const subscription = dropOffForm.watch((value, { name }) => {
       if (name === 'mobileNumber') {
-        debouncedMobileNumberSearch(value.mobileNumber || '');
+        const mobileNumber = value.mobileNumber || '';
+        if (!dropOffForm.formState.errors.mobileNumber) {
+          debouncedSearch(mobileNumber);
+        }
       }
     });
 
-    return () => mobileNumberSubscription.unsubscribe();
-  }, [dropOffForm.watch, debouncedMobileNumberSearch]);
+    return () => {
+      subscription.unsubscribe();
+      debouncedSearch.cancel(); // cleanup debounce
+    };
+  }, [dropOffForm]);
 
   // Helper functions
 
   const updatePickUpDetailsForBranchUser = async () => {
-    if (user?.roles?.includes('VENDOR_USER') && user.user.vendor?.branch_id) {
+    if (user?.roles?.includes('VENDOR_USER') && branchId) {
       try {
-        const res = await VendorService.getBranchDetailByBranchId({
-          vendor_id: user.user.vendor.vendor_id,
-          branch_id: user?.user.vendor.branch_id,
-        });
+        const res = await VendorService.getBranchDetailByBranchId(
+          {
+            vendor_id: vendorId!,
+            branch_id: branchId!,
+          },
+          {}
+        );
 
         pickUpForm.setValue('address', res.data.address);
         pickUpForm.setValue('customerName', res.data.name);
@@ -108,12 +118,16 @@ export default function ShippingForm() {
     }
   };
 
-  const searchAddressByMobileNumber = (mobileNumber: string) => {
-    if (mobileNumber && mobileNumber.length >= 7) {
-      // Mock API call to search addresses by mobile number
-      console.log('Searching addresses for:', mobileNumber);
-    }
+  const searchAddressByMobileNumber = async (mobileNumber: string) => {
+    const res = await VendorService.getAddressByMobile(
+      vendorId!,
+      branchId!,
+      mobileNumber
+    );
+
+    console.log(res);
   };
+  console.log(vendorId!, branchId!);
 
   const onSenderSubmit = (values: z.infer<TypePickUpSchema>) => {
     console.log('Sender Form Data:', values);

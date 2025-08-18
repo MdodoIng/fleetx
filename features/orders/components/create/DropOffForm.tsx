@@ -16,7 +16,7 @@ import {
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
-import { TypeDropOffSchema } from '../../validations/order';
+import { TypeDropOffSchema, TypePickUpSchema } from '../../validations/order';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
