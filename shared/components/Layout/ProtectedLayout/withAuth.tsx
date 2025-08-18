@@ -1,6 +1,7 @@
 'use client';
 import LoadingPage from '@/app/loading';
 import { isMounted } from '@/shared/lib/hooks';
+import { storageKeys } from '@/shared/lib/storageKeys';
 import type { UserRole } from '@/shared/types/auth';
 import { useAuthStore } from '@/store';
 import Link from 'next/link';
@@ -26,7 +27,6 @@ export function withAuth<P extends object>(
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
 
-    console.log(user);
     if (isLoading) {
       return <LoadingPage />;
     }

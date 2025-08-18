@@ -42,7 +42,6 @@ const PickUpForm: React.FC<SenderFormProps> = ({
         <Card className="rounded-lg shadow-lg">
           <CardHeader className="bg-emerald-50 rounded-t-lg p-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-emerald-800">
-              <img src="/pickUp_img.svg" alt="Pickup" className="w-6 h-6" />
               Pick Up
             </CardTitle>
           </CardHeader>
@@ -97,7 +96,8 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Address */}
             <AddressLandmarkFields
               form={senderForm}
-              landmarkFieldName="landmark"
+              landmarkFieldName="address"
+              isMap={true}
             />
 
             {/* Floor */}

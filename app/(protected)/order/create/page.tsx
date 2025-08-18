@@ -21,52 +21,12 @@ import {
   TypePickUpSchema,
 } from '@/features/orders/validations/order';
 import { useDebounce } from '@/shared/lib/hooks';
-
-interface DropOffCardValue {
-  source: string;
-  destination: string;
-  distance: number;
-  deliveryFee: number;
-  customerName: string;
-  address: string;
-  index: number;
-}
-
-interface LiveOrderDisplayModel {
-  source: string;
-  destination: string;
-  distance: number;
-  deliveryFee: number;
-}
-
-interface TotalOrderHistory {
-  totalOrders: number;
-  totalKM: number;
-  totalDelivery: number;
-}
-
-interface EstimatedDeliveryModel {
-  order_session_id: string;
-  vendor_id: string;
-  branch_id: string;
-  pickup: any;
-  drop_offs: any[];
-}
-
-interface SelectedAddress {
-  id: string;
-  name_en: string;
-  type: string;
-  latitude?: number;
-  longitude?: number;
-  area_id?: string;
-  block_id?: string;
-}
-
-interface Option {
-  id: string;
-  value: string;
-}
+import {
+  DropOffCardValue,
+  EstimatedDeliveryModel,
+  SelectedAddress,
+} from '@/shared/types/orders';
+import { VendorService } from '@/shared/services/vender';
 
 // Main component
 export default function ShippingForm() {
@@ -74,40 +34,14 @@ export default function ShippingForm() {
 
   // State
   const [isCOD, setIsCOD] = useState(false);
-  const [submitPlaceOrder, setSubmitPlaceOrder] = useState(false);
 
-  // Complex state objects
-  const [dropOffCardValues, setDropOffCardValues] = useState<
-    DropOffCardValue[]
-  >([]);
-
-  const [estimatedDeliveryData, setEstimatedDeliveryData] =
-    useState<EstimatedDeliveryModel>({
-      order_session_id: '',
-      vendor_id: '',
-      branch_id: '',
-      pickup: null,
-      drop_offs: [],
-    });
-
-  const [selectedAddressPickUp, setSelectedAddressPickUp] = useState<
-    SelectedAddress[]
-  >([]);
-  const [selectedAddressDropOff, setSelectedAddressDropOff] = useState<
-    SelectedAddress[]
-  >([]);
-
-  // Refs
-  const placeOrderButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Forms
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
     defaultValues: {
       customerName: '',
       paciNumber: '',
       floor: '',
-      landmark: [],
+      address: {},
       mobileNumber: '',
       additionalAddress: '',
     },
@@ -122,7 +56,7 @@ export default function ShippingForm() {
       floor: '',
       roomNumber: '',
       paymentType: PAYMENTTYPE.KNET,
-      landmark: [],
+      address: {},
       mobileNumber: '',
       amount: '',
       additionalAddress: '',
@@ -142,22 +76,10 @@ export default function ShippingForm() {
     // Initialize component
     updatePickUpDetailsForBranchUser();
 
-    return () => {
-      // Cleanup
-      setSelectedAddressDropOff([]);
-      setSelectedAddressPickUp([]);
-      setEstimatedDeliveryData({
-        order_session_id: '',
-        vendor_id: '',
-        branch_id: '',
-        pickup: null,
-        drop_offs: [],
-      });
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
-    // Watch form changes
     const mobileNumberSubscription = dropOffForm.watch((value, { name }) => {
       if (name === 'mobileNumber') {
         debouncedMobileNumberSearch(value.mobileNumber || '');
@@ -169,31 +91,20 @@ export default function ShippingForm() {
 
   // Helper functions
 
-  const updatePickUpDetailsForBranchUser = () => {
-    // Get current user details and update pickup form
-    const currentUser = getCurrentUser();
-    if (
-      currentUser?.roles[0] === 'VENDOR_USER' &&
-      currentUser.user.vendor?.branch_id
-    ) {
-      // Fetch branch details and update form
-      fetchBranchDetails(
-        currentUser.user.vendor.vendor_id,
-        currentUser.user.vendor.branch_id
-      );
-    }
-  };
+  const updatePickUpDetailsForBranchUser = async () => {
+    if (user?.roles?.includes('VENDOR_USER') && user.user.vendor?.branch_id) {
+      try {
+        const res = await VendorService.getBranchDetailByBranchId({
+          vendor_id: user.user.vendor.vendor_id,
+          branch_id: user?.user.vendor.branch_id,
+        });
 
-  const getCurrentUser = () => {
-    return user;
-  };
-
-  const fetchBranchDetails = async (vendorId: string, branchId: string) => {
-    try {
-      // Mock API call - replace with actual service
-      console.log('Fetching branch details...', vendorId, branchId);
-    } catch (error) {
-      console.error('Error fetching branch details:', error);
+        pickUpForm.setValue('address', res.data.address);
+        pickUpForm.setValue('customerName', res.data.name);
+        pickUpForm.setValue('mobileNumber', res.data.mobile_number);
+      } catch (error) {
+        console.error('Error fetching branch ddetails:', error);
+      }
     }
   };
 
@@ -202,114 +113,6 @@ export default function ShippingForm() {
       // Mock API call to search addresses by mobile number
       console.log('Searching addresses for:', mobileNumber);
     }
-  };
-
-  const onClickAddDropOff = () => {
-    const orderLimit = commonConstants.ORDER_LIMIT_BAHRAIN;
-    if (dropOffCardValues.length >= orderLimit) {
-      alert('Grouping orders limit reached');
-      return;
-    }
-
-    if (selectedAddressPickUp.length < 2) {
-      alert('Please select pickup address');
-      return;
-    }
-
-    if (selectedAddressDropOff.length < 2) {
-      alert('Please select customer address');
-      return;
-    }
-
-    // Add drop off logic
-    console.log('Adding drop off...');
-  };
-
-  const onClickPlaceOrder = async () => {
-    if (submitPlaceOrder) return;
-
-    setSubmitPlaceOrder(true);
-
-    if (!basicValidationForPlaceOrder()) {
-      setSubmitPlaceOrder(false);
-      return;
-    }
-
-    try {
-      // Create order object and submit
-      const order = createOrderObject();
-      await submitOrder(order);
-
-      // Show success message and reset form
-      showSuccessMessage();
-      resetAfterPlaceOrder();
-    } catch (error) {
-      console.error('Error placing order:', error);
-    } finally {
-      setSubmitPlaceOrder(false);
-    }
-  };
-
-  const basicValidationForPlaceOrder = () => {
-    return (
-      pickUpForm.formState.isValid &&
-      dropOffCardValues.length > 0 &&
-      selectedAddressPickUp.length >= 2 &&
-      selectedAddressDropOff.length >= 2
-    );
-  };
-
-  const createOrderObject = () => {
-    // Create order object from form data
-    return {
-      pick_up: createPickUpObject(),
-      drop_offs: estimatedDeliveryData.drop_offs,
-      vendor_id: estimatedDeliveryData.vendor_id,
-      branch_id: estimatedDeliveryData.branch_id,
-      order_session_id: estimatedDeliveryData.order_session_id,
-      driver_id: null,
-    };
-  };
-
-  const createPickUpObject = () => {
-    const pickUpData = pickUpForm.getValues();
-    return {
-      customer_name: pickUpData.customerName,
-      mobile_number: pickUpData.mobileNumber,
-      landmark: pickUpData.landmark,
-      floor: pickUpData.floor,
-      area: selectedAddressPickUp[0]?.name_en,
-      area_id: selectedAddressPickUp[0]?.id,
-      block: selectedAddressPickUp[1]?.name_en,
-      block_id: selectedAddressPickUp[1]?.id,
-      street: selectedAddressPickUp[2]?.name_en,
-      street_id: selectedAddressPickUp[2]?.id,
-    };
-  };
-
-  const submitOrder = async (order: any) => {
-    // Mock API call - replace with actual service
-    console.log('Submitting order:', order);
-    return Promise.resolve({ data: { order_number: 'ORD-123' } });
-  };
-
-  const showSuccessMessage = () => {
-    alert('Order placed successfully!');
-  };
-
-  const resetAfterPlaceOrder = () => {
-    pickUpForm.reset();
-    dropOffForm.reset({ paymentType: PAYMENTTYPE.KNET });
-    setSelectedAddressPickUp([]);
-    setSelectedAddressDropOff([]);
-    setDropOffCardValues([]);
-    setEstimatedDeliveryData({
-      order_session_id: '',
-      vendor_id: '',
-      branch_id: '',
-      pickup: null,
-      drop_offs: [],
-    });
   };
 
   const onSenderSubmit = (values: z.infer<TypePickUpSchema>) => {
@@ -359,7 +162,6 @@ export default function ShippingForm() {
               variant="outline"
               size="sm"
               className="text-teal-500 border-teal-500 hover:bg-teal-50"
-              onClick={onClickAddDropOff}
             >
               <Plus className="w-4 h-4 mr-1" />
               Save and add drop off
@@ -368,10 +170,7 @@ export default function ShippingForm() {
             <Button
               variant="secondary"
               size="sm"
-              disabled={!basicValidationForPlaceOrder()}
               className="bg-gray-200 text-gray-400 hover:bg-gray-200"
-              onClick={onClickPlaceOrder}
-              ref={placeOrderButtonRef}
             >
               PLACE ORDER
             </Button>

@@ -50,6 +50,8 @@ function getInitialAuthState(): boolean {
         user: decoded,
         isAuthenticated: true,
       });
+    } else {
+      useAuthStore().refreshToken()
     }
     useAuthStore.setState({ isLoading: false });
     return isTokenValid;

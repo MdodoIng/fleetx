@@ -44,7 +44,6 @@ const DropoffForm: React.FC<SenderFormProps> = ({
         <Card className="rounded-lg shadow-lg">
           <CardHeader className="bg-cyan-50 rounded-t-lg p-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-              <img src="/pickUp_img.svg" alt="Dropoff" className="w-6 h-6" />
               Drop Off
             </CardTitle>
           </CardHeader>
@@ -82,7 +81,8 @@ const DropoffForm: React.FC<SenderFormProps> = ({
 
             <AddressLandmarkFields
               form={recipientForm}
-              landmarkFieldName="landmark"
+              landmarkFieldName="address"
+              isMap={true}
             />
 
             {/* Floor */}

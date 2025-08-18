@@ -2,7 +2,7 @@
 
 import { useAuthStore } from '@/store';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { z } from 'zod';
@@ -25,15 +25,9 @@ import { loginSchema } from '@/features/auth/validations/auth';
 export default function Login() {
   const [error, setError] = useState('');
   const { isAuthenticated, isLoading, login } = useAuthStore();
-  const {setRtl} = useRTL();
+  const { setRtl } = useRTL();
   const { push } = useRouter();
   const redirectToHome = useRedirectToHome();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      push('/order');
-    }
-  }, [isAuthenticated, push]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -53,6 +47,13 @@ export default function Login() {
       setError('Invalid email or password');
     }
   }
+  
+  useEffect(() => {
+    if (isAuthenticated) {
+      
+      redirectToHome();
+    }
+  }, [isAuthenticated, redirectToHome]);
 
   return (
     <div
