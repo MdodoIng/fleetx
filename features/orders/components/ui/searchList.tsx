@@ -17,7 +17,7 @@ const SearchResults: React.FC<Props> = ({
   handleAddressClick,
 }) => {
   return (
-    <div className="mt-2 grid px-10 py-4 gap-2 absolute w-full bg-yellow-300 top-full left-0 max-h-[200px] overflow-y-auto ">
+    <div className="mt-2 grid px-10 py-4 gap-2 absolute w-full bg-yellow-300 top-14 z-50 left-0 max-h-[200px] overflow-y-auto ">
       {' '}
       {loading ? (
         '...'

@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
+import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { TypeDropOffSchema, TypePickUpSchema } from '../../validations/order';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
@@ -37,24 +37,16 @@ const DropoffForm: React.FC<SenderFormProps> = ({
 }) => {
   return (
     <Form {...recipientForm}>
-      <form
-        onSubmit={recipientForm.handleSubmit(onRecipientSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
         <Card className="rounded-lg shadow-lg">
-          <CardHeader className="bg-cyan-50 rounded-t-lg p-4">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-              Drop Off
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Recipient Name */}
+          <CardContent className="p-6 grid grid-cols-2  gap-4">
+            {/* orderNumber */}
             <FormField
               control={recipientForm.control}
-              name="customerName"
+              name="orderNumber"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel> Recipient Names</FormLabel>
+                <FormItem className="col-span-2">
+                  <FormLabel> orderNumber</FormLabel>
                   <FormControl>
                     <Input placeholder="Recipient Name" {...field} />
                   </FormControl>
@@ -64,15 +56,29 @@ const DropoffForm: React.FC<SenderFormProps> = ({
               )}
             />
 
-            {/* Mobile Number */}
+            {/* customerName */}
             <FormField
               control={recipientForm.control}
-              name="mobileNumber"
+              name="customerName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mobile Number</FormLabel>
+                  <FormLabel>customerName</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 6045 9486" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* phone */}
+            <FormField
+              control={recipientForm.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 3" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,6 +89,21 @@ const DropoffForm: React.FC<SenderFormProps> = ({
               form={recipientForm}
               landmarkFieldName="address"
               isMap={true}
+            />
+
+            {/* apartmentNo */}
+            <FormField
+              control={recipientForm.control}
+              name="apartmentNo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>apartmentNo</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 3" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             {/* Floor */}
@@ -103,10 +124,10 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Apt */}
             <FormField
               control={recipientForm.control}
-              name="roomNumber"
+              name="additionalAddress"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apt</FormLabel>
+                <FormItem className="col-span-2">
+                  <FormLabel>additionalAddress</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: 12" {...field} />
                   </FormControl>
@@ -116,106 +137,74 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             />
 
             {/* Cash Collection */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-1">
-              <Label className="text-gray-500">
-                Shall we collect cash from the recipient?
-              </Label>
-              <div className="flex gap-4 items-center">
-                {/* YES Option */}
-                <label
-                  className={cn(
-                    'flex items-center gap-2 cursor-pointer',
-                    shallCollectCash
-                      ? 'text-cyan-500 font-semibold'
-                      : 'text-gray-500'
-                  )}
-                >
-                  <input
-                    type="radio"
-                    value="yes"
-                    checked={shallCollectCash}
-                    onChange={() => {
-                      setIsCOD(true);
-                      recipientForm.setValue('paymentType', 'cash');
-                    }}
-                    className="accent-cyan-500 w-4 h-4"
-                  />
-                  YES
-                </label>
+            <div className="col-span-2 p-3 bg-yellow-100">
+              <div className="flex items-center justify-between">
+                <Label className="text-gray-500">
+                  Shall we collect cash from the recipient?
+                </Label>
+                <div className="flex gap-4 items-center">
+                  {/* YES Option */}
+                  <label
+                    className={cn(
+                      'flex items-center gap-2 cursor-pointer',
+                      shallCollectCash
+                        ? 'text-cyan-500 font-semibold'
+                        : 'text-gray-500'
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      value="yes"
+                      checked={shallCollectCash}
+                      onChange={() => {
+                        setIsCOD(true);
+                      }}
+                      className="accent-cyan-500 w-4 h-4"
+                    />
+                    YES
+                  </label>
 
-                {/* NO Option */}
-                <label
-                  className={cn(
-                    'flex items-center gap-2 cursor-pointer',
-                    !shallCollectCash
-                      ? 'text-cyan-500 font-semibold'
-                      : 'text-gray-500'
-                  )}
-                >
-                  <input
-                    type="radio"
-                    value="no"
-                    checked={!shallCollectCash}
-                    onChange={() => {
-                      setIsCOD(false);
-                      recipientForm.setValue('paymentType', 'card');
-                    }}
-                    className="accent-cyan-500 w-4 h-4"
-                  />
-                  NO
-                </label>
+                  {/* NO Option */}
+                  <label
+                    className={cn(
+                      'flex items-center gap-2 cursor-pointer',
+                      !shallCollectCash
+                        ? 'text-cyan-500 font-semibold'
+                        : 'text-gray-500'
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      value="no"
+                      checked={!shallCollectCash}
+                      onChange={() => {
+                        setIsCOD(false);
+                      }}
+                      className="accent-cyan-500 w-4 h-4"
+                    />
+                    NO
+                  </label>
+                </div>
               </div>
-            </div>
 
-            {/* Amount - Conditionally rendered */}
-            {shallCollectCash && (
               <FormField
                 control={recipientForm.control}
                 name="amount"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="mt-4">
                     <FormLabel>Amount</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: 10" {...field} />
+                    <FormControl className="bg-white">
+                      <Input
+                        // disabled={!shallCollectCash}
+                        placeholder="Ex: 10"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
-
-            {/* Additional Address */}
-            <FormField
-              control={recipientForm.control}
-              name="vendorOrderNumber"
-              render={({ field }) => (
-                <FormItem className="col-span-1 md:col-span-2 lg:col-span-2">
-                  <FormLabel>Additional Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ex: House number, Building number etc"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Order Number */}
-            <FormField
-              control={recipientForm.control}
-              name="vendorOrderNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Order Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: DHA334D01" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            </div>
           </CardContent>
         </Card>
       </form>

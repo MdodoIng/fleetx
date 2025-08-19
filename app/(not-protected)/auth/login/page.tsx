@@ -24,7 +24,8 @@ import { loginSchema } from '@/features/auth/validations/auth';
 
 export default function Login() {
   const [error, setError] = useState('');
-  const { isAuthenticated, isLoading, login } = useAuthStore();
+  const { isAuthenticated, isLoading, login, isAuthenticatedCheck } =
+    useAuthStore();
   const { setRtl } = useRTL();
   const { push } = useRouter();
   const redirectToHome = useRedirectToHome();
@@ -47,13 +48,13 @@ export default function Login() {
       setError('Invalid email or password');
     }
   }
-  
+
+  // console.log(isAuthenticated, isAuthenticatedCheck());/
   useEffect(() => {
     if (isAuthenticated) {
-      
       redirectToHome();
     }
-  }, [isAuthenticated, redirectToHome]);
+  }, [isAuthenticated]);
 
   return (
     <div

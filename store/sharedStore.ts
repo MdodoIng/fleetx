@@ -16,7 +16,6 @@ import { configService } from '@/shared/services/app-config';
 import { setUserLocale } from '@/shared/services/locale';
 import { useStorageStore } from './useStorageStore';
 import { AuthData, DecodedToken } from '@/shared/types/auth';
-import { ZoneETPTrend } from '@/shared/types/orders';
 import { useTranslations, Locale } from 'next-intl';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
@@ -29,7 +28,7 @@ interface SharedState {
   currentRates?: number;
   orderNumberRate?: string;
   improvements: any[];
-  appConstants: any | null;
+  appConstants: typeof kuwait | typeof bahrain | typeof qatar | null;
   rate: number | null;
   branchId: any | null;
   vendorId: any | null;
@@ -42,7 +41,7 @@ interface SharedState {
   whatsAppUpdateAddressMessage: any;
   fleetZonePickUpTrend: any[];
   freeDriverData: any[];
-  currentStatusZoneETPTrend: ZoneETPTrend | undefined;
+  currentStatusZoneETPTrend: undefined;
   currentZoneId?: number;
   defaultZoneId?: number;
   isAthuGurad: boolean;
@@ -481,9 +480,17 @@ export const useSharedStore = create<SharedState & SharedActions>()((
 
     readAppConstants: async () => {
       const country = environment.COUNTRY.toLowerCase();
-      if (country === KUWAIT) set({ appConstants: kuwait });
-      else if (country === BAHRAIN) set({ appConstants: bahrain });
-      else if (country === QATAR) set({ appConstants: qatar });
+      let appConstants = null;
+
+      if (country === KUWAIT) {
+        appConstants = kuwait;
+      } else if (country === BAHRAIN) {
+        appConstants = bahrain;
+      } else if (country === QATAR) {
+        appConstants = qatar;
+      }
+
+      set({ appConstants });
     },
 
     verifyAppVersionUpdate: (apiVersion: string) => {
@@ -529,7 +536,7 @@ export const useSharedStore = create<SharedState & SharedActions>()((
         return;
       }
 
-      const newTrend: ZoneETPTrend = {};
+      const newTrend: any = {};
 
       const freeDrivers = freeBuddies?.freeBuddies ?? 0;
       const unAssignedDrivers = freeBuddies?.unAssignedOrders ?? 0;

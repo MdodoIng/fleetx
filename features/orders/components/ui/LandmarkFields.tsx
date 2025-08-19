@@ -1,29 +1,22 @@
 'use client';
 
-import React, {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import { Button } from '@/shared/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/components/ui/form';
-import { classForInput } from '@/shared/components/ui/input';
-import { cn } from '@/shared/lib/utils';
 import { getArea, getBlock, getStreet } from '@/store/sharedStore';
-import { MapPin } from 'lucide-react';
-import { TypeLandMarkScema } from '../../validations/order';
+import LandmarkInput from './LandmarkInput';
+
+// import MyMap from '@/shared/components/MyMap/Map';
+
+const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
+
+import { makeLoc } from '@/shared/lib/helpers';
+import dynamic from 'next/dynamic';
+import { TypePickUpSchema } from '../../validations/order';
 import SearchResults from './searchList';
-const MyMap = React.lazy(() => import('@/shared/components/MyMap/Map'));
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
@@ -39,7 +32,7 @@ export default function AddressLandmarkFields({
 }: AddressLandmarkProps) {
   const { control, watch, setValue } = form;
 
-  const landmarkValues: TypeLandMarkScema = watch(landmarkFieldName) || [];
+  const landmarkValues: TypePickUpSchema = watch() || [];
   const [loading, setLoading] = useState(false);
   const [currentLevel, setCurrentLevel] = useState<
     'area' | 'block' | 'street' | 'bulding'
@@ -63,49 +56,47 @@ export default function AddressLandmarkFields({
   const once = useRef(false);
 
   useEffect(() => {
-    if (!landmarkValues && !once.current) return;
+    if (!landmarkValues.area || once.current) return;
 
     const items: Locs[] = [];
+    let newCurrentLevel = 'block';
+    let newParentId = landmarkValues.area_id;
 
     if (landmarkValues.area && landmarkValues.area_id) {
-      items.push({
-        id: landmarkValues.area_id,
-        name_ar: landmarkValues.area,
-        name_en: landmarkValues.area,
-        latitude: Number(landmarkValues.latitude) || 0,
-        longitude: Number(landmarkValues.longitude) || 0,
-        governorate_id: 0,
-        loc_type: 'area',
-      });
+      items.push(
+        makeLoc('area', landmarkValues.area, landmarkValues.area_id, {
+          latitude: Number(landmarkValues.latitude) || 0,
+          longitude: Number(landmarkValues.longitude) || 0,
+        })
+      );
     }
-
     if (landmarkValues.block && landmarkValues.block_id) {
-      items.push({
-        id: landmarkValues.block_id,
-        name_ar: landmarkValues.block,
-        name_en: landmarkValues.block,
-        latitude: Number(landmarkValues.latitude) || 0,
-        longitude: Number(landmarkValues.longitude) || 0,
-        governorate_id: 0,
-        loc_type: 'block',
-      });
+      items.push(
+        makeLoc('block', landmarkValues.block, landmarkValues.block_id, {
+          latitude: Number(landmarkValues.latitude) || 0,
+          longitude: Number(landmarkValues.longitude) || 0,
+        })
+      );
+      newCurrentLevel = 'street';
+      newParentId = landmarkValues.block_id;
     }
-
     if (landmarkValues.street && landmarkValues.street_id) {
-      items.push({
-        id: landmarkValues.street_id,
-        name_ar: landmarkValues.street,
-        name_en: landmarkValues.street,
-        latitude: Number(landmarkValues.latitude) || 0,
-        longitude: Number(landmarkValues.longitude) || 0,
-        governorate_id: 0,
-        loc_type: 'street',
-      });
+      items.push(
+        makeLoc('street', landmarkValues.street, landmarkValues.street_id, {
+          latitude: Number(landmarkValues.latitude) || 0,
+          longitude: Number(landmarkValues.longitude) || 0,
+        })
+      );
+      newCurrentLevel = 'street';
+      newParentId = landmarkValues.street_id;
     }
 
+    // Batch all state updates
     setSelcectItems(items);
+    setCurrentLevel(newCurrentLevel);
+    setParentId(newParentId);
     once.current = true;
-  }, [landmarkValues, once]);
+  }, [landmarkValues]);
 
   useMemo(async () => {
     if (!isInputBlur) return;
@@ -160,7 +151,7 @@ export default function AddressLandmarkFields({
   }, [isInputVal, currentLevel, isInputBlur]);
 
   useMemo(() => {
-    if (!isMapOpen || !selctedItems || selctedItems.length === 0) return;
+    if (!isMap || !selctedItems) return;
 
     const last = selctedItems[selctedItems.length - 1];
 
@@ -170,18 +161,19 @@ export default function AddressLandmarkFields({
     };
 
     setMapValues(center);
-  }, [selctedItems, isMapOpen]);
+  }, [selctedItems, isMap]);
 
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street';
 
-    setValue(`address.${key}`, data.name_en);
-    setValue(`address.${key}_id`, data.id);
-    setValue('address.latitude', data.latitude);
-    setValue('address.longitude', data.longitude);
+    setValue(`${key}`, data.name_en);
+    setValue(`${key}_id`, data.id);
+    setValue('latitude', data.latitude);
+    setValue('longitude', data.longitude);
 
     setParentId(data.id);
-
+    setIsInputVal('');
+    setSearchData(undefined);
     setSelcectItems((prev) => (prev ? [...prev, data] : [data]));
 
     if (key === 'area') setCurrentLevel('block');
@@ -199,7 +191,8 @@ export default function AddressLandmarkFields({
   };
 
   const handleRemoveAddress = (removed: Locs, index: number) => {
-    setSelcectItems(selctedItems?.filter((_, key) => key < index));
+    console.log(removed);
+    setSelcectItems(selctedItems?.slice(0, index));
     if (removed.loc_type === 'area') {
       clearValues(['area', 'block', 'street']);
       setCurrentLevel('area');
@@ -217,9 +210,9 @@ export default function AddressLandmarkFields({
   function clearValues(keys: any[]) {
     keys.forEach((key) => {
       // @ts-ignore
-      setValue(`address.${key}`, '');
+      setValue(`${key}`, '');
       // @ts-ignore
-      setValue(`address.${key}_id`, undefined);
+      setValue(`${key}_id`, undefined);
     });
   }
 
@@ -241,144 +234,69 @@ export default function AddressLandmarkFields({
     }
   };
 
-  console.log(selctedItems);
-
   return (
     <>
-      <div className="flex flex-col gap-4 w-full col-span-3">
+      <div className="flex flex-col gap-4 w-full col-span-2 relative">
         {/* Landmark Inputs */}
-        <FormField
+        <LandmarkInput
           control={control}
-          name={landmarkFieldName}
-          render={() => (
-            <FormItem
-              onBlur={() => setTimeout(() => setIsInputBlur(false), 1000)}
-              // onMouseLeave={() => setTimeout(() => setIsInputBlur(false), 1000)}
-              onFocus={() => setIsInputBlur(true)}
-            >
-              <FormLabel>Landmarks</FormLabel>
-              <FormControl className="relative z-0">
-                <div className={cn('flex gap-3 items-center ', classForInput)}>
-                  {selctedItems &&
-                    selctedItems.map((item, key) => {
-                      if (!item) return null;
-
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => handleRemoveAddress(item, key)}
-                          className="cursor-pointer text-red-500 shrink-0 flex items-center gap-1 border border-red-300 rounded-full px-2 py-1 text-sm hover:bg-red-100"
-                        >
-                          <span className="font-bold">×</span> {item.name_en}
-                        </button>
-                      );
-                    })}
-
-                  <input
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      setIsInputVal(e.target.value);
-                    }}
-                    value={isInputVal}
-                    disabled={landmarkValues.street ? true : false}
-                    placeholder={`Landmark `}
-                    className="outline-0 border-none bg-yellow-500 w-full flex disabled:hidden"
-                    onKeyDown={(e) => handleEnter(e)}
-                  />
-                  {isMap && (
-                    <Button
-                      onClick={() => setIsMapOpen(!isMapOpen)}
-                      variant="ghost"
-                      className="absolute right-0 top-0 bg-white"
-                    >
-                      <MapPin />
-                    </Button>
-                  )}
-
-                  {searchData &&
-                    isInputBlur &&
-                    !isMapOpen &&
-                    searchData?.length > 0 && (
-                      <SearchResults
-                        handleAddressClick={handleAddressClick}
-                        loading={loading}
-                        searchData={searchData}
-                      />
-                    )}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          fieldName={landmarkFieldName}
+          handleAddressClick={handleAddressClick}
+          handleEnter={handleEnter}
+          handleRemoveAddress={handleRemoveAddress}
+          isInputVal={isInputVal}
+          landmarkValues={landmarkValues}
+          loading={loading}
+          searchData={searchData}
+          selctedItems={selctedItems}
+          setIsInputBlur={setIsInputBlur}
+          setIsInputVal={setIsInputVal}
+          setIsMapOpen={setIsMapOpen}
+          isInputBlur={isInputBlur}
+          isMapOpen={false}
+          isMap={isMap}
+          formLabel="Landmark"
         />
+        {searchData && isInputBlur && !isMapOpen && searchData?.length > 0 && (
+          <SearchResults
+            handleAddressClick={handleAddressClick}
+            loading={loading}
+            searchData={searchData}
+          />
+        )}
       </div>
 
       {isMapOpen && (
-        <div className="fixed w-full h-full m-auto bg-black/25 z-50 inset-0 flex items-center justify-center">
+        <div className="fixed w-full h-full m-auto bg-black/25 z-50 inset-0 flex items-center justify-center ">
           <div className="w-[max(400px,50%)] flex flex-col  bg-white rounded-lg relative z-0 ">
             {/* Landmark Inputs */}
-            <FormField
+            <LandmarkInput
               control={control}
-              name={landmarkFieldName}
-              render={() => (
-                <FormItem
-                  className="w-[calc(100%-20px)] mx-auto absolute top-0 z-50 bg-white"
-                  onBlur={() => setTimeout(() => setIsInputBlur(false), 1000)}
-                  // onMouseLeave={() => setTimeout(() => setIsInputBlur(false), 1000)}
-                  onFocus={() => setIsInputBlur(true)}
-                >
-                  <FormControl className="relative z-0">
-                    <div
-                      className={cn('flex gap-3 items-center ', classForInput)}
-                    >
-                      {selctedItems &&
-                        selctedItems.map((item, key) => {
-                          if (!item) return null;
-
-                          return (
-                            <button
-                              key={key}
-                              type="button"
-                              onClick={() => handleRemoveAddress(item, key)}
-                              className="cursor-pointer text-red-500 shrink-0 flex items-center gap-1 border border-red-300 rounded-full px-2 py-1 text-sm hover:bg-red-100"
-                            >
-                              <span className="font-bold">×</span>{' '}
-                              {item.name_en}
-                            </button>
-                          );
-                        })}
-                      <input
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          setIsInputVal(e.target.value);
-                        }}
-                        value={isInputVal}
-                        disabled={landmarkValues.street ? true : false}
-                        placeholder={`Landmark `}
-                        className="outline-0 border-none bg-yellow-500 w-full flex disabled:hidden"
-                        onKeyDown={(e) => handleEnter(e)}
-                      />
-
-                      <Button
-                        onClick={() => setIsMapOpen(!isMapOpen)}
-                        variant="default"
-                        className="absolute right-0 top-0 "
-                      >
-                        submit
-                      </Button>
-
-                      {searchData && isInputBlur && searchData?.length > 0 && (
-                        <SearchResults
-                          handleAddressClick={handleAddressClick}
-                          loading={loading}
-                          searchData={searchData}
-                        />
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              fieldName={landmarkFieldName}
+              handleAddressClick={handleAddressClick}
+              handleEnter={handleEnter}
+              handleRemoveAddress={handleRemoveAddress}
+              isInputVal={isInputVal}
+              landmarkValues={landmarkValues}
+              loading={loading}
+              searchData={searchData}
+              selctedItems={selctedItems}
+              setIsInputBlur={setIsInputBlur}
+              setIsInputVal={setIsInputVal}
+              setIsMapOpen={setIsMapOpen}
+              isInputBlur={isInputBlur}
+              isMapOpen={isMapOpen}
+              isMap={isMap}
             />
+
+            {searchData && isInputBlur && searchData?.length > 0 && (
+              <SearchResults
+                handleAddressClick={handleAddressClick}
+                loading={loading}
+                searchData={searchData}
+              />
+            )}
+
             <MyMap center={mapValues} />
           </div>
         </div>

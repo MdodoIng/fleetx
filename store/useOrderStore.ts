@@ -1,50 +1,90 @@
 import { create } from 'zustand';
-import {
-  DropOff,
-  BulkDropOff,
-  BulkOrderValidation,
-  OrderList,
-} from '@/shared/types/orders';
+import { TypeDropOffs, TypeOrderList, TypePickUp } from '@/shared/types/orders';
+import { persist } from 'zustand/middleware';
 
 interface OrderState {
   driverId: number | null;
-  dropOffs: DropOff[];
-  bulkDropOffs: BulkDropOff[];
-  selectedDropOffs: DropOff[];
-  bulkValidation: BulkOrderValidation[];
+  dropOffs: TypeDropOffs[];
+  pickUp: TypePickUp | undefined;
+
+  // bulkDropOffs: BulkDropOff[];
+  selectedDropOffs: TypeDropOffs[];
+  // bulkValidation: BulkOrderValidation[];
   selectedPage: number;
   selectedPerPage: number;
-  orderStatusListData: OrderList[];
+  orderStatusListData: TypeOrderList[];
   totalCountList: number;
-
-  // actions
-  setDriverId: (id: number | null) => void;
-  setDropOffs: (dropOffs: DropOff[]) => void;
-  setBulkDropOffs: (bulk: BulkDropOff[]) => void;
-  setSelectedDropOffs: (selected: DropOff[]) => void;
-  setBulkValidation: (errors: BulkOrderValidation[]) => void;
-  setOrderList: (list: OrderList[], total: number) => void;
-  setPagination: (page: number, perPage: number) => void;
 }
 
-export const useOrderStore = create<OrderState>((set) => ({
-  driverId: null,
-  dropOffs: [],
-  bulkDropOffs: [],
-  selectedDropOffs: [],
-  bulkValidation: [],
-  selectedPage: 1,
-  selectedPerPage: 10,
-  orderStatusListData: [],
-  totalCountList: 0,
-
-  setDriverId: (id) => set({ driverId: id }),
-  setDropOffs: (dropOffs) => set({ dropOffs }),
-  setBulkDropOffs: (bulk) => set({ bulkDropOffs: bulk }),
-  setSelectedDropOffs: (selected) => set({ selectedDropOffs: selected }),
-  setBulkValidation: (errors) => set({ bulkValidation: errors }),
-  setOrderList: (list, total) =>
-    set({ orderStatusListData: list, totalCountList: total }),
-  setPagination: (page, perPage) =>
-    set({ selectedPage: page, selectedPerPage: perPage }),
-}));
+export const useOrderStore = create<OrderState>()(
+  persist(
+    (set) => ({
+      driverId: null,
+      dropOffs: [
+        {
+          id: 0,
+          order_index: 0,
+          display_address: '',
+          address: '',
+          vendor_order_id: '',
+          customer_name: '',
+          paci_number: '',
+          area: '',
+          area_id: 0,
+          block: '',
+          block_id: 0,
+          street: '',
+          street_id: 0,
+          building_id: 0,
+          building: '',
+          floor: '',
+          room_number: '',
+          landmark: '',
+          mobile_number: '',
+          latitude: '',
+          longitude: '',
+          specific_driver_instructions: '',
+          quantity: 0,
+          amount_to_collect: 0,
+          payment_type: 0,
+        },
+        {
+          id: 0,
+          order_index: 0,
+          display_address: '',
+          address: '',
+          vendor_order_id: '',
+          customer_name: '',
+          paci_number: '',
+          area: '',
+          area_id: 0,
+          block: '',
+          block_id: 0,
+          street: '',
+          street_id: 0,
+          building_id: 0,
+          building: '',
+          floor: '',
+          room_number: '',
+          landmark: '',
+          mobile_number: '',
+          latitude: '',
+          longitude: '',
+          specific_driver_instructions: '',
+          quantity: 0,
+          amount_to_collect: 0,
+          payment_type: 0,
+        },
+      ],
+      selectedDropOffs: [],
+      selectedPage: 1,
+      selectedPerPage: 10,
+      orderStatusListData: [],
+      totalCountList: 0,
+      pickUp: undefined,
+    }),
+    {
+      name: 'order-store', // key in localStorage
+    }
+  )
+);

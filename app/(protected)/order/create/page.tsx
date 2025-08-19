@@ -1,15 +1,25 @@
 'use client';
 
 import { Button } from '@/shared/components/ui/button';
-import { Plus, MapPin, Lightbulb, Coins } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import {
+  Plus,
+  MapPin,
+  Lightbulb,
+  Coins,
+  Truck,
+  Clock,
+  DollarSign,
+  Delete,
+  Edit,
+} from 'lucide-react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { never, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
 import DropoffForm from '@/features/orders/components/create/DropOffForm';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useSharedStore } from '@/store';
 import {
   commonConstants,
   PAYMENTTYPE,
@@ -21,56 +31,88 @@ import {
   TypePickUpSchema,
 } from '@/features/orders/validations/order';
 import { useDebounce } from '@/shared/lib/hooks';
-import {
-  DropOffCardValue,
-  EstimatedDeliveryModel,
-  SelectedAddress,
-} from '@/shared/types/orders';
+
 import { VendorService } from '@/shared/services/vender';
 import { debounce } from 'lodash';
 import { useStorageStore } from '@/shared/services/storage';
+import LoadingPage from '../../loading';
+import { TypeLiveOrderDisplay } from '@/shared/types/orders';
+import { configService } from '@/shared/services/app-config';
+import { useOrderStore } from '@/store/useOrderStore';
+import { hasErrors, hasValue } from '@/shared/lib/helpers';
+import { useDeliveryFeeCalculator } from '@/features/orders/hooks/useDeliveryFeeCalculator';
+import { orderService } from '@/features/orders/services/ordersApi';
+import { CardHeader, CardTitle } from '@/shared/components/ui/card';
 
 // Main component
 export default function ShippingForm() {
   const { user } = useAuthStore();
+  const { appConstants, readAppConstants } = useSharedStore();
+  const [isDropIndex, setIsDropofIndex] = useState<number>(0);
+
   const { branchId, vendorId } = useStorageStore();
 
-  // State
   const [isCOD, setIsCOD] = useState(false);
+  const [liveOrderDisplay, setLiveOrderDisplay] =
+    useState<TypeLiveOrderDisplay>();
+  const orderStore = useOrderStore();
+  // const { totalOrders, totalDelivery, totalKM, deliveryModel } =
+  //   useDeliveryFeeCalculator();
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
     defaultValues: {
-      customerName: '',
-      paciNumber: '',
+      senderName: '',
+      phone: '',
+      area: '',
+      area_id: '',
+      block: '',
+      block_id: '',
+      street: '',
+      street_id: '',
+      building: '',
+      building_id: '',
+      apartmentNo: '',
       floor: '',
-      address: {},
-      mobileNumber: '',
       additionalAddress: '',
+      latitude: '',
+      longitude: '',
     },
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });
-
   const dropOffForm = useForm<TypeDropOffSchema>({
     resolver: zodResolver(dropOffSchema),
     defaultValues: {
+      orderNumber: '',
       customerName: '',
+      phone: '',
+      area: '',
+      area_id: '',
+      block: '',
+      block_id: '',
+      street: '',
+      street_id: '',
+      building: '',
+      building_id: '',
+      latitude: '',
+      longitude: '',
+      apartmentNo: '',
       floor: '',
-      roomNumber: '',
-      paymentType: PAYMENTTYPE.KNET,
-      address: {},
-      mobileNumber: '',
-      amount: '',
       additionalAddress: '',
-      vendorOrderNumber: '',
+      amount: '',
     },
+
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });
 
+  const pickUpFormValues = pickUpForm.watch();
+  const dropOffFormValues = dropOffForm.watch();
+
   // Effects
   useEffect(() => {
+    readAppConstants();
     updatePickUpDetailsForBranchUser();
     return () => {};
   }, []);
@@ -82,9 +124,9 @@ export default function ShippingForm() {
     }, 400);
 
     const subscription = dropOffForm.watch((value, { name }) => {
-      if (name === 'mobileNumber') {
-        const mobileNumber = value.mobileNumber || '';
-        if (!dropOffForm.formState.errors.mobileNumber) {
+      if (name === 'phone') {
+        const mobileNumber = value.phone || '';
+        if (!dropOffForm.formState.errors.phone) {
           debouncedSearch(mobileNumber);
         }
       }
@@ -96,38 +138,85 @@ export default function ShippingForm() {
     };
   }, [dropOffForm]);
 
-  // Helper functions
+  const isActive =
+    !hasErrors(pickUpForm) &&
+    !hasErrors(dropOffForm) &&
+    hasValue(pickUpFormValues.phone) &&
+    hasValue(pickUpFormValues.street_id) &&
+    hasValue(pickUpFormValues.floor) &&
+    hasValue(dropOffFormValues.phone) &&
+    hasValue(dropOffFormValues.street_id) &&
+    hasValue(dropOffFormValues.customerName) &&
+    (isCOD ? hasValue(dropOffFormValues.amount) : true);
+
+  const prevIsActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (isActive && !prevIsActiveRef.current) {
+      useOrderStore.setState((state) => {
+        const updatedDropOffs = [...state.dropOffs];
+        updatedDropOffs[isDropIndex] = {
+          ...(dropOffFormValues as any),
+        };
+
+        return {
+          pickUp: {
+            ...(pickUpFormValues as any),
+          },
+          dropOffs: updatedDropOffs,
+        };
+      });
+    }
+
+    prevIsActiveRef.current = isActive;
+  }, [isActive, pickUpFormValues, dropOffFormValues]);
 
   const updatePickUpDetailsForBranchUser = async () => {
     if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      try {
-        const res = await VendorService.getBranchDetailByBranchId(
-          {
+      if (orderStore.pickUp) {
+        Object.entries(orderStore.pickUp).forEach(([key, value]) => {
+          // @ts-ignore
+          pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
+        });
+      } else
+        try {
+          const res = await VendorService.getBranchDetailByBranchId({
             vendor_id: vendorId!,
             branch_id: branchId!,
-          },
-          {}
-        );
+          });
 
-        pickUpForm.setValue('address', res.data.address);
-        pickUpForm.setValue('customerName', res.data.name);
-        pickUpForm.setValue('mobileNumber', res.data.mobile_number);
-      } catch (error) {
-        console.error('Error fetching branch ddetails:', error);
-      }
+          Object.entries(res.data.address).forEach(([key, value]) => {
+            // @ts-ignore
+            pickUpForm.setValue(key as keyof typeof res.data.address, value);
+          });
+
+          pickUpForm.setValue('senderName', res.data.name);
+          pickUpForm.setValue('phone', res.data.mobile_number);
+        } catch (error) {
+          console.error('Error fetching branch ddetails:', error);
+        }
     }
   };
 
   const searchAddressByMobileNumber = async (mobileNumber: string) => {
-    const res = await VendorService.getAddressByMobile(
-      vendorId!,
-      branchId!,
-      mobileNumber
-    );
-
-    console.log(res);
+    try {
+      const res = await VendorService.getAddressByMobile(
+        vendorId!,
+        branchId!,
+        mobileNumber
+      );
+      // dropOffForm.setFocus('address', res.data.address);
+    } catch (error) {
+      console.error(error);
+    }
   };
-  console.log(vendorId!, branchId!);
+
+  const liveDeliverySourceDestination = (index: number) => {
+    setLiveOrderDisplay({
+      source: index > 0 ? 'D' + index : 'P',
+      destination: 'D' + (index + 1),
+    });
+  };
 
   const onSenderSubmit = (values: z.infer<TypePickUpSchema>) => {
     console.log('Sender Form Data:', values);
@@ -137,56 +226,123 @@ export default function ShippingForm() {
     console.log('Recipient Form Data:', values);
   };
 
+  const liveDeliveryFeeAndDistance = (index: number) => {
+    if (1 > 2) {
+      setLiveOrderDisplay({
+        source: '0',
+        destination: '0',
+      });
+    } else {
+      setLiveOrderDisplay({
+        source: '0',
+        destination: '0',
+      });
+    }
+  };
+
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
-      <div className="flex rounded-md max-w-full md:max-w-[70%] flex-col gap-10 w-full">
+      <div className="grid grid-cols-2 h-full rounded-md  gap-10 w-full">
         {/* PICK UP FORM */}
+
         <PickUpForm onSenderSubmit={onSenderSubmit} senderForm={pickUpForm} />
 
         {/* DROP OFF FORM */}
 
-        <DropoffForm
-          onRecipientSubmit={onRecipientSubmit}
-          recipientForm={dropOffForm}
-          shallCollectCash={isCOD}
-          setIsCOD={setIsCOD}
-        />
+        <div className="grid gap-4">
+          {orderStore.dropOffs.map((item, idx) => (
+            <div key={idx} className="shadow">
+              <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
+                  Drop Off {idx + 1}
+                </CardTitle>
+                <div className="grid-cols-2 grid gap-4">
+                  <Button
+                    onClick={() =>
+                      useOrderStore.setState((state) => {
+                        const updatedDropOffs = [...state.dropOffs];
+                        updatedDropOffs.splice(idx, 1);
 
-        {/* BOTTOM SECTION */}
-        <div className="flex items-center justify-between flex-col border rounded-lg p-3 bg-gray-50 gap-6">
+                        return {
+                          pickUp: {
+                            ...(pickUpFormValues as any),
+                          },
+                          dropOffs: updatedDropOffs,
+                        };
+                      })
+                    }
+                    variant="destructive"
+                  >
+                    <Delete />
+                  </Button>
+                  <Button
+                    onClick={() => setIsDropofIndex(idx)}
+                    variant="secondary"
+                  >
+                    <Edit />
+                  </Button>
+                </div>
+              </CardHeader>
+              {isDropIndex === idx && (
+                <DropoffForm
+                  onRecipientSubmit={onRecipientSubmit}
+                  recipientForm={dropOffForm}
+                  shallCollectCash={isCOD}
+                  setIsCOD={setIsCOD}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Right Section */}
+        <div className="flex items-center justify-between bg-white border rounded-lg shadow-sm  text-sm text-gray-700 w-full col-span-2 p-3">
           {/* Left Section */}
-          <div className="flex items-center gap-4 text-gray-500 text-sm justify-between w-full border p-4 rounded-md ">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>P.... D1</span>
+          <div className="flex items-center space-x-6">
+            <span className="font-medium text-blue-600 cursor-pointer">
+              Order Details
+            </span>
+
+            <div className="flex items-center space-x-1">
+              <MapPin className="w-4 h-4 text-gray-500" />
+              <span>Distance: {liveOrderDisplay?.distance} </span>
             </div>
-            <div className="flex items-center gap-1">
-              <Lightbulb className="w-4 h-4" />
-              <span>0 KM</span>
+
+            <div className="flex items-center space-x-1">
+              <Truck className="w-4 h-4 text-gray-500" />
+              <span>Drop-off: {liveOrderDisplay?.source}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Coins className="w-4 h-4" />
-              <span>0 KD</span>
+
+            <div className="flex items-center space-x-1">
+              <Clock className="w-4 h-4 text-gray-500" />
+              <span>
+                Est. Time:{' '}
+                <span className="font-medium">{liveOrderDisplay?.source}</span>
+              </span>
+            </div>
+
+            <div className="flex items-center space-x-1">
+              <DollarSign className="w-4 h-4 text-gray-500" />
+              <span>
+                Delivery Fee:{' '}
+                <span className="text-blue-600 font-medium">
+                  {' '}
+                  {appConstants?.currency} {liveOrderDisplay?.deliveryFee}
+                </span>
+              </span>
             </div>
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3 justify-between w-full">
+          <div className="flex items-center space-x-2">
+            <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-100">
+              Cancel
+            </button>
             <Button
-              variant="outline"
-              size="sm"
-              className="text-teal-500 border-teal-500 hover:bg-teal-50"
+              disabled={!isActive}
+              className="px-4 py-1.5 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700"
             >
-              <Plus className="w-4 h-4 mr-1" />
-              Save and add drop off
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              className="bg-gray-200 text-gray-400 hover:bg-gray-200"
-            >
-              PLACE ORDER
+              Create Order
             </Button>
           </div>
         </div>

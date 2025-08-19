@@ -1,80 +1,55 @@
 import z from 'zod';
 
 export const pickUpSchema = z.object({
-  customerName: z
+  senderName: z
     .string()
     .min(1, 'Customer name is required')
     .regex(/^[^\s].*/, { message: 'Cannot start with space' }),
-  paciNumber: z
+
+  phone: z
     .string()
-    .regex(/^[0-9]*$/, { message: 'Only numbers allowed' })
-    .optional(),
-  floor: z.string().optional(),
-  address: z.object({
-    area: z.string().optional(),
-    block: z.string().optional(),
-    street: z.string().optional(),
-    area_id: z.number().optional(),
-    block_id: z.number().optional(),
-    building: z.string().optional(),
-    landmark: z.string().optional(),
-    latitude: z.string().optional(),
-    longitude: z.string().optional(),
-    street_id: z.number().optional(),
-    building_id: z.number().optional(),
-    paci_number: z.string().optional(),
-  }),
-  mobileNumber: z.string().min(1, 'Mobile number is required'),
-  additionalAddress: z.string().optional(),
+    .min(7, 'Mobile number is required')
+    .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
+  area: z.string(),
+  area_id: z.string(),
+  block: z.string(),
+  block_id: z.string(),
+  street: z.string(),
+  street_id: z.string(),
+  building: z.string(),
+  building_id: z.string(),
+  apartmentNo: z.string(),
+  floor: z.string(),
+  additionalAddress: z.string(),
+  latitude: z.string(),
+  longitude: z.string(),
 });
 
 export const dropOffSchema = z.object({
+  orderNumber: z.string(),
   customerName: z
     .string()
     .min(1, 'Customer name is required')
     .regex(/^[^\s].*/, { message: 'Cannot start with space' }),
-  floor: z.string().optional(),
-  roomNumber: z.string().optional(),
-  paymentType: z.string().min(1, 'Payment type is required'),
-  address: z.object({
-    area: z.string().optional(),
-    block: z.string().optional(),
-    street: z.string().optional(),
-    area_id: z.number().optional(),
-    block_id: z.number().optional(),
-    building: z.string().optional(),
-    landmark: z.string().optional(),
-    latitude: z.string().optional(),
-    longitude: z.string().optional(),
-    street_id: z.number().optional(),
-    building_id: z.number().optional(),
-    paci_number: z.string().optional(),
-  }),
-
-  mobileNumber: z
+  phone: z
     .string()
-    .min(1, 'Mobile number is required')
-
-    .optional(),
-  amount: z
-    .string()
-    .optional()
-    .refine(
-      (val) =>
-        val === undefined ||
-        val === null ||
-        val === '' ||
-        /^(?=.*[0-9])(?:[0-9]\d*\.?|0?\.)\d*$/.test(val),
-      {
-        message: 'Invalid amount',
-      }
-    )
-    .optional(),
-  additionalAddress: z.string().optional(),
-
-  vendorOrderNumber: z.string().optional(),
+    .min(7, 'Mobile number is required')
+    .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
+  area: z.string(),
+  area_id: z.string(),
+  block: z.string(),
+  block_id: z.string(),
+  street: z.string(),
+  street_id: z.string(),
+  building: z.string(),
+  building_id: z.string(),
+  latitude: z.string(),
+  longitude: z.string(),
+  apartmentNo: z.string(),
+  floor: z.string(),
+  additionalAddress: z.string(),
+  amount: z.string().optional(),
 });
 
 export type TypePickUpSchema = z.infer<typeof pickUpSchema>;
 export type TypeDropOffSchema = z.infer<typeof dropOffSchema>;
-export type TypeLandMarkScema = TypePickUpSchema['address'];

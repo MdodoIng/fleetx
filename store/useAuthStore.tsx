@@ -51,7 +51,7 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     } else {
-      useAuthStore().refreshToken()
+      useAuthStore().refreshToken();
     }
     useAuthStore.setState({ isLoading: false });
     return isTokenValid;
@@ -248,11 +248,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   isAuthenticatedCheck: () => {
-    set({ isLoading: true });
     const isAuth = getInitialAuthState();
     set({ isAuthenticated: isAuth });
     set({ isLoading: false });
-
     return isAuth;
   },
 }));
