@@ -12,7 +12,7 @@ import {
   Delete,
   Edit,
 } from 'lucide-react';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, Fragment } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { never, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -43,6 +43,7 @@ import { hasErrors, hasValue } from '@/shared/lib/helpers';
 import { useDeliveryFeeCalculator } from '@/features/orders/hooks/useDeliveryFeeCalculator';
 import { orderService } from '@/features/orders/services/ordersApi';
 import { CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { id } from 'zod/v4/locales';
 
 // Main component
 export default function ShippingForm() {
@@ -240,6 +241,155 @@ export default function ShippingForm() {
     }
   };
 
+  const isDropoffOne = orderStore.dropOffs.length === 0;
+
+  const handleAddOneDropoff = () => {
+    if (isActive) {
+      useOrderStore.setState((state) => {
+        return {
+          dropOffs: [...state.dropOffs, dropOffFormValues as any],
+        };
+      });
+      dropOffForm.reset();
+    }
+  };
+
+  const handleEditOneDropoff = (index: number) => {
+    if (
+      isActive &&
+      dropOffFormValues &&
+      index >= 0 &&
+      index < orderStore.dropOffs.length
+    ) {
+      // Create a proper deep copy to avoid mutation
+      const updatedDropOffs = [...orderStore.dropOffs];
+
+      // Update the specific drop-off at the given index
+      updatedDropOffs[index] = { ...dropOffFormValues } as any;
+
+      // Update the store in one atomic operation
+      useOrderStore.setState((state) => ({
+        ...state,
+        dropOffs: updatedDropOffs,
+      }));
+    }
+  };
+
+  const handleSaveCurrentDropOff = () => {
+    if (isActive && dropOffFormValues) {
+      useOrderStore.setState((state) => {
+        const newDropOffs = [...state.dropOffs];
+        newDropOffs[isDropIndex] = { ...dropOffFormValues } as any;
+
+        return {
+          ...state,
+          dropOffs: newDropOffs,
+        };
+      });
+    }
+  };
+
+  const handleEditDropOffWithSave = (index: number) => {
+    try {
+      // Save current changes if we're editing a different drop-off
+      if (isDropIndex !== index && isActive) {
+        handleSaveCurrentDropOff();
+      }
+
+      // Validate index bounds
+      if (index < 0 || index >= orderStore.dropOffs.length) {
+        console.error(
+          `Invalid index: ${index}. Array length: ${orderStore.dropOffs.length}`
+        );
+        return;
+      }
+
+      const dropOffData = orderStore.dropOffs[index];
+
+      if (!dropOffData) {
+        console.error(`No drop-off data found at index ${index}`);
+        return;
+      }
+
+      // Set the current editing index
+      setIsDropofIndex(index);
+
+      // Load the data into the form
+      dropOffForm.reset(dropOffData);
+
+      console.log(`Editing drop-off at index ${index}`);
+    } catch (error) {
+      console.error('Error loading drop-off for editing:', error);
+    }
+  };
+  const handleDeleteDropOff = (index: number) => {
+    try {
+      // Prevent deletion if it's the last drop-off
+      if (orderStore.dropOffs.length <= 1) {
+        console.warn(
+          'Cannot delete the last drop-off. At least one drop-off is required.'
+        );
+        // You might want to show a toast notification here
+        return;
+      }
+
+      // Validate index
+      if (index < 0 || index >= orderStore.dropOffs.length) {
+        console.error(
+          `Invalid index: ${index}. Valid range: 0-${orderStore.dropOffs.length - 1}`
+        );
+        return;
+      }
+
+      // Save current form data before deletion if we're editing
+      if (isActive && isDropIndex !== index) {
+        // Save current editing form data
+        useOrderStore.setState((state) => {
+          const updatedDropOffs = [...state.dropOffs];
+          updatedDropOffs[isDropIndex] = { ...dropOffFormValues } as any;
+
+          return {
+            ...state,
+            dropOffs: updatedDropOffs,
+          };
+        });
+      }
+
+      // Delete the item
+      useOrderStore.setState((state) => {
+        const updatedDropOffs = [...state.dropOffs];
+        updatedDropOffs.splice(index, 1);
+
+        return {
+          ...state,
+          pickUp: {
+            ...(pickUpFormValues as any),
+          },
+          dropOffs: updatedDropOffs,
+        };
+      });
+
+      // Handle editing index adjustment
+      if (isDropIndex === index) {
+        // If we deleted the currently edited item, switch to the first one
+        setIsDropofIndex(0);
+        // Load the first item's data into the form
+        const firstDropOff = orderStore.dropOffs[0];
+        if (firstDropOff) {
+          dropOffForm.reset(firstDropOff);
+        }
+      } else if (isDropIndex > index) {
+        // If we deleted an item before the current one, adjust the index
+        setIsDropofIndex(isDropIndex - 1);
+      }
+
+      console.log(`Successfully deleted drop-off at index ${index}`);
+    } catch (error) {
+      console.error('Error deleting drop-off:', error);
+    }
+  };
+  console.log(orderStore.dropOffs);
+
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
       <div className="grid grid-cols-2 h-full rounded-md  gap-10 w-full">
@@ -250,49 +400,76 @@ export default function ShippingForm() {
         {/* DROP OFF FORM */}
 
         <div className="grid gap-4">
-          {orderStore.dropOffs.map((item, idx) => (
-            <div key={idx} className="shadow">
+          {orderStore.dropOffs?.map((item, idx) => (
+            <Fragment key={idx}>
+              <Suspense>
+                {
+                  <div className="shadow">
+                    <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
+                        Drop Off {item.orderNumber}
+                      </CardTitle>
+                      {idx == isDropIndex ? (
+                        <Button
+                          disabled={!isActive}
+                          onClick={() => handleAddOneDropoff()}
+                        >
+                          <Plus /> dropOff {idx + 1}
+                        </Button>
+                      ) : (
+                        <div className="grid-cols-2 grid gap-4">
+                          <Button
+                            onClick={() => handleDeleteDropOff(idx)}
+                            variant="destructive"
+                          >
+                            <Delete />
+                          </Button>
+                          <Button
+                            onClick={() => handleEditDropOffWithSave(idx)}
+                            variant="secondary"
+                          >
+                            <Edit />
+                          </Button>
+                        </div>
+                      )}
+                    </CardHeader>
+                    {isDropIndex === idx && (
+                      <DropoffForm
+                        onRecipientSubmit={onRecipientSubmit}
+                        recipientForm={dropOffForm}
+                        shallCollectCash={isCOD}
+                        setIsCOD={setIsCOD}
+                      />
+                    )}
+                  </div>
+                }
+              </Suspense>
+            </Fragment>
+          ))}
+
+          {orderStore.dropOffs.length === 0 && (
+            <div className="shadow">
               <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                  Drop Off {idx + 1}
+                  Drop Off {dropOffFormValues.orderNumber}
                 </CardTitle>
-                <div className="grid-cols-2 grid gap-4">
-                  <Button
-                    onClick={() =>
-                      useOrderStore.setState((state) => {
-                        const updatedDropOffs = [...state.dropOffs];
-                        updatedDropOffs.splice(idx, 1);
 
-                        return {
-                          pickUp: {
-                            ...(pickUpFormValues as any),
-                          },
-                          dropOffs: updatedDropOffs,
-                        };
-                      })
-                    }
-                    variant="destructive"
-                  >
-                    <Delete />
-                  </Button>
-                  <Button
-                    onClick={() => setIsDropofIndex(idx)}
-                    variant="secondary"
-                  >
-                    <Edit />
-                  </Button>
-                </div>
+                <Button
+                  disabled={!isActive}
+                  onClick={() => handleAddOneDropoff()}
+                >
+                  <Plus /> dropOff
+                </Button>
               </CardHeader>
-              {isDropIndex === idx && (
-                <DropoffForm
-                  onRecipientSubmit={onRecipientSubmit}
-                  recipientForm={dropOffForm}
-                  shallCollectCash={isCOD}
-                  setIsCOD={setIsCOD}
-                />
-              )}
+
+              <DropoffForm
+                onRecipientSubmit={onRecipientSubmit}
+                recipientForm={dropOffForm}
+                shallCollectCash={isCOD}
+                setIsCOD={setIsCOD}
+              />
             </div>
-          ))}
+          )}
         </div>
 
         {/* Right Section */}
