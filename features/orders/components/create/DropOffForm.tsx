@@ -25,8 +25,8 @@ import AddressLandmarkFields from '../ui/LandmarkFields';
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
   onRecipientSubmit: (data: TypeDropOffSchema) => void;
-  shallCollectCash: boolean;
-  setIsCOD: Dispatch<SetStateAction<boolean>>;
+  shallCollectCash: 1 | 2;
+  setIsCOD: Dispatch<SetStateAction<1 | 2>>;
 }
 
 const DropoffForm: React.FC<SenderFormProps> = ({
@@ -43,7 +43,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* orderNumber */}
             <FormField
               control={recipientForm.control}
-              name="orderNumber"
+              name="order_index"
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel> orderNumber</FormLabel>
@@ -59,7 +59,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* customerName */}
             <FormField
               control={recipientForm.control}
-              name="customerName"
+              name="customer_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>customerName</FormLabel>
@@ -73,7 +73,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* phone */}
             <FormField
               control={recipientForm.control}
-              name="phone"
+              name="mobile_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>phone</FormLabel>
@@ -94,7 +94,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* apartmentNo */}
             <FormField
               control={recipientForm.control}
-              name="apartmentNo"
+              name="apartment_no"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>apartmentNo</FormLabel>
@@ -124,7 +124,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             {/* Apt */}
             <FormField
               control={recipientForm.control}
-              name="additionalAddress"
+              name="additional_address"
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel>additionalAddress</FormLabel>
@@ -147,7 +147,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      shallCollectCash
+                      shallCollectCash === 2
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -155,9 +155,9 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="yes"
-                      checked={shallCollectCash}
+                      checked={shallCollectCash === 2}
                       onChange={() => {
-                        setIsCOD(true);
+                        setIsCOD(2);
                       }}
                       className="accent-cyan-500 w-4 h-4"
                     />
@@ -168,7 +168,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      !shallCollectCash
+                      shallCollectCash === 1
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -176,9 +176,9 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="no"
-                      checked={!shallCollectCash}
+                      checked={shallCollectCash === 1}
                       onChange={() => {
-                        setIsCOD(false);
+                        setIsCOD(1);
                       }}
                       className="accent-cyan-500 w-4 h-4"
                     />
@@ -189,13 +189,13 @@ const DropoffForm: React.FC<SenderFormProps> = ({
 
               <FormField
                 control={recipientForm.control}
-                name="amount"
+                name="amount_to_collect"
                 render={({ field }) => (
                   <FormItem className="mt-4">
                     <FormLabel>Amount</FormLabel>
                     <FormControl className="bg-white">
                       <Input
-                        // disabled={!shallCollectCash}
+                        disabled={shallCollectCash === 1}
                         placeholder="Ex: 10"
                         {...field}
                       />

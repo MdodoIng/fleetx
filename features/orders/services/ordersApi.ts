@@ -1,5 +1,6 @@
 import { apiFetch } from '@/shared/lib/utils';
 import { configService } from '@/shared/services/app-config';
+import { TypeEstimatedDelivery } from '@/shared/types/orders';
 
 export const orderService = {
   createOnDemandOrders: (orders: any) =>
@@ -44,7 +45,7 @@ export const orderService = {
   getOrderStatusById: (id: string) =>
     apiFetch(`${configService.orderServiceApiUrl()}/get-vendor-order/${id}`),
 
-  calculateDeliveryEstimate: (req: any) =>
+  calculateDeliveryEstimate: (req: TypeEstimatedDelivery) =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/pre-order/delivery-calculate`,
       { method: 'POST', body: JSON.stringify(req) }

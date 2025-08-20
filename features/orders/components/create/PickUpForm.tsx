@@ -49,7 +49,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Sender Name */}
             <FormField
               control={senderForm.control}
-              name="senderName"
+              name="customer_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel> Sender Names</FormLabel>
@@ -65,7 +65,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Phone Number */}
             <FormField
               control={senderForm.control}
-              name="phone"
+              name="mobile_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel> Phone</FormLabel>
@@ -88,7 +88,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Appartment */}
             <FormField
               control={senderForm.control}
-              name="apartmentNo"
+              name="apartment_no"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Apartment No</FormLabel>
@@ -120,7 +120,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({
             {/* Addinational Address */}
             <FormField
               control={senderForm.control}
-              name="additionalAddress"
+              name="additional_address"
               render={({ field }) => (
                 <FormItem className="col-span-1 md:col-span-2 lg:col-span-2">
                   <FormLabel>Floor</FormLabel>

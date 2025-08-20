@@ -36,14 +36,18 @@ import { VendorService } from '@/shared/services/vender';
 import { debounce } from 'lodash';
 import { useStorageStore } from '@/shared/services/storage';
 import LoadingPage from '../../loading';
-import { TypeLiveOrderDisplay } from '@/shared/types/orders';
+import {
+  TypeDropOffs,
+  TypeEstimatedDelivery,
+  TypeLiveOrderDisplay,
+  TypePickUp,
+} from '@/shared/types/orders';
 import { configService } from '@/shared/services/app-config';
 import { useOrderStore } from '@/store/useOrderStore';
 import { hasErrors, hasValue } from '@/shared/lib/helpers';
 import { useDeliveryFeeCalculator } from '@/features/orders/hooks/useDeliveryFeeCalculator';
 import { orderService } from '@/features/orders/services/ordersApi';
 import { CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { id } from 'zod/v4/locales';
 
 // Main component
 export default function ShippingForm() {
@@ -53,7 +57,7 @@ export default function ShippingForm() {
 
   const { branchId, vendorId } = useStorageStore();
 
-  const [isCOD, setIsCOD] = useState(false);
+  const [isCOD, setIsCOD] = useState<1 | 2>(1);
   const [liveOrderDisplay, setLiveOrderDisplay] =
     useState<TypeLiveOrderDisplay>();
   const orderStore = useOrderStore();
@@ -63,8 +67,8 @@ export default function ShippingForm() {
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
     defaultValues: {
-      senderName: '',
-      phone: '',
+      customer_name: '',
+      mobile_number: '',
       area: '',
       area_id: '',
       block: '',
@@ -73,9 +77,9 @@ export default function ShippingForm() {
       street_id: '',
       building: '',
       building_id: '',
-      apartmentNo: '',
+      apartment_no: '',
       floor: '',
-      additionalAddress: '',
+      additional_address: '',
       latitude: '',
       longitude: '',
     },
@@ -85,9 +89,9 @@ export default function ShippingForm() {
   const dropOffForm = useForm<TypeDropOffSchema>({
     resolver: zodResolver(dropOffSchema),
     defaultValues: {
-      orderNumber: '',
-      customerName: '',
-      phone: '',
+      order_index: '',
+      customer_name: '',
+      mobile_number: '',
       area: '',
       area_id: '',
       block: '',
@@ -98,10 +102,10 @@ export default function ShippingForm() {
       building_id: '',
       latitude: '',
       longitude: '',
-      apartmentNo: '',
+      apartment_no: '',
       floor: '',
-      additionalAddress: '',
-      amount: '',
+      additional_address: '',
+      amount_to_collect: '',
     },
 
     mode: 'onBlur',
@@ -115,6 +119,7 @@ export default function ShippingForm() {
   useEffect(() => {
     readAppConstants();
     updatePickUpDetailsForBranchUser();
+    updateDropOutDetailsForStore();
     return () => {};
   }, []);
 
@@ -125,9 +130,9 @@ export default function ShippingForm() {
     }, 400);
 
     const subscription = dropOffForm.watch((value, { name }) => {
-      if (name === 'phone') {
-        const mobileNumber = value.phone || '';
-        if (!dropOffForm.formState.errors.phone) {
+      if (name === 'mobile_number') {
+        const mobileNumber = value.mobile_number || '';
+        if (!dropOffForm.formState.errors.mobile_number) {
           debouncedSearch(mobileNumber);
         }
       }
@@ -142,60 +147,53 @@ export default function ShippingForm() {
   const isActive =
     !hasErrors(pickUpForm) &&
     !hasErrors(dropOffForm) &&
-    hasValue(pickUpFormValues.phone) &&
+    hasValue(pickUpFormValues.mobile_number) &&
     hasValue(pickUpFormValues.street_id) &&
     hasValue(pickUpFormValues.floor) &&
-    hasValue(dropOffFormValues.phone) &&
+    hasValue(dropOffFormValues.mobile_number) &&
     hasValue(dropOffFormValues.street_id) &&
-    hasValue(dropOffFormValues.customerName) &&
-    (isCOD ? hasValue(dropOffFormValues.amount) : true);
+    hasValue(dropOffFormValues.customer_name) &&
+    (isCOD === 2 ? hasValue(dropOffFormValues.amount_to_collect) : true);
 
   const prevIsActiveRef = useRef(false);
 
-  useEffect(() => {
-    if (isActive && !prevIsActiveRef.current) {
-      useOrderStore.setState((state) => {
-        const updatedDropOffs = [...state.dropOffs];
-        updatedDropOffs[isDropIndex] = {
-          ...(dropOffFormValues as any),
-        };
-
-        return {
-          pickUp: {
-            ...(pickUpFormValues as any),
-          },
-          dropOffs: updatedDropOffs,
-        };
-      });
-    }
-
-    prevIsActiveRef.current = isActive;
-  }, [isActive, pickUpFormValues, dropOffFormValues]);
-
   const updatePickUpDetailsForBranchUser = async () => {
     if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      if (orderStore.pickUp) {
+      if (orderStore.pickUp?.area) {
         Object.entries(orderStore.pickUp).forEach(([key, value]) => {
           // @ts-ignore
           pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
         });
-      } else
-        try {
-          const res = await VendorService.getBranchDetailByBranchId({
-            vendor_id: vendorId!,
-            branch_id: branchId!,
-          });
+      }
+      try {
+        const res = await VendorService.getBranchDetailByBranchId({
+          vendor_id: vendorId!,
+          branch_id: branchId!,
+        });
 
-          Object.entries(res.data.address).forEach(([key, value]) => {
+        Object.entries(res.data.address).forEach(([key, value]) => {
+          // @ts-ignore
+          pickUpForm.setValue(key as keyof typeof res.data.address, value);
+        });
+
+        pickUpForm.setValue('customer_name', res.data.name);
+        pickUpForm.setValue('mobile_number', res.data.mobile_number);
+      } catch (error) {
+        console.error('Error fetching branch ddetails:', error);
+      }
+    }
+  };
+
+  const updateDropOutDetailsForStore = () => {
+    if (user?.roles?.includes('VENDOR_USER') && branchId) {
+      if (orderStore.dropOffs) {
+        Object.entries(orderStore.dropOffs[isDropIndex]).forEach(
+          ([key, value]) => {
             // @ts-ignore
-            pickUpForm.setValue(key as keyof typeof res.data.address, value);
-          });
-
-          pickUpForm.setValue('senderName', res.data.name);
-          pickUpForm.setValue('phone', res.data.mobile_number);
-        } catch (error) {
-          console.error('Error fetching branch ddetails:', error);
-        }
+            dropOffForm.setValue(key as keyof TypeDropOffs, value);
+          }
+        );
+      }
     }
   };
 
@@ -206,17 +204,20 @@ export default function ShippingForm() {
         branchId!,
         mobileNumber
       );
-      // dropOffForm.setFocus('address', res.data.address);
+
+      // dropOffForm.setValue('address', res.data.address);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const liveDeliverySourceDestination = (index: number) => {
-    setLiveOrderDisplay({
-      source: index > 0 ? 'D' + index : 'P',
-      destination: 'D' + (index + 1),
-    });
+  const updateCalculateDeliveryEstimate = async (
+    data: TypeEstimatedDelivery
+  ) => {
+    try {
+      const res = await orderService.calculateDeliveryEstimate(data);
+      console.log(res);
+    } catch (error) {}
   };
 
   const onSenderSubmit = (values: z.infer<TypePickUpSchema>) => {
@@ -227,30 +228,78 @@ export default function ShippingForm() {
     console.log('Recipient Form Data:', values);
   };
 
-  const liveDeliveryFeeAndDistance = (index: number) => {
-    if (1 > 2) {
-      setLiveOrderDisplay({
-        source: '0',
-        destination: '0',
-      });
-    } else {
-      setLiveOrderDisplay({
-        source: '0',
-        destination: '0',
-      });
-    }
-  };
+  const isDropoffOne = orderStore.dropOffs[0].area;
 
-  const isDropoffOne = orderStore.dropOffs.length === 0;
-
-  const handleAddOneDropoff = () => {
+  const handleAddOneDropoff = async () => {
     if (isActive) {
+      const dropOffFormValuesForDropffs: TypeDropOffs = {
+        id: Number(new Date()),
+        vendor_order_id: vendorId!,
+        address: '',
+        customer_name: dropOffFormValues.customer_name,
+        area: dropOffFormValues.area,
+        area_id: Number(dropOffFormValues.area_id),
+        block: dropOffFormValues.area,
+        block_id: Number(dropOffFormValues.block_id),
+        street: dropOffFormValues.street,
+        street_id: Number(dropOffFormValues.street_id),
+        building: dropOffFormValues.building,
+        building_id: Number(dropOffFormValues.building_id),
+        floor: dropOffFormValues.floor,
+        room_number: '',
+        latitude: dropOffFormValues.latitude,
+        longitude: dropOffFormValues.latitude,
+        landmark: dropOffFormValues.additional_address,
+        mobile_number: dropOffFormValues.mobile_number,
+        order_index: Number(dropOffFormValues.order_index),
+        amount_to_collect: Number(dropOffFormValues.amount_to_collect),
+        display_address: dropOffFormValues.additional_address,
+        quantity: 1,
+        payment_type: isCOD,
+        paci_number: '',
+        specific_driver_instructions: dropOffFormValues.additional_address,
+      };
+      const pickUpFormValuesForPickUp: TypePickUp = {
+        address: pickUpFormValues.additional_address,
+        area: pickUpFormValues.area,
+        area_id: Number(pickUpFormValues.area_id),
+        block: pickUpFormValues.block,
+        block_id: Number(pickUpFormValues.block_id),
+        street: pickUpFormValues.street,
+        street_id: Number(pickUpFormValues.street_id),
+        building: pickUpFormValues.building,
+        building_id: Number(pickUpFormValues.building_id),
+        latitude: pickUpFormValues.latitude,
+        longitude: pickUpFormValues.longitude,
+        floor: pickUpFormValues.floor,
+        room_number: pickUpFormValues.apartment_no,
+        landmark: pickUpFormValues.apartment_no,
+        mobile_number: pickUpFormValues.mobile_number,
+        customer_name: pickUpFormValues.customer_name,
+        paci_number: '',
+      };
+
       useOrderStore.setState((state) => {
         return {
-          dropOffs: [...state.dropOffs, dropOffFormValues as any],
+          dropOffs: [...state.dropOffs, dropOffFormValuesForDropffs],
+          pickUp: pickUpFormValuesForPickUp,
         };
       });
+
+      const estimatedDeliveryData: TypeEstimatedDelivery = {
+        branch_id: branchId!,
+        vendor_id: vendorId!,
+        drop_offs: orderStore.dropOffs,
+        delivery_model: orderStore.deliveryModel.key!,
+        order_session_id: '',
+        pickup: orderStore.pickUp!,
+      };
+      useOrderStore.setState({
+        estimatedDelivery: estimatedDeliveryData,
+      });
+      await updateCalculateDeliveryEstimate(estimatedDeliveryData);
       dropOffForm.reset();
+      setIsDropofIndex(orderStore.dropOffs.length);
     }
   };
 
@@ -315,7 +364,7 @@ export default function ShippingForm() {
       setIsDropofIndex(index);
 
       // Load the data into the form
-      dropOffForm.reset(dropOffData);
+      dropOffForm.reset();
 
       console.log(`Editing drop-off at index ${index}`);
     } catch (error) {
@@ -376,7 +425,7 @@ export default function ShippingForm() {
         // Load the first item's data into the form
         const firstDropOff = orderStore.dropOffs[0];
         if (firstDropOff) {
-          dropOffForm.reset(firstDropOff);
+          dropOffForm.reset();
         }
       } else if (isDropIndex > index) {
         // If we deleted an item before the current one, adjust the index
@@ -388,7 +437,7 @@ export default function ShippingForm() {
       console.error('Error deleting drop-off:', error);
     }
   };
-  console.log(orderStore.dropOffs);
+  console.log(orderStore.dropOffs, isActive);
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
@@ -400,58 +449,59 @@ export default function ShippingForm() {
         {/* DROP OFF FORM */}
 
         <div className="grid gap-4">
-          {orderStore.dropOffs?.map((item, idx) => (
-            <Fragment key={idx}>
-              <Suspense>
-                {
-                  <div className="shadow">
-                    <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                        Drop Off {item.orderNumber}
-                      </CardTitle>
-                      {idx == isDropIndex ? (
-                        <Button
-                          disabled={!isActive}
-                          onClick={() => handleAddOneDropoff()}
-                        >
-                          <Plus /> dropOff {idx + 1}
-                        </Button>
-                      ) : (
-                        <div className="grid-cols-2 grid gap-4">
+          {isDropoffOne &&
+            orderStore.dropOffs?.map((item, idx) => (
+              <Fragment key={idx}>
+                <Suspense>
+                  {
+                    <div className="shadow">
+                      <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
+                          Drop Off {item?.customer_name}
+                        </CardTitle>
+                        {idx == isDropIndex ? (
                           <Button
-                            onClick={() => handleDeleteDropOff(idx)}
-                            variant="destructive"
+                            disabled={!isActive}
+                            onClick={() => handleAddOneDropoff()}
                           >
-                            <Delete />
+                            <Plus /> dropOff {idx + 1}
                           </Button>
-                          <Button
-                            onClick={() => handleEditDropOffWithSave(idx)}
-                            variant="secondary"
-                          >
-                            <Edit />
-                          </Button>
-                        </div>
+                        ) : (
+                          <div className="grid-cols-2 grid gap-4">
+                            <Button
+                              onClick={() => handleDeleteDropOff(idx)}
+                              variant="destructive"
+                            >
+                              <Delete />
+                            </Button>
+                            <Button
+                              onClick={() => handleEditDropOffWithSave(idx)}
+                              variant="secondary"
+                            >
+                              <Edit />
+                            </Button>
+                          </div>
+                        )}
+                      </CardHeader>
+                      {isDropIndex === idx && (
+                        <DropoffForm
+                          onRecipientSubmit={onRecipientSubmit}
+                          recipientForm={dropOffForm}
+                          shallCollectCash={isCOD}
+                          setIsCOD={setIsCOD}
+                        />
                       )}
-                    </CardHeader>
-                    {isDropIndex === idx && (
-                      <DropoffForm
-                        onRecipientSubmit={onRecipientSubmit}
-                        recipientForm={dropOffForm}
-                        shallCollectCash={isCOD}
-                        setIsCOD={setIsCOD}
-                      />
-                    )}
-                  </div>
-                }
-              </Suspense>
-            </Fragment>
-          ))}
+                    </div>
+                  }
+                </Suspense>
+              </Fragment>
+            ))}
 
-          {orderStore.dropOffs.length === 0 && (
+          {!isDropoffOne && (
             <div className="shadow">
               <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                  Drop Off {dropOffFormValues.orderNumber}
+                  Drop Off {dropOffFormValues.order_index}
                 </CardTitle>
 
                 <Button

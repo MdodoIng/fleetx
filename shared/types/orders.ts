@@ -1,11 +1,11 @@
-export interface TypeLiveOrderDisplay {
+export type TypeLiveOrderDisplay = {
   source?: string;
   destination?: string;
   distance?: number;
   deliveryFee?: number;
-}
+};
 
-export interface TypePickUp {
+export type TypePickUp = {
   address: string;
   customer_name: string;
   paci_number: string;
@@ -23,9 +23,9 @@ export interface TypePickUp {
   mobile_number: string;
   latitude: string;
   longitude: string;
-}
+};
 
-export interface TypeDropOffs {
+export type TypeDropOffs = {
   id: number;
   order_index: number;
   display_address: string;
@@ -49,27 +49,35 @@ export interface TypeDropOffs {
   longitude: string;
   specific_driver_instructions: string;
   quantity: number;
-  amount_to_collect: number = 0;
+  amount_to_collect: number;
   payment_type: number;
-}
+};
 
-export interface TypeDropOffsDelivery extends TypeDropOffs {
+export type TypeDropOffsDelivery = TypeDropOffs & {
   delivery_distance: number;
   delivery_fee: number;
   delivery_duration: number;
-}
+};
 
-
-export interface TypeEstimatedDelivery {
+export type TypeEstimatedDelivery = {
   vendor_id: string;
   branch_id: string;
   delivery_model: number;
-  pickup: PickUp;
-  drop_offs: TypeDropOffsDelivery[] = [];
-  order_session_id: string = null;
-}
+  pickup: TypePickUp;
+  drop_offs: TypeDropOffs[];
+  order_session_id: string | null;
+};
 
-export interface TypeOrderList {
+export type TypeEstimatedDeliveryReturnFromApi = {
+  vendor_id: string;
+  branch_id: string;
+  delivery_model: number;
+  pickup: TypePickUp;
+  drop_offs: TypeDropOffsDelivery[];
+  order_session_id: string | null;
+};
+
+export type TypeOrderList = {
   id: string;
   order_number: string;
   created_at: string;
@@ -105,24 +113,13 @@ export interface TypeOrderList {
   cod_counter_type: number;
   class_status: string;
   fresh_chat_restore_id: string;
-  unread_chat: boolean = false;
+  unread_chat: boolean;
   oms_agent_id: string;
-  is_addr_last_updated_by_customer: boolean = false;
-  is_active_card: boolean = false;
+  is_addr_last_updated_by_customer: boolean;
+  is_active_card: boolean;
   delivery_duration: string;
   disply_current_delivery_duration: string;
-}
-
-
-export interface TypeEstimatedDelivery {
-  vendor_id: string;
-  branch_id: string;
-  delivery_model: number;
-  pickup: TypePickUp;
-  drop_offs: TypeDropOffsDelivery[] = [];
-  order_session_id: string = null;
-}
-
+};
 
 export const TypeDelivery = [
   { key: 0, value: 'deliveryModel.unidentified' },
@@ -132,4 +129,4 @@ export const TypeDelivery = [
   { key: 4, value: 'deliveryModel.massDeliveries' },
   { key: 5, value: 'deliveryModel.superSaverIndividual' },
   { key: 6, value: 'deliveryModel.superSaverGroup' },
-];
+] as const;

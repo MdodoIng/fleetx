@@ -1,12 +1,12 @@
 import z from 'zod';
 
 export const pickUpSchema = z.object({
-  senderName: z
+  customer_name: z
     .string()
     .min(1, 'Customer name is required')
     .regex(/^[^\s].*/, { message: 'Cannot start with space' }),
 
-  phone: z
+  mobile_number: z
     .string()
     .min(7, 'Mobile number is required')
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
@@ -18,20 +18,20 @@ export const pickUpSchema = z.object({
   street_id: z.string(),
   building: z.string(),
   building_id: z.string(),
-  apartmentNo: z.string(),
+  apartment_no: z.string(),
   floor: z.string(),
-  additionalAddress: z.string(),
+  additional_address: z.string(),
   latitude: z.string(),
   longitude: z.string(),
 });
 
 export const dropOffSchema = z.object({
-  orderNumber: z.string(),
-  customerName: z
+  order_index: z.string(),
+  customer_name: z
     .string()
     .min(1, 'Customer name is required')
     .regex(/^[^\s].*/, { message: 'Cannot start with space' }),
-  phone: z
+  mobile_number: z
     .string()
     .min(7, 'Mobile number is required')
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
@@ -45,10 +45,10 @@ export const dropOffSchema = z.object({
   building_id: z.string(),
   latitude: z.string(),
   longitude: z.string(),
-  apartmentNo: z.string(),
+  apartment_no: z.string(),
   floor: z.string(),
-  additionalAddress: z.string(),
-  amount: z.string().optional(),
+  additional_address: z.string(),
+  amount_to_collect: z.string().optional(),
 });
 
 export type TypePickUpSchema = z.infer<typeof pickUpSchema>;
