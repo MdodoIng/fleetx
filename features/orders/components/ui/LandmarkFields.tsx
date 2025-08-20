@@ -64,96 +64,7 @@ export default function AddressLandmarkFields({
   const [searchData, setSearchData] = useState<Locs[] | undefined>(undefined);
   const [isInputVal, setIsInputVal] = useState<string>('');
   const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
-  const { isChangedForm } = useOrderStore();
 
-  // const updateSelectedItems = useCallback(() => {
-  //   // Early returns for performance
-  //   if (!landmarkValues) return;
-
-  //   const items: Locs[] = [];
-  //   let newCurrentLevel: 'area' | 'block' | 'street' | 'building' = 'area';
-  //   let newParentId: string | undefined;
-
-  //   // Create coordinate object once
-  //   const coordinates = {
-  //     latitude: Number(landmarkValues.latitude) || 0,
-  //     longitude: Number(landmarkValues.longitude) || 0,
-  //   };
-
-  //   // Process levels in order using a more efficient approach
-  //   const levels = [
-  //     {
-  //       type: 'area' as const,
-  //       name: landmarkValues.area,
-  //       id: landmarkValues.area_id,
-  //       nextLevel: 'block' as const,
-  //     },
-  //     {
-  //       type: 'block' as const,
-  //       name: landmarkValues.block,
-  //       id: landmarkValues.block_id,
-  //       nextLevel: 'street' as const,
-  //     },
-  //     {
-  //       type: 'street' as const,
-  //       name: landmarkValues.street,
-  //       id: landmarkValues.street_id,
-  //       nextLevel: 'building' as const,
-  //     },
-  //     {
-  //       type: 'building' as const,
-  //       name: landmarkValues.building,
-  //       id: landmarkValues.building_id,
-  //       nextLevel: 'building' as const, // Stay at building level
-  //     },
-  //   ];
-
-  //   // Process each level
-  //   for (const level of levels) {
-  //     if (level.name && level.id) {
-  //       // @ts-ignore
-  //       items.push(makeLoc(level.type, level.name, level.id, coordinates));
-  //       newCurrentLevel = level.nextLevel;
-  //       newParentId = level.id;
-  //     }
-  //   }
-
-  //   // Batch state updates to prevent multiple re-renders
-  //   const updateState = () => {
-  //     useOrderStore.setState({ isChangedForm: false });
-  //     setSelcectItems(items);
-  //     setCurrentLevel(newCurrentLevel);
-  //     setParentId(newParentId);
-  //   };
-
-  //   // Use requestAnimationFrame for better performance than setTimeout
-  //   if (items.length > 0) {
-  //     requestAnimationFrame(updateState);
-  //   } else {
-  //     return null;
-  //   }
-  // }, [
-  //   isChangedForm,
-  //   setSelcectItems,
-  //   setCurrentLevel,
-  //   setParentId,
-  //   landmarkValues?.area,
-  //   landmarkValues?.area_id,
-  //   landmarkValues?.block,
-  //   landmarkValues?.block_id,
-  //   landmarkValues?.street,
-  //   landmarkValues?.street_id,
-  //   landmarkValues?.building,
-  //   landmarkValues?.building_id,
-  //   landmarkValues?.latitude,
-  //   landmarkValues?.longitude,
-  // ]);
-
-  // useMemo(() => {
-  //   updateSelectedItems();
-  // }, [updateSelectedItems]);
-
-  // console.log(selctedItems, 'd');
 
   useMemo(async () => {
     if (!isInputBlur) return;
@@ -214,7 +125,7 @@ export default function AddressLandmarkFields({
     }
   }, [isInputVal, currentLevel, isInputBlur, parentId]);
 
-  // console.log(selctedItems, 'afsgf    d');
+
 
   useMemo(() => {
     if (!isMap) return;

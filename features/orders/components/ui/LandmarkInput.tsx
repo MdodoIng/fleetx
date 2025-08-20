@@ -38,7 +38,7 @@ const LandmarkInput = ({
   fieldName: 'address';
   setIsInputBlur: React.Dispatch<React.SetStateAction<boolean>>;
   selectedItems: Locs[] | undefined;
-  handleRemoveAddress: (removed: Locs, index: number) => void;
+  handleRemoveAddress: (removed: any) => void;
   setIsInputVal: React.Dispatch<React.SetStateAction<string>>;
   isInputVal: string;
   landmarkValues: TypePickUpSchema;

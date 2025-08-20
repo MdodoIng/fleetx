@@ -11,13 +11,13 @@ export const usePickUpFormValuesForPickUp = ({
   return {
     address: pickUpFormValues.additional_address,
     area: pickUpFormValues.area,
-    area_id: Number(pickUpFormValues.area_id),
+    area_id: pickUpFormValues.area_id as any,
     block: pickUpFormValues.block,
-    block_id: Number(pickUpFormValues.block_id),
+    block_id: pickUpFormValues.block_id as any,
     street: pickUpFormValues.street,
-    street_id: Number(pickUpFormValues.street_id),
+    street_id: pickUpFormValues.street_id as any,
     building: pickUpFormValues.building,
-    building_id: Number(pickUpFormValues.building_id),
+    building_id: pickUpFormValues.building_id as any,
     latitude: pickUpFormValues.latitude,
     longitude: pickUpFormValues.longitude,
     floor: pickUpFormValues.floor,
@@ -39,26 +39,26 @@ export const usedropOffFormValuesForDropffs = ({
   isCOD: 1 | 2;
 }): TypeDropOffs => {
   return {
-    id: Number(new Date()),
+    id: new Date() as any,
     vendor_order_id: vendorId!,
     address: '',
     customer_name: dropOffFormValues.customer_name,
     area: dropOffFormValues.area,
-    area_id: Number(dropOffFormValues.area_id),
+    area_id: dropOffFormValues.area_id as any,
     block: dropOffFormValues.block,
-    block_id: Number(dropOffFormValues.block_id),
+    block_id: dropOffFormValues.block_id as any,
     street: dropOffFormValues.street,
-    street_id: Number(dropOffFormValues.street_id),
+    street_id: dropOffFormValues.street_id as any,
     building: dropOffFormValues.building,
-    building_id: Number(dropOffFormValues.building_id),
+    building_id: dropOffFormValues.building_id as any,
     floor: dropOffFormValues.floor,
     room_number: '',
     latitude: dropOffFormValues.latitude,
     longitude: dropOffFormValues.latitude,
     landmark: dropOffFormValues.additional_address!,
     mobile_number: dropOffFormValues.mobile_number,
-    order_index: Number(dropOffFormValues.order_index),
-    amount_to_collect: Number(dropOffFormValues.amount_to_collect),
+    order_index: dropOffFormValues.order_index as any,
+    amount_to_collect: dropOffFormValues.amount_to_collect as any,
     display_address: dropOffFormValues.additional_address!,
     quantity: 1,
     payment_type: isCOD,
@@ -67,7 +67,7 @@ export const usedropOffFormValuesForDropffs = ({
   };
 };
 
-export const emptyDropOff:TypeDropOffSchema = {
+export const emptyDropOff: TypeDropOffSchema = {
   order_index: '',
   customer_name: '',
   mobile_number: '',
@@ -86,5 +86,3 @@ export const emptyDropOff:TypeDropOffSchema = {
   additional_address: '',
   amount_to_collect: '',
 };
-
-

@@ -59,14 +59,16 @@ import {
 // Main component
 export default function ShippingForm() {
   const { user } = useAuthStore();
+  const orderStore = useOrderStore();
   const { appConstants, readAppConstants } = useSharedStore();
-  const [isDropIndex, setIsDropofIndex] = useState<number>(0);
+  const [isDropIndex, setIsDropofIndex] = useState<number>(
+    orderStore.dropOffs.length ? orderStore.dropOffs.length - 1 : 0
+  );
 
   const { branchId, vendorId } = useStorageStore();
   const [isValid, setIsValid] = useState(false);
 
   const [isCOD, setIsCOD] = useState<1 | 2>(1);
-  const orderStore = useOrderStore();
   const { totalOrders, totalDelivery, totalKM, estTime } =
     useDeliveryFeeCalculator(orderStore.estimatedDeliveryReturnFromApi!);
 
@@ -189,9 +191,6 @@ export default function ShippingForm() {
           // @ts-ignore
           pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
         });
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
       }
       try {
         const res = await VendorService.getBranchDetailByBranchId({
@@ -206,9 +205,6 @@ export default function ShippingForm() {
 
         pickUpForm.setValue('customer_name', res.data.name);
         pickUpForm.setValue('mobile_number', res.data.mobile_number);
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
       } catch (error) {
         console.error('Error fetching branch ddetails:', error);
       }
@@ -216,56 +212,20 @@ export default function ShippingForm() {
   };
 
   const updateDropOutDetailsForStore = () => {
-    if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      if (orderStore.estimatedDeliveryReturnFromApi?.data?.drop_offs?.length) {
-        // Safely access the drop_offs array with bounds checking
-        const dropOffs =
-          orderStore.estimatedDeliveryReturnFromApi.data.drop_offs;
-        if (
-          isDropIndex >= 0 &&
-          isDropIndex < dropOffs.length &&
-          orderStore.estimatedDeliveryReturnFromApi.data.branch_id ===
-            branchId &&
-          orderStore.estimatedDeliveryReturnFromApi.data.vendor_id === vendorId
-        ) {
-          Object.entries(dropOffs[isDropIndex]).forEach(([key, value]) => {
-            dropOffForm.setValue(key as keyof TypeDropOffs, value);
-          });
+    if (
+      user?.roles?.includes('VENDOR_USER') &&
+      branchId &&
+      orderStore.dropOffs &&
+      isDropIndex >= 0 &&
+      isDropIndex < orderStore.dropOffs.length
+    ) {
+      Object.entries(orderStore.dropOffs[isDropIndex]).forEach(
+        ([key, value]) => {
+          dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
         }
-
-        if (orderStore.dropOffs.length) {
-          const updatedDropOffs = orderStore.dropOffs.map((item) => {
-            const apiDropOff =
-              orderStore.estimatedDeliveryReturnFromApi?.data?.drop_offs?.find(
-                (apiItem) => apiItem.id === item.id
-              );
-            return apiDropOff || item;
-          });
-
-          useOrderStore.setState({
-            dropOffs: updatedDropOffs,
-            isChangedForm: true,
-          });
-        } else {
-          useOrderStore.setState({
-            dropOffs: orderStore.estimatedDeliveryReturnFromApi.data.drop_offs,
-            isChangedForm: true,
-          });
-        }
-      } else if (orderStore.dropOffs.length) {
-        // Safely access the dropOffs array with bounds checking
-        if (isDropIndex >= 0 && isDropIndex < orderStore.dropOffs.length) {
-          Object.entries(orderStore.dropOffs[isDropIndex]).forEach(
-            ([key, value]) => {
-              dropOffForm.setValue(key as keyof TypeDropOffs, value);
-            }
-          );
-        }
-      }
+      );
     }
   };
-
-  // console.log(dropOffForm.getValues(), pickUpForm.getValues());
 
   const searchAddressByMobileNumber = async (mobileNumber: string) => {
     try {
@@ -286,13 +246,14 @@ export default function ShippingForm() {
   ): Promise<TypeEstimatedDeliveryReturnFromApi | undefined> => {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
-      console.log(res.data);
       useOrderStore.setState({
         estimatedDeliveryReturnFromApi: res,
       });
       useDeliveryFeeCalculator(res);
       return res;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error, 'sgfdsg');
+    }
   };
 
   const onSenderSubmit = (values: z.infer<TypePickUpSchema>) => {
@@ -303,7 +264,11 @@ export default function ShippingForm() {
     console.log('Recipient Form Data:', values);
   };
 
-  const isDropoffOne = orderStore.dropOffs.length ? orderStore.dropOffs[0].area : false;
+  const isDropoffOne = orderStore.dropOffs.length
+    ? orderStore.dropOffs[0].area
+      ? true
+      : false
+    : false;
 
   const handleAddOneDropoff = async () => {
     const isFormValid = await validateFormsAsync();
@@ -340,35 +305,26 @@ export default function ShippingForm() {
         pickup: updatedPickUp,
       };
 
-      console.log();
+      // const res = await updateCalculateDeliveryEstimate(estimatedDeliveryData!);
 
-      const res = await updateCalculateDeliveryEstimate(estimatedDeliveryData!);
+      // if (res?.data) {
+      useOrderStore.setState((state) => {
+        const newDropOffs = [...state.dropOffs, newDropOff];
 
-      if (res?.data) {
-        useOrderStore.setState((state) => {
-          const newDropOffs = [
-            ...state.dropOffs,
-            newDropOff,
-            emptyDropOff as any,
-          ];
+        return {
+          ...state,
+          dropOffs: newDropOffs,
+          pickUp: updatedPickUp,
+          estimatedDelivery: estimatedDeliveryData,
+        };
+      });
 
-          return {
-            ...state,
-            dropOffs: newDropOffs,
-            pickUp: updatedPickUp,
-            estimatedDelivery: estimatedDeliveryData,
-          };
-        });
+      dropOffForm.reset(emptyDropOff);
+      dropOffForm.clearErrors();
 
-        // dropOffForm.reset(emptyDropOff);
-        dropOffForm.clearErrors();
-
-        setIsCOD(1);
-        setIsDropofIndex(orderStore.dropOffs.length);
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
-      }
+      setIsCOD(1);
+      setIsDropofIndex(orderStore.dropOffs.length);
+      // }
 
       console.log(
         'Successfully added and calculated estimate for new drop-off'
@@ -466,9 +422,6 @@ export default function ShippingForm() {
         }
 
         setIsDropofIndex(index);
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
 
         console.log(dropOffData);
 
@@ -534,9 +487,7 @@ export default function ShippingForm() {
       if (isDropIndex === index) {
         // If we deleted the currently edited item, switch to the first one
         setIsDropofIndex(0);
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
+
         // Load the first item's data into the form
         const firstDropOff = orderStore.dropOffs[0];
         if (firstDropOff) {
@@ -545,9 +496,6 @@ export default function ShippingForm() {
       } else if (isDropIndex > index) {
         // If we deleted an item before the current one, adjust the index
         setIsDropofIndex(isDropIndex - 1);
-        useOrderStore.setState({
-          isChangedForm: true,
-        });
       }
 
       console.log(`Successfully deleted drop-off at index ${index}`);
@@ -566,59 +514,52 @@ export default function ShippingForm() {
         {/* DROP OFF FORM */}
 
         <div className="grid gap-4">
-          {isDropoffOne &&
-            orderStore.dropOffs?.map((item, idx) => (
-              <Fragment key={idx}>
-                <Suspense>
-                  {
-                    <div className="shadow">
-                      <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                          Drop Off{' '}
-                          {isDropIndex == idx
-                            ? dropOffFormValues.customer_name
-                            : item.customer_name}
-                        </CardTitle>
-                        {idx == isDropIndex ? (
-                          <Button
-                            // disabled={!isFormValid}
-                            onClick={() => handleAddOneDropoff()}
-                          >
-                            <Plus /> dropOff {idx + 1}
-                          </Button>
-                        ) : (
-                          <div className="grid-cols-2 grid gap-4">
-                            <Button
-                              onClick={() => handleDeleteDropOff(idx)}
-                              variant="destructive"
-                            >
-                              <Delete />
-                            </Button>
-                            <Button
-                              onClick={() => handleEditDropOffWithSave(idx)}
-                              variant="secondary"
-                            >
-                              <Edit />
-                            </Button>
-                          </div>
-                        )}
-                      </CardHeader>
-                      {isDropIndex === idx && (
-                        <DropoffForm
-                          onRecipientSubmit={onRecipientSubmit}
-                          recipientForm={dropOffForm}
-                          shallCollectCash={isCOD}
-                          setIsCOD={setIsCOD}
-                        />
-                      )}
-                    </div>
-                  }
-                </Suspense>
-              </Fragment>
-            ))}
+          {orderStore.dropOffs?.map((item, idx) => (
+            <div key={idx} className="shadow bg-red-300">
+              <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
+                  Drop Off{' '}
+                  {isDropIndex == idx
+                    ? dropOffFormValues.customer_name
+                    : item.customer_name}
+                </CardTitle>
+                {idx == isDropIndex ? (
+                  <Button
+                    // disabled={!isFormValid}
+                    onClick={() => handleAddOneDropoff()}
+                  >
+                    <Plus /> dropOff {idx + 1}
+                  </Button>
+                ) : (
+                  <div className="grid-cols-2 grid gap-4">
+                    <Button
+                      onClick={() => handleDeleteDropOff(idx)}
+                      variant="destructive"
+                    >
+                      <Delete />
+                    </Button>
+                    <Button
+                      onClick={() => handleEditDropOffWithSave(idx)}
+                      variant="secondary"
+                    >
+                      <Edit />
+                    </Button>
+                  </div>
+                )}
+              </CardHeader>
+              {isDropIndex === idx && (
+                <DropoffForm
+                  onRecipientSubmit={onRecipientSubmit}
+                  recipientForm={dropOffForm}
+                  shallCollectCash={isCOD}
+                  setIsCOD={setIsCOD}
+                />
+              )}
+            </div>
+          ))}
 
           {!isDropoffOne && (
-            <div className="shadow">
+            <div className="shadow bg-green-500">
               <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
                   Drop Off {dropOffFormValues.order_index}

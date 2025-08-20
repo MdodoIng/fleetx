@@ -23,7 +23,7 @@ interface OrderState {
   estimatedDeliveryReturnFromApi:
     | TypeEstimatedDeliveryReturnFromApi
     | undefined;
-  isChangedForm: boolean;
+
   updateDeliveryModel: (deliveryModel: number) => void;
 }
 
@@ -40,7 +40,6 @@ export const useOrderStore = create<OrderState>()(
       pickUp: undefined,
       estimatedDelivery: undefined,
       deliveryModel: TypeDelivery[0],
-      isChangedForm: false,
       estimatedDeliveryReturnFromApi: undefined,
 
       updateDeliveryModel: (deliveryModel: number) => {
