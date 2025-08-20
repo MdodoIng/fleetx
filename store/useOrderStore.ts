@@ -2,6 +2,7 @@ import {
   TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
+  TypeEstimatedDeliveryReturnFromApi,
   TypeOrderList,
   TypePickUp,
 } from '@/shared/types/orders';
@@ -19,6 +20,9 @@ interface OrderState {
   selectedPerPage: number;
   orderStatusListData: TypeOrderList[];
   totalCountList: number;
+  estimatedDeliveryReturnFromApi:
+    | TypeEstimatedDeliveryReturnFromApi
+    | undefined;
   updateDeliveryModel: (deliveryModel: number) => void;
 }
 
@@ -35,6 +39,8 @@ export const useOrderStore = create<OrderState>()(
       pickUp: undefined,
       estimatedDelivery: undefined,
       deliveryModel: TypeDelivery[0],
+      estimatedDeliveryReturnFromApi: undefined,
+
       updateDeliveryModel: (deliveryModel: number) => {
         const delivery = TypeDelivery.find((x) => x.key === deliveryModel);
         set({ deliveryModel: delivery ? delivery : TypeDelivery[0] });

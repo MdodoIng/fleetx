@@ -69,12 +69,14 @@ export type TypeEstimatedDelivery = {
 };
 
 export type TypeEstimatedDeliveryReturnFromApi = {
-  vendor_id: string;
-  branch_id: string;
-  delivery_model: number;
-  pickup: TypePickUp;
-  drop_offs: TypeDropOffsDelivery[];
-  order_session_id: string | null;
+  data: {
+    vendor_id: string;
+    branch_id: string;
+    delivery_model: number;
+    pickup: TypePickUp;
+    drop_offs: TypeDropOffsDelivery[];
+    order_session_id: string | null;
+  };
 };
 
 export type TypeOrderList = {

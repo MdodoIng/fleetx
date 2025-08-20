@@ -11,13 +11,13 @@ export const pickUpSchema = z.object({
     .min(7, 'Mobile number is required')
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
   area: z.string(),
-  area_id: z.string(),
+  area_id: z.any(),
   block: z.string(),
-  block_id: z.string(),
+  block_id: z.any(),
   street: z.string(),
-  street_id: z.string(),
+  street_id: z.any(),
   building: z.string(),
-  building_id: z.string(),
+  building_id: z.any(),
   apartment_no: z.string(),
   floor: z.string(),
   additional_address: z.string(),
@@ -26,7 +26,7 @@ export const pickUpSchema = z.object({
 });
 
 export const dropOffSchema = z.object({
-  order_index: z.string(),
+  order_index: z.any(),
   customer_name: z
     .string()
     .min(1, 'Customer name is required')
@@ -36,19 +36,19 @@ export const dropOffSchema = z.object({
     .min(7, 'Mobile number is required')
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }),
   area: z.string(),
-  area_id: z.string(),
+  area_id: z.any(),
   block: z.string(),
-  block_id: z.string(),
+  block_id: z.any(),
   street: z.string(),
-  street_id: z.string(),
+  street_id: z.any(),
   building: z.string(),
-  building_id: z.string(),
-  latitude: z.string(),
-  longitude: z.string(),
-  apartment_no: z.string(),
+  building_id: z.any(),
+  latitude: z.any(),
+  longitude: z.any(),
+  apartment_no: z.any(),
   floor: z.string(),
-  additional_address: z.string(),
-  amount_to_collect: z.string().optional(),
+  additional_address: z.string().optional(),
+  amount_to_collect: z.any().optional(),
 });
 
 export type TypePickUpSchema = z.infer<typeof pickUpSchema>;

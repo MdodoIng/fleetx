@@ -490,7 +490,7 @@ export const useSharedStore = create<SharedState & SharedActions>()((
         appConstants = qatar;
       }
 
-      set({ appConstants });
+      set({ appConstants: appConstants });
     },
 
     verifyAppVersionUpdate: (apiVersion: string) => {

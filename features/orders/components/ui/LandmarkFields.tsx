@@ -59,7 +59,7 @@ export default function AddressLandmarkFields({
     if (!landmarkValues.area || once.current) return;
 
     const items: Locs[] = [];
-    let newCurrentLevel = 'block';
+    let newCurrentLevel:typeof currentLevel = 'block';
     let newParentId = landmarkValues.area_id;
 
     if (landmarkValues.area && landmarkValues.area_id) {

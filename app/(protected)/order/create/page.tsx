@@ -16,6 +16,7 @@ import { useState, useEffect, useRef, Suspense, Fragment } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { never, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { randomUUID, UUID } from 'crypto';
 
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
 import DropoffForm from '@/features/orders/components/create/DropOffForm';
@@ -48,6 +49,11 @@ import { hasErrors, hasValue } from '@/shared/lib/helpers';
 import { useDeliveryFeeCalculator } from '@/features/orders/hooks/useDeliveryFeeCalculator';
 import { orderService } from '@/features/orders/services/ordersApi';
 import { CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  emptyDropOff,
+  usedropOffFormValuesForDropffs,
+  usePickUpFormValuesForPickUp,
+} from '@/features/orders/hooks/useOrders';
 
 // Main component
 export default function ShippingForm() {
@@ -56,13 +62,12 @@ export default function ShippingForm() {
   const [isDropIndex, setIsDropofIndex] = useState<number>(0);
 
   const { branchId, vendorId } = useStorageStore();
+  const [isValid, setIsValid] = useState(false);
 
   const [isCOD, setIsCOD] = useState<1 | 2>(1);
-  const [liveOrderDisplay, setLiveOrderDisplay] =
-    useState<TypeLiveOrderDisplay>();
   const orderStore = useOrderStore();
-  // const { totalOrders, totalDelivery, totalKM, deliveryModel } =
-  //   useDeliveryFeeCalculator();
+  const { totalOrders, totalDelivery, totalKM, deliveryModel } =
+    useDeliveryFeeCalculator(orderStore.estimatedDeliveryReturnFromApi!);
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
@@ -144,27 +149,46 @@ export default function ShippingForm() {
     };
   }, [dropOffForm]);
 
-  const isActive =
-    !hasErrors(pickUpForm) &&
-    !hasErrors(dropOffForm) &&
-    hasValue(pickUpFormValues.mobile_number) &&
-    hasValue(pickUpFormValues.street_id) &&
-    hasValue(pickUpFormValues.floor) &&
-    hasValue(dropOffFormValues.mobile_number) &&
-    hasValue(dropOffFormValues.street_id) &&
-    hasValue(dropOffFormValues.customer_name) &&
-    (isCOD === 2 ? hasValue(dropOffFormValues.amount_to_collect) : true);
+  const validateFormsAsync = async (): Promise<boolean> => {
+    try {
+      // Trigger validation on both forms
+      const [pickUpValid, dropOffValid] = await Promise.all([
+        pickUpForm.trigger(),
+        dropOffForm.trigger(),
+      ]);
+
+      const pickUpFieldsValid =
+        hasValue(pickUpFormValues.customer_name) &&
+        hasValue(pickUpFormValues.mobile_number) &&
+        hasValue(pickUpFormValues.street_id) &&
+        hasValue(pickUpFormValues.floor);
+
+      const dropOffFieldsValid =
+        hasValue(dropOffFormValues.order_index) &&
+        hasValue(dropOffFormValues.customer_name) &&
+        hasValue(dropOffFormValues.mobile_number) &&
+        hasValue(dropOffFormValues.street_id) &&
+        (isCOD ? hasValue(dropOffFormValues.amount_to_collect) : true);
+
+      return (
+        pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
+      );
+    } catch (error) {
+      console.error('Validation error:', error);
+      return false;
+    }
+  };
 
   const prevIsActiveRef = useRef(false);
 
   const updatePickUpDetailsForBranchUser = async () => {
     if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      if (orderStore.pickUp?.area) {
-        Object.entries(orderStore.pickUp).forEach(([key, value]) => {
-          // @ts-ignore
-          pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
-        });
-      }
+      // if (orderStore.pickUp?.area) {
+      //   Object.entries(orderStore.pickUp).forEach(([key, value]) => {
+      //     // @ts-ignore
+      //     pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
+      //   });
+      // }
       try {
         const res = await VendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,
@@ -216,7 +240,10 @@ export default function ShippingForm() {
   ) => {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
-      console.log(res);
+      console.log(res.data);
+      useOrderStore.setState({
+        estimatedDeliveryReturnFromApi: res,
+      });
     } catch (error) {}
   };
 
@@ -231,81 +258,68 @@ export default function ShippingForm() {
   const isDropoffOne = orderStore.dropOffs[0].area;
 
   const handleAddOneDropoff = async () => {
-    if (isActive) {
-      const dropOffFormValuesForDropffs: TypeDropOffs = {
-        id: Number(new Date()),
-        vendor_order_id: vendorId!,
-        address: '',
-        customer_name: dropOffFormValues.customer_name,
-        area: dropOffFormValues.area,
-        area_id: Number(dropOffFormValues.area_id),
-        block: dropOffFormValues.area,
-        block_id: Number(dropOffFormValues.block_id),
-        street: dropOffFormValues.street,
-        street_id: Number(dropOffFormValues.street_id),
-        building: dropOffFormValues.building,
-        building_id: Number(dropOffFormValues.building_id),
-        floor: dropOffFormValues.floor,
-        room_number: '',
-        latitude: dropOffFormValues.latitude,
-        longitude: dropOffFormValues.latitude,
-        landmark: dropOffFormValues.additional_address,
-        mobile_number: dropOffFormValues.mobile_number,
-        order_index: Number(dropOffFormValues.order_index),
-        amount_to_collect: Number(dropOffFormValues.amount_to_collect),
-        display_address: dropOffFormValues.additional_address,
-        quantity: 1,
-        payment_type: isCOD,
-        paci_number: '',
-        specific_driver_instructions: dropOffFormValues.additional_address,
-      };
-      const pickUpFormValuesForPickUp: TypePickUp = {
-        address: pickUpFormValues.additional_address,
-        area: pickUpFormValues.area,
-        area_id: Number(pickUpFormValues.area_id),
-        block: pickUpFormValues.block,
-        block_id: Number(pickUpFormValues.block_id),
-        street: pickUpFormValues.street,
-        street_id: Number(pickUpFormValues.street_id),
-        building: pickUpFormValues.building,
-        building_id: Number(pickUpFormValues.building_id),
-        latitude: pickUpFormValues.latitude,
-        longitude: pickUpFormValues.longitude,
-        floor: pickUpFormValues.floor,
-        room_number: pickUpFormValues.apartment_no,
-        landmark: pickUpFormValues.apartment_no,
-        mobile_number: pickUpFormValues.mobile_number,
-        customer_name: pickUpFormValues.customer_name,
-        paci_number: '',
-      };
+    const isFormValid = await validateFormsAsync();
+
+    if (!isFormValid) {
+      console.warn(
+        'Please complete all required fields before adding drop-off'
+      );
+      // Optional: Highlight invalid fields or show error message
+      return;
+    }
+
+    try {
+      const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
+        dropOffFormValues: dropOffFormValues,
+        vendorId: vendorId!,
+        isCOD: isCOD,
+      });
+
+      const updatedPickUp = usePickUpFormValuesForPickUp({
+        pickUpFormValues: pickUpFormValues,
+      });
 
       useOrderStore.setState((state) => {
+        const newDropOffs = [...state.dropOffs, newDropOff];
+
+        const estimatedDeliveryData: TypeEstimatedDelivery = {
+          branch_id: branchId!,
+          vendor_id: vendorId!,
+          drop_offs: newDropOffs,
+          delivery_model: state.deliveryModel.key,
+          order_session_id:
+            state.estimatedDelivery?.order_session_id || Date.now().toString(),
+          pickup: updatedPickUp,
+        };
+
         return {
-          dropOffs: [...state.dropOffs, dropOffFormValuesForDropffs],
-          pickUp: pickUpFormValuesForPickUp,
+          ...state,
+          dropOffs: newDropOffs,
+          pickUp: updatedPickUp,
+          estimatedDelivery: estimatedDeliveryData,
         };
       });
 
-      const estimatedDeliveryData: TypeEstimatedDelivery = {
-        branch_id: branchId!,
-        vendor_id: vendorId!,
-        drop_offs: orderStore.dropOffs,
-        delivery_model: orderStore.deliveryModel.key!,
-        order_session_id: '',
-        pickup: orderStore.pickUp!,
-      };
-      useOrderStore.setState({
-        estimatedDelivery: estimatedDeliveryData,
-      });
-      await updateCalculateDeliveryEstimate(estimatedDeliveryData);
-      dropOffForm.reset();
-      setIsDropofIndex(orderStore.dropOffs.length);
+      await updateCalculateDeliveryEstimate(orderStore.estimatedDelivery!);
+
+      dropOffForm.reset(emptyDropOff);
+      dropOffForm.clearErrors();
+
+      setIsCOD(1);
+      setIsDropofIndex(orderStore.dropOffs.length - 1);
+
+      console.log(
+        'Successfully added and calculated estimate for new drop-off'
+      );
+    } catch (error) {
+      console.error('Error in handleAddOneDropoffImproved:', error);
+      // Optionally revert state changes on error
     }
   };
 
   const handleEditOneDropoff = (index: number) => {
     if (
-      isActive &&
+      isValid &&
       dropOffFormValues &&
       index >= 0 &&
       index < orderStore.dropOffs.length
@@ -314,7 +328,13 @@ export default function ShippingForm() {
       const updatedDropOffs = [...orderStore.dropOffs];
 
       // Update the specific drop-off at the given index
-      updatedDropOffs[index] = { ...dropOffFormValues } as any;
+      updatedDropOffs[index] = {
+        ...usedropOffFormValuesForDropffs({
+          dropOffFormValues: dropOffFormValues,
+          vendorId: vendorId!,
+          isCOD: isCOD,
+        }),
+      } as any;
 
       // Update the store in one atomic operation
       useOrderStore.setState((state) => ({
@@ -324,24 +344,47 @@ export default function ShippingForm() {
     }
   };
 
-  const handleSaveCurrentDropOff = () => {
-    if (isActive && dropOffFormValues) {
-      useOrderStore.setState((state) => {
-        const newDropOffs = [...state.dropOffs];
-        newDropOffs[isDropIndex] = { ...dropOffFormValues } as any;
+  const handleSaveCurrentDropOff = async () => {
+    useOrderStore.setState((state) => {
+      const newDropOffs = [...state.dropOffs];
+      newDropOffs[isDropIndex] = {
+        ...usedropOffFormValuesForDropffs({
+          dropOffFormValues: dropOffFormValues,
+          vendorId: vendorId!,
+          isCOD: isCOD,
+        }),
+      } as any;
 
-        return {
-          ...state,
-          dropOffs: newDropOffs,
-        };
-      });
-    }
+      const estimatedDeliveryData: TypeEstimatedDelivery = {
+        branch_id: branchId!,
+        vendor_id: vendorId!,
+        drop_offs: newDropOffs,
+        delivery_model: state.deliveryModel.key,
+        order_session_id:
+          state.estimatedDelivery?.order_session_id || Date.now().toString(),
+        pickup: usePickUpFormValuesForPickUp({
+          pickUpFormValues: pickUpFormValues,
+        }),
+      };
+
+      return {
+        ...state,
+        dropOffs: newDropOffs,
+        estimatedDelivery: estimatedDeliveryData,
+      };
+    });
+    await updateCalculateDeliveryEstimate(orderStore.estimatedDelivery!);
   };
 
-  const handleEditDropOffWithSave = (index: number) => {
+  const handleEditDropOffWithSave = async (index: number) => {
     try {
+      if (typeof index !== 'number' || isNaN(index)) {
+        console.error(`Invalid index type: ${index}. Expected a valid number.`);
+        return;
+      }
+      const isFormValid = await validateFormsAsync();
       // Save current changes if we're editing a different drop-off
-      if (isDropIndex !== index && isActive) {
+      if (isDropIndex !== index && isFormValid) {
         handleSaveCurrentDropOff();
       }
 
@@ -363,8 +406,9 @@ export default function ShippingForm() {
       // Set the current editing index
       setIsDropofIndex(index);
 
+      console.log(dropOffData);
       // Load the data into the form
-      dropOffForm.reset();
+      dropOffForm.reset(dropOffData!);
 
       console.log(`Editing drop-off at index ${index}`);
     } catch (error) {
@@ -391,11 +435,17 @@ export default function ShippingForm() {
       }
 
       // Save current form data before deletion if we're editing
-      if (isActive && isDropIndex !== index) {
+      if (isValid && isDropIndex !== index) {
         // Save current editing form data
         useOrderStore.setState((state) => {
           const updatedDropOffs = [...state.dropOffs];
-          updatedDropOffs[isDropIndex] = { ...dropOffFormValues } as any;
+          updatedDropOffs[isDropIndex] = {
+            ...usedropOffFormValuesForDropffs({
+              dropOffFormValues: dropOffFormValues,
+              vendorId: vendorId!,
+              isCOD: isCOD,
+            }),
+          } as any;
 
           return {
             ...state,
@@ -437,7 +487,6 @@ export default function ShippingForm() {
       console.error('Error deleting drop-off:', error);
     }
   };
-  console.log(orderStore.dropOffs, isActive);
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
@@ -461,7 +510,7 @@ export default function ShippingForm() {
                         </CardTitle>
                         {idx == isDropIndex ? (
                           <Button
-                            disabled={!isActive}
+                            // disabled={!isFormValid}
                             onClick={() => handleAddOneDropoff()}
                           >
                             <Plus /> dropOff {idx + 1}
@@ -505,7 +554,7 @@ export default function ShippingForm() {
                 </CardTitle>
 
                 <Button
-                  disabled={!isActive}
+                  // disabled={!isFormValid}
                   onClick={() => handleAddOneDropoff()}
                 >
                   <Plus /> dropOff
@@ -532,19 +581,19 @@ export default function ShippingForm() {
 
             <div className="flex items-center space-x-1">
               <MapPin className="w-4 h-4 text-gray-500" />
-              <span>Distance: {liveOrderDisplay?.distance} </span>
+              <span>Distance: {totalKM} </span>
             </div>
 
             <div className="flex items-center space-x-1">
               <Truck className="w-4 h-4 text-gray-500" />
-              <span>Drop-off: {liveOrderDisplay?.source}</span>
+              <span>Drop-off: {totalOrders}</span>
             </div>
 
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-gray-500" />
               <span>
-                Est. Time:{' '}
-                <span className="font-medium">{liveOrderDisplay?.source}</span>
+                Est. Time:{deliveryModel}
+                <span className="font-medium">{''}</span>
               </span>
             </div>
 
@@ -554,7 +603,7 @@ export default function ShippingForm() {
                 Delivery Fee:{' '}
                 <span className="text-blue-600 font-medium">
                   {' '}
-                  {appConstants?.currency} {liveOrderDisplay?.deliveryFee}
+                  {appConstants?.currency} {}
                 </span>
               </span>
             </div>
@@ -566,7 +615,7 @@ export default function ShippingForm() {
               Cancel
             </button>
             <Button
-              disabled={!isActive}
+              // disabled={!isFormValid}
               className="px-4 py-1.5 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700"
             >
               Create Order
