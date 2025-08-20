@@ -21,8 +21,8 @@ export const pickUpSchema = z.object({
   apartment_no: z.string(),
   floor: z.string(),
   additional_address: z.string(),
-  latitude: z.string(),
-  longitude: z.string(),
+  latitude: z.any(),
+  longitude: z.any(),
 });
 
 export const dropOffSchema = z.object({

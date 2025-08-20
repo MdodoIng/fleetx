@@ -40,6 +40,7 @@ import LoadingPage from '../../loading';
 import {
   TypeDropOffs,
   TypeEstimatedDelivery,
+  TypeEstimatedDeliveryReturnFromApi,
   TypeLiveOrderDisplay,
   TypePickUp,
 } from '@/shared/types/orders';
@@ -66,7 +67,7 @@ export default function ShippingForm() {
 
   const [isCOD, setIsCOD] = useState<1 | 2>(1);
   const orderStore = useOrderStore();
-  const { totalOrders, totalDelivery, totalKM, deliveryModel } =
+  const { totalOrders, totalDelivery, totalKM, estTime } =
     useDeliveryFeeCalculator(orderStore.estimatedDeliveryReturnFromApi!);
 
   const pickUpForm = useForm<TypePickUpSchema>({
@@ -168,7 +169,7 @@ export default function ShippingForm() {
         hasValue(dropOffFormValues.customer_name) &&
         hasValue(dropOffFormValues.mobile_number) &&
         hasValue(dropOffFormValues.street_id) &&
-        (isCOD ? hasValue(dropOffFormValues.amount_to_collect) : true);
+        (isCOD === 2 ? hasValue(dropOffFormValues.amount_to_collect) : true);
 
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
@@ -183,12 +184,15 @@ export default function ShippingForm() {
 
   const updatePickUpDetailsForBranchUser = async () => {
     if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      // if (orderStore.pickUp?.area) {
-      //   Object.entries(orderStore.pickUp).forEach(([key, value]) => {
-      //     // @ts-ignore
-      //     pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
-      //   });
-      // }
+      if (orderStore.pickUp?.area) {
+        Object.entries(orderStore.pickUp).forEach(([key, value]) => {
+          // @ts-ignore
+          pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
+        });
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
+      }
       try {
         const res = await VendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,
@@ -202,6 +206,9 @@ export default function ShippingForm() {
 
         pickUpForm.setValue('customer_name', res.data.name);
         pickUpForm.setValue('mobile_number', res.data.mobile_number);
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
       } catch (error) {
         console.error('Error fetching branch ddetails:', error);
       }
@@ -210,16 +217,55 @@ export default function ShippingForm() {
 
   const updateDropOutDetailsForStore = () => {
     if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      if (orderStore.dropOffs) {
-        Object.entries(orderStore.dropOffs[isDropIndex]).forEach(
-          ([key, value]) => {
-            // @ts-ignore
+      if (orderStore.estimatedDeliveryReturnFromApi?.data?.drop_offs?.length) {
+        // Safely access the drop_offs array with bounds checking
+        const dropOffs =
+          orderStore.estimatedDeliveryReturnFromApi.data.drop_offs;
+        if (
+          isDropIndex >= 0 &&
+          isDropIndex < dropOffs.length &&
+          orderStore.estimatedDeliveryReturnFromApi.data.branch_id ===
+            branchId &&
+          orderStore.estimatedDeliveryReturnFromApi.data.vendor_id === vendorId
+        ) {
+          Object.entries(dropOffs[isDropIndex]).forEach(([key, value]) => {
             dropOffForm.setValue(key as keyof TypeDropOffs, value);
-          }
-        );
+          });
+        }
+
+        if (orderStore.dropOffs.length) {
+          const updatedDropOffs = orderStore.dropOffs.map((item) => {
+            const apiDropOff =
+              orderStore.estimatedDeliveryReturnFromApi?.data?.drop_offs?.find(
+                (apiItem) => apiItem.id === item.id
+              );
+            return apiDropOff || item;
+          });
+
+          useOrderStore.setState({
+            dropOffs: updatedDropOffs,
+            isChangedForm: true,
+          });
+        } else {
+          useOrderStore.setState({
+            dropOffs: orderStore.estimatedDeliveryReturnFromApi.data.drop_offs,
+            isChangedForm: true,
+          });
+        }
+      } else if (orderStore.dropOffs.length) {
+        // Safely access the dropOffs array with bounds checking
+        if (isDropIndex >= 0 && isDropIndex < orderStore.dropOffs.length) {
+          Object.entries(orderStore.dropOffs[isDropIndex]).forEach(
+            ([key, value]) => {
+              dropOffForm.setValue(key as keyof TypeDropOffs, value);
+            }
+          );
+        }
       }
     }
   };
+
+  // console.log(dropOffForm.getValues(), pickUpForm.getValues());
 
   const searchAddressByMobileNumber = async (mobileNumber: string) => {
     try {
@@ -237,13 +283,15 @@ export default function ShippingForm() {
 
   const updateCalculateDeliveryEstimate = async (
     data: TypeEstimatedDelivery
-  ) => {
+  ): Promise<TypeEstimatedDeliveryReturnFromApi | undefined> => {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
       console.log(res.data);
       useOrderStore.setState({
         estimatedDeliveryReturnFromApi: res,
       });
+      useDeliveryFeeCalculator(res);
+      return res;
     } catch (error) {}
   };
 
@@ -255,7 +303,7 @@ export default function ShippingForm() {
     console.log('Recipient Form Data:', values);
   };
 
-  const isDropoffOne = orderStore.dropOffs[0].area;
+  const isDropoffOne = orderStore.dropOffs.length ? orderStore.dropOffs[0].area : false;
 
   const handleAddOneDropoff = async () => {
     const isFormValid = await validateFormsAsync();
@@ -275,38 +323,52 @@ export default function ShippingForm() {
         isCOD: isCOD,
       });
 
+      const newDropOffs = [...orderStore.dropOffs, newDropOff];
+
       const updatedPickUp = usePickUpFormValuesForPickUp({
         pickUpFormValues: pickUpFormValues,
       });
 
-      useOrderStore.setState((state) => {
-        const newDropOffs = [...state.dropOffs, newDropOff];
+      const estimatedDeliveryData: TypeEstimatedDelivery = {
+        branch_id: branchId!,
+        vendor_id: vendorId!,
+        drop_offs: newDropOffs,
+        delivery_model: orderStore.deliveryModel.key,
+        order_session_id:
+          orderStore.estimatedDelivery?.order_session_id ||
+          Date.now().toString(),
+        pickup: updatedPickUp,
+      };
 
-        const estimatedDeliveryData: TypeEstimatedDelivery = {
-          branch_id: branchId!,
-          vendor_id: vendorId!,
-          drop_offs: newDropOffs,
-          delivery_model: state.deliveryModel.key,
-          order_session_id:
-            state.estimatedDelivery?.order_session_id || Date.now().toString(),
-          pickup: updatedPickUp,
-        };
+      console.log();
 
-        return {
-          ...state,
-          dropOffs: newDropOffs,
-          pickUp: updatedPickUp,
-          estimatedDelivery: estimatedDeliveryData,
-        };
-      });
+      const res = await updateCalculateDeliveryEstimate(estimatedDeliveryData!);
 
-      await updateCalculateDeliveryEstimate(orderStore.estimatedDelivery!);
+      if (res?.data) {
+        useOrderStore.setState((state) => {
+          const newDropOffs = [
+            ...state.dropOffs,
+            newDropOff,
+            emptyDropOff as any,
+          ];
 
-      dropOffForm.reset(emptyDropOff);
-      dropOffForm.clearErrors();
+          return {
+            ...state,
+            dropOffs: newDropOffs,
+            pickUp: updatedPickUp,
+            estimatedDelivery: estimatedDeliveryData,
+          };
+        });
 
-      setIsCOD(1);
-      setIsDropofIndex(orderStore.dropOffs.length - 1);
+        // dropOffForm.reset(emptyDropOff);
+        dropOffForm.clearErrors();
+
+        setIsCOD(1);
+        setIsDropofIndex(orderStore.dropOffs.length);
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
+      }
 
       console.log(
         'Successfully added and calculated estimate for new drop-off'
@@ -384,9 +446,6 @@ export default function ShippingForm() {
       }
       const isFormValid = await validateFormsAsync();
       // Save current changes if we're editing a different drop-off
-      if (isDropIndex !== index && isFormValid) {
-        handleSaveCurrentDropOff();
-      }
 
       // Validate index bounds
       if (index < 0 || index >= orderStore.dropOffs.length) {
@@ -396,20 +455,27 @@ export default function ShippingForm() {
         return;
       }
 
-      const dropOffData = orderStore.dropOffs[index];
+      if (isDropIndex !== index && isFormValid) {
+        handleSaveCurrentDropOff();
 
-      if (!dropOffData) {
-        console.error(`No drop-off data found at index ${index}`);
-        return;
+        const dropOffData = orderStore.dropOffs[index];
+
+        if (!dropOffData) {
+          console.error(`No drop-off data found at index ${index}`);
+          return;
+        }
+
+        setIsDropofIndex(index);
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
+
+        console.log(dropOffData);
+
+        Object.entries(dropOffData).forEach(([key, value]) => {
+          dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
+        });
       }
-
-      // Set the current editing index
-      setIsDropofIndex(index);
-
-      console.log(dropOffData);
-      // Load the data into the form
-      dropOffForm.reset(dropOffData!);
-
       console.log(`Editing drop-off at index ${index}`);
     } catch (error) {
       console.error('Error loading drop-off for editing:', error);
@@ -417,12 +483,10 @@ export default function ShippingForm() {
   };
   const handleDeleteDropOff = (index: number) => {
     try {
-      // Prevent deletion if it's the last drop-off
       if (orderStore.dropOffs.length <= 1) {
         console.warn(
           'Cannot delete the last drop-off. At least one drop-off is required.'
         );
-        // You might want to show a toast notification here
         return;
       }
 
@@ -434,9 +498,7 @@ export default function ShippingForm() {
         return;
       }
 
-      // Save current form data before deletion if we're editing
       if (isValid && isDropIndex !== index) {
-        // Save current editing form data
         useOrderStore.setState((state) => {
           const updatedDropOffs = [...state.dropOffs];
           updatedDropOffs[isDropIndex] = {
@@ -472,6 +534,9 @@ export default function ShippingForm() {
       if (isDropIndex === index) {
         // If we deleted the currently edited item, switch to the first one
         setIsDropofIndex(0);
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
         // Load the first item's data into the form
         const firstDropOff = orderStore.dropOffs[0];
         if (firstDropOff) {
@@ -480,6 +545,9 @@ export default function ShippingForm() {
       } else if (isDropIndex > index) {
         // If we deleted an item before the current one, adjust the index
         setIsDropofIndex(isDropIndex - 1);
+        useOrderStore.setState({
+          isChangedForm: true,
+        });
       }
 
       console.log(`Successfully deleted drop-off at index ${index}`);
@@ -506,7 +574,10 @@ export default function ShippingForm() {
                     <div className="shadow">
                       <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                          Drop Off {item?.customer_name}
+                          Drop Off{' '}
+                          {isDropIndex == idx
+                            ? dropOffFormValues.customer_name
+                            : item.customer_name}
                         </CardTitle>
                         {idx == isDropIndex ? (
                           <Button
@@ -592,20 +663,14 @@ export default function ShippingForm() {
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-gray-500" />
               <span>
-                Est. Time:{deliveryModel}
+                Est. Time: {estTime} Min
                 <span className="font-medium">{''}</span>
               </span>
             </div>
 
             <div className="flex items-center space-x-1">
-              <DollarSign className="w-4 h-4 text-gray-500" />
-              <span>
-                Delivery Fee:{' '}
-                <span className="text-blue-600 font-medium">
-                  {' '}
-                  {appConstants?.currency} {}
-                </span>
-              </span>
+              <Coins className="w-4 h-4 text-gray-500" />
+              <span>Delivery Fee: {totalDelivery}</span>
             </div>
           </div>
 

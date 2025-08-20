@@ -10,13 +10,13 @@ import { useState, useMemo } from 'react';
 export const useDeliveryFeeCalculator = (
   orderService: TypeEstimatedDeliveryReturnFromApi
 ) => {
-  const { appConstants, readAppConstants } = useSharedStore();
+  const { appConstants } = useSharedStore();
   const deliveryEstimate = useMemo(() => {
-    readAppConstants();
     const totalOrders = orderService?.data.drop_offs?.length || 0;
 
     let totalKMs = 0;
     let totalDeliveryFee = 0;
+    let estTime = 0;
 
     // Find delivery model
     const delivery = TypeDelivery.find(
@@ -28,6 +28,7 @@ export const useDeliveryFeeCalculator = (
     orderService?.data.drop_offs?.forEach((element) => {
       totalDeliveryFee += element.delivery_fee || 0;
       totalKMs += element.delivery_distance || 0;
+      estTime = element.delivery_duration;
     });
 
     return {
@@ -35,6 +36,7 @@ export const useDeliveryFeeCalculator = (
       totalDelivery: `${totalDeliveryFee.toFixed(2)} ${appConstants?.currency}`,
       totalKM: `${totalKMs.toFixed(2)} KM`,
       deliveryModel,
+      estTime,
     };
   }, []);
 

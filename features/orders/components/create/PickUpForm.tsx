@@ -21,6 +21,11 @@ import { Fragment, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fi } from 'zod/v4/locales';
 import AddressLandmarkFields from '../ui/LandmarkFields';
+import dynamic from 'next/dynamic';
+// const AddressLandmarkFields = dynamic(() => import('../ui/LandmarkFields'), {
+//   ssr: false,
+//   loading: () => <p>Loading Map...</p>,
+// });
 
 interface SenderFormProps {
   senderForm: UseFormReturn<TypePickUpSchema>;

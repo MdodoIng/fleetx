@@ -27,8 +27,8 @@ export default function MyMap({ center, style = mashkorMap }: Props) {
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={{
-        lat: center.lat || 29.3759,
-        lng: center.lng || 47.9774,
+        lat: center.lat ?? 29.3759,
+        lng: center.lng ?? 47.9774,
       }}
       zoom={12}
       options={{
@@ -41,8 +41,8 @@ export default function MyMap({ center, style = mashkorMap }: Props) {
     >
       <Marker
         position={{
-          lat: center.lat || 0,
-          lng: center.lng || 0,
+          lat: center.lat ?? 0,
+          lng: center.lng ?? 0,
         }}
         draggable={true}
         icon="/images/map-marker.svg" // public/ folder

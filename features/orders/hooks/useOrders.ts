@@ -45,7 +45,7 @@ export const usedropOffFormValuesForDropffs = ({
     customer_name: dropOffFormValues.customer_name,
     area: dropOffFormValues.area,
     area_id: Number(dropOffFormValues.area_id),
-    block: dropOffFormValues.area,
+    block: dropOffFormValues.block,
     block_id: Number(dropOffFormValues.block_id),
     street: dropOffFormValues.street,
     street_id: Number(dropOffFormValues.street_id),
@@ -55,15 +55,15 @@ export const usedropOffFormValuesForDropffs = ({
     room_number: '',
     latitude: dropOffFormValues.latitude,
     longitude: dropOffFormValues.latitude,
-    landmark: dropOffFormValues.additional_address,
+    landmark: dropOffFormValues.additional_address!,
     mobile_number: dropOffFormValues.mobile_number,
     order_index: Number(dropOffFormValues.order_index),
     amount_to_collect: Number(dropOffFormValues.amount_to_collect),
-    display_address: dropOffFormValues.additional_address,
+    display_address: dropOffFormValues.additional_address!,
     quantity: 1,
     payment_type: isCOD,
     paci_number: '',
-    specific_driver_instructions: dropOffFormValues.additional_address,
+    specific_driver_instructions: dropOffFormValues.additional_address!,
   };
 };
 

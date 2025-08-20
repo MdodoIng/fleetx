@@ -4,7 +4,7 @@ export function makeLoc(
   type: string,
   name: string,
   id: any,
-  landmarkValues?: TypePickUpSchema
+  landmarkValues: TypePickUpSchema
 ): Locs {
   // Validate required parameters
   if (!type || !name || id === null || id === undefined) {
@@ -15,8 +15,8 @@ export function makeLoc(
     id,
     name_ar: name,
     name_en: name,
-    latitude: landmarkValues?.latitude ? Number(landmarkValues.latitude) : 0,
-    longitude: landmarkValues?.longitude ? Number(landmarkValues.longitude) : 0,
+    latitude: landmarkValues?.latitude ?? 0,
+    longitude: landmarkValues?.longitude ?? 0,
     governorate_id: 0,
     loc_type: type,
   };

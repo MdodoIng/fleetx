@@ -86,18 +86,33 @@ export const fetcher = async (url: string, options?: RequestInit) => {
 };
 
 export const getArea = () =>
-  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas');
+  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas', {
+    cache: 'force-cache',
+  });
 export const getAreaByPickupAreaId = (id: string) =>
   fetcher(
-    environment.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id
+    environment.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
+    {
+      cache: 'force-cache',
+    }
   );
 export const getBlock = (id: string) =>
-  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks');
+  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
+    cache: 'force-cache',
+  });
 export const getStreet = (id: string) =>
-  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets');
+  fetcher(
+    environment.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
+    {
+      cache: 'force-cache',
+    }
+  );
 export const getBuildings = (id: string) =>
   fetcher(
-    environment.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings'
+    environment.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
+    {
+      cache: 'force-cache',
+    }
   );
 
 export const getDeliveryRate = (request: any) =>
@@ -482,12 +497,18 @@ export const useSharedStore = create<SharedState & SharedActions>()((
       const country = environment.COUNTRY.toLowerCase();
       let appConstants = null;
 
-      if (country === KUWAIT) {
-        appConstants = kuwait;
-      } else if (country === BAHRAIN) {
-        appConstants = bahrain;
-      } else if (country === QATAR) {
-        appConstants = qatar;
+      switch (country) {
+        case KUWAIT:
+          appConstants = kuwait;
+          break;
+        case BAHRAIN:
+          appConstants = bahrain;
+          break;
+        case QATAR:
+          appConstants = qatar;
+          break;
+        default:
+          console.warn(`Unknown country: ${country}`);
       }
 
       set({ appConstants: appConstants });

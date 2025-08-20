@@ -20,7 +20,6 @@ const LandmarkInput = ({
   fieldName,
   landmarkValues,
   searchData,
-  selctedItems,
   loading,
   isInputVal,
   isInputBlur,
@@ -33,11 +32,12 @@ const LandmarkInput = ({
   setIsInputBlur,
   setIsInputVal,
   formLabel,
+  selectedItems,
 }: {
   control: Control<any, any, any>;
   fieldName: 'address';
   setIsInputBlur: React.Dispatch<React.SetStateAction<boolean>>;
-  selctedItems: Locs[] | undefined;
+  selectedItems: Locs[] | undefined;
   handleRemoveAddress: (removed: Locs, index: number) => void;
   setIsInputVal: React.Dispatch<React.SetStateAction<string>>;
   isInputVal: string;
@@ -52,6 +52,25 @@ const LandmarkInput = ({
   isMap: boolean;
   formLabel?: string;
 }) => {
+  const selectedItem = [
+    {
+      name_en: landmarkValues?.area!,
+      loc_type: 'area',
+    },
+    {
+      name_en: landmarkValues?.block!,
+      loc_type: 'block',
+    },
+    {
+      name_en: landmarkValues?.street!,
+      loc_type: 'street',
+    },
+    {
+      name_en: landmarkValues?.building!,
+      loc_type: 'building',
+    },
+  ];
+
   return (
     <FormItem
       className={
@@ -66,28 +85,27 @@ const LandmarkInput = ({
       {!isMapOpen && <FormLabel>{formLabel}</FormLabel>}
       <FormControl className="relative z-0">
         <div className={cn('flex gap-3 items-center ', classForInput)}>
-          {selctedItems &&
-            selctedItems.map((item, key) => {
-              if (!item) return null;
+          {selectedItem.map((item, key) => {
+            if (!item.name_en) return null;
 
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleRemoveAddress(item, key)}
-                  className="cursor-pointer text-red-500 shrink-0 flex items-center gap-1 border border-red-300 rounded-full px-2 py-1 text-sm hover:bg-red-100"
-                >
-                  <span className="font-bold">×</span> {item.name_en}
-                </button>
-              );
-            })}
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleRemoveAddress(item)}
+                className="cursor-pointer text-red-500 shrink-0 flex items-center gap-1 border border-red-300 rounded-full px-2 py-1 text-sm hover:bg-red-100"
+              >
+                <span className="font-bold">×</span> {item.name_en}
+              </button>
+            );
+          })}
           <input
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setIsInputVal(e.target.value);
             }}
             value={isInputVal}
-            disabled={landmarkValues.street ? true : false}
-            placeholder={`Landmark `}
+            disabled={landmarkValues.building ? true : false}
+            placeholder={`Landmark`}
             className="outline-0 border-none bg-yellow-500 w-full flex disabled:hidden"
             onKeyDown={(e) => handleEnter(e)}
           />
