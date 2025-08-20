@@ -24,15 +24,15 @@ import AddressLandmarkFields from '../ui/LandmarkFields';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
-  onRecipientSubmit: (data: TypeDropOffSchema) => void;
-  shallCollectCash: 1 | 2;
+
+  isCOD: 1 | 2;
   setIsCOD: Dispatch<SetStateAction<1 | 2>>;
 }
 
 const DropoffForm: React.FC<SenderFormProps> = ({
   recipientForm,
-  onRecipientSubmit,
-  shallCollectCash,
+
+  isCOD,
   setIsCOD,
 }) => {
   return (
@@ -147,7 +147,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      shallCollectCash === 2
+                      isCOD === 2
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -155,7 +155,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="yes"
-                      checked={shallCollectCash === 2}
+                      checked={isCOD === 2}
                       onChange={() => {
                         setIsCOD(2);
                       }}
@@ -168,7 +168,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      shallCollectCash === 1
+                      isCOD === 1
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -176,7 +176,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="no"
-                      checked={shallCollectCash === 1}
+                      checked={isCOD === 1}
                       onChange={() => {
                         setIsCOD(1);
                       }}
@@ -195,7 +195,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <FormLabel>Amount</FormLabel>
                     <FormControl className="bg-white">
                       <Input
-                        disabled={shallCollectCash === 1}
+                        disabled={isCOD === 1}
                         placeholder="Ex: 10"
                         {...field}
                       />

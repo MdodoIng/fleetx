@@ -27,7 +27,7 @@ export type TypePickUp = {
 
 export type TypeDropOffs = {
   id: number;
-  order_index: number;
+  order_index: number | any;
   display_address: string;
   address: string;
   vendor_order_id: string;

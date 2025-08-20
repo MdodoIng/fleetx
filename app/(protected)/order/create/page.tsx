@@ -47,7 +47,7 @@ import {
 import { configService } from '@/shared/services/app-config';
 import { useOrderStore } from '@/store/useOrderStore';
 import { hasErrors, hasValue } from '@/shared/lib/helpers';
-import { useDeliveryFeeCalculator } from '@/features/orders/hooks/useDeliveryFeeCalculator';
+
 import { orderService } from '@/features/orders/services/ordersApi';
 import { CardHeader, CardTitle } from '@/shared/components/ui/card';
 import {
@@ -55,6 +55,7 @@ import {
   usedropOffFormValuesForDropffs,
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
+import DropoffFormSection from '@/features/orders/components/ui/DropoffFormSection';
 
 // Main component
 export default function ShippingForm() {
@@ -62,15 +63,13 @@ export default function ShippingForm() {
   const orderStore = useOrderStore();
   const { appConstants, readAppConstants } = useSharedStore();
   const [isDropIndex, setIsDropofIndex] = useState<number>(
-    orderStore.dropOffs.length ? orderStore.dropOffs.length - 1 : 0
+    orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
   const { branchId, vendorId } = useStorageStore();
   const [isValid, setIsValid] = useState(false);
 
   const [isCOD, setIsCOD] = useState<1 | 2>(1);
-  const { totalOrders, totalDelivery, totalKM, estTime } =
-    useDeliveryFeeCalculator(orderStore.estimatedDeliveryReturnFromApi!);
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
@@ -249,7 +248,7 @@ export default function ShippingForm() {
       useOrderStore.setState({
         estimatedDeliveryReturnFromApi: res,
       });
-      useDeliveryFeeCalculator(res);
+      orderStore.setEstimatedDeliveryReturnFromApi(res);
       return res;
     } catch (error) {
       console.log(error, 'sgfdsg');
@@ -264,8 +263,8 @@ export default function ShippingForm() {
     console.log('Recipient Form Data:', values);
   };
 
-  const isDropoffOne = orderStore.dropOffs.length
-    ? orderStore.dropOffs[0].area
+  const isDropoffOne = orderStore.dropOffs
+    ? orderStore.dropOffs.length
       ? true
       : false
     : false;
@@ -309,21 +308,30 @@ export default function ShippingForm() {
 
       // if (res?.data) {
       useOrderStore.setState((state) => {
-        const newDropOffs = [...state.dropOffs, newDropOff];
+        const updatedDropOffs = [...state.dropOffs];
+        if (state.dropOffs === undefined || state.dropOffs.length === 0) {
+          updatedDropOffs.push(newDropOff);
+          updatedDropOffs.push(emptyDropOff as any);
+        } else {
+          updatedDropOffs.length - 1 <= isDropIndex
+            ? ((updatedDropOffs[isDropIndex] = newDropOff),
+              updatedDropOffs.push(emptyDropOff as any))
+            : updatedDropOffs.push(newDropOff);
+        }
 
+        setIsDropofIndex(updatedDropOffs.length - 1);
         return {
           ...state,
-          dropOffs: newDropOffs,
+          dropOffs: updatedDropOffs,
           pickUp: updatedPickUp,
           estimatedDelivery: estimatedDeliveryData,
         };
       });
 
+      setIsCOD(1);
       dropOffForm.reset(emptyDropOff);
       dropOffForm.clearErrors();
 
-      setIsCOD(1);
-      setIsDropofIndex(orderStore.dropOffs.length);
       // }
 
       console.log(
@@ -504,6 +512,8 @@ export default function ShippingForm() {
     }
   };
 
+  console.log(orderStore.dropOffs, 'afa');
+
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
       <div className="grid grid-cols-2 h-full rounded-md  gap-10 w-full">
@@ -515,71 +525,34 @@ export default function ShippingForm() {
 
         <div className="grid gap-4">
           {orderStore.dropOffs?.map((item, idx) => (
-            <div key={idx} className="shadow bg-red-300">
-              <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                  Drop Off{' '}
-                  {isDropIndex == idx
-                    ? dropOffFormValues.customer_name
-                    : item.customer_name}
-                </CardTitle>
-                {idx == isDropIndex ? (
-                  <Button
-                    // disabled={!isFormValid}
-                    onClick={() => handleAddOneDropoff()}
-                  >
-                    <Plus /> dropOff {idx + 1}
-                  </Button>
-                ) : (
-                  <div className="grid-cols-2 grid gap-4">
-                    <Button
-                      onClick={() => handleDeleteDropOff(idx)}
-                      variant="destructive"
-                    >
-                      <Delete />
-                    </Button>
-                    <Button
-                      onClick={() => handleEditDropOffWithSave(idx)}
-                      variant="secondary"
-                    >
-                      <Edit />
-                    </Button>
-                  </div>
-                )}
-              </CardHeader>
-              {isDropIndex === idx && (
-                <DropoffForm
-                  onRecipientSubmit={onRecipientSubmit}
-                  recipientForm={dropOffForm}
-                  shallCollectCash={isCOD}
-                  setIsCOD={setIsCOD}
-                />
-              )}
-            </div>
+            <DropoffFormSection
+              dropOffForm={dropOffForm}
+              dropOffFormValues={dropOffFormValues}
+              handleAddOneDropoff={handleAddOneDropoff}
+              handleDeleteDropOff={handleDeleteDropOff}
+              handleEditDropOffWithSave={handleEditDropOffWithSave}
+              index={idx}
+              isCOD={isCOD}
+              setIsCOD={setIsCOD}
+              isDropIndex={isDropIndex}
+              item={item}
+              key={idx}
+            />
           ))}
 
           {!isDropoffOne && (
-            <div className="shadow bg-green-500">
-              <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-                  Drop Off {dropOffFormValues.order_index}
-                </CardTitle>
-
-                <Button
-                  // disabled={!isFormValid}
-                  onClick={() => handleAddOneDropoff()}
-                >
-                  <Plus /> dropOff
-                </Button>
-              </CardHeader>
-
-              <DropoffForm
-                onRecipientSubmit={onRecipientSubmit}
-                recipientForm={dropOffForm}
-                shallCollectCash={isCOD}
+            <>
+              <DropoffFormSection
+                dropOffForm={dropOffForm}
+                dropOffFormValues={dropOffFormValues}
+                handleAddOneDropoff={handleAddOneDropoff}
+                handleDeleteDropOff={handleDeleteDropOff}
+                handleEditDropOffWithSave={handleEditDropOffWithSave}
+                isCOD={isCOD}
                 setIsCOD={setIsCOD}
+                isDropIndex={isDropIndex}
               />
-            </div>
+            </>
           )}
         </div>
 
@@ -593,25 +566,27 @@ export default function ShippingForm() {
 
             <div className="flex items-center space-x-1">
               <MapPin className="w-4 h-4 text-gray-500" />
-              <span>Distance: {totalKM} </span>
+              <span>Distance: {orderStore.deliverySummary?.totalKM} </span>
             </div>
 
             <div className="flex items-center space-x-1">
               <Truck className="w-4 h-4 text-gray-500" />
-              <span>Drop-off: {totalOrders}</span>
+              <span>Drop-off: {orderStore.deliverySummary?.totalOrders}</span>
             </div>
 
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-gray-500" />
               <span>
-                Est. Time: {estTime} Min
+                Est. Time: {orderStore.deliverySummary?.estTime} Min
                 <span className="font-medium">{''}</span>
               </span>
             </div>
 
             <div className="flex items-center space-x-1">
               <Coins className="w-4 h-4 text-gray-500" />
-              <span>Delivery Fee: {totalDelivery}</span>
+              <span>
+                Delivery Fee: {orderStore.deliverySummary?.totalDelivery}
+              </span>
             </div>
           </div>
 
