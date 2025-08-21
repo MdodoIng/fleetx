@@ -65,7 +65,6 @@ export default function AddressLandmarkFields({
   const [isInputVal, setIsInputVal] = useState<string>('');
   const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
 
-
   useMemo(async () => {
     if (!isInputBlur) return;
     try {
@@ -98,22 +97,83 @@ export default function AddressLandmarkFields({
         return;
       }
 
+      const generateDisplayName = (item: any): string => {
+        switch (currentLevel) {
+          case 'area':
+            return item.name_en || item.area_name_en || `Area ${item.id}`;
+
+          case 'block':
+            return item.name_en ? `Block-${item.name_en}` : `Block ${item.id}`;
+
+          case 'street':
+            return item.name_en || item.street_name_en || `Street ${item.id}`;
+
+          case 'building':
+            const buildingName = item.building_name_en || item.name_en;
+            const houseNumber = item.house_en || item.house_ar;
+            const unitInfo = item.unit_no ? ` - Unit ${item.unit_no}` : '';
+            const floorInfo = item.floor_no ? ` - Floor ${item.floor_no}` : '';
+
+            if (buildingName && buildingName !== '0') {
+              return `${buildingName}${unitInfo}${floorInfo}`;
+            } else if (houseNumber && houseNumber !== '0') {
+              return `House ${houseNumber}${unitInfo}${floorInfo}`;
+            } else {
+              return `Building ${item.id}${unitInfo}${floorInfo}`;
+            }
+
+          default:
+            return item.name_en || `Item ${item.id}`;
+        }
+      };
+
+      const matchesSearch = (
+        item: any,
+        displayName: string,
+        searchTerm: string
+      ): boolean => {
+        if (!searchTerm.trim()) return true;
+
+        const lowerSearchTerm = searchTerm.toLowerCase();
+        const lowerDisplayName = displayName.toLowerCase();
+
+        if (lowerDisplayName.includes(lowerSearchTerm)) return true;
+
+        if (currentLevel === 'building') {
+          const searchableFields = [
+            item.house_en,
+            item.house_ar,
+            item.unit_no,
+            item.floor_no,
+            item.building_name_en,
+            item.building_name_ar,
+          ].filter(Boolean); // Remove null/undefined values
+
+          return searchableFields.some((field) =>
+            field.toString().toLowerCase().includes(lowerSearchTerm)
+          );
+        }
+
+        return false;
+      };
+
       const items = data.data
-        .map((el: any) => ({
-          ...el,
-          name_en:
-            currentLevel === 'block' ? `Block-${el.name_en}` : el.name_en,
-          type: currentLevel,
-        }))
-        .filter((item: Locs) =>
-          item.name_en?.toLowerCase().includes(isInputVal.toLowerCase())
-        )
-        .map((item: Locs) => ({
+        .map((item: any) => {
+          const displayName = generateDisplayName(item);
+          return {
+            ...item,
+            name_en: displayName,
+            type: currentLevel,
+          };
+        })
+        .filter((item: any) => matchesSearch(item, item.name_en, isInputVal))
+        .map((item: any) => ({
           ...item,
-          value: item.id!,
-          label: item.name_en!,
+          value: item.id,
+          label: item.name_en,
         }));
 
+     
       setTimeout(() => {
         setSearchData(items);
       }, 50);
@@ -125,18 +185,18 @@ export default function AddressLandmarkFields({
     }
   }, [isInputVal, currentLevel, isInputBlur, parentId]);
 
-
-
   useMemo(() => {
     if (!isMap) return;
 
     const center = {
-      lat: landmarkValues.latitude,
-      lng: landmarkValues.longitude,
+      lat: Number(landmarkValues.latitude),
+      lng: Number(landmarkValues.longitude),
     };
 
     setMapValues(center);
   }, [landmarkValues.latitude, landmarkValues.longitude, isMap]);
+
+
 
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street' | 'building';

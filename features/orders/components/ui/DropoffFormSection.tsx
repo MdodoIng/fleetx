@@ -12,12 +12,19 @@ type Props = {
   isDropIndex: number;
   dropOffFormValues: TypeDropOffSchema;
   item?: TypeDropOffs;
-  handleAddOneDropoff: () => void;
-  handleDeleteDropOff: (index: number) => void;
-  handleEditDropOffWithSave: (index: number) => void;
+
   dropOffForm: UseFormReturn<TypeDropOffSchema>;
   isCOD: 1 | 2;
   setIsCOD: Dispatch<SetStateAction<1 | 2>>;
+  functionsDropoffs: (
+    type:
+      | 'addOneDropoff'
+      | 'editOneDropoff'
+      | 'saveCurrentDropOff'
+      | 'editDropOffWithSave'
+      | 'deleteDropOff',
+    index?: any
+  ) => Promise<void>;
 };
 
 const DropoffFormSection = ({
@@ -25,12 +32,10 @@ const DropoffFormSection = ({
   isDropIndex,
   dropOffFormValues,
   item,
-  handleAddOneDropoff,
-  handleDeleteDropOff,
-  handleEditDropOffWithSave,
   dropOffForm,
   isCOD,
   setIsCOD,
+  functionsDropoffs,
 }: Props) => {
   const isSingle = !index && !item;
   return (
@@ -47,20 +52,24 @@ const DropoffFormSection = ({
         {isSingle || index === isDropIndex ? (
           <Button
             // disabled={!isFormValid}
-            onClick={() => handleAddOneDropoff()}
+            onClick={() => functionsDropoffs('addOneDropoff')}
           >
             <Plus /> dropOff {isSingle ? 123 : index! + 1}
           </Button>
         ) : (
           <div className="grid-cols-2 grid gap-4">
             <Button
-              onClick={() => handleDeleteDropOff(index!)}
+              onClick={() =>
+                functionsDropoffs('deleteDropOff', index!)
+              }
               variant="destructive"
             >
               <Delete />
             </Button>
             <Button
-              onClick={() => handleEditDropOffWithSave(index!)}
+              onClick={() =>
+                functionsDropoffs('editDropOffWithSave', index!)
+              }
               variant="secondary"
             >
               <Edit />

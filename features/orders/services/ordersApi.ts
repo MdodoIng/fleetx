@@ -3,10 +3,11 @@ import { configService } from '@/shared/services/app-config';
 import {
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
+  TypeOrders,
 } from '@/shared/types/orders';
 
 export const orderService = {
-  createOnDemandOrders: (orders: any) =>
+  createOnDemandOrders: (orders: TypeOrders) =>
     apiFetch<any>(`${configService.orderServiceApiUrl()}/on-demand/create`, {
       method: 'POST',
       body: JSON.stringify(orders),

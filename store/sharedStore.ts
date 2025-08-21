@@ -14,101 +14,40 @@ import {
 } from '@/shared/constants/storageConstants';
 import { configService } from '@/shared/services/app-config';
 import { setUserLocale } from '@/shared/services/locale';
-import { useStorageStore } from './useStorageStore';
 import { AuthData, DecodedToken } from '@/shared/types/auth';
 import { useTranslations, Locale } from 'next-intl';
+import { TypeZoneETPTrend } from '@/shared/types/orders';
+import { apiFetch } from '@/shared/lib/utils';
+import { persist } from 'zustand/middleware';
+import { TypeBranch, TypeVender } from '@/shared/types/vender';
+import { useVenderStore } from './useVenderStore';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
-interface SharedState {
-  surveyCount: number;
-  isOnline: boolean;
-  smsPathURL?: string;
-  resetPasswordPathUrl?: string;
-  currentRates?: number;
-  orderNumberRate?: string;
-  improvements: any[];
-  appConstants: typeof kuwait | typeof bahrain | typeof qatar | null;
-  rate: number | null;
-  branchId: any | null;
-  vendorId: any | null;
-  foodicsReference: string | null;
-  foodicsIsAlreadyConnected?: boolean;
-  foodicsCanceledMessage: boolean;
-  foodicsAssociatedToVendorAdmin: boolean;
-  isRateFirstOrderPickUp: boolean;
-  whatsAppUpdateAddress: any;
-  whatsAppUpdateAddressMessage: any;
-  fleetZonePickUpTrend: any[];
-  freeDriverData: any[];
-  currentStatusZoneETPTrend: undefined;
-  currentZoneId?: number;
-  defaultZoneId?: number;
-  isAthuGurad: boolean;
-  operationalHours: any;
-  activeBusyModeDetails: any;
-  defaultBusyModeDetails: any;
-  isShowVersionUpdateBtn: boolean;
-  switchToGridView: boolean;
-  isShowSwitchButtonInLiveOrder: boolean;
-  isShowTopArrowWhileScroll: boolean;
-  isEnglishShowTopArrowButton: boolean;
-  bulkOrderNo?: string;
-  encryptedBulkOrderNo?: string;
-  bulkOrderPrimaryStatus?: number;
-  isValidCancelOrReschedule?: boolean;
-}
-
-interface SharedActions {
-  readAppConstants: () => Promise<void>;
-  verifyAppVersionUpdate: (apiVersion: string) => void;
-  calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => void;
-  triggerCalculatedTrend: (zoneId: number) => void;
-  setSuperSaverPromation: (
-    vendorId: string,
-    branchId: string,
-    currencyCode: string
-  ) => Promise<string[]>;
-  // Add other actions that modify state here
-  setState: (partialState: Partial<SharedState>) => void;
-}
-
-export const fetcher = async (url: string, options?: RequestInit) => {
-  const res = await fetch(url, options);
-  if (!res.ok) {
-    // In a real app, you'd have more robust error handling
-    const errorBody = await res
-      .json()
-      .catch(() => ({ message: res.statusText }));
-    throw new Error(errorBody.message || 'An API error occurred');
-  }
-  return res.json();
-};
-
 export const getArea = () =>
-  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas', {
+  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas', {
     cache: 'force-cache',
   });
 export const getAreaByPickupAreaId = (id: string) =>
-  fetcher(
+  apiFetch(
     environment.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
     {
       cache: 'force-cache',
     }
   );
 export const getBlock = (id: string) =>
-  fetcher(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
+  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
     cache: 'force-cache',
   });
 export const getStreet = (id: string) =>
-  fetcher(
+  apiFetch(
     environment.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
     {
       cache: 'force-cache',
     }
   );
 export const getBuildings = (id: string) =>
-  fetcher(
+  apiFetch(
     environment.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
     {
       cache: 'force-cache',
@@ -116,33 +55,33 @@ export const getBuildings = (id: string) =>
   );
 
 export const getDeliveryRate = (request: any) =>
-  fetcher(+'/order/delivery/' + request);
-export const getCurrentIPInfo = () => fetcher('http://ipinfo.io/json'); // Note: client-side only
+  apiFetch(+'/order/delivery/' + request);
+export const getCurrentIPInfo = () => apiFetch('http://ipinfo.io/json'); // Note: client-side only
 export const getCurrentIPWhois = () =>
-  fetcher('https://ipwhois.app/json/?lang=en'); // Note: client-side only
+  apiFetch('https://ipwhois.app/json/?lang=en'); // Note: client-side only
 export const connectFoodics = () =>
-  fetcher(configService.userServiceApiUrl() + '/foodics/connect');
+  apiFetch(configService.userServiceApiUrl() + '/foodics/connect');
 export const associateFoodics = (request: any) =>
-  fetcher(configService.vendorServiceApiUrl() + '/foodics/branch/associate', {
+  apiFetch(configService.vendorServiceApiUrl() + '/foodics/branch/associate', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
 export const validateVerifyCustomerAddress = (request: string) =>
-  fetcher(
+  apiFetch(
     configService.orderServiceApiUrl() + '/validate/customer/address/' + request
   );
 export const verifyCustomerAddress = (request: any) =>
-  fetcher(configService.orderServiceApiUrl() + '/verify/customer/address', {
+  apiFetch(configService.orderServiceApiUrl() + '/verify/customer/address', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
 
 export const getAllFreeBuddiesFromB2C = () =>
-  fetcher(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
+  apiFetch(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
 export const getSuperSaverPromation = (vendorId: string, branchId: string) =>
-  fetcher(
+  apiFetch(
     configService.finServiceApiUrl() +
       '/super-saver-promotion-status/vendor/' +
       vendorId +
@@ -151,49 +90,49 @@ export const getSuperSaverPromation = (vendorId: string, branchId: string) =>
   );
 
 export const getFirstOrderInsight = (fromDate: Date, toDate: Date) => {
-  const { getFormattedDate } = useStorageStore();
+  const { getFormattedDate } = useSharedStore();
   const params = new URLSearchParams({
     from_date: getFormattedDate(fromDate),
     to_date: getFormattedDate(toDate),
   });
-  return fetcher(
+  return apiFetch(
     configService.rateServiceApiUrl() +
       `/first-order/insight?${params.toString()}`
   );
 };
 export const getFirstOrderList = (url: string) =>
-  fetcher(configService.rateServiceApiUrl() + url);
+  apiFetch(configService.rateServiceApiUrl() + url);
 export const getFirstOrderPickUpRate = (value: any) =>
-  fetcher(
+  apiFetch(
     configService.rateServiceApiUrl() + '/first/order/pickup/rating/' + value
   );
 
 export const checkBlockActivation = (vendorId: string, branchId?: string) => {
   const url = branchId ? `${vendorId}/${branchId}` : vendorId;
-  return fetcher(
+  return apiFetch(
     configService.finServiceApiUrl() + '/wallet/recharge/blocked/' + url
   );
 };
 
 export const getZone = (request: any) =>
-  fetcher(configService.orderServiceApiUrl() + '/pickup/address/zone', {
+  apiFetch(configService.orderServiceApiUrl() + '/pickup/address/zone', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
 export const getFleetZonePickUpTrendAPI = () =>
-  fetcher(configService.fleetServiceApiUrl() + '/zone-pickup/trend');
+  apiFetch(configService.fleetServiceApiUrl() + '/zone-pickup/trend');
 export const getFleetZonePickUpTrendAPINew = () =>
-  fetcher(configService.awsApiGatewayBaseUrl() + '/zone/pickup-agg-data');
+  apiFetch(configService.awsApiGatewayBaseUrl() + '/zone/pickup-agg-data');
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
-  fetcher(
+  apiFetch(
     configService.orderServiceApiUrl() +
       '/get-customer-bulk-order/' +
       encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
-  const { getLocalStorage } = useStorageStore();
+  const { getLocalStorage } = useSharedStore();
   const currentUserStr = getLocalStorage(storageConstants.user_context);
   if (currentUserStr && currentUserStr !== 'null') {
     return JSON.parse(currentUserStr);
@@ -252,7 +191,7 @@ export const showToast = (status: ToastStatus, message: string) => {
 };
 
 export const showServerMessage = (status: ToastStatus, resMessage: string) => {
-  const { getLocalStorage } = useStorageStore();
+  const { getLocalStorage } = useSharedStore();
   const t = useTranslations();
   const lang = getLocalStorage('lang') as Locale;
   if (!lang) {
@@ -346,257 +285,460 @@ export const clearSupportChat = () => {
   // This must be called from a Client Component
   document.querySelectorAll('.message-container').forEach((el) => el.remove());
 };
+const toValidateOperationalHours = () => {
+  const { operationalHours } = useSharedStore.getState();
+  if (!operationalHours) return false;
+  if (operationalHours.full_day_operational) return true;
 
-export const useSharedStore = create<SharedState & SharedActions>()((
-  set,
-  get
-) => {
-  // Private helper functions within the store's scope
-  const toValidateOperationalHours = () => {
-    const { operationalHours } = get();
-    if (!operationalHours) return false;
-    if (operationalHours.full_day_operational) return true;
+  const now = new Date();
+  const [startHours, startMinutes] = operationalHours.start_time
+    .split(':')
+    .map(Number);
+  const [endHours, endMinutes] = operationalHours.end_time
+    .split(':')
+    .map(Number);
 
-    const now = new Date();
-    const [startHours, startMinutes] = operationalHours.start_time
-      .split(':')
-      .map(Number);
-    const [endHours, endMinutes] = operationalHours.end_time
-      .split(':')
-      .map(Number);
+  const fromDate = new Date(now);
+  fromDate.setHours(startHours, startMinutes, 0, 0);
 
-    const fromDate = new Date(now);
-    fromDate.setHours(startHours, startMinutes, 0, 0);
+  const toDate = new Date(now);
+  toDate.setHours(endHours, endMinutes, 0, 0);
 
-    const toDate = new Date(now);
-    toDate.setHours(endHours, endMinutes, 0, 0);
+  if (operationalHours.next_day && toDate < fromDate) {
+    toDate.setDate(toDate.getDate() + 1);
+  }
 
-    if (operationalHours.next_day && toDate < fromDate) {
-      toDate.setDate(toDate.getDate() + 1);
+  return now >= fromDate && now <= toDate;
+};
+
+const checkZoneBusyModeIsEnabled = () => {
+  const { activeBusyModeDetails } = useSharedStore();
+  if (!activeBusyModeDetails) return false;
+  const now = new Date();
+  const activatedAt = new Date(activeBusyModeDetails.activated_at);
+  const expiredAt = new Date(activeBusyModeDetails.expired_at);
+  return now > activatedAt && now < expiredAt;
+};
+
+const getDiffrenceBwCurrentAndLastUpdatedETP = (zoneDetail: any) => {
+  if (!zoneDetail?.updated_at) return 0;
+  const updatedAt = new Date(zoneDetail.updated_at);
+  const now = new Date();
+  const minutes = Math.abs(now.getTime() - updatedAt.getTime()) / 60000;
+  if (
+    Math.round(minutes) <=
+    commonConstants.orderTransparencyLastUpdatedTimeConfigMins
+  ) {
+    return Math.round(zoneDetail.avg_pickup_duration / 60);
+  }
+  return 0;
+};
+
+const setSuperSaverWalletInfoMessage = (data: any) => {
+  const t = useTranslations('screens');
+  let messages: string[] = [];
+  if (!data.achieved_supersaver && data.active) {
+    messages.push(t('newOrder.superSaver.push10OrMoreOrders'));
+    messages.push(t('newOrder.superSaver.save50FilsForEachOrder'));
+  }
+  return messages;
+};
+
+// const addGoogleTag = () => {
+//   const { eventEmitter } = useAnalytics();
+//   const { currentStatusZoneETPTrend, currentZoneId } = get();
+//   const currentUser = getDecodedAccessToken();
+//   const branchId = storage.getLocalStorage(storageConstants.branch_id);
+
+//   const role = currentUser?.roles?.[0];
+
+//   if (role === ROLES.vendor_user && branchId && currentStatusZoneETPTrend) {
+//     const branchName =
+//       storage.getLocalStorage(storageConstants.branch_name) || '';
+//     const selectedBranchName =
+//       storage.getLocalStorage(storageConstants.selected_branch_name) || '';
+
+//     let eventName = currentUser.user.vendor.branch_id
+//       ? branchName.substring(0, 20)
+//       : selectedBranchName.substring(0, 20);
+
+//     const etaTime = getETATimeFormatForGTag();
+//     const freeBuddy = `FRB${currentStatusZoneETPTrend.freeBuddies}`;
+
+//     if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
+//       eventName += `>15-${currentZoneId}${etaTime}`;
+//       eventEmitter(eventName, 'eta-trend-more', eventName, 'eta-trend', 1);
+
+//       const eventActions = `>15-${currentZoneId}${etaTime}${freeBuddy}`;
+//       eventEmitter(
+//         eventActions,
+//         'eta-trend-more-free-buddy',
+//         eventActions,
+//         'eta-trend-free-buddy',
+//         1
+//       );
+//     } else {
+//       eventName += `<15-${currentZoneId}${etaTime}`;
+//       eventEmitter(eventName, 'eta-trend-less', eventName, 'eta-trend', 1);
+
+//       const eventActions = `<15-${currentZoneId}${etaTime}${freeBuddy}`;
+//       eventEmitter(
+//         eventActions,
+//         'eta-trend-less-free-buddy',
+//         eventActions,
+//         'eta-trend-free-buddy',
+//         1
+//       );
+//     }
+//   }
+// };
+
+export interface SharedState {
+  surveyCount: number;
+  isOnline: boolean;
+  smsPathURL?: string;
+  resetPasswordPathUrl?: string;
+  currentRates?: number;
+  orderNumberRate?: string;
+  improvements: any[];
+  appConstants: typeof kuwait | typeof bahrain | typeof qatar | null;
+  rate: number | null;
+  foodicsReference: string | null;
+  foodicsIsAlreadyConnected?: boolean;
+  foodicsCanceledMessage: boolean;
+  foodicsAssociatedToVendorAdmin: boolean;
+  isRateFirstOrderPickUp: boolean;
+  whatsAppUpdateAddress: any;
+  whatsAppUpdateAddressMessage: any;
+  fleetZonePickUpTrend: [] | undefined;
+  freeDriverData: any[];
+  currentStatusZoneETPTrend: TypeZoneETPTrend | undefined;
+  currentZoneId?: number;
+  defaultZoneId?: number;
+  isAthuGurad: boolean;
+  operationalHours: any;
+  activeBusyModeDetails: any;
+  defaultBusyModeDetails: any;
+  isShowVersionUpdateBtn: boolean;
+  switchToGridView: boolean;
+  isShowSwitchButtonInLiveOrder: boolean;
+  isShowTopArrowWhileScroll: boolean;
+  isEnglishShowTopArrowButton: boolean;
+  bulkOrderNo?: string;
+  encryptedBulkOrderNo?: string;
+  bulkOrderPrimaryStatus?: number;
+  isValidCancelOrReschedule?: boolean;
+}
+
+export interface SharedActions {
+  readAppConstants: () => Promise<void>;
+  verifyAppVersionUpdate: (apiVersion: string) => void;
+  calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => void;
+  triggerCalculatedTrend: (zoneId: number, branchId: string) => void;
+  setSuperSaverPromation: (
+    vendorId: string,
+    branchId: string,
+    currencyCode: string
+  ) => Promise<string[]>;
+  // Add other actions that modify state here
+
+  // Utils
+  isMobile: () => boolean;
+  getFormattedDate: (date: Date) => string;
+
+  getSessionStorage: (key: string) => string | null;
+  addSessionStorage: (key: string, value: string) => void;
+  removeSessionStorage: (key: string) => void;
+  clearSessionStorage: () => void;
+  addLocalStorage: (key: string, value: string) => void;
+  getLocalStorage: (key: string) => string | null;
+  removeLocalStorage: (key: string) => void;
+  clearLocalStorage: () => void;
+  setValue: (key: keyof SharedState, value: any) => void;
+  getFleetZonePickUpTrend: () => Promise<void>;
+  getAllFreeBuddiesOnLoad: () => Promise<void>;
+}
+
+export const useSharedStore = create<SharedState & SharedActions>()(
+  persist(
+    (set, get) => {
+      // Private helper functions within the store's scope
+
+      return {
+        // Initial State
+        surveyCount: 0,
+        isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
+        improvements: [],
+        appConstants: null,
+        rate: null,
+        foodicsReference: null,
+        foodicsCanceledMessage: false,
+        foodicsAssociatedToVendorAdmin: false,
+        isRateFirstOrderPickUp: false,
+        whatsAppUpdateAddress: null,
+        whatsAppUpdateAddressMessage: null,
+        fleetZonePickUpTrend: [],
+        freeDriverData: [],
+        currentStatusZoneETPTrend: undefined,
+        isAthuGurad: false,
+        operationalHours: null,
+        activeBusyModeDetails: null,
+        defaultBusyModeDetails: null,
+        isShowVersionUpdateBtn: false,
+        switchToGridView: false,
+        isShowSwitchButtonInLiveOrder: false,
+        isShowTopArrowWhileScroll: false,
+        isEnglishShowTopArrowButton: false,
+        bulkOrderNo: undefined,
+        encryptedBulkOrderNo: undefined,
+        bulkOrderPrimaryStatus: undefined,
+        isValidCancelOrReschedule: undefined,
+
+        // Actions
+
+        setValue: (key: keyof SharedState, value: any) => set({ [key]: value }),
+        isMobile: () => {
+          if (typeof navigator === 'undefined') return false;
+          const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i,
+          ];
+          return toMatch.some((regex) => navigator.userAgent.match(regex));
+        },
+
+        getFormattedDate: (date: Date) =>
+          date.getFullYear() +
+          '-' +
+          ('0' + (date.getMonth() + 1)).slice(-2) +
+          '-' +
+          ('0' + date.getDate()).slice(-2),
+
+        getSessionStorage: (key: string) => {
+          if (typeof sessionStorage === 'undefined') return null;
+          return sessionStorage.getItem(key);
+        },
+
+        addSessionStorage: (key: string, value: string) => {
+          if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem(key, value);
+          }
+        },
+
+        removeSessionStorage: (key: string) => {
+          if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.removeItem(key);
+          }
+        },
+
+        clearSessionStorage: () => {
+          if (typeof sessionStorage !== 'undefined') {
+            const keys = Object.keys(sessionStorage);
+            keys.forEach((key) => {
+              sessionStorage.removeItem(key);
+            });
+          }
+        },
+
+        addLocalStorage: (key: string, value: string) => {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(key, value);
+          }
+        },
+
+        getLocalStorage: (key: string) => {
+          if (typeof localStorage === 'undefined') return null;
+          return localStorage.getItem(key);
+        },
+
+        removeLocalStorage: (key: string) => {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(key);
+          }
+        },
+
+        clearLocalStorage: () => {
+          if (typeof localStorage !== 'undefined') {
+            const keys = Object.keys(localStorage);
+            keys.forEach((key) => {
+              localStorage.removeItem(key);
+            });
+          }
+        },
+
+        setState: (partialState: Partial<SharedState>) => set(partialState),
+        setFoodicsIsAlreadyConnected: (isConnected: boolean) =>
+          set({ foodicsIsAlreadyConnected: isConnected }),
+
+        readAppConstants: async () => {
+          const country = environment.COUNTRY.toLowerCase();
+          let appConstants = null;
+
+          switch (country) {
+            case KUWAIT:
+              appConstants = kuwait;
+              break;
+            case BAHRAIN:
+              appConstants = bahrain;
+              break;
+            case QATAR:
+              appConstants = qatar;
+              break;
+            default:
+              console.warn(`Unknown country: ${country}`);
+          }
+
+          set({ appConstants: appConstants });
+        },
+
+        verifyAppVersionUpdate: (apiVersion: string) => {
+          const { getLocalStorage, addLocalStorage, removeLocalStorage } =
+            get();
+          if (apiVersion.trim() !== environment.APP_VERSION) {
+            const popupDisplayedVersion = getLocalStorage(
+              storageConstants.app_version
+            );
+            if (popupDisplayedVersion !== apiVersion) {
+              addLocalStorage(storageConstants.app_version, apiVersion);
+              // In React, you wouldn't use a callback. A component would just
+              // re-render because isShowVersionUpdateBtn has changed.
+            }
+            set({ isShowVersionUpdateBtn: true });
+          } else {
+            set({ isShowVersionUpdateBtn: false });
+            removeLocalStorage(storageConstants.app_version);
+          }
+        },
+
+        setSuperSaverPromation: async (vendorId: string, branchId: string) => {
+          try {
+            const res: any = await getSuperSaverPromation(vendorId, branchId);
+            return setSuperSaverWalletInfoMessage(res.data);
+          } catch (err: any) {
+            logError(err.message);
+            return [];
+          }
+        },
+
+        calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => {
+          const { operationalHours, activeBusyModeDetails } = get();
+          const { getLocalStorage } = get();
+          const branchId = getLocalStorage(storageConstants.branch_id) || '';
+
+          if (
+            !toValidateOperationalHours() ||
+            !freeBuddies ||
+            !zoneDetail ||
+            !checkZoneBusyModeIsEnabled() ||
+            !branchId
+          ) {
+            set({ currentStatusZoneETPTrend: undefined });
+            return;
+          }
+
+          const newTrend: TypeZoneETPTrend = {
+            etpMins: 0,
+            etpMoreThanConfigValue: false,
+            avgPromisedETP: 0,
+            isEnable: false,
+            freeBuddies: 0,
+          };
+
+          const freeDrivers = freeBuddies?.freeBuddies ?? 0;
+          const unAssignedDrivers = freeBuddies?.unAssignedOrders ?? 0;
+          const currentBuddies = freeDrivers - unAssignedDrivers;
+
+          newTrend.freeBuddies = currentBuddies;
+          newTrend.isEnable = zoneDetail?.need_ui_display;
+          newTrend.avgPromisedETP = Math.round(
+            zoneDetail.avg_pickup_duration / 60
+          );
+
+          const minuteETP = getDiffrenceBwCurrentAndLastUpdatedETP(zoneDetail);
+
+          if (currentBuddies > 0) {
+            if (minuteETP <= 0) {
+              newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
+              newTrend.etpMoreThanConfigValue = false;
+            } else if (minuteETP >= commonConstants.orderTransparencyMaxMins) {
+              newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
+              newTrend.etpMoreThanConfigValue = true;
+            } else {
+              newTrend.etpMins = minuteETP < 5 ? 5 : minuteETP;
+              newTrend.etpMoreThanConfigValue = false;
+            }
+          } else {
+            newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
+            newTrend.etpMoreThanConfigValue = true;
+          }
+
+          set({ currentStatusZoneETPTrend: newTrend });
+          // addGoogleTag();
+        },
+
+        getFleetZonePickUpTrend: async () => {
+          try {
+            const res: any = await getFleetZonePickUpTrendAPINew();
+
+            if (res.data) {
+              res.data.forEach((element: any) => {
+                element.system_response_at = new Date();
+              });
+              set({ fleetZonePickUpTrend: res.data });
+              const { getLocalStorage } = get();
+              const branchId =
+                getLocalStorage(storageConstants.branch_id) || '';
+              get().triggerCalculatedTrend(get().currentZoneId!, branchId);
+            }
+          } catch (err: any) {
+            logError(err?.error?.message);
+          }
+        },
+
+        getAllFreeBuddiesOnLoad: async () => {
+          try {
+            const res: any = await getAllFreeBuddiesFromB2C();
+            if (res) {
+              set({ freeDriverData: res });
+              const { getLocalStorage } = get();
+              const branchId =
+                getLocalStorage(storageConstants.branch_id) || '';
+              get().triggerCalculatedTrend(get().currentZoneId!, branchId);
+            }
+          } catch (err: any) {
+            logError(err);
+          }
+        },
+
+        triggerCalculatedTrend: async (zoneId: number, branchId: string) => {
+          const {
+            fleetZonePickUpTrend,
+            freeDriverData,
+            calculateTrendToShowETP,
+            getFleetZonePickUpTrend,
+            getAllFreeBuddiesOnLoad,
+          } = get();
+
+          if (!fleetZonePickUpTrend) {
+            await getFleetZonePickUpTrend();
+          }
+          if (!freeDriverData) {
+            await getAllFreeBuddiesOnLoad();
+          }
+
+          const zoneTrend = fleetZonePickUpTrend?.find(
+            (x: any) => x.zone_region_id === zoneId
+          );
+          const freeBuddies = freeDriverData.find((x) => x.regionId === zoneId);
+          calculateTrendToShowETP(zoneTrend, freeBuddies);
+        },
+      };
+    },
+    {
+      name: 'shared-storage',
     }
-
-    return now >= fromDate && now <= toDate;
-  };
-
-  const checkZoneBusyModeIsEnabled = () => {
-    const { activeBusyModeDetails } = get();
-    if (!activeBusyModeDetails) return false;
-    const now = new Date();
-    const activatedAt = new Date(activeBusyModeDetails.activated_at);
-    const expiredAt = new Date(activeBusyModeDetails.expired_at);
-    return now > activatedAt && now < expiredAt;
-  };
-
-  const getDiffrenceBwCurrentAndLastUpdatedETP = (zoneDetail: any) => {
-    if (!zoneDetail?.updated_at) return 0;
-    const updatedAt = new Date(zoneDetail.updated_at);
-    const now = new Date();
-    const minutes = Math.abs(now.getTime() - updatedAt.getTime()) / 60000;
-    if (
-      Math.round(minutes) <=
-      commonConstants.orderTransparencyLastUpdatedTimeConfigMins
-    ) {
-      return Math.round(zoneDetail.avg_pickup_duration / 60);
-    }
-    return 0;
-  };
-
-  const setSuperSaverWalletInfoMessage = (data: any) => {
-    const t = useTranslations('screens');
-    let messages: string[] = [];
-    if (!data.achieved_supersaver && data.active) {
-      messages.push(t('newOrder.superSaver.push10OrMoreOrders'));
-      messages.push(t('newOrder.superSaver.save50FilsForEachOrder'));
-    }
-    return messages;
-  };
-
-  // const addGoogleTag = () => {
-  //   const { eventEmitter } = useAnalytics();
-  //   const { currentStatusZoneETPTrend, currentZoneId } = get();
-  //   const currentUser = getDecodedAccessToken();
-  //   const branchId = storage.getLocalStorage(storageConstants.branch_id);
-
-  //   const role = currentUser?.roles?.[0];
-
-  //   if (role === ROLES.vendor_user && branchId && currentStatusZoneETPTrend) {
-  //     const branchName =
-  //       storage.getLocalStorage(storageConstants.branch_name) || '';
-  //     const selectedBranchName =
-  //       storage.getLocalStorage(storageConstants.selected_branch_name) || '';
-
-  //     let eventName = currentUser.user.vendor.branch_id
-  //       ? branchName.substring(0, 20)
-  //       : selectedBranchName.substring(0, 20);
-
-  //     const etaTime = getETATimeFormatForGTag();
-  //     const freeBuddy = `FRB${currentStatusZoneETPTrend.freeBuddies}`;
-
-  //     if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
-  //       eventName += `>15-${currentZoneId}${etaTime}`;
-  //       eventEmitter(eventName, 'eta-trend-more', eventName, 'eta-trend', 1);
-
-  //       const eventActions = `>15-${currentZoneId}${etaTime}${freeBuddy}`;
-  //       eventEmitter(
-  //         eventActions,
-  //         'eta-trend-more-free-buddy',
-  //         eventActions,
-  //         'eta-trend-free-buddy',
-  //         1
-  //       );
-  //     } else {
-  //       eventName += `<15-${currentZoneId}${etaTime}`;
-  //       eventEmitter(eventName, 'eta-trend-less', eventName, 'eta-trend', 1);
-
-  //       const eventActions = `<15-${currentZoneId}${etaTime}${freeBuddy}`;
-  //       eventEmitter(
-  //         eventActions,
-  //         'eta-trend-less-free-buddy',
-  //         eventActions,
-  //         'eta-trend-free-buddy',
-  //         1
-  //       );
-  //     }
-  //   }
-  // };
-
-  return {
-    // Initial State
-    surveyCount: 0,
-    isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
-    improvements: [],
-    appConstants: null,
-    rate: null,
-    branchId: null,
-    vendorId: null,
-    foodicsReference: null,
-    foodicsCanceledMessage: false,
-    foodicsAssociatedToVendorAdmin: false,
-    isRateFirstOrderPickUp: false,
-    whatsAppUpdateAddress: null,
-    whatsAppUpdateAddressMessage: null,
-    fleetZonePickUpTrend: [],
-    freeDriverData: [],
-    currentStatusZoneETPTrend: undefined,
-    isAthuGurad: false,
-    operationalHours: null,
-    activeBusyModeDetails: null,
-    defaultBusyModeDetails: null,
-    isShowVersionUpdateBtn: false,
-    switchToGridView: false,
-    isShowSwitchButtonInLiveOrder: false,
-    isShowTopArrowWhileScroll: false,
-    isEnglishShowTopArrowButton: false,
-
-    // Actions
-    setState: (partialState) => set(partialState),
-    setFoodicsIsAlreadyConnected: (isConnected: boolean) =>
-      set({ foodicsIsAlreadyConnected: isConnected }),
-
-    readAppConstants: async () => {
-      const country = environment.COUNTRY.toLowerCase();
-      let appConstants = null;
-
-      switch (country) {
-        case KUWAIT:
-          appConstants = kuwait;
-          break;
-        case BAHRAIN:
-          appConstants = bahrain;
-          break;
-        case QATAR:
-          appConstants = qatar;
-          break;
-        default:
-          console.warn(`Unknown country: ${country}`);
-      }
-
-      set({ appConstants: appConstants });
-    },
-
-    verifyAppVersionUpdate: (apiVersion: string) => {
-      const { getLocalStorage, addLocalStorage, removeLocalStorage } =
-        useStorageStore();
-      if (apiVersion.trim() !== environment.APP_VERSION) {
-        const popupDisplayedVersion = getLocalStorage(
-          storageConstants.app_version
-        );
-        if (popupDisplayedVersion !== apiVersion) {
-          addLocalStorage(storageConstants.app_version, apiVersion);
-          // In React, you wouldn't use a callback. A component would just
-          // re-render because isShowVersionUpdateBtn has changed.
-        }
-        set({ isShowVersionUpdateBtn: true });
-      } else {
-        set({ isShowVersionUpdateBtn: false });
-        removeLocalStorage(storageConstants.app_version);
-      }
-    },
-
-    setSuperSaverPromation: async (vendorId, branchId) => {
-      try {
-        const res = await getSuperSaverPromation(vendorId, branchId);
-        return setSuperSaverWalletInfoMessage(res.data);
-      } catch (err: any) {
-        logError(err.message);
-        return [];
-      }
-    },
-
-    calculateTrendToShowETP: (zoneDetail, freeBuddies) => {
-      const { getLocalStorage } = useStorageStore();
-      const branchId = getLocalStorage(storageConstants.branch_id);
-      if (
-        !toValidateOperationalHours() ||
-        !freeBuddies ||
-        !zoneDetail ||
-        checkZoneBusyModeIsEnabled() ||
-        !branchId
-      ) {
-        set({ currentStatusZoneETPTrend: undefined });
-        return;
-      }
-
-      const newTrend: any = {};
-
-      const freeDrivers = freeBuddies?.freeBuddies ?? 0;
-      const unAssignedDrivers = freeBuddies?.unAssignedOrders ?? 0;
-      const currentBuddies = freeDrivers - unAssignedDrivers;
-
-      newTrend.freeBuddies = currentBuddies;
-      newTrend.isEnable = zoneDetail?.need_ui_display;
-      newTrend.avgPromisedETP = Math.round(zoneDetail.avg_pickup_duration / 60);
-
-      const minuteETP = getDiffrenceBwCurrentAndLastUpdatedETP(zoneDetail);
-
-      if (currentBuddies > 0) {
-        if (minuteETP <= 0) {
-          newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
-          newTrend.etpMoreThanConfigValue = false;
-        } else if (minuteETP >= commonConstants.orderTransparencyMaxMins) {
-          newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
-          newTrend.etpMoreThanConfigValue = true;
-        } else {
-          newTrend.etpMins = minuteETP < 5 ? 5 : minuteETP;
-          newTrend.etpMoreThanConfigValue = false;
-        }
-      } else {
-        newTrend.etpMins = commonConstants.orderTransparencyMaxMins;
-        newTrend.etpMoreThanConfigValue = true;
-      }
-
-      set({ currentStatusZoneETPTrend: newTrend });
-      // addGoogleTag();
-    },
-
-    triggerCalculatedTrend: (zoneId) => {
-      const { fleetZonePickUpTrend, freeDriverData, calculateTrendToShowETP } =
-        get();
-      const zoneTrend = fleetZonePickUpTrend.find(
-        (x) => x.zone_region_id === zoneId
-      );
-      const freeBuddies = freeDriverData.find((x) => x.regionId === zoneId);
-      calculateTrendToShowETP(zoneTrend, freeBuddies);
-    },
-  };
-});
+  )
+);

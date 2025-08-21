@@ -1,10 +1,3 @@
-export type TypeLiveOrderDisplay = {
-  source?: string;
-  destination?: string;
-  distance?: number;
-  deliveryFee?: number;
-};
-
 export type TypePickUp = {
   address: string;
   customer_name: string;
@@ -132,3 +125,27 @@ export const TypeDelivery = [
   { key: 5, value: 'deliveryModel.superSaverIndividual' },
   { key: 6, value: 'deliveryModel.superSaverGroup' },
 ] as const;
+
+export interface TypeOrders {
+  vendor_id: string;
+  branch_id: string;
+  driver_id: number;
+  order_session_id: string;
+  payment_type: number;
+  order_meta: {
+    vendor_name: string;
+    ot_trend: string;
+    ot_free_drivers: number;
+  };
+  pick_up: TypePickUp;
+  drop_offs: TypeDropOffs[];
+}
+
+
+export interface TypeZoneETPTrend {
+  etpMins: number;
+  etpMoreThanConfigValue: boolean;
+  avgPromisedETP: number;
+  isEnable: boolean;
+  freeBuddies: number;
+}

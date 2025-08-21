@@ -1,8 +1,11 @@
-'use clinet';
+'use client';
 import { withAuth } from './withAuth';
 import Header from './Header';
 import SideBar from './Sidebar';
 import { SearchX } from 'lucide-react';
+import { useEffect } from 'react';
+import { updateZoneAndSome } from '@/shared/services/header';
+import { useSharedStore, useVenderStore } from '@/store';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
@@ -12,6 +15,14 @@ interface BaseLayoutProps {
 }
 
 const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
+  const sharedStore = useSharedStore();
+  const venderStore = useVenderStore();
+  useEffect(() => {
+    async function callUpdateZone() {
+      await updateZoneAndSome({ sharedStore, venderStore });
+    }
+    callUpdateZone();
+  }, [updateZoneAndSome]);
   return (
     <section className="flex items-start justify-start h-svh overflow-hidden">
       <SideBar />

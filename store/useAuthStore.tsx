@@ -15,7 +15,7 @@ import type {
   UserLogin,
   UserRole,
 } from '@/shared/types/auth';
-import { useStorageStore } from './useStorageStore';
+import { useSharedStore, useVenderStore } from '.';
 
 const userApiUrl = configService.userServiceApiUrl();
 
@@ -119,7 +119,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({ isLoading: false });
             return false;
           } else {
-            useStorageStore.setState({
+            useVenderStore.setState({
               vendorId: tokenPayload.user.vendor?.vendor_id,
               branchId: tokenPayload.user.vendor?.branch_id,
             });

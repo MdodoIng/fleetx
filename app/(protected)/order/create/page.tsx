@@ -1,72 +1,57 @@
 'use client';
 
 import { Button } from '@/shared/components/ui/button';
-import {
-  Plus,
-  MapPin,
-  Lightbulb,
-  Coins,
-  Truck,
-  Clock,
-  DollarSign,
-  Delete,
-  Edit,
-} from 'lucide-react';
-import { useState, useEffect, useRef, Suspense, Fragment } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { never, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { randomUUID, UUID } from 'crypto';
+import { Clock, Coins, MapPin, Truck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
-import DropoffForm from '@/features/orders/components/create/DropOffForm';
-import { useAuthStore, useSharedStore } from '@/store';
-import {
-  commonConstants,
-  PAYMENTTYPE,
-} from '@/shared/constants/storageConstants';
 import {
   dropOffSchema,
   pickUpSchema,
   TypeDropOffSchema,
   TypePickUpSchema,
 } from '@/features/orders/validations/order';
-import { useDebounce } from '@/shared/lib/hooks';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 
+import { hasValue } from '@/shared/lib/helpers';
 import { VendorService } from '@/shared/services/vender';
-import { debounce } from 'lodash';
-import { useStorageStore } from '@/shared/services/storage';
-import LoadingPage from '../../loading';
 import {
   TypeDropOffs,
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
-  TypeLiveOrderDisplay,
-  TypePickUp,
+  TypeOrders,
 } from '@/shared/types/orders';
-import { configService } from '@/shared/services/app-config';
 import { useOrderStore } from '@/store/useOrderStore';
-import { hasErrors, hasValue } from '@/shared/lib/helpers';
+import { debounce } from 'lodash';
 
-import { orderService } from '@/features/orders/services/ordersApi';
-import { CardHeader, CardTitle } from '@/shared/components/ui/card';
+import DropoffFormSection from '@/features/orders/components/ui/DropoffFormSection';
 import {
   emptyDropOff,
   usedropOffFormValuesForDropffs,
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
-import DropoffFormSection from '@/features/orders/components/ui/DropoffFormSection';
+import { orderService } from '@/features/orders/services/ordersApi';
 
 // Main component
 export default function ShippingForm() {
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const { appConstants, readAppConstants } = useSharedStore();
+  const {
+    readAppConstants,
+    triggerCalculatedTrend,
+    currentZoneId,
+    defaultZoneId,
+    currentStatusZoneETPTrend,
+  } = useSharedStore();
   const [isDropIndex, setIsDropofIndex] = useState<number>(
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
-  const { branchId, vendorId } = useStorageStore();
+  const { branchId, vendorId, selectedVendorName } = useVenderStore();
+
   const [isValid, setIsValid] = useState(false);
 
   const [isCOD, setIsCOD] = useState<1 | 2>(1);
@@ -125,6 +110,7 @@ export default function ShippingForm() {
   // Effects
   useEffect(() => {
     readAppConstants();
+
     updatePickUpDetailsForBranchUser();
     updateDropOutDetailsForStore();
     return () => {};
@@ -269,10 +255,19 @@ export default function ShippingForm() {
       : false
     : false;
 
-  const handleAddOneDropoff = async () => {
+  const functionsDropoffs = async (
+    type:
+      | 'addOneDropoff'
+      | 'editOneDropoff'
+      | 'saveCurrentDropOff'
+      | 'editDropOffWithSave'
+      | 'deleteDropOff'
+      | 'order',
+    index: number = 0
+  ) => {
     const isFormValid = await validateFormsAsync();
 
-    if (!isFormValid) {
+    if (!isFormValid && type !== 'deleteDropOff') {
       console.warn(
         'Please complete all required fields before adding drop-off'
       );
@@ -280,19 +275,8 @@ export default function ShippingForm() {
       return;
     }
 
-    try {
-      const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
-        dropOffFormValues: dropOffFormValues,
-        vendorId: vendorId!,
-        isCOD: isCOD,
-      });
-
-      const newDropOffs = [...orderStore.dropOffs, newDropOff];
-
-      const updatedPickUp = usePickUpFormValuesForPickUp({
-        pickUpFormValues: pickUpFormValues,
-      });
-
+    const handleSaveCurrentDropOff = async () => {
+      const newDropOffs = [...orderStore.dropOffs];
       const estimatedDeliveryData: TypeEstimatedDelivery = {
         branch_id: branchId!,
         vendor_id: vendorId!,
@@ -301,168 +285,18 @@ export default function ShippingForm() {
         order_session_id:
           orderStore.estimatedDelivery?.order_session_id ||
           Date.now().toString(),
-        pickup: updatedPickUp,
-      };
-
-      // const res = await updateCalculateDeliveryEstimate(estimatedDeliveryData!);
-
-      // if (res?.data) {
-      useOrderStore.setState((state) => {
-        const updatedDropOffs = [...state.dropOffs];
-        if (state.dropOffs === undefined || state.dropOffs.length === 0) {
-          updatedDropOffs.push(newDropOff);
-          updatedDropOffs.push(emptyDropOff as any);
-        } else {
-          updatedDropOffs.length - 1 <= isDropIndex
-            ? ((updatedDropOffs[isDropIndex] = newDropOff),
-              updatedDropOffs.push(emptyDropOff as any))
-            : updatedDropOffs.push(newDropOff);
-        }
-
-        setIsDropofIndex(updatedDropOffs.length - 1);
-        return {
-          ...state,
-          dropOffs: updatedDropOffs,
-          pickUp: updatedPickUp,
-          estimatedDelivery: estimatedDeliveryData,
-        };
-      });
-
-      setIsCOD(1);
-      dropOffForm.reset(emptyDropOff);
-      dropOffForm.clearErrors();
-
-      // }
-
-      console.log(
-        'Successfully added and calculated estimate for new drop-off'
-      );
-    } catch (error) {
-      console.error('Error in handleAddOneDropoffImproved:', error);
-      // Optionally revert state changes on error
-    }
-  };
-
-  const handleEditOneDropoff = (index: number) => {
-    if (
-      isValid &&
-      dropOffFormValues &&
-      index >= 0 &&
-      index < orderStore.dropOffs.length
-    ) {
-      // Create a proper deep copy to avoid mutation
-      const updatedDropOffs = [...orderStore.dropOffs];
-
-      // Update the specific drop-off at the given index
-      updatedDropOffs[index] = {
-        ...usedropOffFormValuesForDropffs({
-          dropOffFormValues: dropOffFormValues,
-          vendorId: vendorId!,
-          isCOD: isCOD,
-        }),
-      } as any;
-
-      // Update the store in one atomic operation
-      useOrderStore.setState((state) => ({
-        ...state,
-        dropOffs: updatedDropOffs,
-      }));
-    }
-  };
-
-  const handleSaveCurrentDropOff = async () => {
-    useOrderStore.setState((state) => {
-      const newDropOffs = [...state.dropOffs];
-      newDropOffs[isDropIndex] = {
-        ...usedropOffFormValuesForDropffs({
-          dropOffFormValues: dropOffFormValues,
-          vendorId: vendorId!,
-          isCOD: isCOD,
-        }),
-      } as any;
-
-      const estimatedDeliveryData: TypeEstimatedDelivery = {
-        branch_id: branchId!,
-        vendor_id: vendorId!,
-        drop_offs: newDropOffs,
-        delivery_model: state.deliveryModel.key,
-        order_session_id:
-          state.estimatedDelivery?.order_session_id || Date.now().toString(),
         pickup: usePickUpFormValuesForPickUp({
           pickUpFormValues: pickUpFormValues,
         }),
       };
+      try {
+        // const res = await updateCalculateDeliveryEstimate(
+        //   estimatedDeliveryData!
+        // );
 
-      return {
-        ...state,
-        dropOffs: newDropOffs,
-        estimatedDelivery: estimatedDeliveryData,
-      };
-    });
-    await updateCalculateDeliveryEstimate(orderStore.estimatedDelivery!);
-  };
-
-  const handleEditDropOffWithSave = async (index: number) => {
-    try {
-      if (typeof index !== 'number' || isNaN(index)) {
-        console.error(`Invalid index type: ${index}. Expected a valid number.`);
-        return;
-      }
-      const isFormValid = await validateFormsAsync();
-      // Save current changes if we're editing a different drop-off
-
-      // Validate index bounds
-      if (index < 0 || index >= orderStore.dropOffs.length) {
-        console.error(
-          `Invalid index: ${index}. Array length: ${orderStore.dropOffs.length}`
-        );
-        return;
-      }
-
-      if (isDropIndex !== index && isFormValid) {
-        handleSaveCurrentDropOff();
-
-        const dropOffData = orderStore.dropOffs[index];
-
-        if (!dropOffData) {
-          console.error(`No drop-off data found at index ${index}`);
-          return;
-        }
-
-        setIsDropofIndex(index);
-
-        console.log(dropOffData);
-
-        Object.entries(dropOffData).forEach(([key, value]) => {
-          dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
-        });
-      }
-      console.log(`Editing drop-off at index ${index}`);
-    } catch (error) {
-      console.error('Error loading drop-off for editing:', error);
-    }
-  };
-  const handleDeleteDropOff = (index: number) => {
-    try {
-      if (orderStore.dropOffs.length <= 1) {
-        console.warn(
-          'Cannot delete the last drop-off. At least one drop-off is required.'
-        );
-        return;
-      }
-
-      // Validate index
-      if (index < 0 || index >= orderStore.dropOffs.length) {
-        console.error(
-          `Invalid index: ${index}. Valid range: 0-${orderStore.dropOffs.length - 1}`
-        );
-        return;
-      }
-
-      if (isValid && isDropIndex !== index) {
+        // if (res?.data) {
         useOrderStore.setState((state) => {
-          const updatedDropOffs = [...state.dropOffs];
-          updatedDropOffs[isDropIndex] = {
+          newDropOffs[isDropIndex] = {
             ...usedropOffFormValuesForDropffs({
               dropOffFormValues: dropOffFormValues,
               vendorId: vendorId!,
@@ -472,43 +306,282 @@ export default function ShippingForm() {
 
           return {
             ...state,
-            dropOffs: updatedDropOffs,
+            dropOffs: newDropOffs,
+            estimatedDelivery: estimatedDeliveryData,
           };
         });
+        console.log(
+          'Successfully added and calculated estimate for new drop-off'
+        );
+        // }
+      } catch (error) {
+        console.error('Error in handleAddOneDropoffImproved:', error);
+        // Optionally revert state changes on error
       }
+    };
 
-      // Delete the item
-      useOrderStore.setState((state) => {
-        const updatedDropOffs = [...state.dropOffs];
-        updatedDropOffs.splice(index, 1);
+    switch (type) {
+      case 'addOneDropoff':
+        try {
+          const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
+            dropOffFormValues: dropOffFormValues,
+            vendorId: vendorId!,
+            isCOD: isCOD,
+          });
 
-        return {
-          ...state,
-          pickUp: {
-            ...(pickUpFormValues as any),
-          },
-          dropOffs: updatedDropOffs,
-        };
-      });
+          const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-      // Handle editing index adjustment
-      if (isDropIndex === index) {
-        // If we deleted the currently edited item, switch to the first one
-        setIsDropofIndex(0);
+          const updatedPickUp = usePickUpFormValuesForPickUp({
+            pickUpFormValues: pickUpFormValues,
+          });
 
-        // Load the first item's data into the form
-        const firstDropOff = orderStore.dropOffs[0];
-        if (firstDropOff) {
-          dropOffForm.reset();
+          const estimatedDeliveryData: TypeEstimatedDelivery = {
+            branch_id: branchId!,
+            vendor_id: vendorId!,
+            drop_offs: newDropOffs,
+            delivery_model: orderStore.deliveryModel.key,
+            order_session_id:
+              orderStore.estimatedDelivery?.order_session_id ||
+              Date.now().toString(),
+            pickup: updatedPickUp,
+          };
+
+          const res = await updateCalculateDeliveryEstimate(
+            estimatedDeliveryData!
+          );
+
+          // if (res?.data) {
+          useOrderStore.setState((state) => {
+            const updatedDropOffs = [...state.dropOffs];
+            if (state.dropOffs === undefined || state.dropOffs.length === 0) {
+              updatedDropOffs.push(newDropOff);
+              updatedDropOffs.push(emptyDropOff as any);
+            } else {
+              updatedDropOffs.length - 1 <= isDropIndex
+                ? ((updatedDropOffs[isDropIndex] = newDropOff),
+                  updatedDropOffs.push(emptyDropOff as any))
+                : updatedDropOffs.push(newDropOff);
+            }
+
+            setIsDropofIndex(updatedDropOffs.length - 1);
+            return {
+              ...state,
+              dropOffs: updatedDropOffs,
+              pickUp: updatedPickUp,
+              estimatedDelivery: estimatedDeliveryData,
+            };
+          });
+
+          setIsCOD(1);
+          dropOffForm.reset(emptyDropOff);
+          dropOffForm.clearErrors();
+          console.log(
+            'Successfully added and calculated estimate for new drop-off'
+          );
+          // }
+        } catch (error) {
+          console.error('Error in handleAddOneDropoffImproved:', error);
+          // Optionally revert state changes on error
         }
-      } else if (isDropIndex > index) {
-        // If we deleted an item before the current one, adjust the index
-        setIsDropofIndex(isDropIndex - 1);
-      }
+        break;
+      case 'editOneDropoff':
+        if (
+          dropOffFormValues &&
+          index >= 0 &&
+          index < orderStore.dropOffs.length
+        ) {
+          // Create a proper deep copy to avoid mutation
+          const updatedDropOffs = [...orderStore.dropOffs];
 
-      console.log(`Successfully deleted drop-off at index ${index}`);
-    } catch (error) {
-      console.error('Error deleting drop-off:', error);
+          // Update the specific drop-off at the given index
+          updatedDropOffs[index] = {
+            ...usedropOffFormValuesForDropffs({
+              dropOffFormValues: dropOffFormValues,
+              vendorId: vendorId!,
+              isCOD: isCOD,
+            }),
+          } as any;
+
+          // Update the store in one atomic operation
+          useOrderStore.setState((state) => ({
+            ...state,
+            dropOffs: updatedDropOffs,
+          }));
+        }
+        break;
+      case 'saveCurrentDropOff':
+        handleSaveCurrentDropOff();
+        break;
+      case 'editDropOffWithSave':
+        try {
+          if (typeof index !== 'number' || isNaN(index)) {
+            console.error(
+              `Invalid index type: ${index}. Expected a valid number.`
+            );
+            return;
+          }
+          const isFormValid = await validateFormsAsync();
+          // Save current changes if we're editing a different drop-off
+
+          // Validate index bounds
+          if (index < 0 || index >= orderStore.dropOffs.length) {
+            console.error(
+              `Invalid index: ${index}. Array length: ${orderStore.dropOffs.length}`
+            );
+            return;
+          }
+
+          if (isDropIndex !== index && isFormValid) {
+            handleSaveCurrentDropOff();
+
+            const dropOffData = orderStore.dropOffs[index];
+
+            if (!dropOffData) {
+              console.error(`No drop-off data found at index ${index}`);
+              return;
+            }
+
+            setIsDropofIndex(index);
+
+            console.log(dropOffData);
+
+            Object.entries(dropOffData).forEach(([key, value]) => {
+              dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
+            });
+          }
+          console.log(`Editing drop-off at index ${index}`);
+        } catch (error) {
+          console.error('Error loading drop-off for editing:', error);
+        }
+        break;
+      case 'deleteDropOff':
+        try {
+          if (orderStore.dropOffs.length <= 1) {
+            console.warn(
+              'Cannot delete the last drop-off. At least one drop-off is required.'
+            );
+            return;
+          }
+
+          // Validate index
+          if (index < 0 || index >= orderStore.dropOffs.length) {
+            console.error(
+              `Invalid index: ${index}. Valid range: 0-${orderStore.dropOffs.length - 1}`
+            );
+            return;
+          }
+
+          if (isValid && isDropIndex !== index) {
+            useOrderStore.setState((state) => {
+              const updatedDropOffs = [...state.dropOffs];
+              updatedDropOffs[isDropIndex] = {
+                ...usedropOffFormValuesForDropffs({
+                  dropOffFormValues: dropOffFormValues,
+                  vendorId: vendorId!,
+                  isCOD: isCOD,
+                }),
+              } as any;
+
+              return {
+                ...state,
+                dropOffs: updatedDropOffs,
+              };
+            });
+          }
+
+          // Delete the item
+          useOrderStore.setState((state) => {
+            const updatedDropOffs = [...state.dropOffs];
+            updatedDropOffs.splice(index, 1);
+
+            return {
+              ...state,
+              pickUp: {
+                ...(pickUpFormValues as any),
+              },
+              dropOffs: updatedDropOffs,
+            };
+          });
+
+          // Handle editing index adjustment
+          if (isDropIndex === index) {
+            // If we deleted the currently edited item, switch to the first one
+            setIsDropofIndex(0);
+
+            // Load the first item's data into the form
+            const firstDropOff = orderStore.dropOffs[0];
+            if (firstDropOff) {
+              dropOffForm.reset(firstDropOff);
+            }
+          } else if (isDropIndex > index) {
+            // If we deleted an item before the current one, adjust the index
+            setIsDropofIndex(isDropIndex - 1);
+          }
+
+          console.log(`Successfully deleted drop-off at index ${index}`);
+        } catch (error) {
+          console.error('Error deleting drop-off:', error);
+        }
+        break;
+
+      case 'order':
+        try {
+          handleSaveCurrentDropOff();
+          triggerCalculatedTrend(currentZoneId! ?? defaultZoneId!, branchId!);
+
+          const dropffOrders =
+            orderStore.estimatedDeliveryReturnFromApi?.data.drop_offs ||
+            orderStore.dropOffs;
+
+          const ot_trend = () => {
+            if (currentStatusZoneETPTrend) {
+              let displayValue = currentStatusZoneETPTrend.etpMins?.toString();
+              if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
+                displayValue = '>' + displayValue;
+              } else {
+                displayValue = '<' + displayValue;
+              }
+              return displayValue;
+            }
+            return '';
+          };
+
+          const order_meta: TypeOrders['order_meta'] = {
+            vendor_name:
+              selectedVendorName! ||
+              user?.user.first_name! + ' ' + user?.user.last_name!,
+            ot_trend: ot_trend(),
+            ot_free_drivers: currentStatusZoneETPTrend?.freeBuddies || 0,
+          };
+
+          const orders: TypeOrders = {
+            branch_id: branchId!,
+            vendor_id: vendorId!,
+            driver_id: 0,
+            order_session_id:
+              orderStore.estimatedDeliveryReturnFromApi?.data.order_session_id!,
+            payment_type: isCOD,
+            order_meta: order_meta,
+            pick_up: orderStore.pickUp!,
+            drop_offs: dropffOrders,
+          };
+
+          try {
+            const res = await orderService.createOnDemandOrders(orders);
+
+            console.log(res);
+            console.log(res, 'orders');
+          } catch (error) {
+            console.log(error);
+          }
+        } catch (error) {
+          console.error(error, type);
+        }
+        break;
+
+      default:
+        console.warn(`Unhandled action type: ${type}`);
+        break;
     }
   };
 
@@ -528,9 +601,7 @@ export default function ShippingForm() {
             <DropoffFormSection
               dropOffForm={dropOffForm}
               dropOffFormValues={dropOffFormValues}
-              handleAddOneDropoff={handleAddOneDropoff}
-              handleDeleteDropOff={handleDeleteDropOff}
-              handleEditDropOffWithSave={handleEditDropOffWithSave}
+              functionsDropoffs={functionsDropoffs}
               index={idx}
               isCOD={isCOD}
               setIsCOD={setIsCOD}
@@ -545,9 +616,7 @@ export default function ShippingForm() {
               <DropoffFormSection
                 dropOffForm={dropOffForm}
                 dropOffFormValues={dropOffFormValues}
-                handleAddOneDropoff={handleAddOneDropoff}
-                handleDeleteDropOff={handleDeleteDropOff}
-                handleEditDropOffWithSave={handleEditDropOffWithSave}
+                functionsDropoffs={functionsDropoffs}
                 isCOD={isCOD}
                 setIsCOD={setIsCOD}
                 isDropIndex={isDropIndex}
@@ -596,6 +665,7 @@ export default function ShippingForm() {
               Cancel
             </button>
             <Button
+              onClick={() => functionsDropoffs('order')}
               // disabled={!isFormValid}
               className="px-4 py-1.5 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700"
             >
