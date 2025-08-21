@@ -232,10 +232,11 @@ export default function ShippingForm() {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
       useOrderStore.setState({
-        estimatedDeliveryReturnFromApi: res,
+        estimatedDeliveryReturnFromApi: res.data,
       });
-      orderStore.setEstimatedDeliveryReturnFromApi(res);
-      return res;
+      orderStore.setEstimatedDeliveryReturnFromApi(res.data);
+      console.log(res.data);
+      return res.data;
     } catch (error) {
       console.log(error, 'sgfdsg');
     }
@@ -283,37 +284,36 @@ export default function ShippingForm() {
         drop_offs: newDropOffs,
         delivery_model: orderStore.deliveryModel.key,
         order_session_id:
-          orderStore.estimatedDelivery?.order_session_id ||
-          Date.now().toString(),
+          orderStore.estimatedDelivery?.order_session_id || null,
         pickup: usePickUpFormValuesForPickUp({
           pickUpFormValues: pickUpFormValues,
         }),
       };
       try {
-        // const res = await updateCalculateDeliveryEstimate(
-        //   estimatedDeliveryData!
-        // );
-
-        // if (res?.data) {
-        useOrderStore.setState((state) => {
-          newDropOffs[isDropIndex] = {
-            ...usedropOffFormValuesForDropffs({
-              dropOffFormValues: dropOffFormValues,
-              vendorId: vendorId!,
-              isCOD: isCOD,
-            }),
-          } as any;
-
-          return {
-            ...state,
-            dropOffs: newDropOffs,
-            estimatedDelivery: estimatedDeliveryData,
-          };
-        });
-        console.log(
-          'Successfully added and calculated estimate for new drop-off'
+        const res = await updateCalculateDeliveryEstimate(
+          estimatedDeliveryData!
         );
-        // }
+
+        if (res) {
+          useOrderStore.setState((state) => {
+            newDropOffs[isDropIndex] = {
+              ...usedropOffFormValuesForDropffs({
+                dropOffFormValues: dropOffFormValues,
+                vendorId: vendorId!,
+                isCOD: isCOD,
+              }),
+            } as any;
+
+            return {
+              ...state,
+              dropOffs: newDropOffs,
+              estimatedDelivery: estimatedDeliveryData,
+            };
+          });
+          console.log(
+            'Successfully added and calculated estimate for new drop-off'
+          );
+        }
       } catch (error) {
         console.error('Error in handleAddOneDropoffImproved:', error);
         // Optionally revert state changes on error
@@ -341,8 +341,8 @@ export default function ShippingForm() {
             drop_offs: newDropOffs,
             delivery_model: orderStore.deliveryModel.key,
             order_session_id:
-              orderStore.estimatedDelivery?.order_session_id ||
-              Date.now().toString(),
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id! ||
+              null,
             pickup: updatedPickUp,
           };
 
@@ -350,35 +350,35 @@ export default function ShippingForm() {
             estimatedDeliveryData!
           );
 
-          // if (res?.data) {
-          useOrderStore.setState((state) => {
-            const updatedDropOffs = [...state.dropOffs];
-            if (state.dropOffs === undefined || state.dropOffs.length === 0) {
-              updatedDropOffs.push(newDropOff);
-              updatedDropOffs.push(emptyDropOff as any);
-            } else {
-              updatedDropOffs.length - 1 <= isDropIndex
-                ? ((updatedDropOffs[isDropIndex] = newDropOff),
-                  updatedDropOffs.push(emptyDropOff as any))
-                : updatedDropOffs.push(newDropOff);
-            }
+          if (res) {
+            useOrderStore.setState((state) => {
+              const updatedDropOffs = [...state.dropOffs];
+              if (state.dropOffs === undefined || state.dropOffs.length === 0) {
+                updatedDropOffs.push(newDropOff);
+                updatedDropOffs.push(emptyDropOff as any);
+              } else {
+                updatedDropOffs.length - 1 <= isDropIndex
+                  ? ((updatedDropOffs[isDropIndex] = newDropOff),
+                    updatedDropOffs.push(emptyDropOff as any))
+                  : updatedDropOffs.push(newDropOff);
+              }
 
-            setIsDropofIndex(updatedDropOffs.length - 1);
-            return {
-              ...state,
-              dropOffs: updatedDropOffs,
-              pickUp: updatedPickUp,
-              estimatedDelivery: estimatedDeliveryData,
-            };
-          });
+              setIsDropofIndex(updatedDropOffs.length - 1);
+              return {
+                ...state,
+                dropOffs: updatedDropOffs,
+                pickUp: updatedPickUp,
+                estimatedDelivery: estimatedDeliveryData,
+              };
+            });
 
-          setIsCOD(1);
-          dropOffForm.reset(emptyDropOff);
-          dropOffForm.clearErrors();
-          console.log(
-            'Successfully added and calculated estimate for new drop-off'
-          );
-          // }
+            setIsCOD(1);
+            dropOffForm.reset(emptyDropOff);
+            dropOffForm.clearErrors();
+            console.log(
+              'Successfully added and calculated estimate for new drop-off'
+            );
+          }
         } catch (error) {
           console.error('Error in handleAddOneDropoffImproved:', error);
           // Optionally revert state changes on error
@@ -530,7 +530,7 @@ export default function ShippingForm() {
           triggerCalculatedTrend(currentZoneId! ?? defaultZoneId!, branchId!);
 
           const dropffOrders =
-            orderStore.estimatedDeliveryReturnFromApi?.data.drop_offs ||
+            orderStore.estimatedDeliveryReturnFromApi?.drop_offs ||
             orderStore.dropOffs;
 
           const ot_trend = () => {
@@ -559,7 +559,7 @@ export default function ShippingForm() {
             vendor_id: vendorId!,
             driver_id: 0,
             order_session_id:
-              orderStore.estimatedDeliveryReturnFromApi?.data.order_session_id!,
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id!,
             payment_type: isCOD,
             order_meta: order_meta,
             pick_up: orderStore.pickUp!,
@@ -584,8 +584,6 @@ export default function ShippingForm() {
         break;
     }
   };
-
-  console.log(orderStore.dropOffs, 'afa');
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">

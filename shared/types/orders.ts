@@ -61,15 +61,17 @@ export type TypeEstimatedDelivery = {
   order_session_id: string | null;
 };
 
+export type TypeRootEstimatedDeliveryReturnFromApi = {
+  data: TypeEstimatedDeliveryReturnFromApi;
+};
+
 export type TypeEstimatedDeliveryReturnFromApi = {
-  data: {
-    vendor_id: string;
-    branch_id: string;
-    delivery_model: number;
-    pickup: TypePickUp;
-    drop_offs: TypeDropOffsDelivery[];
-    order_session_id: string | null;
-  };
+  vendor_id: string;
+  branch_id: string;
+  delivery_model: number;
+  pickup: TypePickUp;
+  drop_offs: TypeDropOffsDelivery[];
+  order_session_id: string | null;
 };
 
 export type TypeOrderList = {
@@ -140,7 +142,6 @@ export interface TypeOrders {
   pick_up: TypePickUp;
   drop_offs: TypeDropOffs[];
 }
-
 
 export interface TypeZoneETPTrend {
   etpMins: number;

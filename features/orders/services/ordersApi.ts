@@ -4,6 +4,7 @@ import {
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
   TypeOrders,
+  TypeRootEstimatedDeliveryReturnFromApi,
 } from '@/shared/types/orders';
 
 export const orderService = {
@@ -51,7 +52,7 @@ export const orderService = {
 
   calculateDeliveryEstimate: (
     req: TypeEstimatedDelivery
-  ): Promise<TypeEstimatedDeliveryReturnFromApi> =>
+  ): Promise<TypeRootEstimatedDeliveryReturnFromApi> =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/pre-order/delivery-calculate`,
       { method: 'POST', body: JSON.stringify(req) }

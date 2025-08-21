@@ -64,17 +64,17 @@ export const useOrderStore = create<OrderState>()(
       setEstimatedDeliveryReturnFromApi: (data) => {
         const { appConstants } = useSharedStore.getState();
 
-        let totalOrders = data?.data.drop_offs?.length || 0;
+        let totalOrders = data?.drop_offs?.length || 0;
         let totalKMs = 0;
         let totalDeliveryFee = 0;
         let estTime = 0;
 
         const delivery = TypeDelivery.find(
-          (x) => x.key === data?.data.delivery_model
+          (x) => x.key === data?.delivery_model
         );
         const deliveryModel = delivery?.value || '';
 
-        data?.data.drop_offs?.forEach((element) => {
+        data?.drop_offs?.forEach((element) => {
           totalDeliveryFee += element.delivery_fee || 0;
           totalKMs += element.delivery_distance || 0;
           estTime = element.delivery_duration;
