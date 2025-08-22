@@ -19,6 +19,7 @@ import {
   Circle,
 } from 'lucide-react';
 import { orderService } from '@/features/orders/services/ordersApi';
+
 import {
   OrderStatus,
   OrderStatusMappingForTick,
@@ -145,6 +146,16 @@ export default function OrderTrackingDashboard() {
     {}
   );
 
+  function handleTableChange(style: 'grid' | 'list') {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setIsStyleTabel(style);
+      });
+    } else {
+      setIsStyleTabel(style);
+    }
+  }
+
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
       {/* Left Panel - Orders List */}
@@ -178,14 +189,14 @@ export default function OrderTrackingDashboard() {
           </select>
           <div className="flex gap-2 border bg-white rounded-md">
             <button
-              onClick={() => setIsStyleTabel('grid')}
+              onClick={() => handleTableChange('grid')}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <Grid className="w-5 h-5 text-gray-600" />
             </button>
             <span className="h-auto bg-gray-200 w-0.5 " />
             <button
-              onClick={() => setIsStyleTabel('list')}
+              onClick={() => handleTableChange('list')}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <List className="w-5 h-5 text-gray-600" />
@@ -213,6 +224,9 @@ export default function OrderTrackingDashboard() {
                 return (
                   <div
                     key={index}
+                    style={{
+                      viewTransitionName: order.fleetx_order_number,
+                    }}
                     onClick={() => setSelectedOrder(order)}
                     className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 flex items-start justify-between transition-colors ${
                       selectedOrder?.id === order.id
@@ -421,6 +435,9 @@ export default function OrderTrackingDashboard() {
 
               {grouped[label]?.map((order) => (
                 <div
+                  style={{
+                    viewTransitionName: order.fleetx_order_number,
+                  }}
                   key={order.fleetx_order_number}
                   className={`rounded-lg border p-3 mb-3 flex  ${
                     order.class_status === 'CONFIRMED'
