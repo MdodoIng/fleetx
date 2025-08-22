@@ -26,8 +26,6 @@ export function withAuth<P extends object>(
     useEffect(() => {
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
-    
-    console.log(isAuthenticated)
 
     if (isLoading) {
       return <LoadingPage />;

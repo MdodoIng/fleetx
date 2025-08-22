@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Search,
   Phone,
@@ -13,144 +13,127 @@ import {
   Navigation,
   Grid,
   List,
+  Map,
+  LocateFixed,
+  ShipWheel,
+  Circle,
 } from 'lucide-react';
-
-// Mock data for demonstration
-const mockOrders = [
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Active',
-    statusColor: 'bg-yellow-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'Arab-Resto Cafe',
-    currentAddress: 'Dasman, Block 1, St 17',
-  },
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Confirmed',
-    statusColor: 'bg-blue-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'Processing',
-  },
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Urgent',
-    statusColor: 'bg-red-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'Delayed',
-  },
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Active',
-    statusColor: 'bg-yellow-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'En Route',
-  },
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Confirmed',
-    statusColor: 'bg-blue-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'Preparing',
-  },
-  {
-    id: 'B-6MSEC',
-    customerName: 'Tom Thomas',
-    address: 'Dasman, Block 1',
-    status: 'Urgent',
-    statusColor: 'bg-red-500',
-    estimatedTime: '5-20 Mins',
-    phone: '34566342',
-    currentLocation: 'Critical',
-  },
-];
-
-const orderStatuses = [
-  {
-    id: 'confirmed',
-    label: 'Order Confirmed',
-    icon: CheckCircle,
-    color: 'text-green-600',
-    active: true,
-  },
-  {
-    id: 'assigned',
-    label: 'Buddy Assigned',
-    icon: User,
-    color: 'text-blue-600',
-    active: true,
-  },
-  {
-    id: 'pickup-ready',
-    label: 'Ready for Pickup',
-    icon: Package,
-    color: 'text-orange-500',
-    active: false,
-  },
-  {
-    id: 'pickup-arrived',
-    label: 'Arrived at Pickup Location',
-    icon: MapPin,
-    color: 'text-purple-500',
-    active: false,
-  },
-  {
-    id: 'pickup-up',
-    label: 'Order Picked Up',
-    icon: Truck,
-    color: 'text-indigo-500',
-    active: false,
-  },
-  {
-    id: 'customer',
-    label: 'Reaching Customer Location',
-    icon: Navigation,
-    color: 'text-yellow-600',
-    active: false,
-  },
-  {
-    id: 'delivered',
-    label: 'Delivered',
-    icon: CheckCircle,
-    color: 'text-green-600',
-    active: false,
-  },
-];
+import { orderService } from '@/features/orders/services/ordersApi';
+import {
+  OrderStatus,
+  OrderStatusMappingForTick,
+  TypeLiveOrderItem,
+  TypeOrderHistoryList,
+  TypeOrderStatusHistoryHistory,
+  TypeRootLiveOrderList,
+  TypeStatusHistoryForUi,
+} from '@/shared/types/orders';
+import { useOrderStore } from '@/store/useOrderStore';
+import MyMap from '@/shared/components/MyMap/Map';
+import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [selectedOrder, setSelectedOrder] = useState(mockOrders[0]);
+  const [ordernNumber, setOrdernNumber] = useState('');
+  const orderStore = useOrderStore();
 
-  const filteredOrders = mockOrders.filter(
-    (order) =>
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const [isEditDetails, setIsEditDetails] = useState(false);
+  const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
+    undefined
   );
+  const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [searchOrder, setSearchOrder] = useState('');
+  const [searchCustomer, setSearchCustomer] = useState('');
+  const [searchDriver, setSearchDriver] = useState('');
+  const [selectedAccountManager, setSelectedAccountManager] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
+    undefined
+  );
+  const [nextSetItemsToken, setNextSetItemsToken] = useState<
+    string[] | undefined
+  >(undefined);
+  const [orderHistorys, setOrderHistorys] =
+    useState<TypeOrderStatusHistoryHistory>();
+
+  const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
+    orderStore?.orderHistoryListData &&
+      orderStore?.orderHistoryListData.length > 0
+      ? orderStore?.orderHistoryListData[0]
+      : ({} as TypeOrderHistoryList)
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const fetchOrderDetails = async (perPage: number, clearData: boolean) => {
+    setIsLoading(true);
+
+    const searchAll = isEditDetails ? null : true;
+
+    const url = orderService.getOrderStatusUrl(
+      page,
+      perPage,
+      ordernNumber,
+      searchCustomer,
+      searchDriver,
+      searchAll
+    );
+
+    try {
+      const res = await orderService.getOrderList(url);
+
+      console.log(res.data[0].delivery_duration, 'afads');
+
+      orderStore.setSourceForTable(res.data);
+      setSelectedOrder(
+        orderStore.orderHistoryListData
+          ? orderStore.orderHistoryListData[0]
+          : ({} as TypeOrderHistoryList)
+      );
+
+      // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+
+      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
+      const errorMessage =
+        err.error?.message ||
+        err.message ||
+        'An unknown error occurred while fetching orders.';
+
+      console.error('Error in fetchOrderDetails:', errorMessage);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialOrders = async () => {
+      await fetchOrderDetails(20, true);
+    };
+    loadInitialOrders();
+  }, []);
+
+  const { statusHistory, loading, error, refetch } =
+    useOrderStatusHistory(selectedOrder);
+
+  // useEffect(() => {
+  //   // Refetch when selectedOrder.id changes
+  //   refetch();
+  // }, [selectedOrder.id, refetch]);
+
+  console.log(selectedOrder, 'FDS', loading);
 
   return (
-    <div className="flex h-screen bg-gray-50 flex-col items-center">
+    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
       {/* Left Panel - Orders List */}
 
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
         <div className="flex items-center justify-between ">
           <h2 className="text-xl font-semibold text-gray-900">Active Orders</h2>
-       
         </div>
 
         {/* Search and Filter */}
@@ -179,7 +162,7 @@ export default function OrderTrackingDashboard() {
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <Grid className="w-5 h-5 text-gray-600" />
             </button>
-            <span className='h-auto bg-gray-200 w-0.5 ' />
+            <span className="h-auto bg-gray-200 w-0.5 " />
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <List className="w-5 h-5 text-gray-600" />
             </button>
@@ -187,8 +170,8 @@ export default function OrderTrackingDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 w-full gap-4">
-        <div className="w-full bg-white border-r border-gray-200 flex flex-col">
+      <div className="grid grid-cols-3 w-full gap-4 h-full">
+        <div className="w-full bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
           {/* Header */}
 
           {/* Orders Header */}
@@ -201,49 +184,51 @@ export default function OrderTrackingDashboard() {
 
           {/* Orders List */}
           <div className="flex-1 overflow-y-auto">
-            {filteredOrders.map((order, index) => (
-              <div
-                key={index}
-                onClick={() => setSelectedOrder(order)}
-                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedOrder.id === order.id
-                    ? 'bg-blue-50 border-l-4 border-l-blue-500'
-                    : ''
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
+            {orderStore.orderHistoryListData?.map((order, index) => {
+              return (
+                <div
+                  key={index}
+                  onClick={() => setSelectedOrder(order)}
+                  className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 flex items-start justify-between transition-colors ${
+                    selectedOrder?.id === order.id
+                      ? 'bg-blue-50 border-l-4 border-l-blue-500'
+                      : ''
+                  }`}
+                >
+                  <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-gray-900">
-                        {order.id}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium text-white ${order.statusColor}`}
-                      >
-                        {order.status}
+                        {order.fleetx_order_number}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600">
-                      {order.customerName}
+                      {order.customer_name}
                     </p>
-                    <p className="text-xs text-gray-500">{order.address}</p>
+                    <p className=" text-gray-500 text-sm flex items-center mt-6">
+                      <MapPin size={16} />
+                      {order.to}
+                    </p>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{order.estimatedTime}</span>
+                  <div className="flex items-center justify-between text-xs text-gray-500 flex-col h-full">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium text-white bg-red-400 ml-auto`}
+                    >
+                      {order.class_status}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{order.delivery_duration} Mins</span>
+                    </div>
                   </div>
-                  <span>#{order.phone}</span>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Center Panel - Live Tracking Map */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-col h-full overflow-y-auto">
           {/* Map Header */}
           <div className="p-6 bg-white border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">
@@ -254,148 +239,143 @@ export default function OrderTrackingDashboard() {
             </p>
           </div>
 
-          {/* Map Container */}
-          <div className="flex-1 relative bg-gray-100">
-            {/* Mock Map */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
-              {/* Map placeholder with some mock elements */}
-              <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-blue-500 rounded-full shadow-lg"></div>
-              <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-green-500 rounded-full"></div>
-
-              {/* Mock location info */}
-              <div className="absolute top-1/4 left-1/3 transform -translate-x-1/2 -translate-y-full mb-2">
-                <div className="bg-white rounded-lg shadow-lg p-3 border">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <div>
-                      <p className="font-medium text-sm">Tom Thomas</p>
-                      <p className="text-xs text-gray-600">
-                        Dasman, Block 1, St 17
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Driver location */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full mb-2">
-                <div className="bg-white rounded-lg shadow-lg p-3 border">
-                  <div className="flex items-center gap-2">
-                    <Truck className="w-4 h-4 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-sm">Ahmad Al-Rashid</p>
-                      <p className="text-xs text-gray-600">Driver</p>
-                    </div>
-                  </div>
-                  <button className="mt-2 flex items-center gap-1 text-xs text-green-600 hover:text-green-700">
-                    <Phone className="w-3 h-3" />
-                    Call Driver
-                  </button>
-                </div>
-              </div>
-
-              {/* Mock street layout */}
-              <svg className="absolute inset-0 w-full h-full opacity-20">
-                <path
-                  d="M0,150 Q200,100 400,150 T800,150"
-                  stroke="#9CA3AF"
-                  strokeWidth="2"
-                  fill="none"
-                />
-                <path
-                  d="M150,0 Q200,200 150,400 T150,600"
-                  stroke="#9CA3AF"
-                  strokeWidth="2"
-                  fill="none"
-                />
-                <path
-                  d="M300,50 Q350,250 300,450"
-                  stroke="#9CA3AF"
-                  strokeWidth="1"
-                  fill="none"
-                />
-              </svg>
+          <div className="bg-white rounded-2xl shadow p-4 w-full max-w-md space-y-4 mt-3">
+            {/* Order ID */}
+            <div className="text-gray-700 font-semibold">
+              {selectedOrder?.fleetx_order_number}
             </div>
+
+            {/* Pickup Location */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl  text-green-300 flex items-center justify-center">
+                <MapPin className="w-5 h-5  text-green-300" />
+              </div>
+              <div className="flex-1">
+                <div className="font-medium text-gray-900">
+                  {selectedOrder?.customer_name_sender}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {selectedOrder?.from}
+                </div>
+              </div>
+              <button className="flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-lg text-sm text-gray-700">
+                <Phone className="w-4 h-4" />{' '}
+                {selectedOrder?.phone_number_sender}
+              </button>
+            </div>
+
+            {/* Drop-off Location */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                <LocateFixed className="w-5 h-5 text-green-500" />
+              </div>
+              <div className="flex-1">
+                <div className="font-medium text-gray-900">
+                  {selectedOrder?.customer_name}
+                </div>
+                <div className="text-sm text-gray-500">{selectedOrder?.to}</div>
+              </div>
+              <button className="flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-lg text-sm text-gray-700">
+                <Phone className="w-4 h-4" /> {selectedOrder?.phone_number}
+              </button>
+            </div>
+
+            <hr />
+
+            {/* Driver Section */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                  <ShipWheel className="w-5 h-5 text-purple-500" />
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400">Driver</div>
+                  <div className="font-medium text-gray-900">
+                    {selectedOrder?.driver_name}
+                  </div>
+                </div>
+              </div>
+              <button className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-600 rounded-lg font-medium">
+                <Phone className="w-4 h-4" /> Call Driver
+              </button>
+            </div>
+          </div>
+
+          {/* Map Container */}
+          <div className="flex-1 relative bg-gray-100 mt-3 rounded-md shadow ">
+            {/* Mock Map */}
+            <MyMap
+              center={[
+                {
+                  lat: Number(selectedOrder?.pick_up.latitude),
+                  lng: Number(selectedOrder?.pick_up.longitude),
+                },
+                {
+                  lat: Number(selectedOrder?.drop_off.latitude),
+                  lng: Number(selectedOrder?.drop_off.longitude),
+                },
+              ]}
+            />
           </div>
         </div>
 
         {/* Right Panel - Order Details */}
-        <div className="w-full bg-white border-l border-gray-200 flex flex-col">
-          {/* Order Details Header */}
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Order Details
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Complete overview of Your Order Process
-            </p>
-          </div>
 
-          {/* Customer Info */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h4 className="font-semibold text-gray-900">
-                  {selectedOrder.customerName}
-                </h4>
-                <p className="text-sm text-gray-600">{selectedOrder.address}</p>
-                <p className="text-sm text-gray-500 mt-1">Customer Method</p>
-              </div>
-              <div className="text-right">
-                <span className="font-semibold text-lg">
-                  {selectedOrder.id}
-                </span>
-                <p className="text-sm text-gray-600">K Net (Card)</p>
-                <p className="text-sm text-gray-600 mt-1">1.5 KD</p>
-              </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 w-full max-w-sm">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-sm text-gray-500">Order Details</p>
+              <p className="text-lg font-semibold">
+                {selectedOrder.customer_name}
+              </p>
+              <p className="text-xs text-gray-500">
+                {selectedOrder.payment_type === 2 ? 'K-Net (Paid)' : 'Cash'}
+              </p>
             </div>
-
-            <div className="text-sm text-gray-600">
-              <p className="mb-1">Delivery Fee</p>
-              <p className="font-medium">#{selectedOrder.phone}</p>
+            <div className="text-right">
+              <p className="font-semibold">
+                {selectedOrder.fleetx_order_number}
+              </p>
+              <p className="text-sm text-gray-500">
+                {selectedOrder.delivery_fee} KD
+              </p>
             </div>
           </div>
 
-          {/* Order Status Timeline */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6">
-              <div className="space-y-4">
-                {orderStatuses.map((status, index) => {
-                  const Icon = status.icon;
-                  return (
-                    <div key={status.id} className="flex items-center gap-4">
-                      <div
-                        className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
-                          status.active
-                            ? 'border-blue-500 bg-blue-500 text-white'
-                            : 'border-gray-300 bg-white text-gray-400'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <p
-                          className={`text-sm font-medium ${
-                            status.active ? 'text-gray-900' : 'text-gray-500'
-                          }`}
-                        >
-                          {status.label}
-                        </p>
-                        {status.active && (
-                          <p className="text-xs text-green-600 mt-1">
-                            Completed
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {/* Timeline */}
+          <div className="mt-4 space-y-5">
+            {statusHistory
+              .filter((s) => s.display)
+              .map((status) => (
+                <div key={status.id} className="flex gap-3 items-start">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-5 h-5 rounded-full ${
+                        status.completed
+                          ? 'bg-purple-600'
+                          : 'border border-gray-300'
+                      }`}
+                    />
+                    <div className="h-6 w-px bg-gray-200" />
+                  </div>
+                  <div>
+                    <p
+                      className={`text-sm font-medium ${
+                        status.completed ? 'text-purple-600' : 'text-gray-500'
+                      }`}
+                    >
+                      {status.text}
+                    </p>
+                    {status.time && (
+                      <p className="text-xs text-gray-400">
+                        {new Date(status.time).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
           </div>
-
-
         </div>
       </div>
     </div>

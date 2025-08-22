@@ -132,7 +132,7 @@ export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
-  const { getLocalStorage } = useSharedStore();
+  const { getLocalStorage } = useSharedStore.getState();
   const currentUserStr = getLocalStorage(storageConstants.user_context);
   if (currentUserStr && currentUserStr !== 'null') {
     return JSON.parse(currentUserStr);
