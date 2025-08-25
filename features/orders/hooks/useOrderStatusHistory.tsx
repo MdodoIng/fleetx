@@ -134,6 +134,7 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!order.id) return;
     const loadInitialOrders = async () => {
       try {
         setLoading(true);
@@ -154,9 +155,7 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
     loadInitialOrders();
   }, [order.id]);
 
-  console.log(orderHistorys,order.id, "af")
-
-
+  console.log(orderHistorys, order.id, 'af');
 
   const statusHistory = useMemo(
     () => buildStatusHistory(order, orderHistorys!),

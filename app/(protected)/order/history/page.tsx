@@ -1,7 +1,8 @@
 'use client';
 import { orderService } from '@/features/orders/services/ordersApi';
-import { Grid, List, Search } from 'lucide-react';
+import { CalendarIcon, Download, Grid, List, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { addDays, format } from 'date-fns';
 
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
@@ -13,6 +14,15 @@ import {
 import { useOrderStore } from '@/store/useOrderStore';
 import { useAuthStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+import { Button } from '@/shared/components/ui/button';
+import useTableExport from '@/shared/lib/hooks/useTableExport';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
+import { Calendar } from '@/shared/components/ui/calendar';
+import { cn } from '@/shared/lib/utils';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,15 +57,20 @@ export default function OrderTrackingDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
+  const [date, setDate] = useState<{ from: Date; to: Date }>();
 
   const fetchOrderDetails = async (perPage: number) => {
     setIsLoading(true);
+    useOrderStore.setState({
+      orderHistoryListData: undefined,
+    });
 
     const searchAll = isEditDetails ? null : true;
 
-    const url = orderService.getOrderStatusUrl(
-      page,
-      perPage,
+    const url = orderService.getOrderHistoryUrl(
+      10,
+      date?.from,
+      date?.to,
       ordernNumber,
       searchCustomer,
       searchDriver,
@@ -85,7 +100,7 @@ export default function OrderTrackingDashboard() {
         err.message ||
         'An unknown error occurred while fetching orders.';
 
-      console.error('Error in fetchOrderDetails:', errorMessage);
+      console.log('Error in fetchOrderDetails:', errorMessage);
     }
   };
 
@@ -93,10 +108,9 @@ export default function OrderTrackingDashboard() {
     const loadInitialOrders = async () => {
       await fetchOrderDetails(20);
     };
+
     loadInitialOrders();
   }, []);
-
-  const isOrderLiveIsTable = authStore.user?.roles.includes('VENDOR_USER');
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
@@ -117,13 +131,15 @@ export default function OrderTrackingDashboard() {
     }
   }
 
+  const { exportOrdersToCSV } = useTableExport();
+
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
       {/* Left Panel - Orders List */}
 
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
         <div className="flex items-center justify-between ">
-          <h2 className="text-xl font-semibold text-gray-900">Active Orders</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Order History</h2>
         </div>
 
         {/* Search and Filter */}
@@ -148,43 +164,64 @@ export default function OrderTrackingDashboard() {
             <option>Confirmed</option>
             <option>Urgent</option>
           </select>
-          <div
-            hidden={isOrderLiveIsTable}
-            className="flex gap-2 border bg-white rounded-md"
-          >
-            <button
-              onClick={() => handleTableChange('grid')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+
+          <div className="flex items-center gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={'outline'}
+                  className={cn(
+                    'w-[280px] justify-start text-left font-normal',
+                    !date?.from && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date?.from ? (
+                    date?.to ? (
+                      <>
+                        From {format(date.from, 'PP')} - To{' '}
+                        {format(date.to, 'PP')}
+                      </>
+                    ) : (
+                      format(date.from, 'PPP')
+                    )
+                  ) : (
+                    <span>From Date - To Date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 flex">
+                <Calendar
+                  autoFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  // @ts-ignore
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+            <Button
+              variant="ghost"
+              className="text-primary"
+              onClick={() => console.log('Apply with:', date)}
             >
-              <Grid className="w-5 h-5 text-gray-600" />
-            </button>
-            <span className="h-auto bg-gray-200 w-0.5 " />
-            <button
-              onClick={() => handleTableChange('list')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <List className="w-5 h-5 text-gray-600" />
-            </button>
+              Apply
+            </Button>
           </div>
+
+          <Button
+            onClick={() => exportOrdersToCSV()}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <Download className="w-5 h-5" /> Export
+          </Button>
         </div>
       </div>
 
-      {isOrderLiveIsTable ? (
-        <TableComponent data={orderStore?.orderHistoryListData!} />
-      ) : (
-        <>
-          {isStyleTabel === 'grid' && (
-            <GridComponent
-              orders={orderStore?.orderHistoryListData!}
-              selectedOrder={selectedOrder}
-              setSelectedOrder={setSelectedOrder}
-              statusHistory={statusHistory}
-            />
-          )}
-
-          {isStyleTabel === 'list' && <ListComponent />}
-        </>
-      )}
+      <TableComponent data={orderStore?.orderHistoryListData!} />
     </div>
   );
 }

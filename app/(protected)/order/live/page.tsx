@@ -13,6 +13,7 @@ import {
 import { useOrderStore } from '@/store/useOrderStore';
 import { useAuthStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+import LoadingPage from '../../loading';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,6 +51,9 @@ export default function OrderTrackingDashboard() {
 
   const fetchOrderDetails = async (perPage: number) => {
     setIsLoading(true);
+    useOrderStore.setState({
+      orderHistoryListData: undefined,
+    });
 
     const searchAll = isEditDetails ? null : true;
 
@@ -67,13 +71,12 @@ export default function OrderTrackingDashboard() {
 
       console.log(res.data[0].delivery_duration, 'afads');
 
-      orderStore.setSourceForTable(res.data);
-      setSelectedOrder(
-        orderStore.orderHistoryListData
-          ? orderStore.orderHistoryListData[0]
-          : ({} as TypeOrderHistoryList)
-      );
-
+      if (res.data) {
+        orderStore.setSourceForTable(res.data);
+        if (orderStore.orderHistoryListData) {
+          setSelectedOrder(orderStore.orderHistoryListData[0]);
+        }
+      }
       // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
       setIsLoading(false);
     } catch (err: any) {
@@ -96,7 +99,8 @@ export default function OrderTrackingDashboard() {
     loadInitialOrders();
   }, []);
 
-  const isOrderLiveIsTable = authStore.user?.roles.includes('VENDOR_USER');
+  const isOrderLiveIsTable =
+    authStore.user?.roles.includes('VENDOR_USER');
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
@@ -116,6 +120,10 @@ export default function OrderTrackingDashboard() {
       setIsStyleTabel(style);
     }
   }
+
+  if (isLoading || !orderStore.orderHistoryListData) return LoadingPage ;
+  
+
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">

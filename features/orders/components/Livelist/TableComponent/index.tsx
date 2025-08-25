@@ -66,8 +66,8 @@ export default function TableComponent({ data }: OrdersPageProps) {
   };
   const pageSize = 5;
 
-  const paginated = data.slice((page - 1) * pageSize, page * pageSize);
-  console.log(data[3].order_number);
+  const paginated = data?.slice((page - 1) * pageSize, page * pageSize);
+
 
   return (
     <div className="p-6 bg-gray-50">

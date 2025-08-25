@@ -157,12 +157,12 @@ const GridComponent: React.FC<GridComponentProps> = ({
               <MyMap
                 center={[
                   {
-                    lat: Number(selectedOrder.pick_up.latitude),
-                    lng: Number(selectedOrder.pick_up.longitude),
+                    lat: Number(selectedOrder?.pick_up?.latitude) || 0,
+                    lng: Number(selectedOrder?.pick_up?.longitude) || 0,
                   },
                   {
-                    lat: Number(selectedOrder.drop_off.latitude),
-                    lng: Number(selectedOrder.drop_off.longitude),
+                    lat: Number(selectedOrder?.drop_off?.latitude) || 0,
+                    lng: Number(selectedOrder?.drop_off?.longitude) || 0,
                   },
                 ]}
               />
