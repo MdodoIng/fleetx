@@ -1,6 +1,10 @@
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
-import { RootTypeBranch, TypeBranch } from '../types/vender';
+import {
+  RootTypeBranch,
+  TypeBranch,
+  TypeWalletResponce,
+} from '../types/vender';
 import { configService } from './app-config';
 
 export const VendorService = {
@@ -52,7 +56,10 @@ export const VendorService = {
       `${configService.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),
 
-  getVendorWalletBalance: (vendorId: string, branchId?: string) => {
+  getVendorWalletBalance: (
+    vendorId: string,
+    branchId?: string
+  ): Promise<TypeWalletResponce> => {
     let url = `/${vendorId}`;
     if (branchId) url += `/branch/${branchId}`;
     return apiFetch(

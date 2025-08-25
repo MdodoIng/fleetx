@@ -16,7 +16,7 @@ import {
 } from '@/shared/components/ui/form';
 import { classForInput, Input } from '@/shared/components/ui/input';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
-import { TypePickUpSchema } from '../../validations/order';
+import { TypePickUpSchema } from '../../../wallet/validations/order';
 import { Fragment, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fi } from 'zod/v4/locales';

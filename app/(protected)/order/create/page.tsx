@@ -8,12 +8,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
-import {
-  dropOffSchema,
-  pickUpSchema,
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '@/features/orders/validations/order';
+
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 
 import { hasValue } from '@/shared/lib/helpers';
@@ -34,6 +29,7 @@ import {
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
 import { orderService } from '@/features/orders/services/ordersApi';
+import { dropOffSchema, pickUpSchema, TypeDropOffSchema, TypePickUpSchema } from '@/features/orders/validations/order';
 
 // Main component
 export default function ShippingForm() {
@@ -54,7 +50,7 @@ export default function ShippingForm() {
 
   const [isValid, setIsValid] = useState(false);
 
-  const [isCOD, setIsCOD] = useState<1 | 2>(1);
+  const [isCOD, setIsCOD] = useState<1 | 2>(2);
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
@@ -156,7 +152,7 @@ export default function ShippingForm() {
         hasValue(dropOffFormValues.customer_name) &&
         hasValue(dropOffFormValues.mobile_number) &&
         hasValue(dropOffFormValues.street_id) &&
-        (isCOD === 2 ? hasValue(dropOffFormValues.amount_to_collect) : true);
+        (isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true);
 
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
