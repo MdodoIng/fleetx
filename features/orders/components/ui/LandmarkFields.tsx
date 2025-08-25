@@ -25,7 +25,7 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
 
 import { makeLoc } from '@/shared/lib/helpers';
 import dynamic from 'next/dynamic';
-import { TypePickUpSchema } from '../../validations/order';
+import { TypePickUpSchema } from '../../../wallet/validations/order';
 import SearchResults from './searchList';
 import { useOrderStore } from '@/store/useOrderStore';
 

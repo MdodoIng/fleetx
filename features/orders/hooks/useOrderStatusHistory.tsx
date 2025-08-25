@@ -155,8 +155,6 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
     loadInitialOrders();
   }, [order?.id]);
 
-
-
   const statusHistory = useMemo(
     () => buildStatusHistory(order, orderHistorys!),
     [order, orderHistorys]

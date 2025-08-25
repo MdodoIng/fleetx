@@ -33,10 +33,10 @@ export const MAIN_MENU = {
     LINK: '/cr/',
   },
   BULK: {
-    LINK: '/bk/'
+    LINK: '/bk/',
   },
   BULK_UPDATE: {
-    LINK: '/bulk/:bulkId'
+    LINK: '/bulk/:bulkId',
   },
   PICKUP_RATE: {
     LINK: '/pr/',
@@ -99,8 +99,8 @@ export const MAIN_MENU = {
     LINK: '/auth/login',
   },
   FORGOT_PASSWORD: {
-    TITLE: "Forgot Password",
-    LINK: '/auth/forgot-password'
+    TITLE: 'Forgot Password',
+    LINK: '/auth/forgot-password',
   },
   SELECT_DOMAIN: {
     LINK: 'select/domain',

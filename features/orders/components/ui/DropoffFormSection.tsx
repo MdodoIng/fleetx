@@ -2,7 +2,7 @@ import { Button } from '@/shared/components/ui/button';
 import { CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Delete, Edit, Plus } from 'lucide-react';
 import DropoffForm from '../create/DropOffForm';
-import { TypeDropOffSchema } from '../../validations/order';
+import { TypeDropOffSchema } from '../../../wallet/validations/order';
 import { TypeDropOffs } from '@/shared/types/orders';
 import { Dispatch, SetStateAction } from 'react';
 import { UseFormReturn } from 'react-hook-form';

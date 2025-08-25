@@ -46,18 +46,14 @@ export function RecentTransactions({
             <div className="flex justify-between">
               <div>
                 <p className="text-xs text-gray-500">{item.entity_id}</p>
-                <p
-                  className={` max-w-[36ch]`}
-                >
-                  {item.message}
-                </p>
+                <p className={` max-w-[36ch]`}>{item.message}</p>
                 <p className="text-xs text-gray-400 ">
                   {new Date(item.notify_at).toLocaleString()}
                 </p>
               </div>
               <span
                 className={`px-3 py-2 rounded-full h-max text-xs bg-yellow-500 text-center`}
-              > 
+              >
                 {item.message.includes('debited')
                   ? 'Delivery Fee'
                   : 'Wallet Recharged'}

@@ -29,7 +29,12 @@ import {
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
 import { orderService } from '@/features/orders/services/ordersApi';
-import { dropOffSchema, pickUpSchema, TypeDropOffSchema, TypePickUpSchema } from '@/features/orders/validations/order';
+import {
+  dropOffSchema,
+  pickUpSchema,
+  TypeDropOffSchema,
+  TypePickUpSchema,
+} from '@/features/orders/validations/order';
 
 // Main component
 export default function ShippingForm() {

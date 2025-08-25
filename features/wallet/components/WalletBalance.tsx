@@ -73,7 +73,10 @@ export function WalletBalance({
             <Lightbulb size={10} />
             Smart Recommendations?
           </Button>
-          <div hidden={!isOpen} className="w-[min(90%,400px)] fixed inset-0 size-full flex items-center justify-center mx-auto my-auto ">
+          <div
+            hidden={!isOpen}
+            className="w-[min(90%,400px)] fixed inset-0 size-full flex items-center justify-center mx-auto my-auto "
+          >
             <div className="relative  rounded-2xl bg-white shadow-lg p-6 border mx-auto">
               {/* Close Button */}
               <Button

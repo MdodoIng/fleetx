@@ -68,7 +68,6 @@ export default function TableComponent({ data }: OrdersPageProps) {
 
   const paginated = data?.slice((page - 1) * pageSize, page * pageSize);
 
-
   return (
     <div className="p-6 bg-gray-50">
       <div className="space-y-6">

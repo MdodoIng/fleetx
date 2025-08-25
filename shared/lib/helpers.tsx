@@ -1,4 +1,4 @@
-import { TypePickUpSchema } from '@/features/orders/validations/order';
+import { TypePickUpSchema } from '@/features/wallet/validations/order';
 import { useOrderStore } from '@/store/useOrderStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
