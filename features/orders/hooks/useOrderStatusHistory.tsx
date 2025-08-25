@@ -143,7 +143,7 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
       } catch (err: any) {
         console.error(
           'Error fetching order status history:',
-          err.message || 'An unknown error occurred'
+          err || 'An unknown error occurred'
         );
         setError(err.message || 'An unknown error occurred');
       } finally {
@@ -159,7 +159,7 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
 
 
   const statusHistory = useMemo(
-    () => buildStatusHistory(order, orderHistorys),
+    () => buildStatusHistory(order, orderHistorys!),
     [order, orderHistorys]
   );
 

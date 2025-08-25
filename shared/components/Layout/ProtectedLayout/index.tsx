@@ -25,7 +25,7 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
   }, [updateZoneAndSome]);
   return (
     <section className="flex items-start justify-start h-svh overflow-hidden">
-      <SideBar />
+      <SideBar header={header} />
       <div className="h-full overflow-y-auto w-full">
         <Header {...header} />
         {children}

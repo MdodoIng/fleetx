@@ -21,6 +21,7 @@ import { apiFetch } from '@/shared/lib/utils';
 import { persist } from 'zustand/middleware';
 import { TypeBranch, TypeVender } from '@/shared/types/vender';
 import { useVenderStore } from './useVenderStore';
+import { typePostRating, TypeRootRatingResponse } from '@/shared/types/rating';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -54,8 +55,21 @@ export const getBuildings = (id: string) =>
     }
   );
 
-export const getDeliveryRate = (request: any) =>
-  apiFetch(+'/order/delivery/' + request);
+export const getDeliveryRate = (
+  orderNumber: string
+): Promise<TypeRootRatingResponse> =>
+  apiFetch(
+    configService.rateServiceApiUrl() + '/order/delivery/' + orderNumber,
+    {
+      method: 'GET',
+    }
+  );
+
+export const setDeliveryRate = (request: typePostRating) =>
+  apiFetch(configService.rateServiceApiUrl() + '/order/delivery/rate', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  });
 export const getCurrentIPInfo = () => apiFetch('http://ipinfo.io/json'); // Note: client-side only
 export const getCurrentIPWhois = () =>
   apiFetch('https://ipwhois.app/json/?lang=en'); // Note: client-side only
