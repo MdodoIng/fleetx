@@ -51,9 +51,6 @@ export default function OrderTrackingDashboard() {
 
   const fetchOrderDetails = async (perPage: number) => {
     setIsLoading(true);
-    useOrderStore.setState({
-      orderHistoryListData: undefined,
-    });
 
     const searchAll = isEditDetails ? null : true;
 
@@ -72,9 +69,9 @@ export default function OrderTrackingDashboard() {
       console.log(res.data[0].delivery_duration, 'afads');
 
       if (res.data) {
-        orderStore.setSourceForTable(res.data);
-        if (orderStore.orderHistoryListData) {
-          setSelectedOrder(orderStore.orderHistoryListData[0]);
+        orderStore.setSourceForTable('orderStatusListData', res.data);
+        if (orderStore.orderStatusListData) {
+          setSelectedOrder(orderStore.orderStatusListData[0]);
         }
       }
       // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
@@ -100,7 +97,7 @@ export default function OrderTrackingDashboard() {
   }, []);
 
   const isOrderLiveIsTable =
-    authStore.user?.roles.includes('VENDOR_USER');
+    authStore.user?.roles.includes('OPERATION_MANAGER');
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
@@ -121,9 +118,7 @@ export default function OrderTrackingDashboard() {
     }
   }
 
-  if (isLoading || !orderStore.orderHistoryListData) return LoadingPage ;
-  
-
+  if (isLoading || !orderStore.orderStatusListData) return <LoadingPage />;
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
@@ -178,19 +173,21 @@ export default function OrderTrackingDashboard() {
       </div>
 
       {isOrderLiveIsTable ? (
-        <TableComponent data={orderStore?.orderHistoryListData!} />
+        <TableComponent data={orderStore?.orderStatusListData!} />
       ) : (
         <>
           {isStyleTabel === 'grid' && (
             <GridComponent
-              orders={orderStore?.orderHistoryListData!}
+              orders={orderStore?.orderStatusListData!}
               selectedOrder={selectedOrder}
               setSelectedOrder={setSelectedOrder}
               statusHistory={statusHistory}
             />
           )}
 
-          {isStyleTabel === 'list' && <ListComponent />}
+          {isStyleTabel === 'list' && (
+            <ListComponent data={orderStore?.orderStatusListData!} />
+          )}
         </>
       )}
     </div>

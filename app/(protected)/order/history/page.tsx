@@ -23,6 +23,7 @@ import {
 } from '@/shared/components/ui/popover';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { cn } from '@/shared/lib/utils';
+import LoadingPage from '../../loading';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,15 +81,9 @@ export default function OrderTrackingDashboard() {
     try {
       const res = await orderService.getOrderList(url);
 
-      console.log(res.data[0].delivery_duration, 'afads');
-
-      orderStore.setSourceForTable(res.data);
-      setSelectedOrder(
-        orderStore.orderHistoryListData
-          ? orderStore.orderHistoryListData[0]
-          : ({} as TypeOrderHistoryList)
-      );
-
+      if (res.data) {
+        orderStore.setSourceForTable('orderHistoryListData', res.data);
+      }
       // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
       setIsLoading(false);
     } catch (err: any) {
@@ -112,26 +107,11 @@ export default function OrderTrackingDashboard() {
     loadInitialOrders();
   }, []);
 
-  const { statusHistory } = useOrderStatusHistory(selectedOrder);
-
-  // useEffect(() => {
-  //   // Refetch when selectedOrder.id changes
-  //   refetch();
-  // }, [selectedOrder.id, refetch]);
-
-  console.log(orderStore.orderHistoryListData);
-
-  function handleTableChange(style: 'grid' | 'list') {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        setIsStyleTabel(style);
-      });
-    } else {
-      setIsStyleTabel(style);
-    }
-  }
-
   const { exportOrdersToCSV } = useTableExport();
+
+  if (isLoading || !orderStore.orderHistoryListData) return <LoadingPage />;
+
+  console.log(orderStore.orderHistoryListData, 'weew');
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
@@ -213,7 +193,7 @@ export default function OrderTrackingDashboard() {
           </div>
 
           <Button
-            onClick={() => exportOrdersToCSV()}
+            onClick={() => exportOrdersToCSV(orderStore.orderHistoryListData!)}
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <Download className="w-5 h-5" /> Export
@@ -221,7 +201,11 @@ export default function OrderTrackingDashboard() {
         </div>
       </div>
 
-      <TableComponent data={orderStore?.orderHistoryListData!} />
+      {orderStore?.orderHistoryListData.length ? (
+        <TableComponent data={orderStore?.orderHistoryListData!} />
+      ) : (
+        <>no data</>
+      )}
     </div>
   );
 }

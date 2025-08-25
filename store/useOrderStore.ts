@@ -32,7 +32,7 @@ interface OrderState {
   selectedDropOffs: TypeDropOffs[];
   selectedPage: number;
   selectedPerPage: number;
-  orderStatusListData: TypeOrderList[];
+  orderStatusListData: TypeOrderHistoryList[] | undefined;
   totalCountList: number;
   estimatedDeliveryReturnFromApi:
     | TypeEstimatedDeliveryReturnFromApi
@@ -48,7 +48,11 @@ interface OrderState {
     data: TypeEstimatedDeliveryReturnFromApi
   ) => void;
 
-  setSourceForTable: (data: TypeLiveOrderItem[], clearData?: boolean) => void;
+  setSourceForTable: (
+    key: 'orderStatusListData' | 'orderHistoryListData',
+    data: TypeLiveOrderItem[],
+    clearData?: boolean
+  ) => void;
 }
 
 export const useOrderStore = create<OrderState>()(
@@ -59,7 +63,7 @@ export const useOrderStore = create<OrderState>()(
       selectedDropOffs: [],
       selectedPage: 1,
       selectedPerPage: 10,
-      orderStatusListData: [],
+      orderStatusListData: undefined,
       totalCountList: 0,
       pickUp: undefined,
       estimatedDelivery: undefined,
@@ -108,7 +112,7 @@ export const useOrderStore = create<OrderState>()(
         });
       },
 
-      setSourceForTable(data, clearData = false) {
+      setSourceForTable(key, data, clearData = false) {
         if (clearData) {
           set({
             orderHistoryListData: undefined,
@@ -216,7 +220,7 @@ export const useOrderStore = create<OrderState>()(
         }
 
         set({
-          orderHistoryListData: orderList,
+          [key]: orderList,
         });
       },
     }),

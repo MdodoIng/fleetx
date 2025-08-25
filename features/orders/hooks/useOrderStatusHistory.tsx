@@ -17,7 +17,7 @@ function buildStatusHistory(
     {
       id: OrderStatusValues.CONFIRMED,
       text: 'Your order is confirmed',
-      time: order.created_at,
+      time: order?.created_at,
       subText: '',
       active: false,
       completed: false,
@@ -134,12 +134,12 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!order.id) return;
+    if (!order?.id) return;
     const loadInitialOrders = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await orderService.getOrderStatusById(order.id);
+        const res = await orderService.getOrderStatusById(order?.id);
         setOrderHistorys(res.data);
       } catch (err: any) {
         console.error(
@@ -153,9 +153,9 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
     };
 
     loadInitialOrders();
-  }, [order.id]);
+  }, [order?.id]);
 
-  console.log(orderHistorys, order.id, 'af');
+
 
   const statusHistory = useMemo(
     () => buildStatusHistory(order, orderHistorys!),
@@ -171,7 +171,7 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
         try {
           setLoading(true);
           setError(null);
-          const res = await orderService.getOrderStatusById(order.id);
+          const res = await orderService.getOrderStatusById(order?.id);
           setOrderHistorys(res.data);
         } catch (err: any) {
           setError(err.message || 'An unknown error occurred');

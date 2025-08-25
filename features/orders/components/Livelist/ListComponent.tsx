@@ -6,7 +6,9 @@ import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import { statusColors } from '../../constants';
 
-const ListComponent: React.FC = () => {
+const ListComponent: React.FC<{ data: TypeOrderHistoryList[] }> = ({
+  data,
+}) => {
   const orderStore = useOrderStore();
 
   const statusMap: Record<string, string> = {
@@ -16,7 +18,7 @@ const ListComponent: React.FC = () => {
     'orderStatus.IN_DELIVERY': 'In Delivery',
   };
 
-  const grouped = orderStore.orderHistoryListData!.reduce(
+  const grouped = data!.reduce(
     (acc: Record<string, TypeOrderHistoryList[]>, order) => {
       const col = statusMap[order.status] || 'Confirmed Orders';
       if (!acc[col]) acc[col] = [];
@@ -44,8 +46,7 @@ const ListComponent: React.FC = () => {
               }}
               key={order.fleetx_order_number}
               className={`rounded-lg border p-3 mb-3 flex justify-between items-start ${
-                statusColors[order.class_status] ||
-                'bg-gray-100 text-gray-700'
+                statusColors[order.class_status] || 'bg-gray-100 text-gray-700'
               }`}
             >
               {/* Left: Order Info */}

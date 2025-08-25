@@ -235,7 +235,7 @@ export default function ShippingForm() {
         estimatedDeliveryReturnFromApi: res.data,
       });
       orderStore.setEstimatedDeliveryReturnFromApi(res.data);
-      console.log(res.data);
+      console.log(res.data, 'EstimatedDeliveryReturnFromApi');
       return res.data;
     } catch (error) {
       console.log(error, 'sgfdsg');
@@ -314,6 +314,7 @@ export default function ShippingForm() {
             'Successfully added and calculated estimate for new drop-off'
           );
         }
+        return res;
       } catch (error) {
         console.error('Error in handleAddOneDropoffImproved:', error);
         // Optionally revert state changes on error
@@ -526,53 +527,56 @@ export default function ShippingForm() {
 
       case 'order':
         try {
-          handleSaveCurrentDropOff();
+          useOrderStore.setState({
+            estimatedDeliveryReturnFromApi: undefined,
+          });
+          const res = await handleSaveCurrentDropOff();
           triggerCalculatedTrend(currentZoneId! ?? defaultZoneId!, branchId!);
 
-          const dropffOrders =
-            orderStore.estimatedDeliveryReturnFromApi?.drop_offs ||
-            orderStore.dropOffs;
-
-          const ot_trend = () => {
-            if (currentStatusZoneETPTrend) {
-              let displayValue = currentStatusZoneETPTrend.etpMins?.toString();
-              if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
-                displayValue = '>' + displayValue;
-              } else {
-                displayValue = '<' + displayValue;
+          if (res!) {
+            const ot_trend = () => {
+              if (currentStatusZoneETPTrend) {
+                let displayValue =
+                  currentStatusZoneETPTrend.etpMins?.toString();
+                if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
+                  displayValue = '>' + displayValue;
+                } else {
+                  displayValue = '<' + displayValue;
+                }
+                return displayValue;
               }
-              return displayValue;
+              return '';
+            };
+
+            const order_meta: TypeOrders['order_meta'] = {
+              vendor_name:
+                selectedVendorName! ||
+                user?.user.first_name! + ' ' + user?.user.last_name!,
+              ot_trend: ot_trend(),
+              ot_free_drivers: currentStatusZoneETPTrend?.freeBuddies || 0,
+            };
+
+            console.log(res?.order_session_id, 'dgfds');
+
+            const orders: TypeOrders = {
+              branch_id: res.branch_id!,
+              vendor_id: res.vendor_id!,
+              driver_id: 0,
+              order_session_id: res.order_session_id!,
+              payment_type: isCOD,
+              order_meta: order_meta,
+              pick_up: res?.pickup!,
+              drop_offs: res.drop_offs!,
+            };
+
+            try {
+              const res = await orderService.createOnDemandOrders(orders);
+
+              console.log(res);
+              console.log(res, 'orders');
+            } catch (error) {
+              console.log(error);
             }
-            return '';
-          };
-
-          const order_meta: TypeOrders['order_meta'] = {
-            vendor_name:
-              selectedVendorName! ||
-              user?.user.first_name! + ' ' + user?.user.last_name!,
-            ot_trend: ot_trend(),
-            ot_free_drivers: currentStatusZoneETPTrend?.freeBuddies || 0,
-          };
-
-          const orders: TypeOrders = {
-            branch_id: branchId!,
-            vendor_id: vendorId!,
-            driver_id: 0,
-            order_session_id:
-              orderStore.estimatedDeliveryReturnFromApi?.order_session_id!,
-            payment_type: isCOD,
-            order_meta: order_meta,
-            pick_up: orderStore.pickUp!,
-            drop_offs: dropffOrders,
-          };
-
-          try {
-            const res = await orderService.createOnDemandOrders(orders);
-
-            console.log(res);
-            console.log(res, 'orders');
-          } catch (error) {
-            console.log(error);
           }
         } catch (error) {
           console.error(error, type);

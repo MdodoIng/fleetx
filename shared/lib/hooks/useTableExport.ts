@@ -1,12 +1,11 @@
+import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 function useTableExport() {
-  const { orderHistoryListData } = useOrderStore.getState();
-
-  const exportOrdersToPDF = () => {
-    if (!orderHistoryListData || orderHistoryListData.length === 0) return;
+  const exportOrdersToPDF = (data: TypeOrderHistoryList[]) => {
+    if (!data || data.length === 0) return;
 
     const doc = new jsPDF();
 
@@ -25,7 +24,7 @@ function useTableExport() {
       ],
     ];
 
-    const rows = orderHistoryListData.map((o: any) => [
+    const rows = data.map((o: any) => [
       o.fleetx_order_number,
       o.customer_name,
       o.phone_number,
@@ -47,8 +46,11 @@ function useTableExport() {
     doc.save('orders.pdf');
   };
 
-  const exportOrdersToCSV = (filename = 'orders.csv') => {
-    if (!orderHistoryListData || orderHistoryListData.length === 0) return;
+  const exportOrdersToCSV = (
+    data: TypeOrderHistoryList[],
+    filename = 'orders.csv'
+  ) => {
+    if (!data || data.length === 0) return;
 
     const separator = ',';
     const keys = [
@@ -67,7 +69,7 @@ function useTableExport() {
     const csvContent =
       keys.join(separator) +
       '\n' +
-      orderHistoryListData
+      data
         .map((order: any) =>
           keys
             .map((k) => {
@@ -100,6 +102,5 @@ function useTableExport() {
     exportOrdersToCSV,
   };
 }
-
 
 export default useTableExport;
