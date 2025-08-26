@@ -7,7 +7,7 @@ import {
 } from '../types/vender';
 import { configService } from './app-config';
 
-export const VendorService = {
+export const vendorService = {
   create: (vendor: any) =>
     apiFetch(`${configService.vendorServiceApiUrl()}/create`, {
       method: 'POST',

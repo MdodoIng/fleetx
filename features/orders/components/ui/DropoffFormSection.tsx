@@ -59,17 +59,13 @@ const DropoffFormSection = ({
         ) : (
           <div className="grid-cols-2 grid gap-4">
             <Button
-              onClick={() =>
-                functionsDropoffs('deleteDropOff', index!)
-              }
+              onClick={() => functionsDropoffs('deleteDropOff', index!)}
               variant="destructive"
             >
               <Delete />
             </Button>
             <Button
-              onClick={() =>
-                functionsDropoffs('editDropOffWithSave', index!)
-              }
+              onClick={() => functionsDropoffs('editDropOffWithSave', index!)}
               variant="secondary"
             >
               <Edit />

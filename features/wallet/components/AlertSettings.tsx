@@ -8,15 +8,19 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
+import { paymentService } from '@/shared/services/payment';
+
+import { TypeBalanceAlertReq } from '@/shared/types/payment';
 import { useVenderStore } from '@/store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type MethodType = 'email' | 'phone';
 
 export function AlertSettings() {
-  const [alertValue, setAlertValue] = useState('12');
+  const [alertValue, setAlertValue] = useState('');
   const [method, setMethod] = useState<MethodType[]>(['email']);
   const { vendorId, branchId } = useVenderStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const isCentralWalletEnabled = false;
 
@@ -35,24 +39,71 @@ export function AlertSettings() {
       return;
     }
 
-    const request = {
-      vendor_id: vendorId,
-      branch_id: branchId,
+    const request: TypeBalanceAlertReq & any = {
+      vendor_id: vendorId!,
+      branch_id: branchId!,
       alert_on_amount: parseFloat(parseFloat(alertValue).toFixed(2)),
       required_email_alert: method.includes('email'),
       required_sms_alert: method.includes('phone'),
     };
 
     try {
-      const res = await axios.post('/api/wallet/confirm-notify', request); // API call
-      if (res.data) {
-        setAlertNotifyAmount(request.alert_on_amount);
+      const res = await paymentService.confirmWalletNotifyBalance(request);
+
+      if (res) {
         alert('✅ Wallet balance alert configured successfully!');
       }
     } catch (err: any) {
       console.error(err.response?.data?.message || err.message);
     }
   };
+
+  const fetchAlertLoader = async () => {
+    setIsLoading(true);
+
+    try {
+      const res = await paymentService.getWalletNotifyBalance(
+        vendorId!,
+        branchId!
+      );
+
+      if (res?.data) {
+        setAlertValue(
+          res.data.alert_on_amount
+            ? parseFloat(
+                parseFloat(res.data.alert_on_amount).toFixed(2)
+              ).toString()
+            : '0'
+        );
+
+        setMethod(
+          [
+            res.data.required_email_alert ? 'email' : '',
+            res.data.required_sms_alert ? 'phone' : '',
+          ].filter(Boolean) as MethodType[]
+        );
+      }
+
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+
+      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
+      const errorMessage =
+        err.error?.message ||
+        err.message ||
+        'An unknown error occurred while fetching orders.';
+
+      console.error('Error in fetchOrderDetails:', errorMessage);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialOrders = async () => {
+      await fetchAlertLoader();
+    };
+    loadInitialOrders();
+  }, [branchId, vendorId]);
 
   const onHandleClick = (value: MethodType) => {
     setMethod((prev) => {

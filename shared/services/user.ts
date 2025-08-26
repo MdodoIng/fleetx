@@ -2,7 +2,7 @@ import { configService } from '@/shared/services/app-config';
 import { User, UserLogin } from '@/shared/types/auth';
 
 const getUserServiceApiUrl = configService.userServiceApiUrl();
-const getVendorServiceApiUrl = configService.vendorServiceApiUrl();
+const getvendorServiceApiUrl = configService.vendorServiceApiUrl();
 
 export const authenticate = (user: UserLogin) =>
   fetch(`${getUserServiceApiUrl}/authenticate`, {
@@ -26,7 +26,7 @@ export const restPassword = (user: User) =>
   });
 
 export const signUp = (request: any) =>
-  fetch(`${getVendorServiceApiUrl}/signup`, {
+  fetch(`${getvendorServiceApiUrl}/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),

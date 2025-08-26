@@ -28,4 +28,3 @@ export function makeLoc(
 export const hasErrors = (form: any) =>
   Object.entries(form.formState.errors).length > 0;
 export const hasValue = (value: any) => Boolean(value);
-

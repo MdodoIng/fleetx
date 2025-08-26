@@ -5,7 +5,8 @@ import { RecentTransactions } from '@/features/wallet/components/RecentTransacti
 import { WalletBalance } from '@/features/wallet/components/WalletBalance';
 import { commonConstants } from '@/shared/constants/storageConstants';
 import { notificationService } from '@/shared/services/notification';
-import { VendorService } from '@/shared/services/vender';
+import { reportService } from '@/shared/services/report';
+import { vendorService } from '@/shared/services/vender';
 import { TypeNotificationItem } from '@/shared/types/notification';
 import { TypeWallet } from '@/shared/types/vender';
 import { useVenderStore } from '@/store';
@@ -17,28 +18,23 @@ export default function WalletPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState<Number | undefined>(undefined);
   const [wallet, setWallet] = useState<TypeWallet>();
-  const [walletHistory, setWalletHistory] = useState<TypeNotificationItem[]>();
 
   const fetchVendorWalletBalance = async () => {
     setIsLoading(true);
     try {
       // Check if vendorId and branchId are not null before calling the service
       if (venderStore.vendorId && venderStore.branchId) {
-        const historyUrl = notificationService.getNotificationHistoryUrl(
+        const reportUrl = reportService.getVendorBalanceUrl(
           commonConstants.notificationPerPage,
-          null,
+          venderStore.vendorId,
           null
         );
-        const [walletRes, historyRes] = await Promise.all([
-          VendorService.getVendorWalletBalance(
-            venderStore.vendorId,
-            venderStore.branchId
-          ),
-          notificationService.getNotification(historyUrl),
-        ]);
+        const walletRes = await vendorService.getVendorWalletBalance(
+          venderStore.vendorId,
+          venderStore.branchId
+        );
+
         setWallet(walletRes.data);
-        setWalletHistory(historyRes.data!);
-        console.log(historyRes);
       } else {
         console.warn(
           'vendorId or branchId is null. Cannot fetch wallet balance.'
@@ -76,7 +72,7 @@ export default function WalletPage() {
         />
         <AlertSettings />
       </div>
-      <RecentTransactions walletHistory={walletHistory} />
+      <RecentTransactions />
 
       <ModelBox isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>

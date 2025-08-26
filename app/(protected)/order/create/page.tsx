@@ -12,7 +12,7 @@ import PickUpForm from '@/features/orders/components/create/PickUpForm';
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 
 import { hasValue } from '@/shared/lib/helpers';
-import { VendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vender';
 import {
   TypeDropOffs,
   TypeEstimatedDelivery,
@@ -179,7 +179,7 @@ export default function ShippingForm() {
         });
       }
       try {
-        const res = await VendorService.getBranchDetailByBranchId({
+        const res = await vendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,
           branch_id: branchId!,
         });
@@ -215,7 +215,7 @@ export default function ShippingForm() {
 
   const searchAddressByMobileNumber = async (mobileNumber: string) => {
     try {
-      const res = await VendorService.getAddressByMobile(
+      const res = await vendorService.getAddressByMobile(
         vendorId!,
         branchId!,
         mobileNumber

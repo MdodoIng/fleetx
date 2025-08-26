@@ -2,7 +2,7 @@
 import { environment } from '@/environments/environment';
 import { useSharedStore, useVenderStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
-import { VendorService } from './vender';
+import { vendorService } from './vender';
 import { StoreApi, UseBoundStore } from 'zustand';
 import { SharedActions, SharedState } from '@/store/sharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
@@ -12,7 +12,7 @@ const setBranchDetails = async (
   venderStore: VenderState & VenderActions
 ) => {
   try {
-    const res = await VendorService.getBranchDetails(branchId!);
+    const res = await vendorService.getBranchDetails(branchId!);
 
     venderStore.setValue('branchDetails', res.data);
   } catch (error) {

@@ -8,28 +8,53 @@ import {
 } from '@/shared/components/ui/card';
 import { TypeNotificationItem } from '@/shared/types/notification';
 import { cn } from '@/shared/lib/utils';
+import { useEffect, useState } from 'react';
+import { useVenderStore } from '@/store';
+import { vendorService } from '@/shared/services/vender';
+import { commonConstants } from '@/shared/constants/storageConstants';
+import { reportService } from '@/shared/services/report';
 
-export function RecentTransactions({
-  walletHistory,
-}: {
-  walletHistory: TypeNotificationItem[] | undefined;
-}) {
-  const transactions = [
-    { id: 'B-49M5C', amount: -1.5, type: 'fee', date: 'Today at 3:20 PM' },
-    {
-      id: 'B-49M5C',
-      amount: +50,
-      type: 'recharge',
-      date: '21 Aug 2025, 06:24 PM',
-    },
-    { id: 'B-49M5C', amount: -1.5, type: 'fee', date: '21 Aug 2025, 06:24 PM' },
-    {
-      id: 'B-49M5C',
-      amount: +50,
-      type: 'recharge',
-      date: '21 Aug 2025, 06:24 PM',
-    },
-  ];
+export function RecentTransactions() {
+  const [walletHistory, setWalletHistory] = useState<TypeNotificationItem[]>();
+  const venderStore = useVenderStore();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchVendorWalletBalance = async () => {
+    setIsLoading(true);
+    try {
+      // Check if vendorId and branchId are not null before calling the service
+      if (venderStore.vendorId && venderStore.branchId) {
+        const reportUrl = reportService.getVendorBalanceUrl(
+          commonConstants.notificationPerPage,
+          venderStore.vendorId,
+          null
+        );
+        const reportRes = await reportService.getVendorBalanceReport(reportUrl);
+
+        setWalletHistory(reportRes.data!);
+        console.log(reportRes);
+      } else {
+        console.warn(
+          'vendorId or branchId is null. Cannot fetch wallet balance.'
+        );
+      }
+    } catch (err: any) {
+      const errorMessage =
+        err.error?.message ||
+        err.message ||
+        'An unknown error occurred while fetching wallet balance.';
+      console.error('Error in fetchVendorWalletBalance:', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialWalletBalance = async () => {
+      await fetchVendorWalletBalance();
+    };
+    loadInitialWalletBalance();
+  }, [venderStore.vendorId, venderStore.branchId]);
 
   return (
     <Card className="w-full">
@@ -39,7 +64,7 @@ export function RecentTransactions({
           All your confirmed orders are listed here
         </p>
       </CardHeader>
-      <CardContent className="space-y-3">
+      {/*<CardContent className="space-y-3">
         {walletHistory?.map((item) => (
           <div key={item.id} className="bg-white rounded-lg shadow p-3 mb-3">
             <div className="flex justify-between">
@@ -60,7 +85,7 @@ export function RecentTransactions({
             </div>
           </div>
         ))}
-      </CardContent>
+      </CardContent>*/}
     </Card>
   );
 }

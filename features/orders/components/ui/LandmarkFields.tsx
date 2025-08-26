@@ -173,7 +173,6 @@ export default function AddressLandmarkFields({
           label: item.name_en,
         }));
 
-     
       setTimeout(() => {
         setSearchData(items);
       }, 50);
@@ -195,8 +194,6 @@ export default function AddressLandmarkFields({
 
     setMapValues(center);
   }, [landmarkValues.latitude, landmarkValues.longitude, isMap]);
-
-
 
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street' | 'building';
