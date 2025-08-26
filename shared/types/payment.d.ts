@@ -18,3 +18,4 @@ export type TypeWalletNotifyBalanceRes = {
     branch_id: string;
   };
 };
+

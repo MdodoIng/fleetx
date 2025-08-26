@@ -1,6 +1,8 @@
+'use client';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { storageKeys } from './storageKeys';
+import { useAuthStore } from '@/store';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -10,9 +12,10 @@ export async function apiFetch<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
+  const { user } = useAuthStore.getState();
   const defaultHeaders = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem(storageKeys.authAppToken)}`,
+    Authorization: `Bearer ${user?.token}`,
   };
 
   const headers = {

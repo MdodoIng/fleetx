@@ -1,5 +1,5 @@
 'use client';
-import { orderService } from '@/features/orders/services/ordersApi';
+import { orderService } from '@/shared/services/orders';
 import { CalendarIcon, Download, Grid, List, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { addDays, format } from 'date-fns';

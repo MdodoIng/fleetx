@@ -10,52 +10,57 @@ import { vendorService } from '@/shared/services/vender';
 import { TypeNotificationItem } from '@/shared/types/notification';
 import { TypeWallet } from '@/shared/types/vender';
 import { useVenderStore } from '@/store';
+import { useWalletStore } from '@/store/useWalletStore';
 import { useEffect, useState } from 'react';
 
 export default function WalletPage() {
   const venderStore = useVenderStore();
+  const {
+    walletBalance,
+    getCentralWalletEnabled,
+    isCentralWalletEnabled,
+    checkWallet,
+    setTabBasedOnRole,
+  } = useWalletStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState<Number | undefined>(undefined);
-  const [wallet, setWallet] = useState<TypeWallet>();
 
-  const fetchVendorWalletBalance = async () => {
-    setIsLoading(true);
-    try {
-      // Check if vendorId and branchId are not null before calling the service
-      if (venderStore.vendorId && venderStore.branchId) {
-        const reportUrl = reportService.getVendorBalanceUrl(
-          commonConstants.notificationPerPage,
-          venderStore.vendorId,
-          null
-        );
-        const walletRes = await vendorService.getVendorWalletBalance(
-          venderStore.vendorId,
-          venderStore.branchId
-        );
+  // const fetchVendorWalletBalance = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Check if vendorId and branchId are not null before calling the service
+  //     if (venderStore.vendorId && venderStore.branchId) {
 
-        setWallet(walletRes.data);
-      } else {
-        console.warn(
-          'vendorId or branchId is null. Cannot fetch wallet balance.'
-        );
-      }
-    } catch (err: any) {
-      const errorMessage =
-        err.error?.message ||
-        err.message ||
-        'An unknown error occurred while fetching wallet balance.';
-      console.error('Error in fetchVendorWalletBalance:', errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //       const walletRes = await vendorService.getVendorWalletBalance(
+  //         venderStore.vendorId,
+  //         venderStore.branchId
+  //       );
+
+  //       setWallet(walletRes.data);
+  //     } else {
+  //       console.warn(
+  //         'vendorId or branchId is null. Cannot fetch wallet balance.'
+  //       );
+  //     }
+  //   } catch (err: any) {
+  //     const errorMessage =
+  //       err.error?.message ||
+  //       err.message ||
+  //       'An unknown error occurred while fetching wallet balance.';
+  //     console.error('Error in fetchVendorWalletBalance:', errorMessage);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    const loadInitialWalletBalance = async () => {
-      await fetchVendorWalletBalance();
-    };
-    loadInitialWalletBalance();
+    // const loadInitialWalletBalance = async () => {
+    //   await fetchVendorWalletBalance();
+    // };
+    // loadInitialWalletBalance();
+    checkWallet();
+    setTabBasedOnRole();
   }, [venderStore.vendorId, venderStore.branchId]);
 
   // console.log(wallet);
@@ -66,7 +71,6 @@ export default function WalletPage() {
     <div className="p-6 grid gap-6 grid-cols-1 md:grid-cols-2">
       <div className="grid gap-6 w-full h-max">
         <WalletBalance
-          wallet={wallet!}
           handleCreditAction={handleCreditAction}
           setIsOpen={setIsOpen}
         />

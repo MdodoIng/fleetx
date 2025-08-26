@@ -23,7 +23,7 @@ export const vendorService = {
   getVendorDetails: (id: string) =>
     apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
 
-  getVendorInfo: (id: string) =>
+  getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
 
   getVendorList: (url: string) =>

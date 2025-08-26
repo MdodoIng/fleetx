@@ -11,6 +11,7 @@ export interface VenderState {
   selectedVendorName: string | null;
   selectedVendor: TypeVender | undefined;
   selectedBranch: TypeBranch | undefined;
+  isVendorAdmin: boolean;
 }
 
 export interface VenderActions {
@@ -28,6 +29,7 @@ export const useVenderStore = create<VenderState & VenderActions>()(
       selectedVendor: undefined,
       branchId: null,
       vendorId: null,
+      isVendorAdmin: false,
 
       setValue: (key: keyof VenderState, value: any) => set({ [key]: value }),
 

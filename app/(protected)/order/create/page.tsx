@@ -28,7 +28,7 @@ import {
   usedropOffFormValuesForDropffs,
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
-import { orderService } from '@/features/orders/services/ordersApi';
+import { orderService } from '@/shared/services/orders';
 import {
   dropOffSchema,
   pickUpSchema,

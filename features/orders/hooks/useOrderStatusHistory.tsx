@@ -1,4 +1,5 @@
 'use client';
+import { orderService } from '@/shared/services/orders';
 import {
   OrderStatusValues,
   TypeOrderHistoryList,
@@ -7,7 +8,7 @@ import {
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useEffect, useMemo, useState } from 'react';
-import { orderService } from '../services/ordersApi';
+
 
 function buildStatusHistory(
   order: TypeOrderHistoryList,

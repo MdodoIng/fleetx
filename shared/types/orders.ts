@@ -18,6 +18,7 @@ export type TypePickUp = {
   longitude: string;
 };
 
+
 export type TypeDropOffs = {
   id: number;
   order_index: number | any;
@@ -156,15 +157,7 @@ export type TypeOrderHistoryList = TypeLiveOrderItem & {
   primary_order_status?: any;
 };
 
-export const TypeDelivery = [
-  { key: 0, value: 'deliveryModel.unidentified' },
-  { key: 1, value: 'deliveryModel.individual' },
-  { key: 2, value: 'deliveryModel.group' },
-  { key: 3, value: 'deliveryModel.bulk' },
-  { key: 4, value: 'deliveryModel.massDeliveries' },
-  { key: 5, value: 'deliveryModel.superSaverIndividual' },
-  { key: 6, value: 'deliveryModel.superSaverGroup' },
-] as const;
+
 
 export interface TypeOrders {
   vendor_id: string;
@@ -288,6 +281,30 @@ export type TypeRootLiveOrderList = {
   count: number;
 };
 
+
+export type TypeOrderStatusHistoryHistory = {
+  status_history: {
+    primary_order_status: number;
+    created_at: string;
+  }[];
+};
+
+export type TypeRootOrderStatusHistoryHistory = {
+  data: TypeOrderStatusHistoryHistory;
+};
+
+export type TypeStatusHistoryForUi = {
+  id: number;
+  text: string;
+  time: string | null;
+  subText: string;
+  active: boolean;
+  completed: boolean;
+  display: boolean;
+};
+
+
+
 export const OrderStatusCSS = [
   { key: 0, value: 'NEW' },
   { key: 10, value: 'CONFIRMED' },
@@ -372,23 +389,22 @@ export const OrderStatusValues = {
   DELIVERY_FAILED: 130,
 } as const;
 
-export type TypeOrderStatusHistoryHistory = {
-  status_history: {
-    primary_order_status: number;
-    created_at: string;
-  }[];
-};
+export const TypeDelivery = [
+  { key: 0, value: 'deliveryModel.unidentified' },
+  { key: 1, value: 'deliveryModel.individual' },
+  { key: 2, value: 'deliveryModel.group' },
+  { key: 3, value: 'deliveryModel.bulk' },
+  { key: 4, value: 'deliveryModel.massDeliveries' },
+  { key: 5, value: 'deliveryModel.superSaverIndividual' },
+  { key: 6, value: 'deliveryModel.superSaverGroup' },
+] as const;
 
-export type TypeRootOrderStatusHistoryHistory = {
-  data: TypeOrderStatusHistoryHistory;
-};
-
-export type TypeStatusHistoryForUi = {
-  id: number;
-  text: string;
-  time: string | null;
-  subText: string;
-  active: boolean;
-  completed: boolean;
-  display: boolean;
-};
+export const OperationType = [
+  { key: 1, value: 'Recharge', color: 'bg-green-100 text-green-600' },
+  { key: 2, value: 'Refund', color: 'bg-blue-100 text-blue-600' },
+  { key: 3, value: 'Adjustment', color: 'bg-yellow-100 text-yellow-700' },
+  { key: 4, value: 'DeductFee', color: 'bg-red-100 text-red-600' },
+  { key: 5, value: 'MashkorCredit', color: 'bg-emerald-100 text-emerald-600' },
+  { key: 6, value: 'MashkorDebit', color: 'bg-purple-100 text-purple-600' },
+  { key: 7, value: 'MashkorDebit', color: 'bg-pink-100 text-pink-600' },
+] as const;

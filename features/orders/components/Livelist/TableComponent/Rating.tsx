@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Star } from 'lucide-react';
-import { getDeliveryRate, setDeliveryRate } from '@/store/sharedStore';
+
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { typePostRating } from '@/shared/types/rating';
+import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
 
 interface RatingProps {
   max?: number;

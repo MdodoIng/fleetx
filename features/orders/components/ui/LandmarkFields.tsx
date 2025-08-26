@@ -15,7 +15,7 @@ import {
   getBlock,
   getBuildings,
   getStreet,
-} from '@/store/sharedStore';
+} from '@/shared/services';
 import LandmarkInput from './LandmarkInput';
 
 const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
@@ -25,9 +25,10 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
 
 import { makeLoc } from '@/shared/lib/helpers';
 import dynamic from 'next/dynamic';
-import { TypePickUpSchema } from '../../../wallet/validations/order';
+
 import SearchResults from './searchList';
 import { useOrderStore } from '@/store/useOrderStore';
+import { TypePickUpSchema } from '../../validations/order';
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
