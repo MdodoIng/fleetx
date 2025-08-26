@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { TransactionItem } from './TransactionItem';
 import { TypeNotificationItem } from '@/shared/types/notification';
 import { cn } from '@/shared/lib/utils';
 

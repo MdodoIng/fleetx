@@ -8,12 +8,64 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
+import { useVenderStore } from '@/store';
 import { useState } from 'react';
+
+type MethodType = 'email' | 'phone';
 
 export function AlertSettings() {
   const [alertValue, setAlertValue] = useState('12');
-  const [method, setMethod] = useState<'email' | 'phone'>('email');
+  const [method, setMethod] = useState<MethodType[]>(['email']);
+  const { vendorId, branchId } = useVenderStore();
 
+  const isCentralWalletEnabled = false;
+
+  const configureNotification = async () => {
+    // same checks as Angular
+    if (!alertValue) {
+      alert('⚠️ Please enter all the values');
+      return;
+    }
+    if (!vendorId) {
+      alert('⚠️ Please enter Vendor');
+      return;
+    }
+    if (!isCentralWalletEnabled && !branchId) {
+      alert('⚠️ Please enter Branch');
+      return;
+    }
+
+    const request = {
+      vendor_id: vendorId,
+      branch_id: branchId,
+      alert_on_amount: parseFloat(parseFloat(alertValue).toFixed(2)),
+      required_email_alert: method.includes('email'),
+      required_sms_alert: method.includes('phone'),
+    };
+
+    try {
+      const res = await axios.post('/api/wallet/confirm-notify', request); // API call
+      if (res.data) {
+        setAlertNotifyAmount(request.alert_on_amount);
+        alert('✅ Wallet balance alert configured successfully!');
+      }
+    } catch (err: any) {
+      console.error(err.response?.data?.message || err.message);
+    }
+  };
+
+  const onHandleClick = (value: MethodType) => {
+    setMethod((prev) => {
+      if (!prev) {
+        return [value];
+      }
+      if (prev?.includes(value)) {
+        return prev.filter((item) => item !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
+  };
   return (
     <Card className="">
       <CardHeader>
@@ -35,14 +87,14 @@ export function AlertSettings() {
 
         <div className="flex gap-4">
           <Button
-            variant={method === 'email' ? 'default' : 'outline'}
-            onClick={() => setMethod('email')}
+            variant={method?.includes('email') ? 'default' : 'outline'}
+            onClick={() => onHandleClick('email')}
           >
             Email
           </Button>
           <Button
-            variant={method === 'phone' ? 'default' : 'outline'}
-            onClick={() => setMethod('phone')}
+            variant={method?.includes('phone') ? 'default' : 'outline'}
+            onClick={() => onHandleClick('phone')}
           >
             Phone
           </Button>
@@ -53,7 +105,7 @@ export function AlertSettings() {
           {alertValue} KD
         </p>
 
-        <Button>Save Settings</Button>
+        <Button onClick={() => configureNotification()}>Save Settings</Button>
       </CardContent>
     </Card>
   );

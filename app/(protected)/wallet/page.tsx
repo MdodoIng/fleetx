@@ -1,5 +1,6 @@
 'use client';
 import { AlertSettings } from '@/features/wallet/components/AlertSettings';
+import ModelBox from '@/features/wallet/components/ModelBox';
 import { RecentTransactions } from '@/features/wallet/components/RecentTransactions';
 import { WalletBalance } from '@/features/wallet/components/WalletBalance';
 import { commonConstants } from '@/shared/constants/storageConstants';
@@ -14,6 +15,7 @@ export default function WalletPage() {
   const venderStore = useVenderStore();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState<Number | undefined>(undefined);
   const [wallet, setWallet] = useState<TypeWallet>();
   const [walletHistory, setWalletHistory] = useState<TypeNotificationItem[]>();
 
@@ -70,10 +72,13 @@ export default function WalletPage() {
         <WalletBalance
           wallet={wallet!}
           handleCreditAction={handleCreditAction}
+          setIsOpen={setIsOpen}
         />
         <AlertSettings />
       </div>
       <RecentTransactions walletHistory={walletHistory} />
+
+      <ModelBox isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 }
