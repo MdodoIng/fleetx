@@ -19,38 +19,6 @@ import { statusColors, paymentMap } from '@/features/orders/constants';
 import Rating from './Rating';
 import { useSharedStore } from '@/store';
 
-type Order = {
-  id: string;
-  fleetx_order_number: string;
-  customer_name: string;
-  phone_number: string;
-  class_status: string;
-  creation_date: string;
-  delivery_fee: string;
-  amount_to_collect: string;
-  amount_collected: string;
-  from: string;
-  to: string;
-  driver_name: string;
-  driver_phone: string;
-  payment_type: number;
-  pick_up: {
-    customer_name: string;
-    mobile_number: string;
-    area: string;
-    block: string;
-    street: string;
-  };
-  drop_off: {
-    customer_name: string;
-    mobile_number: string;
-    area: string;
-    block: string;
-    street: string;
-    floor?: string;
-    room_number?: string;
-  };
-};
 
 interface OrdersPageProps {
   data: TypeOrderHistoryList[];

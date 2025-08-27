@@ -17,14 +17,12 @@ import { Lightbulb, X } from 'lucide-react';
 import React, { useState } from 'react';
 
 export function WalletBalance({
-  handleCreditAction,
   setIsOpen,
 }: {
-  handleCreditAction: () => void;
   setIsOpen: React.Dispatch<React.SetStateAction<Number | undefined>>;
 }) {
   const sharedStore = useSharedStore();
-  const { walletBalance } = useWalletStore();
+  const { walletBalance, isDisableAddCredit } = useWalletStore();
 
   const isLowBalence = Number(walletBalance) < 3;
 
@@ -43,7 +41,8 @@ export function WalletBalance({
           )}
         </div>
         <div className="flex flex-col items-cemter justify-center gap-2">
-          <Button
+          <Button 
+            disabled={isDisableAddCredit}
             onClick={() => setIsOpen(2)}
             className="bg-white text-indigo-600 hover:bg-gray-100"
           >

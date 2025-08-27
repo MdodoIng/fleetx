@@ -7,12 +7,12 @@ import { StoreApi, UseBoundStore } from 'zustand';
 import { SharedActions, SharedState } from '@/store/sharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
 
-const setBranchDetails = async (
-  branchId: any,
-  venderStore: VenderState & VenderActions
-) => {
+export const setBranchDetails = async () => {
+  const venderStore = useVenderStore.getState();
   try {
-    const res = await vendorService.getBranchDetails(branchId!);
+    const res = await vendorService.getBranchDetails(venderStore.vendorId!);
+
+    console.log(res, 'afd');
 
     venderStore.setValue('branchDetails', res.data);
   } catch (error) {
@@ -20,17 +20,29 @@ const setBranchDetails = async (
   }
 };
 
-export async function updateZoneAndSome({
-  sharedStore,
-  venderStore,
-}: {
-  sharedStore: SharedState & SharedActions;
-  venderStore: VenderState & VenderActions;
-}) {
-  const { branchDetails, branchId, selectedBranch, setValue } = venderStore;
+export const setVenderDetails = async () => {
+  const venderStore = useVenderStore.getState();
+  try {
+    const res = await vendorService.getVendorDetails(venderStore.vendorId!);
+
+    console.log(res, 'afd2222');
+
+    venderStore.setValue('selectedVendor', res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export async function updateZoneAndSome() {
+  const { branchDetails, branchId, selectedBranch, selectedVendor, setValue } =
+    useVenderStore.getState();
+  const sharedStore = useSharedStore.getState();
 
   if (!branchDetails) {
-    await setBranchDetails(branchId, venderStore);
+    await setBranchDetails();
+  }
+  if (!selectedVendor) {
+    await setVenderDetails();
   }
 
   const selectedBranchId = selectedBranch?.id || branchId;
@@ -45,7 +57,7 @@ export async function updateZoneAndSome({
           : undefined
       );
       sharedStore.setValue('defaultZoneId', sharedStore.currentZoneId);
-      venderStore.setValue('selectedVendorName', branch.name);
+      setValue('selectedVendorName', branch.name);
 
       // onBranchSelectionCheckZoneBusyModeIsActive(branch.address);
     }

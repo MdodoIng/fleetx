@@ -5,6 +5,13 @@ export type TypeBalanceAlertReq = {
   alert_enabled: boolean;
 };
 
+export type TypePaymentAddReq = {
+  vendor_id: string;
+  branch_id: string;
+  amount: number;
+  reason: string;
+};
+
 export type TypeWalletNotifyBalanceRes = {
   data: {
     id: string;
@@ -18,4 +25,3 @@ export type TypeWalletNotifyBalanceRes = {
     branch_id: string;
   };
 };
-

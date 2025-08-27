@@ -11,8 +11,10 @@ import { Input } from '@/shared/components/ui/input';
 import { cn } from '@/shared/lib/utils';
 import { checkBlockActivation } from '@/shared/services';
 import { useSharedStore, useVenderStore } from '@/store';
+import { useWalletStore } from '@/store/useWalletStore';
 import { Wallet, X } from 'lucide-react';
 import React, { useState } from 'react';
+import { useAddCredit } from '../hooks/useAddCredit';
 
 export default function ModelBox({
   isOpen,
@@ -21,10 +23,13 @@ export default function ModelBox({
   isOpen: Number | undefined;
   setIsOpen: React.Dispatch<React.SetStateAction<Number | undefined>>;
 }) {
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [selected, setSelected] = useState<number | null>(null);
   const sheredStore = useSharedStore();
   const venderStore = useVenderStore();
+  const walletStore = useWalletStore();
+
+  const { submitAddCredit, handleAddCredit } = useAddCredit();
 
   const recommendations = [
     {
@@ -47,22 +52,11 @@ export default function ModelBox({
     },
   ];
 
-  const handleAddCredit = async () => {
+  const handleSubmit = async () => {
+    const value = parseFloat(String(amount));
+    if (Number.isNaN(value) || value <= 0) return;
     try {
-      const checkBlockActRes = await checkBlockActivation(
-        venderStore.vendorId!,
-        venderStore.branchId!
-      );
-
-      if (
-        checkBlockActRes &&
-        checkBlockActRes.data &&
-        checkBlockActRes.data.blocked
-      ) {
-        console.log(checkBlockActRes.data.message);
-      } else {
-        // addCreditAfterCheckBlockActivation();
-      }
+      await submitAddCredit(value);
     } catch (err: any) {
       console.log(err.error?.message || err.message);
     }
@@ -133,7 +127,7 @@ export default function ModelBox({
                       <Button
                         variant="outline"
                         onClick={() => {
-                          setIsOpen(2);
+                          !walletStore.isDisableAddCredit && setIsOpen(2);
                           setAmount(opt.value);
                         }}
                         className="bg-yellow-50 border-yellow-300 text-gray-700 text-xs"
@@ -150,7 +144,7 @@ export default function ModelBox({
                   <label className="text-sm font-medium">Credit Amount:</label>
                   <div className="flex items-center gap-2 mt-2">
                     <Input
-                      value={String(amount)}
+                      value={String(amount) || "0"}
                       onChange={(e) => setAmount(Number(e.target.value))}
                       placeholder="Enter amount"
                       className="flex-1 border-blue-500 focus-visible:ring-blue-500"
@@ -210,7 +204,7 @@ export default function ModelBox({
 
           {isOpen === 2 && (
             <Button
-              onClick={() => handleAddCredit()}
+              onClick={() => handleSubmit()}
               className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 "
             >
               Add Credit

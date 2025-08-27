@@ -3,6 +3,7 @@ import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranch,
   TypeBranch,
+  TypeVender,
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
@@ -20,7 +21,7 @@ export const vendorService = {
       body: JSON.stringify(vendor),
     }),
 
-  getVendorDetails: (id: string) =>
+  getVendorDetails: (id: string): Promise<TypeVender> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
 
   getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>

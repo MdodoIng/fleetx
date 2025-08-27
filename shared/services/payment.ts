@@ -1,9 +1,10 @@
 import { apiFetch } from '../lib/utils';
 import {
   TypeBalanceAlertReq,
+  TypePaymentAddReq,
   TypeWalletNotifyBalanceRes,
 } from '../types/payment';
-import { configService } from './app-config';
+import { AppConfigService, configService } from './app-config';
 
 export const paymentService = {
   confirmWalletNotifyBalance(request: TypeBalanceAlertReq): Promise<any> {
@@ -28,5 +29,15 @@ export const paymentService = {
     return apiFetch(configService.paymentServiceApiUrl() + url, {
       method: 'GET',
     });
+  },
+
+  addFleetxCredit(request: TypePaymentAddReq & any) {
+    return apiFetch(
+      AppConfigService.paymentServiceApiUrl() + '/add/mashkor-credit',
+      {
+        method: 'POST',
+        body: JSON.stringify(request),
+      }
+    );
   },
 };

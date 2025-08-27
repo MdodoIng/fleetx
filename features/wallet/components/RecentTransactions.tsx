@@ -64,7 +64,7 @@ export function RecentTransactions() {
   const fetchVendorWalletBalance = async () => {
     setIsLoading(true);
     try {
-      if (venderStore.vendorId && venderStore.branchId) {
+      if (venderStore.vendorId) {
         const walletHistoryUrl = reportService.getWalletHistoryUrl(
           4,
           null,
