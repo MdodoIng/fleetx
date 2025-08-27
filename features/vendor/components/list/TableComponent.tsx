@@ -24,6 +24,11 @@ import {
   ServerCrash,
   BetweenVerticalEndIcon,
   GitBranch,
+  Axis3dIcon,
+  MagnetIcon,
+  Minus,
+  Activity,
+  Edit,
 } from 'lucide-react';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 
@@ -32,9 +37,10 @@ import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { OperationType } from '@/shared/types/orders';
 import { cn } from '@/shared/lib/utils';
 import { CentralWalletItem } from '@/features/wallet/type';
+import { TypeVenderList } from '@/shared/types/vender';
 
 interface OrdersPageProps {
-  data: CentralWalletItem[];
+  data: TypeVenderList;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;
@@ -77,48 +83,19 @@ export default function TableComponent({
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">
         {data.map((item, idx) => {
-          const isCredit = Number(item.walletBalance) > 0;
-
           return (
             <div
               key={idx}
               className="bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100 w-full"
             >
-              {/* Header Row */}
-              {/*<div className="flex justify-between items-center mb-3 w-full">
-                <div className="flex gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      operation_type?.color || 'bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {operation_type?.value}
-                  </span>
-                  <span className="font-semibold text-gray-700">
-                    FleetX{' '}
-                    <span className="text-sm font-normal">
-                      {branch?.main_branch
-                        ? 'Main Branch' + ' ' + branch?.name
-                        : branch?.name}
-                    </span>
-                  </span>
-                </div>
-                <div className="flex justify-between items-center mt-3 text-xs text-gray-500 gap-1.5">
-                  <span className="flex items-center gap-1">
-                    <Clock size={12} />
-                    {new Date(txn.updated_at).toLocaleString()}
-                  </span>{' '}
-                </div>
-              </div>*/}
-
               {/* Order Details */}
-              <div className="grid md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] w-full gap-4 text-sm">
+              <div className="grid md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] w-full gap-4 text-sm">
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <User2 size={14} /> User.
+                    <User2 size={14} /> Vender.
                   </span>
                   <span className="text-sm font-medium text-gray-800">
-                    {item.vendor}
+                    {item.name}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
@@ -126,29 +103,49 @@ export default function TableComponent({
                     <GitBranch size={14} /> Branch.
                   </span>
                   <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.branch} 
+                    {item.main_branch.name}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <ServerCrash size={14} /> Min Wallet Balance.
+                    <Phone size={14} /> Phone.
                   </span>
                   <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.minWalletBalance} {appConstants?.currency}
+                    {item.main_branch.mobile_number}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <BetweenVerticalEndIcon size={14} /> Balence.
+                    <Axis3dIcon size={14} /> Adress.
                   </span>
-                  <span
-                    className={cn(
-                      'text-sm font-medium text-gray-800',
-                      isCredit ? 'text-red-500' : 'text-green-500'
-                    )}
-                  >
-                    {isCredit ? '+' : '-'}
-                    {item.walletBalance} {appConstants?.currency}
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    {item.main_branch.address.area},{' '}
+                    {item.main_branch.address.block},{' '}
+                    {item.main_branch.address.street}
+                  </span>
+                </div>
+                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <MagnetIcon size={14} /> Account Manager.
+                  </span>
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    {item.account_manager ? <Activity /> : <Minus />}
+                  </span>
+                </div>
+                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <MagnetIcon size={14} /> Users.
+                  </span>
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    <User />
+                  </span>
+                </div>
+                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <Edit size={14} /> Action.
+                  </span>
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    <Edit />
                   </span>
                 </div>
               </div>

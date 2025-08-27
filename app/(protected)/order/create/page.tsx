@@ -172,7 +172,6 @@ export default function ShippingForm() {
 
   const updatePickUpDetailsForBranchUser = async () => {
     if (branchId) {
-
       try {
         const res = await vendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,

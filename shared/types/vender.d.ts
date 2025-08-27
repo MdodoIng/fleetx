@@ -1,6 +1,13 @@
 type RootTypeBranch = {
   data: TypeBranch[];
 };
+
+type RootTypeBranchByBranchId = {
+  data: TypeBranch;
+};
+
+
+
 type TypeBranch = {
   id: string;
   name: string;

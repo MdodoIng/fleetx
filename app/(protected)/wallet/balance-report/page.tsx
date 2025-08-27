@@ -39,6 +39,7 @@ function BalanceReport(): JSX.Element {
         nextSetItemTotal
       );
       const res = await reportService.getVendorBalanceReport(url);
+      // @ts-ignore
       return res.data || undefined;
     } catch (error) {
       console.error('Failed to fetch central wallet balance:', error);
@@ -153,10 +154,10 @@ function BalanceReport(): JSX.Element {
   };
 
   useEffect(() => {
-    const loadInitialWalletBalance = async () => {
+    const loadFetchBalanceReport = async () => {
       await fetchBalanceReport();
     };
-    loadInitialWalletBalance();
+    loadFetchBalanceReport();
   }, [venderStore.vendorId, venderStore.branchId, page, isCentralWallet]);
 
   console.log(data, 'aeefeafsafaaf');

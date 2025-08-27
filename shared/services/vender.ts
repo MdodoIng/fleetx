@@ -3,6 +3,7 @@ import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranch,
+  RootTypeBranchByBranchId,
   TypeBranch,
   TypeVender,
   TypeVenderList,
@@ -62,7 +63,7 @@ export const vendorService = {
       branch_id: string;
     },
     options?: any
-  ): Promise<RootTypeBranch> =>
+  ): Promise<RootTypeBranchByBranchId> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),

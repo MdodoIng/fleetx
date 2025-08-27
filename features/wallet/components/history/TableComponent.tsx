@@ -115,7 +115,7 @@ export default function TableComponent({
               </div>
 
               {/* Order Details */}
-              <div className="grid md:grid-cols-3 w-full gap-4 text-sm">
+              <div className="grid md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] w-full gap-4 text-sm">
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
                     <User2 size={14} /> User.
