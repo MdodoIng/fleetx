@@ -1,4 +1,5 @@
 import { TypeOrderHistoryList } from '@/shared/types/orders';
+import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { useOrderStore } from '@/store/useOrderStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -47,24 +48,49 @@ function useTableExport() {
   };
 
   const exportOrdersToCSV = (
-    data: TypeOrderHistoryList[],
-    filename = 'orders.csv'
+    data: TypeOrderHistoryList[] | TypeWalletTransactionHistoryRes['data'],
+    type: 'wallet history' | 'order history',
+    fname?: string
   ) => {
     if (!data || data.length === 0) return;
 
     const separator = ',';
-    const keys = [
-      'fleetx_order_number',
-      'customer_name',
-      'phone_number',
-      'from',
-      'to',
-      'amount_to_collect',
-      'class_status',
-      'driver_name',
-      'driver_phone',
-      'creation_date',
-    ];
+    const filename = fname ?? type + '.csv';
+    let keys;
+    switch (type) {
+      case 'order history':
+        keys = [
+          'fleetx_order_number',
+          'customer_name',
+          'phone_number',
+          'from',
+          'to',
+          'amount_to_collect',
+          'class_status',
+          'driver_name',
+          'driver_phone',
+          'creation_date',
+        ];
+        break;
+      case 'wallet history':
+        keys = [
+          'balance.balance_amount',
+          'updated_at',
+          'txn_number',
+          'txn_amount',
+          'txn_type',
+          'txn_at',
+          'operation_type',
+          'vendor_id',
+          'branch_id',
+          'initial_amount',
+          'tax_amount',
+          'wallet_type',
+          'source',
+          'delivery_model',
+          'delivery_distance',
+        ];
+    }
 
     const csvContent =
       keys.join(separator) +

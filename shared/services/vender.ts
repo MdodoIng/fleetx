@@ -1,9 +1,14 @@
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
-import { RootTypeBranch, TypeBranch } from '../types/vender';
+import {
+  RootTypeBranch,
+  TypeBranch,
+  TypeVender,
+  TypeWalletResponce,
+} from '../types/vender';
 import { configService } from './app-config';
 
-export const VendorService = {
+export const vendorService = {
   create: (vendor: any) =>
     apiFetch(`${configService.vendorServiceApiUrl()}/create`, {
       method: 'POST',
@@ -16,10 +21,10 @@ export const VendorService = {
       body: JSON.stringify(vendor),
     }),
 
-  getVendorDetails: (id: string) =>
+  getVendorDetails: (id: string): Promise<TypeVender> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
 
-  getVendorInfo: (id: string) =>
+  getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
 
   getVendorList: (url: string) =>
@@ -52,7 +57,10 @@ export const VendorService = {
       `${configService.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),
 
-  getVendorWalletBalance: (vendorId: string, branchId?: string) => {
+  getVendorWalletBalance: (
+    vendorId: string,
+    branchId?: string
+  ): Promise<TypeWalletResponce> => {
     let url = `/${vendorId}`;
     if (branchId) url += `/branch/${branchId}`;
     return apiFetch(

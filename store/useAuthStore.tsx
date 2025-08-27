@@ -47,7 +47,10 @@ function getInitialAuthState(): boolean {
 
     if (isTokenValid) {
       useAuthStore.setState({
-        user: decoded,
+        user: {
+          ...decoded,
+          token: user.token,
+        },
         isAuthenticated: true,
       });
     } else {

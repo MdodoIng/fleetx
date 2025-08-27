@@ -16,7 +16,7 @@ export const kuwait = {
     max_length: 8,
     regx_key: '^[0-9]{7,8}$',
   },
-}
+};
 
 export const bahrain = {
   currency: 'BD',
@@ -36,7 +36,7 @@ export const bahrain = {
     max_length: 8,
     regx_key: '^[0-9]{8,8}$',
   },
-}
+};
 
 export const qatar = {
   currency: 'QAR',
@@ -56,4 +56,4 @@ export const qatar = {
     max_length: 8,
     regx_key: '^[0-9]{8,8}$',
   },
-}
+};

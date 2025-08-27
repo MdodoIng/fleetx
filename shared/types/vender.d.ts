@@ -60,3 +60,13 @@ export type TypeVender = {
     account_manager: null;
   };
 };
+
+export type TypeWallet = {
+  wallet_balance: number;
+  recharged_count: number;
+  is_vendor_central_wallet_enabled: boolean;
+};
+
+export type TypeWalletResponce = {
+  data: TypeWallet;
+};

@@ -8,16 +8,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
-import {
-  dropOffSchema,
-  pickUpSchema,
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '@/features/orders/validations/order';
+
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 
 import { hasValue } from '@/shared/lib/helpers';
-import { VendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vender';
 import {
   TypeDropOffs,
   TypeEstimatedDelivery,
@@ -33,7 +28,13 @@ import {
   usedropOffFormValuesForDropffs,
   usePickUpFormValuesForPickUp,
 } from '@/features/orders/hooks/useOrders';
-import { orderService } from '@/features/orders/services/ordersApi';
+import { orderService } from '@/shared/services/orders';
+import {
+  dropOffSchema,
+  pickUpSchema,
+  TypeDropOffSchema,
+  TypePickUpSchema,
+} from '@/features/orders/validations/order';
 
 // Main component
 export default function ShippingForm() {
@@ -54,7 +55,7 @@ export default function ShippingForm() {
 
   const [isValid, setIsValid] = useState(false);
 
-  const [isCOD, setIsCOD] = useState<1 | 2>(1);
+  const [isCOD, setIsCOD] = useState<1 | 2>(2);
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
@@ -156,7 +157,7 @@ export default function ShippingForm() {
         hasValue(dropOffFormValues.customer_name) &&
         hasValue(dropOffFormValues.mobile_number) &&
         hasValue(dropOffFormValues.street_id) &&
-        (isCOD === 2 ? hasValue(dropOffFormValues.amount_to_collect) : true);
+        (isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true);
 
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
@@ -178,7 +179,7 @@ export default function ShippingForm() {
         });
       }
       try {
-        const res = await VendorService.getBranchDetailByBranchId({
+        const res = await vendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,
           branch_id: branchId!,
         });
@@ -214,7 +215,7 @@ export default function ShippingForm() {
 
   const searchAddressByMobileNumber = async (mobileNumber: string) => {
     try {
-      const res = await VendorService.getAddressByMobile(
+      const res = await vendorService.getAddressByMobile(
         vendorId!,
         branchId!,
         mobileNumber

@@ -1,4 +1,5 @@
 import { apiFetch } from '@/shared/lib/utils';
+import { getDecodedAccessToken } from '@/shared/services';
 import { configService } from '@/shared/services/app-config';
 import {
   TypeEstimatedDelivery,
@@ -9,7 +10,7 @@ import {
   TypeRootOrderStatusHistoryHistory,
 } from '@/shared/types/orders';
 import { useVenderStore } from '@/store';
-import { getDecodedAccessToken, useSharedStore } from '@/store/sharedStore';
+import {  useSharedStore } from '@/store/sharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>

@@ -194,8 +194,6 @@ export default function MyMap({
           <Polyline path={routePath} options={polylineOptions} />
         )}
       </GoogleMap>
-
-
     </div>
   );
 }

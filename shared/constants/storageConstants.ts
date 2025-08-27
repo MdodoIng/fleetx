@@ -11,7 +11,7 @@ export const storageConstants = {
   busy_mode: 'b_m_data',
   zone_busy_mode: 'z_b_m_data',
   app_version: 'a_v',
-  branch_id:""
+  branch_id: '',
 };
 
 export const uploadFiles = {
@@ -146,10 +146,10 @@ export const RATE_REASONS_EN: any[] = [
 ];
 
 export const RATE_REASONS_AR: any[] = [
-  { id: 1, name: "نظافه السائق" },
+  { id: 1, name: 'نظافه السائق' },
   { id: 2, name: 'التأخر في استلام الطلب' },
   { id: 3, name: 'التأخر في توصيل الطلب' },
-  { id: 4, name: "سلوك السائق" },
+  { id: 4, name: 'سلوك السائق' },
 ];
 
 export const RATE_TYPE: any[] = [
@@ -202,10 +202,7 @@ export const BULK_INSIGHTS_TYPES = {
   canceled_count: 'Cancelled',
   total_rescheduled_count: 'Total rescheduled',
   active_rescheduled_count: 'Active rescheduled',
-}
-
-
-
+};
 
 export const PAYMENTTYPE = {
   COD: '1',

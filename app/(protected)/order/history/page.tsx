@@ -1,5 +1,5 @@
 'use client';
-import { orderService } from '@/features/orders/services/ordersApi';
+import { orderService } from '@/shared/services/orders';
 import { CalendarIcon, Download, Grid, List, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { addDays, format } from 'date-fns';
@@ -193,7 +193,7 @@ export default function OrderTrackingDashboard() {
           </div>
 
           <Button
-            onClick={() => exportOrdersToCSV(orderStore.orderHistoryListData!)}
+            onClick={() => exportOrdersToCSV(orderStore.orderHistoryListData!,"order history")}
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <Download className="w-5 h-5" /> Export

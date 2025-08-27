@@ -1,4 +1,5 @@
 import { TypeBranch, TypeVender } from '@/shared/types/vender';
+import { get } from 'react-hook-form';
 import { create } from 'zustand';
 
 import { persist } from 'zustand/middleware';
@@ -9,13 +10,15 @@ export interface VenderState {
   branchId: string | null;
   branchName: string | null;
   selectedVendorName: string | null;
-  selectedVendor: TypeVender | undefined;
+  selectedVendor: TypeVender['data'] | undefined;
   selectedBranch: TypeBranch | undefined;
+  isVendorAdmin: boolean;
 }
 
 export interface VenderActions {
   clearAll: () => void;
   setValue: (key: keyof VenderState, value: any) => void;
+  updateSelectedBranch: (branchId?: string) => void;
 }
 
 export const useVenderStore = create<VenderState & VenderActions>()(
@@ -28,8 +31,13 @@ export const useVenderStore = create<VenderState & VenderActions>()(
       selectedVendor: undefined,
       branchId: null,
       vendorId: null,
+      isVendorAdmin: false,
 
       setValue: (key: keyof VenderState, value: any) => set({ [key]: value }),
+      updateSelectedBranch: (branchId) => {
+        if (!branchId) {
+        }
+      },
 
       clearAll: () =>
         set({
@@ -40,6 +48,7 @@ export const useVenderStore = create<VenderState & VenderActions>()(
           selectedBranch: undefined,
         }),
     }),
+
     {
       name: 'vender-storage',
     }

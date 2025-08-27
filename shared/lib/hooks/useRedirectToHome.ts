@@ -1,14 +1,14 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { MAIN_MENU } from '@/shared/constants/routes';
-import { associateFoodics, useSharedStore } from '@/store/sharedStore';
+import { useSharedStore, useVenderStore } from '@/store';
+import { associateFoodics } from '@/shared/services';
 
 export function useRedirectToHome() {
   const router = useRouter();
-  const { foodicsIsAlreadyConnected, foodicsReference, branchId, vendorId } =
-    useSharedStore();
+  const { foodicsIsAlreadyConnected, foodicsReference } = useSharedStore();
+  const { vendorId, branchId } = useVenderStore();
 
   const redirectToHomeLogic = async () => {
     if (foodicsIsAlreadyConnected) {

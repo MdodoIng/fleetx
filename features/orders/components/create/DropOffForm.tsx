@@ -16,11 +16,15 @@ import {
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
-import { TypeDropOffSchema, TypePickUpSchema } from '../../validations/order';
+import {
+  TypeDropOffSchema,
+  TypePickUpSchema,
+} from '../../../wallet/validations/order';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
 import AddressLandmarkFields from '../ui/LandmarkFields';
+import { M_PLUS_1p } from 'next/font/google';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
@@ -147,7 +151,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      isCOD === 2
+                      isCOD === 1
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -155,9 +159,9 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="yes"
-                      checked={isCOD === 2}
+                      checked={isCOD === 1}
                       onChange={() => {
-                        setIsCOD(2);
+                        setIsCOD(1);
                       }}
                       className="accent-cyan-500 w-4 h-4"
                     />
@@ -168,7 +172,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   <label
                     className={cn(
                       'flex items-center gap-2 cursor-pointer',
-                      isCOD === 1
+                      isCOD === 2
                         ? 'text-cyan-500 font-semibold'
                         : 'text-gray-500'
                     )}
@@ -176,9 +180,9 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <input
                       type="radio"
                       value="no"
-                      checked={isCOD === 1}
+                      checked={isCOD === 2}
                       onChange={() => {
-                        setIsCOD(1);
+                        setIsCOD(2);
                       }}
                       className="accent-cyan-500 w-4 h-4"
                     />
@@ -195,7 +199,8 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <FormLabel>Amount</FormLabel>
                     <FormControl className="bg-white">
                       <Input
-                        disabled={isCOD === 1}
+                        disabled={isCOD === 2}
+                        required={isCOD === 1}
                         placeholder="Ex: 10"
                         {...field}
                       />

@@ -1,5 +1,5 @@
 'use client';
-import { orderService } from '@/features/orders/services/ordersApi';
+import { orderService } from '@/shared/services/orders';
 import { Grid, List, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -66,8 +66,6 @@ export default function OrderTrackingDashboard() {
     try {
       const res = await orderService.getOrderList(url);
 
-      console.log(res.data[0].delivery_duration, 'afads');
-
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
         if (orderStore.orderStatusListData) {
@@ -106,7 +104,7 @@ export default function OrderTrackingDashboard() {
   //   refetch();
   // }, [selectedOrder.id, refetch]);
 
-  console.log(orderStore.orderHistoryListData);
+
 
   function handleTableChange(style: 'grid' | 'list') {
     if (document.startViewTransition) {

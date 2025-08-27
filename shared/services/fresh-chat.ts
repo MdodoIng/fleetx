@@ -1,9 +1,7 @@
-"use client"
+'use client';
 import { useEffect, useRef } from 'react';
 import { environment } from '@/environments/environment';
 import { commonMessages } from '../constants/commonMessages';
-
-
 
 interface FCWidget {
   init: (data: any) => void;

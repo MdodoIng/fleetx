@@ -15,7 +15,7 @@ import {
   getBlock,
   getBuildings,
   getStreet,
-} from '@/store/sharedStore';
+} from '@/shared/services';
 import LandmarkInput from './LandmarkInput';
 
 const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
@@ -25,9 +25,10 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
 
 import { makeLoc } from '@/shared/lib/helpers';
 import dynamic from 'next/dynamic';
-import { TypePickUpSchema } from '../../validations/order';
+
 import SearchResults from './searchList';
 import { useOrderStore } from '@/store/useOrderStore';
+import { TypePickUpSchema } from '../../validations/order';
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
@@ -173,7 +174,6 @@ export default function AddressLandmarkFields({
           label: item.name_en,
         }));
 
-     
       setTimeout(() => {
         setSearchData(items);
       }, 50);
@@ -195,8 +195,6 @@ export default function AddressLandmarkFields({
 
     setMapValues(center);
   }, [landmarkValues.latitude, landmarkValues.longitude, isMap]);
-
-
 
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street' | 'building';

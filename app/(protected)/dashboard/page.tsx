@@ -52,7 +52,7 @@ function ProtectedContent(): JSX.Element {
                 <p>
                   <strong>Role:</strong>{' '}
                   <span className="capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {user?.roles.join(", ")}
+                    {user?.roles.join(', ')}
                   </span>
                 </p>
                 <p>
