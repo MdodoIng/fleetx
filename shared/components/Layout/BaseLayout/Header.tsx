@@ -30,25 +30,21 @@ const Header: React.FC = () => {
         <Link href="/" className={navLinkClass('/')}>
           Home
         </Link>
-        <Link href="/login" className={navLinkClass('/login')}>
+        <Link href="/auth/login" className={navLinkClass('/login')}>
           login
         </Link>
         {isAuthenticated && (
           <>
-            <Link href="/order" className={navLinkClass('/order')}>
+            <Link
+              suppressHydrationWarning
+              href="/order"
+              className={navLinkClass('/order')}
+            >
               order
             </Link>
             {hasRole('FINANCE_MANAGER') && (
-              <Link href="/admin" className={navLinkClass('/admin')}>
+              <Link href="/dashboard" className={navLinkClass('/dashboard')}>
                 Admin
-              </Link>
-            )}
-            {hasRole('SALES_HEAD') && (
-              <Link
-                href="/super-admin"
-                className={navLinkClass('/super-admin')}
-              >
-                Super Admin
               </Link>
             )}
           </>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="527" height="302" viewBox="0 0 527 302">
+  <defs>
+    <linearGradient id="linear-gradient" x1="-0.056" y1="0.903" x2="1.288" y2="-0.239" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#587bec"/>
+      <stop offset="1" stop-color="#ea5976"/>
+    </linearGradient>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_4" data-name="Rectangle 4" width="527" height="302" rx="47" transform="translate(743 512)" fill="url(#linear-gradient)"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_2" data-name="Mask Group 2" transform="translate(-743 -512)" clip-path="url(#clip-path)">
+    <g id="Group_7" data-name="Group 7">
+      <g id="Ellipse_3" data-name="Ellipse 3" transform="translate(846 273)" fill="none" stroke="#fff" stroke-width="68" opacity="0.08">
+        <circle cx="200" cy="200" r="200" stroke="none"/>
+        <circle cx="200" cy="200" r="166" fill="none"/>
+      </g>
+      <g id="Ellipse_4" data-name="Ellipse 4" transform="translate(1117 588)" fill="none" stroke="#fff" stroke-width="64" opacity="0.08">
+        <circle cx="200" cy="200" r="200" stroke="none"/>
+        <circle cx="200" cy="200" r="168" fill="none"/>
+      </g>
+    </g>
+  </g>
+</svg>

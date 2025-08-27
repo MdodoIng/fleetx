@@ -1,19 +1,36 @@
+'use client';
+import { withAuth } from './withAuth';
 import Header from './Header';
 import SideBar from './Sidebar';
+import { SearchX } from 'lucide-react';
+import { useEffect } from 'react';
+import { updateZoneAndSome } from '@/shared/services/header';
+import { useSharedStore, useVenderStore } from '@/store';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
+  header?: {
+    title: string;
+  };
 }
 
-const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
+const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
+  const sharedStore = useSharedStore();
+  const venderStore = useVenderStore();
+  useEffect(() => {
+    async function callUpdateZone() {
+      await updateZoneAndSome({ sharedStore, venderStore });
+    }
+    callUpdateZone();
+  }, [updateZoneAndSome]);
   return (
-    <main className="flex items-start justify-start h-svh overflow-hidden">
-      <SideBar />
+    <section className="flex items-start justify-start h-svh overflow-hidden">
+      <SideBar header={header} />
       <div className="h-full overflow-y-auto w-full">
-        <Header />
+        <Header {...header} />
         {children}
       </div>
-    </main>
+    </section>
   );
 };
 

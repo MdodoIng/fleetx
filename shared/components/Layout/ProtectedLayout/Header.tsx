@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { Button } from '../../ui/button';
+import { useTranslations } from 'next-intl';
 
-const Header: React.FC = () => {
+const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
   const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole } =
     useAuthStore();
@@ -24,10 +25,11 @@ const Header: React.FC = () => {
     return `${baseClass} ${isActivePath(path) ? activeClass : inactiveClass}`;
   };
 
+  const t = useTranslations();
   return (
     <nav className="">
       <div className="ml-10 flex items-center md:space-x-4">
-        <p className="">Order</p>
+        <p className="">{t(title)}</p>
         <LocaleSwitcher />
         <div className="flex ml-auto">
           {isAuthenticated ? (

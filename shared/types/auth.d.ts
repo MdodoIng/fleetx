@@ -1,24 +1,43 @@
-type UserRole =
-  | 'VENDOR_USER'
+export type UserRole =
   | 'OPERATION_MANAGER'
+  | 'VENDOR_USER'
   | 'FINANCE_MANAGER'
   | 'VENDOR_ACCOUNT_MANAGER'
   | 'SALES_HEAD';
+
+export interface AuthRoot {
+  data: AuthData;
+}
+
+export interface AuthData {
+  roles: UserRole[];
+  token: string;
+  user: User;
+}
+
 export interface User {
-  id: string;
-  name: string;
   email: string;
-  role: UserRole;
+  first_name: string;
+  last_name: string;
+  supplier_admin: null;
+  user_id: string;
+  roles: UserRole[];
+  vendor?: {
+    vendor_id: string;
+    branch_id: string;
+    sla_accepted: boolean;
+    password_reset_by_user: boolean;
+  } | null;
 }
 
 interface AuthState {
-  user: User | null;
+  user: AuthData | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 interface AuthActions {
-  login: (email: string, password: string) => Promise<boolean>;
+  // login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   setLoading: (loading: boolean) => void;
   hasRole: (role: UserRole) => boolean;
@@ -27,3 +46,30 @@ interface AuthActions {
 }
 
 type AuthStore = AuthState & AuthActions;
+
+type UserLogin = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  oldPassword: string;
+};
+
+type ResetPassword = {
+  password: string;
+  confirm_password: string;
+  user_id: string;
+};
+
+interface ChangePassword extends ResetPassword {
+  old_password: string;
+  user_id: string;
+}
+
+export interface DecodedToken {
+  userId: string;
+  user: User;
+  roles: UserRole[];
+  token: string;
+  orig_iat?: number;
+  exp?: number;
+}

@@ -1,29 +1,35 @@
-'use client';
 import { clsx, type ClassValue } from 'clsx';
-import { useLocale } from 'next-intl';
-
-import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { storageKeys } from './storageKeys';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export  function useRTL() {
-  const [direction, setDirection] = useState<'ltr' | 'rtl'>('ltr');
-  const locale = useLocale() ?? 'en';
+export async function apiFetch<T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem(storageKeys.authAppToken)}`,
+  };
 
-  useMemo(() => {
-    const determineDirection = () => {
-      if (locale.startsWith('ar')) {
-        setDirection('rtl');
-      } else {
-        setDirection('ltr');
-      }
-    };
+  const headers = {
+    ...defaultHeaders,
+    ...(options.headers || {}),
+  };
 
-    determineDirection();
-  }, [locale]);
+  const res = await fetch(url, {
+    ...options,
+    headers: headers,
+    cache: 'no-store', // prevents Next.js caching
+  });
 
-  return direction;
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`API error ${res.status}: ${errorText}`);
+  }
+
+  return await res.json();
 }

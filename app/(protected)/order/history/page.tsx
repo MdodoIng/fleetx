@@ -1,112 +1,190 @@
 'use client';
-import { useAuthStore } from '@/store/useAuthStore';
-import Link from 'next/link';
-import { type JSX } from 'react';
+import { orderService } from '@/features/orders/services/ordersApi';
+import { Grid, List, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-function ProtectedContent(): JSX.Element {
-  const { user, logout } = useAuthStore();
+import GridComponent from '@/features/orders/components/Livelist/GridComponent';
+import ListComponent from '@/features/orders/components/Livelist/ListComponent';
+import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
+import {
+  TypeOrderHistoryList,
+  TypeOrderStatusHistoryHistory,
+} from '@/shared/types/orders';
+import { useOrderStore } from '@/store/useOrderStore';
+import { useAuthStore } from '@/store';
+import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+
+export default function OrderTrackingDashboard() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('All Orders');
+  const [ordernNumber, setOrdernNumber] = useState('');
+  const orderStore = useOrderStore();
+  const authStore = useAuthStore();
+
+  const [isEditDetails, setIsEditDetails] = useState(false);
+  const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [searchOrder, setSearchOrder] = useState('');
+  const [searchCustomer, setSearchCustomer] = useState('');
+  const [searchDriver, setSearchDriver] = useState('');
+  const [selectedAccountManager, setSelectedAccountManager] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
+    undefined
+  );
+
+  const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
+    orderStore?.orderHistoryListData &&
+      orderStore?.orderHistoryListData.length > 0
+      ? orderStore?.orderHistoryListData[0]
+      : ({} as TypeOrderHistoryList)
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
+
+  const fetchOrderDetails = async (perPage: number) => {
+    setIsLoading(true);
+
+    const searchAll = isEditDetails ? null : true;
+
+    const url = orderService.getOrderStatusUrl(
+      page,
+      perPage,
+      ordernNumber,
+      searchCustomer,
+      searchDriver,
+      searchAll
+    );
+
+    try {
+      const res = await orderService.getOrderList(url);
+
+      console.log(res.data[0].delivery_duration, 'afads');
+
+      orderStore.setSourceForTable(res.data);
+      setSelectedOrder(
+        orderStore.orderHistoryListData
+          ? orderStore.orderHistoryListData[0]
+          : ({} as TypeOrderHistoryList)
+      );
+
+      // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+
+      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
+      const errorMessage =
+        err.error?.message ||
+        err.message ||
+        'An unknown error occurred while fetching orders.';
+
+      console.error('Error in fetchOrderDetails:', errorMessage);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialOrders = async () => {
+      await fetchOrderDetails(20);
+    };
+    loadInitialOrders();
+  }, []);
+
+  const isOrderLiveIsTable = authStore.user?.roles.includes('VENDOR_USER');
+
+  const { statusHistory } = useOrderStatusHistory(selectedOrder);
+
+  // useEffect(() => {
+  //   // Refetch when selectedOrder.id changes
+  //   refetch();
+  // }, [selectedOrder.id, refetch]);
+
+  console.log(orderStore.orderHistoryListData);
+
+  function handleTableChange(style: 'grid' | 'list') {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setIsStyleTabel(style);
+      });
+    } else {
+      setIsStyleTabel(style);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                Order History Page
-              </h1>
-              <p className="text-gray-600">
-                Welcome to the order history section of our application!
-              </p>
-            </div>
+    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
+      {/* Left Panel - Orders List */}
+
+      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
+        <div className="flex items-center justify-between ">
+          <h2 className="text-xl font-semibold text-gray-900">Active Orders</h2>
+        </div>
+
+        {/* Search and Filter */}
+        <div className="flex items-center justify-center gap-1.5">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search by Order No, Customer, Phone"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <select
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+            className=" px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option>All Orders</option>
+            <option>Active</option>
+            <option>Confirmed</option>
+            <option>Urgent</option>
+          </select>
+          <div
+            hidden={isOrderLiveIsTable}
+            className="flex gap-2 border bg-white rounded-md"
+          >
             <button
-              onClick={logout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              onClick={() => handleTableChange('grid')}
+              className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              Logout
+              <Grid className="w-5 h-5 text-gray-600" />
             </button>
-          </div>
-
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-green-800 mb-2">
-              🎉 Access Granted!
-            </h2>
-            <p className="text-green-700">
-              You have successfully accessed this protected page. This content
-              is only available to authenticated users.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                User Information
-              </h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>Name:</strong> {user?.name}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user?.email}
-                </p>
-                <p>
-                  <strong>Role:</strong>{' '}
-                  <span className="capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {user?.role}
-                  </span>
-                </p>
-                <p>
-                  <strong>User ID:</strong> {user?.id}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Protected Features
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>✅ View past orders</li>
-                <li>✅ Filter order history</li>
-                <li>✅ Download invoices</li>
-                <li>✅ Reorder previous items</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-blue-800 mb-3">
-              📋 Order History Content
-            </h3>
-            <p className="text-blue-700 mb-4">
-              This section displays a comprehensive history of all your orders.
-            </p>
-            <ul className="list-disc list-inside text-blue-700 space-y-1">
-              <li>Search and filter options</li>
-              <li>Detailed order summaries</li>
-              <li>Status of past orders</li>
-              <li>Option to view order details</li>
-            </ul>
-          </div>
-
-          <div className="flex gap-4">
-            <Link
-              href="/"
-              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+            <span className="h-auto bg-gray-200 w-0.5 " />
+            <button
+              onClick={() => handleTableChange('list')}
+              className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              Back to Home
-            </Link>
-            <Link
-              href="/admin-only"
-              className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              Try Admin Page
-            </Link>
+              <List className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
         </div>
       </div>
+
+      {isOrderLiveIsTable ? (
+        <TableComponent data={orderStore?.orderHistoryListData!} />
+      ) : (
+        <>
+          {isStyleTabel === 'grid' && (
+            <GridComponent
+              orders={orderStore?.orderHistoryListData!}
+              selectedOrder={selectedOrder}
+              setSelectedOrder={setSelectedOrder}
+              statusHistory={statusHistory}
+            />
+          )}
+
+          {isStyleTabel === 'list' && <ListComponent />}
+        </>
+      )}
     </div>
   );
 }
-
-export default ProtectedContent;
