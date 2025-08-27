@@ -15,7 +15,7 @@ import type {
   UserLogin,
   UserRole,
 } from '@/shared/types/auth';
-import { useSharedStore, useVenderStore } from '.';
+import { clearAllStore, useSharedStore, useVenderStore } from '.';
 
 const userApiUrl = configService.userServiceApiUrl();
 
@@ -33,6 +33,7 @@ type AuthState = {
   hasRole: (role: UserRole) => boolean;
   hasAnyRole: (roles: UserRole[]) => boolean;
   getAccessTokenTime: () => { orgTime: number; exp: number } | null;
+  clearAll: () => void;
 };
 
 function getInitialAuthState(): boolean {
@@ -64,10 +65,16 @@ function getInitialAuthState(): boolean {
   }
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+const initialState: AuthState | any = {
   user: null,
   isLoading: true,
   isAuthenticated: false,
+};
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+  ...initialState,
+
+  clearAll: () => set({ ...initialState }),
   hasRole: (role) => {
     const { user } = get();
 
@@ -167,6 +174,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
+    clearAllStore();
     set({ user: null, isAuthenticated: false });
   },
 

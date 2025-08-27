@@ -19,12 +19,15 @@ import { statusColors, paymentMap } from '@/features/orders/constants';
 import Rating from './Rating';
 import { useSharedStore } from '@/store';
 
-
 interface OrdersPageProps {
   data: TypeOrderHistoryList[];
+  isRating?: boolean;
 }
 
-export default function TableComponent({ data }: OrdersPageProps) {
+export default function TableComponent({
+  data,
+  isRating = true,
+}: OrdersPageProps) {
   const [page, setPage] = useState(1);
   const [rating, setRating] = useState(0);
   const { appConstants } = useSharedStore();
@@ -64,11 +67,13 @@ export default function TableComponent({ data }: OrdersPageProps) {
                   <Clock size={12} />
                   {new Date(order.creation_date).toLocaleString()}
                 </span>
-                <Rating
-                  initial={0}
-                  order={order}
-                  onChange={(value) => console.log('Selected Rating:', value)}
-                />
+                {isRating && (
+                  <Rating
+                    initial={0}
+                    order={order}
+                    onChange={(value) => console.log('Selected Rating:', value)}
+                  />
+                )}
               </div>
             </div>
 

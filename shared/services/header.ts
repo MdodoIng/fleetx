@@ -1,11 +1,12 @@
 'use clinet';
 import { environment } from '@/environments/environment';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
 import { vendorService } from './vender';
 import { StoreApi, UseBoundStore } from 'zustand';
 import { SharedActions, SharedState } from '@/store/sharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
+import { ca } from 'zod/v4/locales';
 
 export const setBranchDetails = async () => {
   const venderStore = useVenderStore.getState();
@@ -17,6 +18,30 @@ export const setBranchDetails = async () => {
     venderStore.setValue('branchDetails', res.data);
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getVendorList = async () => {
+  const { selectedAccountManager, getVendorAccoutManagerId, setValue } =
+    useVenderStore.getState();
+  const { user } = useAuthStore.getState();
+  getVendorAccoutManagerId();
+  if (
+    user?.roles.includes('OPERATION_MANAGER') ||
+    user?.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
+    user?.roles.includes('SALES_HEAD') ||
+    user?.roles.includes('FINANCE_MANAGER')
+  ) {
+    const url = vendorService.setVendorListurl(null, null, null);
+
+    try {
+      const res = await vendorService.getVendorList(url);
+
+      setValue('venderList', res.data);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 
@@ -37,6 +62,7 @@ export async function updateZoneAndSome() {
   const { branchDetails, branchId, selectedBranch, selectedVendor, setValue } =
     useVenderStore.getState();
   const sharedStore = useSharedStore.getState();
+  await getVendorList();
 
   if (!branchDetails) {
     await setBranchDetails();

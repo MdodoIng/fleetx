@@ -27,7 +27,7 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
 
   useMemo(async () => {
     await setBranchDetails();
-  }, [venderStore.branchId]);
+  }, [venderStore.branchId, venderStore.vendorId]);
 
   return (
     <section className="flex items-start justify-start h-svh overflow-hidden">

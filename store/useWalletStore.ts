@@ -77,27 +77,23 @@ export interface WalletActions {
   setTabBasedOnRole: () => void;
 }
 
+const initialState: WalletState = {
+  isCentralWalletEnabled: false,
+  walletBalance: 0,
+  isRechargedOrWalletBalance: 0,
+  isShowAddCreditButton: false,
+  isShowUserMessageWhenBranchSelected: false,
+  isDisableAddCredit: true,
+  isAddCreditDebit: false,
+};
+
 export const useWalletStore = create<WalletState & WalletActions>()(
   persist(
     (set, get) => ({
-      isCentralWalletEnabled: false,
-      walletBalance: 0,
-      isRechargedOrWalletBalance: 0,
-      isShowAddCreditButton: false,
-      isShowUserMessageWhenBranchSelected: false,
-      isDisableAddCredit: true,
-      isAddCreditDebit: false,
+      ...initialState,
 
       setValue: (key: keyof WalletState, value: any) => set({ [key]: value }),
-      clearAll: () => {
-        set({
-          isCentralWalletEnabled: false,
-          walletBalance: 0,
-          isRechargedOrWalletBalance: 0,
-          isShowAddCreditButton: false,
-          isShowUserMessageWhenBranchSelected: false,
-        });
-      },
+      clearAll: () => set({ ...initialState }),
 
       checkWallet: () => {
         const { user } = useAuthStore.getState();

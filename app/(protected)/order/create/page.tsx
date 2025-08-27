@@ -3,7 +3,7 @@
 import { Button } from '@/shared/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Clock, Coins, MapPin, Truck } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -171,13 +171,8 @@ export default function ShippingForm() {
   const prevIsActiveRef = useRef(false);
 
   const updatePickUpDetailsForBranchUser = async () => {
-    if (user?.roles?.includes('VENDOR_USER') && branchId) {
-      if (orderStore.pickUp?.area) {
-        Object.entries(orderStore.pickUp).forEach(([key, value]) => {
-          // @ts-ignore
-          pickUpForm.setValue(key as keyof typeof orderStore.pickUp, value);
-        });
-      }
+    if (branchId) {
+
       try {
         const res = await vendorService.getBranchDetailByBranchId({
           vendor_id: vendorId!,
@@ -196,6 +191,10 @@ export default function ShippingForm() {
       }
     }
   };
+
+  useMemo(async () => {
+    await updatePickUpDetailsForBranchUser();
+  }, [branchId]);
 
   const updateDropOutDetailsForStore = () => {
     if (

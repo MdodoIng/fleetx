@@ -1,111 +1,216 @@
 'use client';
+import { BalanceReportItem } from '@/features/wallet/type';
+import TableComponent from '@/features/wallet/components/balance-report/TableComponent';
+import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import { Button } from '@/shared/components/ui/button';
+import { Popover } from '@/shared/components/ui/popover';
+import useTableExport from '@/shared/lib/hooks/useTableExport';
+import { reportService } from '@/shared/services/report';
+import { vendorService } from '@/shared/services/vender';
+import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
+import { RootTypeBranch, TypeBranch } from '@/shared/types/vender';
+import { useOrderStore, useVenderStore } from '@/store';
 import { useAuthStore } from '@/store/useAuthStore';
+import { Download, Search, Wallet } from 'lucide-react';
 import Link from 'next/link';
-import { type JSX } from 'react';
+import { useEffect, useState, type JSX } from 'react';
+import { is } from 'zod/v4/locales';
 
-function ProtectedContent(): JSX.Element {
-  const { user, logout } = useAuthStore();
+function BalanceReport(): JSX.Element {
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(10);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
+  const venderStore = useVenderStore();
+  const [data, setData] = useState<BalanceReportItem[]>();
+  const [isCentralWallet, setIsCentralWallet] = useState(false);
+
+  const fetchCentralWalletBalance = async (): Promise<
+    BalanceReportItem[] | undefined
+  > => {
+    if (!venderStore.vendorId) {
+      console.warn('No vendor ID available for central wallet');
+      return [];
+    }
+
+    try {
+      const url = reportService.getVendorBalanceUrl(
+        page,
+        venderStore.vendorId,
+        nextSetItemTotal
+      );
+      const res = await reportService.getVendorBalanceReport(url);
+      return res.data || undefined;
+    } catch (error) {
+      console.error('Failed to fetch central wallet balance:', error);
+      throw error; // Re-throw to be handled by main function
+    }
+  };
+
+  const fetchBranchWalletBalances = async (): Promise<
+    BalanceReportItem[] | undefined
+  > => {
+    const allVendors = venderStore.venderList || [];
+
+    if (allVendors.length === 0) {
+      console.warn('No vendors available');
+      return [];
+    }
+
+    try {
+      // Process vendors in parallel for better performance
+      const vendorPromises = allVendors.map(async (vendor) => {
+        try {
+          const allBranches = await vendorService.getBranchDetails(vendor.id);
+          const branches = allBranches?.data || [];
+
+          console.log(branches, 'branches');
+
+          if (branches.length === 0) {
+            console.warn(`No branches found for vendor: ${vendor.name}`);
+            return [];
+          }
+
+          // Process branches in parallel for each vendor
+          const branchPromises = branches.map(async (branch: TypeBranch) => {
+            try {
+              const url = reportService.getBranchWalletBalanceUrl(
+                page,
+                vendor.id!,
+                branch.id!,
+                nextSetItemTotal
+              );
+              const res = await reportService.getBranchWalletBalanceReport(url);
+
+              if (!res.data) {
+                return [];
+              }
+
+              return res.data.map((r) => ({
+                vendor: vendor.name,
+                branch: branch.name,
+                walletBalance: r?.balance?.balance_amount || 0,
+                minWalletBalance: branch.required_min_wallet_balance || 0,
+              }));
+            } catch (error) {
+              console.error(
+                `Failed to fetch balance for branch ${branch.name}:`,
+                error
+              );
+              return []; // Return empty array to continue processing other branches
+            }
+          });
+
+          const branchResults = await Promise.all(branchPromises);
+          return branchResults.flat();
+        } catch (error) {
+          console.error(
+            `Failed to fetch branches for vendor ${vendor.name}:`,
+            error
+          );
+          return []; // Continue processing other vendors
+        }
+      });
+
+      const vendorResults = await Promise.all(vendorPromises);
+      // @ts-ignore
+      return vendorResults.flat() || undefined;
+    } catch (error) {
+      console.error('Failed to fetch branch wallet balances:', error);
+      throw error;
+    }
+  };
+
+  // Updated main function
+  const fetchBalanceReport = async (): Promise<void> => {
+    setIsLoading(true);
+
+    try {
+      let data: BalanceReportItem[];
+
+      if (isCentralWallet) {
+        const fetchedData = await fetchCentralWalletBalance();
+        data = fetchedData || [];
+      } else {
+        const fetchedData = await fetchBranchWalletBalances();
+        data = fetchedData || [];
+      }
+
+      setData(data!);
+      console.log(`Successfully fetched ${data.length} balance records`);
+    } catch (err: any) {
+      const errorMessage =
+        err?.error?.message ||
+        err?.message ||
+        'An unknown error occurred while fetching wallet balance.';
+
+      console.error('Error in fetchBalanceReport:', errorMessage);
+
+      // Optionally show error to user
+      // setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialWalletBalance = async () => {
+      await fetchBalanceReport();
+    };
+    loadInitialWalletBalance();
+  }, [venderStore.vendorId, venderStore.branchId, page, isCentralWallet]);
+
+  console.log(data, 'aeefeafsafaaf');
+
+  const { exportOrdersToCSV } = useTableExport();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                Balance Report
-              </h1>
-              <p className="text-gray-600">
-                Welcome to the balance report section of our application!
-              </p>
-            </div>
-            <button
-              onClick={logout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
+      {/* Left Panel - Orders List */}
+
+      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
+        <div className="flex items-center justify-between gap-10 ">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Balance Report
+          </h2>
+          <div className="flex items-center justify-center gap-1.5">
+            <Button
+              onClick={() => setIsCentralWallet(!isCentralWallet)}
+              className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              Logout
-            </button>
-          </div>
-
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-green-800 mb-2">
-              🎉 Access Granted!
-            </h2>
-            <p className="text-green-700">
-              You have successfully accessed this protected page. This content
-              is only available to authorized users.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                User Information
-              </h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>Name:</strong> {user?.name}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user?.email}
-                </p>
-                <p>
-                  <strong>Role:</strong>{' '}
-                  <span className="capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {user?.role}
-                  </span>
-                </p>
-                <p>
-                  <strong>User ID:</strong> {user?.id}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Protected Features
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>✅ Generate balance reports</li>
-                <li>✅ Customize report parameters</li>
-                <li>✅ Download reports in multiple formats</li>
-                <li>✅ Schedule report generation</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-blue-800 mb-3">
-              📋 Balance Report Content
-            </h3>
-            <p className="text-blue-700 mb-4">
-              This section allows authorized users to generate balance reports.
-            </p>
-            <ul className="list-disc list-inside text-blue-700 space-y-1">
-              <li>Report generation form</li>
-              <li>Customization options</li>
-              <li>Download links</li>
-            </ul>
-          </div>
-
-          <div className="flex gap-4">
-            <Link
-              href="/"
-              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Back to Home
-            </Link>
-            <Link
-              href="/admin-only"
-              className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              Try Admin Page
-            </Link>
+              <Wallet className="w-5 h-5" />{' '}
+              {isCentralWallet ? 'Central Wallet' : 'Branch Wallet'}
+            </Button>
           </div>
         </div>
+
+        {/* Search and Filter */}
+        <div className="flex items-center justify-center gap-1.5">
+          <Button
+            onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <Download className="w-5 h-5" /> Export
+          </Button>
+        </div>
       </div>
+
+      {data?.length ? (
+        <TableComponent
+          data={data!}
+          page={page}
+          setPage={setPage}
+          nextSetItemTotal={nextSetItemTotal}
+        />
+      ) : (
+        <>no data</>
+      )}
     </div>
   );
 }
 
-export default ProtectedContent;
+export default withAuth(BalanceReport, [
+  'OPERATION_MANAGER',
+  'FINANCE_MANAGER',
+  'VENDOR_ACCOUNT_MANAGER',
+  'SALES_HEAD',
+]);

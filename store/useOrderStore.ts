@@ -13,7 +13,7 @@ import {
 } from '@/shared/types/orders';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import {  useSharedStore } from './sharedStore';
+import { useSharedStore } from './sharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
 
 interface DeliverySummary {
@@ -54,27 +54,33 @@ interface OrderState {
     data: TypeLiveOrderItem[],
     clearData?: boolean
   ) => void;
+  clearAll: () => unknown;
 }
+
+const initialState: OrderState | any = {
+  driverId: null,
+  dropOffs: [],
+  selectedDropOffs: [],
+  selectedPage: 1,
+  selectedPerPage: 10,
+  orderStatusListData: undefined,
+  totalCountList: 0,
+  pickUp: undefined,
+  estimatedDelivery: undefined,
+  deliveryModel: TypeDelivery[0],
+  estimatedDeliveryReturnFromApi: undefined,
+  deliverySummary: null,
+  orderHistoryListData: undefined,
+  OLDER_DATE: '2023-01-01',
+  isEditDetails: false,
+};
 
 export const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
-      driverId: null,
-      dropOffs: [],
-      selectedDropOffs: [],
-      selectedPage: 1,
-      selectedPerPage: 10,
-      orderStatusListData: undefined,
-      totalCountList: 0,
-      pickUp: undefined,
-      estimatedDelivery: undefined,
-      deliveryModel: TypeDelivery[0],
-      estimatedDeliveryReturnFromApi: undefined,
-      deliverySummary: null,
-      orderHistoryListData: undefined,
-      OLDER_DATE: '2023-01-01',
-      isEditDetails: false,
+      ...initialState,
 
+      clearAll: () => set({ ...initialState }),
       updateDeliveryModel: (deliveryModel: number) => {
         const delivery = TypeDelivery.find((x) => x.key === deliveryModel);
         set({ deliveryModel: delivery ? delivery : TypeDelivery[0] });

@@ -23,6 +23,7 @@ import {
   User2,
   ServerCrash,
   BetweenVerticalEndIcon,
+  GitBranch,
 } from 'lucide-react';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 
@@ -30,9 +31,10 @@ import { useSharedStore, useVenderStore } from '@/store';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { OperationType } from '@/shared/types/orders';
 import { cn } from '@/shared/lib/utils';
+import { CentralWalletItem } from '@/features/wallet/type';
 
 interface OrdersPageProps {
-  data: TypeWalletTransactionHistoryRes['data'];
+  data: CentralWalletItem[];
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;
@@ -74,21 +76,16 @@ export default function TableComponent({
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">
-        {data.map((txn, idx) => {
-          const isCredit = Number(txn.txn_amount) > 0;
-          const operation_type = OperationType.find(
-            (x) => x.key === txn?.operation_type
-          );
-          const branch = venderStore.branchDetails?.find(
-            (branch) => branch.id === txn.branch_id
-          );
+        {data.map((item, idx) => {
+          const isCredit = Number(item.walletBalance) > 0;
+
           return (
             <div
               key={idx}
               className="bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100 w-full"
             >
               {/* Header Row */}
-              <div className="flex justify-between items-center mb-3 w-full">
+              {/*<div className="flex justify-between items-center mb-3 w-full">
                 <div className="flex gap-2">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -112,30 +109,32 @@ export default function TableComponent({
                     {new Date(txn.updated_at).toLocaleString()}
                   </span>{' '}
                 </div>
-              </div>
+              </div>*/}
 
               {/* Order Details */}
-              <div className="grid md:grid-cols-3 w-full gap-4 text-sm">
+              <div className="grid md:grid-cols-4 w-full gap-4 text-sm">
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
                     <User2 size={14} /> User.
                   </span>
                   <span className="text-sm font-medium text-gray-800">
-                    {venderStore.selectedVendor?.name}
+                    {item.vendor}
+                  </span>
+                </div>
+                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <GitBranch size={14} /> Branch.
+                  </span>
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    {item.branch} 
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                   <span className="text-xs text-gray-400 flex items-center gap-1">
                     <ServerCrash size={14} /> Amount.
                   </span>
-                  <span
-                    className={cn(
-                      'text-sm font-medium text-gray-800',
-                      isCredit ? 'text-red-500' : 'text-green-500'
-                    )}
-                  >
-                    {isCredit ? '+' : '-'}
-                    {txn.tax_amount} {appConstants?.currency}
+                  <span className={cn('text-sm font-medium text-gray-800')}>
+                    {item.minWalletBalance} {appConstants?.currency}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
@@ -149,7 +148,7 @@ export default function TableComponent({
                     )}
                   >
                     {isCredit ? '+' : '-'}
-                    {txn.balance.balance_amount} {appConstants?.currency}
+                    {item.walletBalance} {appConstants?.currency}
                   </span>
                 </div>
               </div>

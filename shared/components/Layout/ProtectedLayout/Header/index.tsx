@@ -2,9 +2,10 @@
 import { useAuthStore } from '@/store';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import LocaleSwitcher from '../LocaleSwitcher';
-import { Button } from '../../ui/button';
 import { useTranslations } from 'next-intl';
+import LocaleSwitcher from '../../LocaleSwitcher';
+import { Button } from '@/shared/components/ui/button';
+import UserAndBranchSelecter from './UserAndBranchSelecter';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
@@ -31,6 +32,7 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
       <div className="ml-10 flex items-center md:space-x-4">
         <p className="">{t(title)}</p>
         <LocaleSwitcher />
+        <UserAndBranchSelecter />
         <div className="flex ml-auto">
           {isAuthenticated ? (
             <Button onClick={logout} variant={'destructive'}>

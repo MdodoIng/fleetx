@@ -1,5 +1,5 @@
 type RootTypeBranch = {
-  data: TypeBranch;
+  data: TypeBranch[];
 };
 type TypeBranch = {
   id: string;
@@ -69,4 +69,54 @@ export type TypeWallet = {
 
 export type TypeWalletResponce = {
   data: TypeWallet;
+};
+
+export type TypeVenderListMainBranch = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted: boolean;
+  name: string;
+  name_ar: null;
+  code: null;
+  mobile_number: string;
+  active: boolean;
+  main_branch: boolean;
+  created_by: string;
+  address: {
+    area: string;
+    block: string;
+    street: string;
+    area_id: number;
+    block_id: number;
+    landmark: string;
+    latitude: string;
+    longitude: string;
+    street_id: number;
+    paci_number: string;
+  };
+  required_min_wallet_balance: string;
+  source: number;
+  vendor: string;
+};
+
+export type TypeVenderListItem = {
+  id: string;
+  account_manager: null;
+  vendor_affiliation: null;
+  created_at: string;
+  name: string;
+  business_name: string;
+  onboarding_type: number;
+  company_legal_name: null;
+  official_name: null;
+  is_vendor_central_wallet_enabled: boolean;
+  main_branch: TypeVenderListMainBranch;
+};
+
+export type TypeVenderList = TypeVenderListItem[];
+
+export type TypeVenderListRes = {
+  data: TypeVenderList;
+  NEXT_SET_ITEMS_TOKEN: number[];
 };

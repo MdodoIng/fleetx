@@ -1,9 +1,12 @@
+import { useVenderStore } from '@/store';
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranch,
   TypeBranch,
   TypeVender,
+  TypeVenderList,
+  TypeVenderListRes,
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
@@ -27,7 +30,27 @@ export const vendorService = {
   getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
 
-  getVendorList: (url: string) =>
+  setVendorListurl: (
+    perPage: number | null,
+    searchVendor?: string | null,
+    NEXT_SET_ITEMS_TOKEN?: string[] | null
+  ) => {
+    const { getVendorAccoutManagerId, selectedAccountManager } =
+      useVenderStore.getState();
+    getVendorAccoutManagerId();
+    let url = '/vendors-list?';
+    url = perPage ? url + 'page_size=' + perPage : url;
+    url = searchVendor ? url + '&search=' + searchVendor : url;
+    NEXT_SET_ITEMS_TOKEN?.forEach((element) => {
+      url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
+    });
+    if (selectedAccountManager) {
+      url = url + '&account_manager=' + selectedAccountManager;
+    }
+    return url;
+  },
+
+  getVendorList: (url: string): Promise<TypeVenderListRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
   getBranchDetails: (id: string): Promise<RootTypeBranch> =>
