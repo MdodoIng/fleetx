@@ -13,6 +13,7 @@ import {
 import { useOrderStore } from '@/store/useOrderStore';
 import { useAuthStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+import LoadingPage from '../../loading';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,13 +68,12 @@ export default function OrderTrackingDashboard() {
 
       console.log(res.data[0].delivery_duration, 'afads');
 
-      orderStore.setSourceForTable(res.data);
-      setSelectedOrder(
-        orderStore.orderHistoryListData
-          ? orderStore.orderHistoryListData[0]
-          : ({} as TypeOrderHistoryList)
-      );
-
+      if (res.data) {
+        orderStore.setSourceForTable('orderStatusListData', res.data);
+        if (orderStore.orderStatusListData) {
+          setSelectedOrder(orderStore.orderStatusListData[0]);
+        }
+      }
       // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
       setIsLoading(false);
     } catch (err: any) {
@@ -96,7 +96,8 @@ export default function OrderTrackingDashboard() {
     loadInitialOrders();
   }, []);
 
-  const isOrderLiveIsTable = authStore.user?.roles.includes('VENDOR_USER');
+  const isOrderLiveIsTable =
+    authStore.user?.roles.includes('OPERATION_MANAGER');
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
@@ -116,6 +117,8 @@ export default function OrderTrackingDashboard() {
       setIsStyleTabel(style);
     }
   }
+
+  if (isLoading || !orderStore.orderStatusListData) return <LoadingPage />;
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
@@ -170,19 +173,21 @@ export default function OrderTrackingDashboard() {
       </div>
 
       {isOrderLiveIsTable ? (
-        <TableComponent data={orderStore?.orderHistoryListData!} />
+        <TableComponent data={orderStore?.orderStatusListData!} />
       ) : (
         <>
           {isStyleTabel === 'grid' && (
             <GridComponent
-              orders={orderStore?.orderHistoryListData!}
+              orders={orderStore?.orderStatusListData!}
               selectedOrder={selectedOrder}
               setSelectedOrder={setSelectedOrder}
               statusHistory={statusHistory}
             />
           )}
 
-          {isStyleTabel === 'list' && <ListComponent />}
+          {isStyleTabel === 'list' && (
+            <ListComponent data={orderStore?.orderStatusListData!} />
+          )}
         </>
       )}
     </div>
