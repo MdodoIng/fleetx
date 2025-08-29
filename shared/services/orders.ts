@@ -9,7 +9,7 @@ import {
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
 } from '@/shared/types/orders';
-import { useVenderStore } from '@/store';
+import { useAuthStore, useVenderStore } from '@/store';
 import {  useSharedStore } from '@/store/sharedStore';
 
 export const orderService = {
@@ -63,8 +63,10 @@ export const orderService = {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
     const currentUser = getDecodedAccessToken();
     const { branchId, vendorId } = useVenderStore.getState();
-    console.log(currentUser);
-    switch (currentUser?.roles[0]) {
+    const { user } = useAuthStore.getState();
+    
+    
+    switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
       case 'SALES_HEAD':
@@ -84,7 +86,7 @@ export const orderService = {
         }
         break;
       case 'VENDOR_USER':
-        if (!currentUser.user.vendor?.branch_id) {
+        if (!user.user.vendor?.branch_id) {
           if (branchId) {
             url = url + '&branch_id=' + branchId;
           }

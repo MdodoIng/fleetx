@@ -2,33 +2,34 @@ import { useVenderStore } from '@/store';
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
-  RootTypeBranch,
-  RootTypeBranchByBranchId,
+  TypeAddVenderReq,
   TypeBranch,
+  TypeEditVenderReq,
   TypeVender,
   TypeVenderList,
   TypeVenderListRes,
+  TypeVenderRes,
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
 
 export const vendorService = {
-  create: (vendor: any) =>
+  create: (vendor: TypeAddVenderReq) =>
     apiFetch(`${configService.vendorServiceApiUrl()}/create`, {
       method: 'POST',
       body: JSON.stringify(vendor),
     }),
 
-  update: (vendor: any) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/update/${vendor.id}`, {
+  update: (req: TypeEditVenderReq) =>
+    apiFetch(`${configService.vendorServiceApiUrl()}/update/${req.id}`, {
       method: 'PUT',
-      body: JSON.stringify(vendor),
+      body: JSON.stringify(req),
     }),
 
-  getVendorDetails: (id: string): Promise<TypeVender> =>
+  getVendorDetails: (id: string): Promise<TypeVenderRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
 
-  getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>
+  getVendorInfo: (id: string): Promise<{ data: TypeVender }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
 
   setVendorListurl: (
@@ -54,7 +55,7 @@ export const vendorService = {
   getVendorList: (url: string): Promise<TypeVenderListRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
-  getBranchDetails: (id: string): Promise<RootTypeBranch> =>
+  getBranchDetails: (id: string): Promise<{ data: TypeBranch }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details?id=${id}`),
 
   getBranchDetailByBranchId: (
@@ -63,7 +64,7 @@ export const vendorService = {
       branch_id: string;
     },
     options?: any
-  ): Promise<RootTypeBranchByBranchId> =>
+  ): Promise<any> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),

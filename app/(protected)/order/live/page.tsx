@@ -48,6 +48,7 @@ export default function OrderTrackingDashboard() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
 
   const fetchOrderDetails = async (perPage: number) => {
@@ -91,7 +92,7 @@ export default function OrderTrackingDashboard() {
 
   useEffect(() => {
     const loadInitialOrders = async () => {
-      await fetchOrderDetails(20);
+      await fetchOrderDetails(perPage);
     };
     loadInitialOrders();
   }, [venderStore.branchId]);
@@ -122,7 +123,7 @@ export default function OrderTrackingDashboard() {
 
   if (isLoading || !orderStore.orderStatusListData) return <LoadingPage />;
 
-  console.log(selectedOrder.id);
+  console.log(selectedOrder);
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">

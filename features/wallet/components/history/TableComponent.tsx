@@ -71,6 +71,9 @@ export default function TableComponent({
     };
   }, [handleLoadMore]);
 
+  
+  console.log(venderStore.selectedVendor, "venderStore.selectedVendor")
+  
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">

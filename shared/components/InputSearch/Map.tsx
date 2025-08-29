@@ -7,6 +7,7 @@ import {
 } from '@react-google-maps/api';
 import { environment } from '@/environments/environment';
 import { mashkorMap } from '@/shared/constants/mapStyle';
+import { isMounted } from '@/shared/lib/hooks';
 
 const containerStyle = {
   width: '100%',
@@ -41,6 +42,20 @@ export default function MyMap({
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: environment.GOOGLE_KEY!,
   });
+
+  if (!isLoaded) {
+    return (
+      <div
+        style={containerStyle}
+        className="flex items-center justify-center bg-gray-100"
+      >
+        <div className="flex flex-col items-center space-y-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <p className="text-gray-600 text-sm">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const [mapCenter, setMapCenter] = useState({ lat: 29.3759, lng: 47.9774 });
@@ -95,20 +110,6 @@ export default function MyMap({
     fillOpacity: 0.1,
   };
 
-  if (!isLoaded) {
-    if (!window.google?.maps) return;
-    return (
-      <div
-        style={containerStyle}
-        className="flex items-center justify-center bg-gray-100"
-      >
-        <div className="flex flex-col items-center space-y-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <p className="text-gray-600 text-sm">Loading map...</p>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="relative">
       <GoogleMap

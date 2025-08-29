@@ -13,7 +13,7 @@ import { MapPin } from 'lucide-react';
 import { ChangeEvent } from 'react';
 import { Control } from 'react-hook-form';
 import SearchResults from './searchList';
-import { TypePickUpSchema } from '../../validations/order';
+import { TypePickUpSchema } from '../../../features/orders/validations/order';
 
 const LandmarkInput = ({
   control,
@@ -33,6 +33,7 @@ const LandmarkInput = ({
   setIsInputVal,
   formLabel,
   selectedItems,
+  location,
 }: {
   control: Control<any, any, any>;
   fieldName: 'address';
@@ -41,7 +42,7 @@ const LandmarkInput = ({
   handleRemoveAddress: (removed: any) => void;
   setIsInputVal: React.Dispatch<React.SetStateAction<string>>;
   isInputVal: string;
-  landmarkValues: TypePickUpSchema;
+  landmarkValues: any;
   handleEnter: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setIsMapOpen: React.Dispatch<React.SetStateAction<boolean>>;
   searchData: Locs[] | undefined;
@@ -51,22 +52,34 @@ const LandmarkInput = ({
   isMapOpen: boolean;
   isMap: boolean;
   formLabel?: string;
+  location?: string;
 }) => {
   const selectedItem = [
     {
-      name_en: landmarkValues?.area!,
+      name_en: location
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.area!
+        : landmarkValues?.area!,
       loc_type: 'area',
     },
     {
-      name_en: landmarkValues?.block!,
+      name_en: location
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.block!
+        : landmarkValues?.block!,
       loc_type: 'block',
     },
     {
-      name_en: landmarkValues?.street!,
+      name_en: location
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.street!
+        : landmarkValues?.street!,
       loc_type: 'street',
     },
     {
-      name_en: landmarkValues?.building!,
+      name_en:
+        landmarkValues && location
+          ? landmarkValues?.[
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.building!
+          : landmarkValues?.building!,
       loc_type: 'building',
     },
   ];

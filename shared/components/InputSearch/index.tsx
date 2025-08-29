@@ -10,13 +10,7 @@ import React, {
 } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import {
-  getArea,
-  getBlock,
-  getBuildings,
-  getStreet,
-} from '@/shared/services';
-import LandmarkInput from './LandmarkInput';
+import { getArea, getBlock, getBuildings, getStreet } from '@/shared/services';
 
 const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
   ssr: false,
@@ -26,21 +20,24 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
 import { makeLoc } from '@/shared/lib/helpers';
 import dynamic from 'next/dynamic';
 
-import SearchResults from './searchList';
 import { useOrderStore } from '@/store/useOrderStore';
-import { TypePickUpSchema } from '../../validations/order';
+import { TypePickUpSchema } from '@/features/orders/validations/order';
+import LandmarkInput from './LandmarkInput';
+import SearchResults from './searchList';
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
   landmarkFieldName: 'address';
   isDisabled?: boolean;
   isMap?: boolean;
+  location?: string;
 }
 
 export default function AddressLandmarkFields({
   form,
   landmarkFieldName,
   isMap = false,
+  location,
 }: AddressLandmarkProps) {
   const { control, watch, setValue } = form;
 
@@ -55,16 +52,30 @@ export default function AddressLandmarkFields({
   const [selctedItems, setSelcectItems] = useState<Locs[]>();
   const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
   const [mapValues, setMapValues] = useState<{
-    lat: number | undefined;
-    lng: number | undefined;
+    lat: number;
+    lng: number;
   }>({
-    lat: undefined,
-    lng: undefined,
+    lat: 0,
+    lng: 0,
   });
 
   const [searchData, setSearchData] = useState<Locs[] | undefined>(undefined);
   const [isInputVal, setIsInputVal] = useState<string>('');
   const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
+
+  const formVaues = form.watch();
+
+  useEffect(() => {
+    if (watch(location ? `${location}.street` : 'street')) {
+      setCurrentLevel('building');
+    } else if (watch(location ? `${location}.block` : 'block')) {
+      setCurrentLevel('street');
+    } else if (watch(location ? `${location}.area` : 'area')) {
+      setCurrentLevel('block');
+    } else {
+      setCurrentLevel('area');
+    }
+  }, [formVaues, location, watch]);
 
   useMemo(async () => {
     if (!isInputBlur) return;
@@ -189,8 +200,20 @@ export default function AddressLandmarkFields({
     if (!isMap) return;
 
     const center = {
-      lat: Number(landmarkValues.latitude),
-      lng: Number(landmarkValues.longitude),
+      lat: Number(
+        location
+          ? landmarkValues?.[
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.latitude
+          : landmarkValues?.latitude
+      ),
+      lng: Number(
+        location
+          ? landmarkValues?.[
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.longitude
+          : landmarkValues?.longitude
+      ),
     };
 
     setMapValues(center);
@@ -199,10 +222,10 @@ export default function AddressLandmarkFields({
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street' | 'building';
 
-    setValue(`${key}`, data.name_en);
-    setValue(`${key}_id`, data.id);
-    setValue('latitude', data.latitude);
-    setValue('longitude', data.longitude);
+    setValue(location ? `${location}.${key}` : key, data.name_en);
+    setValue(location ? `${location}.${key}_id` : `${key}_id`, data.id);
+    setValue(location ? `${location}.latitude` : 'latitude', data.latitude);
+    setValue(location ? `${location}.longitude` : 'longitude', data.longitude);
 
     setParentId(data.id);
     setIsInputVal('');
@@ -247,9 +270,8 @@ export default function AddressLandmarkFields({
   function clearValues(keys: any[]) {
     keys.forEach((key) => {
       // @ts-ignore
-      setValue(`${key}`, '');
-      // @ts-ignore
-      setValue(`${key}_id`, undefined);
+      setValue(location ? `${location}.${key}` : key, '');
+      setValue(location ? `${location}.${key}_id` : `${key}_id`, undefined);
     });
   }
 
@@ -277,6 +299,7 @@ export default function AddressLandmarkFields({
         {/* Landmark Inputs */}
         <LandmarkInput
           control={control}
+          location={location}
           fieldName={landmarkFieldName}
           handleAddressClick={handleAddressClick}
           handleEnter={handleEnter}
@@ -309,6 +332,7 @@ export default function AddressLandmarkFields({
             {/* Landmark Inputs */}
             <LandmarkInput
               control={control}
+              location={location}
               fieldName={landmarkFieldName}
               handleAddressClick={handleAddressClick}
               handleEnter={handleEnter}

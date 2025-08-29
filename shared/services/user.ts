@@ -1,5 +1,6 @@
 import { configService } from '@/shared/services/app-config';
 import { User, UserLogin } from '@/shared/types/auth';
+import { apiFetch } from '../lib/utils';
 
 const getUserServiceApiUrl = configService.userServiceApiUrl();
 const getvendorServiceApiUrl = configService.vendorServiceApiUrl();

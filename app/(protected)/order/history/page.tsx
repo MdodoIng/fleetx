@@ -12,7 +12,7 @@ import {
   TypeOrderStatusHistoryHistory,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
@@ -31,6 +31,7 @@ export default function OrderTrackingDashboard() {
   const [ordernNumber, setOrdernNumber] = useState('');
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
+  const venderStore = useVenderStore();
 
   const [isEditDetails, setIsEditDetails] = useState(false);
   const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
@@ -105,7 +106,7 @@ export default function OrderTrackingDashboard() {
     };
 
     loadInitialOrders();
-  }, []);
+  }, [venderStore.branchId]);
 
   const { exportOrdersToCSV } = useTableExport();
 
@@ -114,7 +115,7 @@ export default function OrderTrackingDashboard() {
   console.log(orderStore.orderHistoryListData, 'weew');
 
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
+    <div className="flex bg-gray-50 flex-col items-center overflow-hidden ">
       {/* Left Panel - Orders List */}
 
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
@@ -193,7 +194,12 @@ export default function OrderTrackingDashboard() {
           </div>
 
           <Button
-            onClick={() => exportOrdersToCSV(orderStore.orderHistoryListData!,"order history")}
+            onClick={() =>
+              exportOrdersToCSV(
+                orderStore.orderHistoryListData!,
+                'order history'
+              )
+            }
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <Download className="w-5 h-5" /> Export

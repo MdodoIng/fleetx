@@ -7,9 +7,11 @@ import { StoreApi, UseBoundStore } from 'zustand';
 import { SharedActions, SharedState } from '@/store/sharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
 import { ca } from 'zod/v4/locales';
+import { useJsApiLoader } from '@react-google-maps/api';
 
 export const setBranchDetails = async () => {
   const venderStore = useVenderStore.getState();
+
   try {
     const res = await vendorService.getBranchDetails(venderStore.vendorId!);
 
@@ -47,14 +49,16 @@ export const getVendorList = async () => {
 
 export const setVenderDetails = async () => {
   const venderStore = useVenderStore.getState();
-  try {
-    const res = await vendorService.getVendorDetails(venderStore.vendorId!);
+  if (venderStore.vendorId) {
+    try {
+      const res = await vendorService.getVendorDetails(venderStore.vendorId!);
 
-    console.log(res, 'afd2222');
+      console.log(res, 'afd2222');
 
-    venderStore.setValue('selectedVendor', res.data);
-  } catch (error) {
-    console.log(error);
+      venderStore.setValue('selectedVendor', res.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 
@@ -88,4 +92,6 @@ export async function updateZoneAndSome() {
       // onBranchSelectionCheckZoneBusyModeIsActive(branch.address);
     }
   }
+
+
 }

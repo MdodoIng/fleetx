@@ -11,11 +11,13 @@ export interface VenderState {
   branchId: string | null;
   branchName: string | null;
   selectedVendorName: string | null;
-  selectedVendor: TypeVender['data'] | undefined;
+  selectedVendor: TypeVender | undefined;
   selectedBranch: TypeBranch | undefined;
   isVendorAdmin: boolean;
   selectedAccountManager: string | undefined;
   venderList: TypeVenderList | undefined;
+  isEditVenderId: string | undefined;
+  isEditVenderBranchId: string | undefined;
 }
 
 export interface VenderActions {
@@ -36,6 +38,8 @@ const initialState: VenderState = {
   isVendorAdmin: false,
   selectedAccountManager: undefined,
   venderList: undefined,
+  isEditVenderId: undefined,
+  isEditVenderBranchId: undefined,
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(

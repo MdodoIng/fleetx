@@ -2,6 +2,9 @@
 
 import {
   Dispatch,
+  ForwardRefExoticComponent,
+  JSX,
+  RefAttributes,
   SetStateAction,
   useCallback,
   useEffect,
@@ -29,6 +32,7 @@ import {
   Minus,
   Activity,
   Edit,
+  LucideProps,
 } from 'lucide-react';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 
@@ -40,7 +44,34 @@ import { CentralWalletItem } from '@/features/wallet/type';
 import { TypeVenderList } from '@/shared/types/vender';
 
 interface OrdersPageProps {
-  data: TypeVenderList;
+  data:
+    | (
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: string;
+            onClick?: undefined;
+          }
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: JSX.Element;
+            onClick?: undefined;
+          }
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: JSX.Element;
+            onClick: () => void;
+          }
+      )[][]
+    | undefined;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;
@@ -55,6 +86,7 @@ export default function TableComponent({
   const { appConstants } = useSharedStore();
   const venderStore = useVenderStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [isEdit, setIsEdit] = useState({ id: '' });
 
   const handleLoadMore = useCallback(() => {
     setPage((prev) => prev + 10); // load 10 more items
@@ -82,78 +114,34 @@ export default function TableComponent({
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">
-        {data.map((item, idx) => {
-          return (
-            <div
-              key={idx}
-              className="bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100 w-full"
-            >
-              {/* Order Details */}
-              <div className="grid md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] w-full gap-4 text-sm">
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
+        {data?.map((i, x) => (
+          <div
+            key={x}
+            className="bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100 w-full"
+          >
+            {/* Order Details */}
+            <div className="grid md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] w-full gap-4 text-sm">
+              {i.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-col p-3 rounded-lg border bg-gray-50"
+                >
                   <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <User2 size={14} /> Vender.
+                    <item.icon size={14} /> {item.title}.
                   </span>
-                  <span className="text-sm font-medium text-gray-800">
-                    {item.name}
+                  <span
+                    className="text-sm font-medium text-gray-800"
+                    onClick={item.onClick}
+                  >
+                    {item.value}
                   </span>
                 </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <GitBranch size={14} /> Branch.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.main_branch.name}
-                  </span>
-                </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <Phone size={14} /> Phone.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.main_branch.mobile_number}
-                  </span>
-                </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <Axis3dIcon size={14} /> Adress.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.main_branch.address.area},{' '}
-                    {item.main_branch.address.block},{' '}
-                    {item.main_branch.address.street}
-                  </span>
-                </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <MagnetIcon size={14} /> Account Manager.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.account_manager ? <Activity /> : <Minus />}
-                  </span>
-                </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <MagnetIcon size={14} /> Users.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    <User />
-                  </span>
-                </div>
-                <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
-                    <Edit size={14} /> Action.
-                  </span>
-                  <span className={cn('text-sm font-medium text-gray-800')}>
-                    <Edit />
-                  </span>
-                </div>
-              </div>
-
-              {/* Footer */}
+              ))}
             </div>
-          );
-        })}
+
+            {/* Footer */}
+          </div>
+        ))}
       </div>
 
       {/* Pagination */}

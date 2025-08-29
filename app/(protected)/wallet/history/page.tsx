@@ -100,7 +100,7 @@ export default function OrderTrackingDashboard() {
 
   const { exportOrdersToCSV } = useTableExport();
 
-  console.log(nextSetItemTotal, 'weew');
+  console.log(walletHistory , 'weew');
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
