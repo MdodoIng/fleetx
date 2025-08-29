@@ -3,18 +3,13 @@ import { BalanceReportItem } from '@/features/wallet/type';
 import TableComponent from '@/features/wallet/components/balance-report/TableComponent';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
-import { Popover } from '@/shared/components/ui/popover';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { reportService } from '@/shared/services/report';
 import { vendorService } from '@/shared/services/vender';
-import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
-import { RootTypeBranch, TypeBranch } from '@/shared/types/vender';
-import { useOrderStore, useVenderStore } from '@/store';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Download, Search, Wallet } from 'lucide-react';
-import Link from 'next/link';
+import { TypeBranch } from '@/shared/types/vender';
+import { useVenderStore } from '@/store';
+import { Download, Wallet } from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
-import { is } from 'zod/v4/locales';
 
 function BalanceReport(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);

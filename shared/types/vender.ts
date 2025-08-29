@@ -24,6 +24,8 @@ export type TypeBranch = {
     longitude: string;
     street_id: number;
     paci_number: string;
+    building?: string;
+    building_id?: number;
   };
   vendor: {
     id: string;
@@ -143,6 +145,8 @@ export type TypeEditVenderReq = {
         street: string;
         area_id: number;
         block_id: number;
+        building: string;
+        building_id: number;
         landmark: string;
         latitude: string;
         longitude: string;
@@ -217,3 +221,29 @@ export const TypeVendorType = {
   B2B_Vendor: 2,
   B2C_and_B2B_Vendor: 3,
 } as const;
+
+export type TypeVendorUserList = {
+  vendor: {
+    user: string;
+    vendor_id: string;
+    branch_id: string;
+    business_name: null;
+    business_type: null;
+    is_business: boolean;
+    sla_accepted: boolean;
+    password_reset_by_user: boolean;
+    cod_counter_type: number;
+    created_by: string;
+  };
+  email: string;
+  phone: string;
+  first_name: string;
+  last_name: string;
+  created_at: string;
+  source: number;
+};
+
+export type TypeVendorUserListRes = {
+  data: TypeVendorUserList[];
+  NEXT_SET_ITEMS_TOKEN: number[];
+};

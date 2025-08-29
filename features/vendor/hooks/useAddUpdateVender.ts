@@ -30,6 +30,8 @@ const branchTemplate: TypeEditVenderReq['branches'][number] = {
     block_id: 0,
     street: '',
     street_id: 0,
+    building: '',
+    building_id: 0,
     landmark: '',
     latitude: '0',
     longitude: '0',
@@ -230,7 +232,7 @@ export function useAddUpdateVender(
     );
     const formFixBrachs = venderData?.branches.map((item) => {
       return mapBranchDynamic(
-        item,
+        item as Partial<TypeEditVenderReq['branches'][number]>,
         branchTemplate,
         isCreateNewBranch,
         resVender
@@ -238,7 +240,12 @@ export function useAddUpdateVender(
     });
 
     const formFixBrach = branch
-      ? mapBranchDynamic(branch!, branchTemplate, isCreateNewBranch, resVender)
+      ? mapBranchDynamic(
+          branch as Partial<TypeEditVenderReq['branches'][number]>,
+          branchTemplate,
+          isCreateNewBranch,
+          resVender
+        )
       : mapBranchDynamic(
           editVendorBranchFormValues! as any,
           newVenderBranchTemplate! as any,
@@ -348,8 +355,12 @@ export function useAddUpdateVender(
               block_id: item.address.block_id,
               street: item.address.street,
               street_id: item.address.street_id,
-              building: item.address.building,
-              building_id: item.address.building_id,
+              ...(item.address.building
+                ? {
+                    building: item.address.building ?? '',
+                    building_id: item.address.building_id ?? null,
+                  }
+                : {}),
               paci_number: item.address.paci_number,
               landmark: item.address.landmark,
               latitude: item.address.latitude,

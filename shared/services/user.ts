@@ -108,7 +108,7 @@ export const updateAreaRestriction = (request: any, id: string) =>
 export const getAccountManagerList = (
   page: number,
   perPage: number,
-  search?: string
+  search?: string | null
 ) => {
   let url = `/vendor-acount-manager/list?page=${page}&page_size=${perPage}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;

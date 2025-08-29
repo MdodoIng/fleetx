@@ -9,6 +9,7 @@ import {
   TypeVenderList,
   TypeVenderListRes,
   TypeVenderRes,
+  TypeVendorUserListRes,
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
@@ -55,7 +56,7 @@ export const vendorService = {
   getVendorList: (url: string): Promise<TypeVenderListRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
-  getBranchDetails: (id: string): Promise<{ data: TypeBranch }> =>
+  getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details?id=${id}`),
 
   getBranchDetailByBranchId: (
@@ -157,11 +158,11 @@ export const vendorService = {
 
   getVendorUserList: (
     perPage: number,
-    search?: string,
+    search?: string | null,
     vendorId?: string,
     branchId?: string,
-    nextSetItemTotal?: string[]
-  ) => {
+    nextSetItemTotal?: string[] | null
+  ): Promise<TypeVendorUserListRes> => {
     let url = `/vendor/users?page_size=${perPage}`;
     if (search) url += `&search=${search}`;
     if (vendorId) url += `&vendor_id=${vendorId}`;
