@@ -245,15 +245,15 @@ function ManualReport(): JSX.Element {
         {/* Search and Filter */}
         <div className="flex items-center justify-center gap-1.5">
           <Button
-            onClick={() =>
-              exportOrdersToCSV(
-                data!,
-                'wallet history',
-                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-                }`
-              )
-            }
+            // onClick={() =>
+            //   exportOrdersToCSV(
+            //     data!,
+            //     'wallet history',
+            //     `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
+            //       date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+            //     }`
+            //   )
+            // }
             className="p-2 hover:bg-gray-100 rounded-lg"
           >
             <Download className="w-5 h-5" /> Export

@@ -116,7 +116,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     labelKey: 'menuItems.salesFunnel',
     route: '/sales-funnel',
     icon: 'icon-funnel',
-    roles: ['SALES_HEAD'],
+    roles: ['SALES_HEAD', "OPERATION_MANAGER","FINANCE_MANAGER"],
   },
   {
     labelKey: 'menuItems.rating',

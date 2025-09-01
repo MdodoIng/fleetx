@@ -1,6 +1,14 @@
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import {
+  useAuthStore,
+  useOrderStore,
+  useSharedStore,
+  useVenderStore,
+} from '@/store';
 import { apiFetch } from '../lib/utils';
-import { TypBranchWalletBalanceReportRes, TypeWalletTransactionHistoryRes } from '../types/report';
+import {
+  TypBranchWalletBalanceReportRes,
+  TypeWalletTransactionHistoryRes,
+} from '../types/report';
 import { configService } from './app-config';
 
 export const reportService = {
@@ -106,6 +114,72 @@ export const reportService = {
   },
 
   getWalletHistory(url: string): Promise<TypeWalletTransactionHistoryRes> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getDashboardUrl({
+    selectedFromDate,
+    selectedToDate,
+  }: {
+    selectedFromDate?: Date;
+    selectedToDate?: Date;
+  }): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    const { user } = useAuthStore.getState();
+    const { vendorId, branchId } = useVenderStore.getState();
+    const { driverId } = useOrderStore.getState();
+
+    const from = selectedFromDate ? getFormattedDate(selectedFromDate) : '';
+    const to = selectedToDate ? getFormattedDate(selectedToDate) : '';
+
+    let url = `/dashboard-data?from_date=${from}&to_date=${to}`;
+
+    const currentUserRole = user?.roles?.[0];
+    const hasBranchInToken = user?.user?.vendor?.branch_id;
+
+    // showVendorBranchCard is declared here to match the behavior of the old code
+    // which sets a member variable. It's not used in the URL construction itself.
+    let showVendorBranchCard: boolean = false;
+
+    switch (currentUserRole) {
+      case 'OPERATION_MANAGER':
+      case 'VENDOR_ACCOUNT_MANAGER':
+      case 'SALES_HEAD':
+      case 'FINANCE_MANAGER': // Corrected 'finance_manger' to 'FINANCE_MANAGER' based on UserRole enum
+        showVendorBranchCard = true;
+        if (vendorId) {
+          url += `&vendor_id=${vendorId}`;
+        }
+        if (branchId) {
+          url += `&branch_id=${branchId}`;
+        }
+        break;
+      case 'VENDOR_USER':
+        if (hasBranchInToken) {
+          showVendorBranchCard = false;
+        } else {
+          showVendorBranchCard = true;
+          if (branchId) {
+            url += `&branch_id=${branchId}`;
+          }
+        }
+        break;
+      default:
+        // For any other roles or if no role is present, no vendor/branch params are added,
+        // consistent with the fall-through of the old switch logic.
+        break;
+    }
+
+    if (driverId) {
+      url += `&driver_id=${driverId}`;
+    }
+
+    return url;
+  },
+
+  getDashboardDetails(url: string): Promise<any> {
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });

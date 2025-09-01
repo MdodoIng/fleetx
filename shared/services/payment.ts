@@ -75,4 +75,31 @@ export const paymentService = {
       method: 'GET',
     });
   },
+
+  getPaymentHistoryReportUrl(
+    page: number,
+    perPage: number,
+    fromDate: Date | null,
+    toDate: Date | null,
+    invoicePaymentId: string,
+    selectedVendor: string
+  ) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/list?page=' + page + '&page_size=' + perPage;
+    url = invoicePaymentId
+      ? url + '&payment_invoice_id=' + invoicePaymentId
+      : url;
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    if (selectedVendor) {
+      url = url + '&vendor_id=' + selectedVendor;
+    }
+    return url;
+  },
+
+  getPaymentHistoryReport(url: string): Promise<any> {
+    return apiFetch(configService.paymentServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
 };
