@@ -247,3 +247,14 @@ export type TypeVendorUserListRes = {
   data: TypeVendorUserList[];
   NEXT_SET_ITEMS_TOKEN: number[];
 };
+
+export type TypeUpdateVendorUserReq = {
+  branch_id: string;
+  cod_counter_type: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  password?: string;
+  phone: string;
+  vendor_id: string;
+};

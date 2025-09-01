@@ -5,6 +5,7 @@ import {
   TypeAddVenderReq,
   TypeBranch,
   TypeEditVenderReq,
+  TypeUpdateVendorUserReq,
   TypeVender,
   TypeVenderList,
   TypeVenderListRes,
@@ -70,12 +71,6 @@ export const vendorService = {
       method: 'POST',
       body: JSON.stringify(branch),
       ...options,
-    }),
-
-  createVendorUser: (user: any) =>
-    apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
-      method: 'POST',
-      body: JSON.stringify(user),
     }),
 
   getAddressByMobile: (vendorId: string, branchId: string, mobile: string) =>
@@ -173,7 +168,7 @@ export const vendorService = {
     return apiFetch(`${configService.userServiceApiUrl()}${url}`);
   },
 
-  updateVendorUser: (userId: string, request: any) =>
+  updateVendorUser: (userId: string, request: TypeUpdateVendorUserReq) =>
     apiFetch(
       `${configService.userServiceApiUrl()}/vendor/user/update/${userId}`,
       {
@@ -181,6 +176,12 @@ export const vendorService = {
         body: JSON.stringify(request),
       }
     ),
+
+  createVendorUser: (user: any) =>
+    apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+    }),
 
   getCompanyBilling: (vendorId: string) =>
     apiFetch(

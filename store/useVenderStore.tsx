@@ -1,4 +1,9 @@
-import { TypeBranch, TypeVender, TypeVenderList } from '@/shared/types/vender';
+import {
+  TypeBranch,
+  TypeVender,
+  TypeVenderList,
+  TypeVendorUserList,
+} from '@/shared/types/vender';
 import { get } from 'react-hook-form';
 import { create } from 'zustand';
 
@@ -18,6 +23,7 @@ export interface VenderState {
   venderList: TypeVenderList | undefined;
   isEditVenderId: string | undefined;
   isEditVenderBranchId: string | undefined;
+  isEditUser: TypeVendorUserList | undefined;
 }
 
 export interface VenderActions {
@@ -40,6 +46,7 @@ const initialState: VenderState = {
   venderList: undefined,
   isEditVenderId: undefined,
   isEditVenderBranchId: undefined,
+  isEditUser: undefined,
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(

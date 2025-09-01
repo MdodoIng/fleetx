@@ -85,12 +85,12 @@ const newVenderBranchTemplate = {
   },
 };
 
-export function useAddUpdateVender(
+export const useAddUpdateVender = (
   editVendorNameForm: UseFormReturn<TypeEditVendorNameSchema>,
   editVendorBranchForm: UseFormReturn<TypeEditVendorBranchSchema>,
   venderData: TypeVender,
   codType: 1 | 2
-) {
+) => {
   const venderStore = useVenderStore.getState();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
   const [branchs, setBranchs] = useState<
@@ -177,8 +177,8 @@ export function useAddUpdateVender(
   }
 
   const updateVenderDetailsForFromApi = () => {
-    setIsLoadingForm(true);
     if (!venderData?.id) return;
+    setIsLoadingForm(true);
 
     // Populate vendor-level form
     if (venderData && Object.keys(venderData).length) {
@@ -423,4 +423,4 @@ export function useAddUpdateVender(
     handleRemoveBranch,
     handelSaveVender,
   };
-}
+};

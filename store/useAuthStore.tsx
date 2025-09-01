@@ -195,6 +195,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       storageKeys.userContext,
       JSON.stringify({ token: data.data.token })
     );
+    const decoded: any = jwtDecode(data.data.token!);
+
+    set({
+      user: {
+        ...decoded,
+        token: data.data.token,
+        
+      },
+    });
     localStorage.setItem(storageKeys.refreshTime, new Date().toString());
   },
 
