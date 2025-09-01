@@ -1,3 +1,4 @@
+import { Button } from '@/shared/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -7,14 +8,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import {
+  TypeBranch,
+  TypeVender,
+  TypeVenderListItem,
+} from '@/shared/types/vender';
 import { useAuthStore, useVenderStore } from '@/store';
 import React, { use } from 'react';
 
-const UserAndBranchSelecter: React.FC = () => {
+type Props = {
+  handleChangeBranch: (e: string) => void;
+  handleChangeVender: (e: string) => void;
+  branchs: TypeBranch[] | undefined;
+  handleClear?: () => void;
+  selectedVendorValue?: TypeVenderListItem;
+  selectedBranchValue?: TypeBranch;
+};
+
+const UserAndBranchSelecter: React.FC<Props> = ({
+  handleChangeBranch,
+  handleChangeVender,
+  branchs,
+  handleClear,
+  selectedVendorValue,
+  selectedBranchValue,
+}) => {
   const { user } = useAuthStore();
   const {
     vendorId,
-    branchDetails,
     selectedBranch,
     setValue,
     branchId,
@@ -47,28 +68,17 @@ const UserAndBranchSelecter: React.FC = () => {
     }
   }
 
-  const handleChangeBranch = (e: string) => {
-    const branch = branchDetails?.find((r) => r.id === e);
-    setValue('selectedBranch', branch);
-    setValue('branchId', e);
-  };
-  const handleChangeVender = (e: string) => {
-    const vender = venderList?.find((r) => r.id === e);
-    setValue('selectedVendor', vender);
-    setValue('vendorId', e);
-  };
-
   return (
-    <div hidden={!isAccess} className="flex items-center justify-center gap-2">
+    <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
       {isVendorAccess && (
         <Select
           onValueChange={handleChangeVender}
-          defaultValue={selectedVendor?.id}
+          defaultValue={selectedVendorValue?.id ?? selectedVendor?.id}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] ">
             <SelectValue placeholder="Select a Vender" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-[300px]">
             <SelectGroup>
               <SelectLabel>Vender</SelectLabel>
               {venderList?.map((item, key) => (
@@ -81,22 +91,31 @@ const UserAndBranchSelecter: React.FC = () => {
         </Select>
       )}
       {isBranchAccess && (
-        <Select onValueChange={handleChangeBranch} defaultValue={branchId!}>
+        <Select
+          onValueChange={handleChangeBranch}
+          defaultValue={selectedBranchValue?.id ?? selectedBranch?.id}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select a Branch" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-[300px]">
             <SelectGroup>
               <SelectLabel>Branch</SelectLabel>
-              {branchDetails?.map((item, key) => (
+              {branchs?.map((item, key) => (
                 <SelectItem key={key} value={item.id}>
-                  {item.name}
+                  {item.name}{' '}
+                  {item.main_branch && (
+                    <span className="rounded-full bg-gray-300 text-xs px-2.5 leading-0 py-2 pb-3 mr-auto">
+                      main Barnch
+                    </span>
+                  )}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       )}
+      {handleClear && <Button onClick={() => handleClear()}>Clear</Button>}
     </div>
   );
 };

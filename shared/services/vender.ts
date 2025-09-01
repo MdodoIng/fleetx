@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/utils';
 import {
   TypeAddVenderReq,
   TypeBranch,
+  TypeCreateVendorUserReq,
   TypeEditVenderReq,
   TypeUpdateVendorUserReq,
   TypeVender,
@@ -177,7 +178,7 @@ export const vendorService = {
       }
     ),
 
-  createVendorUser: (user: any) =>
+  createVendorUser: (user: TypeCreateVendorUserReq): Promise<any> =>
     apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
       method: 'POST',
       body: JSON.stringify(user),

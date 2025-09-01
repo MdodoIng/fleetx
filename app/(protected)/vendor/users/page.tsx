@@ -8,6 +8,7 @@ import { Input } from '@/shared/components/ui/input';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { vendorService } from '@/shared/services/vender';
 import {
+  TypeBranch,
   TypeVenderList,
   TypeVenderListItem,
   TypeVendorUserList,
@@ -59,16 +60,22 @@ function VenderUser() {
     selectedBranch,
     selectedVendor,
     isEditUser,
+    venderList,
     branchDetails,
   } = useVenderStore();
   const [isCentralWallet, setIsCentralWallet] = useState(false);
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
-  const [isBranch, setIsBranchAction] = useState<{
-    branch_id: string;
-    vendor_id: string;
-  }>({ branch_id: '', vendor_id: '' });
-  const [isAdd, setIsAdd] = useState(false);
+  const [isBranch, setIsBranchAction] = useState<
+    | {
+        branch: TypeBranch;
+        vendor: TypeVenderListItem;
+      }
+    | undefined
+  >(undefined);
+  const [isAdd, setIsAddAction] = useState(false);
+  const [branchList, setBranchList] = useState<TypeBranch[]>();
+  const [tableData, setTableData] = useState<any[]>([]);
 
   // Updated main function
   const fetchVendorUserList = async (): Promise<void> => {
@@ -94,57 +101,89 @@ function VenderUser() {
       await fetchVendorUserList();
     };
     loadFetchVendorUserList();
-  }, [page, selectedBranch?.id]);
+  }, [selectedBranch?.id, page]);
 
-  console.log(data, 'aeefeafsafaaf');
+  const fetchBranchDetails = async () => {
+    try {
+      const res = await vendorService.getBranchDetails(isBranch?.vendor.id!);
 
-  const handleEditClick = (item: TypeVendorUserList) => {
+      setBranchList(res.data);
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (isBranch?.vendor.id || selectedVendor?.id) {
+      fetchBranchDetails();
+    }
+  }, [isBranch?.vendor.id]);
+
+  const handleEditClick = async (
+    item: TypeVendorUserList,
+    branch: TypeBranch | undefined
+  ) => {
+    setIsBranchAction(undefined);
+    const vender = venderList?.find((r) => r.id === item.vendor.vendor_id);
+    setIsBranchAction({
+      vendor: vender!,
+      branch: branch!,
+    });
+    if (!branch) {
+      const branchs = await fetchBranchDetails();
+      const branch = branchs?.data?.find((r) => r.id === item.vendor.branch_id);
+      setIsBranchAction({
+        branch: branch!,
+        vendor: vender!,
+      });
+    }
     setValue('isEditUser', item);
-    console.log(item);
   };
 
-  const tableData = data?.map((item) => {
-    return [
-      {
-        icon: User2,
-        title: 'first_name',
-        value: item.first_name,
-      },
-      {
-        icon: User2,
-        title: 'last_name',
-        value: item.last_name,
-      },
-      {
-        icon: Mail,
-        title: 'Branch',
-        value: item.email,
-      },
-      {
-        icon: Phone,
-        title: 'Phone',
-        value: item.phone,
-      },
-      {
-        icon: Axis3dIcon,
-        title: 'Vendor',
-        value: branchDetails?.find((x) => x.id === item.vendor.branch_id)
-          ?.vendor.name,
-      },
-      {
-        icon: MagnetIcon,
-        title: 'Branch',
-        value: branchDetails?.find((x) => x.id === item.vendor.branch_id)?.name,
-      },
-      {
-        icon: Edit,
-        title: ' Action',
-        value: <Edit />,
-        onClick: () => handleEditClick(item),
-      },
-    ];
-  });
+  const handleAddClick = () => {
+    editUserForm.clearErrors();
+    editUserForm.reset();
+    setIsAddAction(true);
+  };
 
+  useEffect(() => {
+    const fetchTableData = async () => {
+      if (!data) return;
+      const resolvedData = await Promise.all(
+        data.map(async (item) => {
+          const res = await vendorService.getBranchDetails(
+            item.vendor.vendor_id!
+          );
+          const branch = res.data?.find((x) => x.id === item.vendor.branch_id);
+          return [
+            { icon: User2, title: 'first_name', value: item.first_name },
+            { icon: User2, title: 'last_name', value: item.last_name },
+            { icon: Mail, title: 'Branch', value: item.email },
+            { icon: Phone, title: 'Phone', value: item.phone },
+            {
+              icon: Axis3dIcon,
+              title: 'Vendor',
+              value: branch?.vendor.name || item.vendor.vendor_id,
+            },
+            {
+              icon: MagnetIcon,
+              title: 'Branch',
+              value: branch?.name || item.vendor.branch_id,
+            },
+            {
+              icon: Edit,
+              title: 'Action',
+              value: <Edit />,
+              onClick: () => handleEditClick(item, branch),
+            },
+          ];
+        })
+      );
+      setTableData(resolvedData);
+    };
+
+    if (data) fetchTableData();
+  }, [data]);
   const editUserForm = useForm<TypeEditUserSchema>({
     resolver: zodResolver(editUserSchema),
     defaultValues: {
@@ -154,6 +193,8 @@ function VenderUser() {
       email: '',
       password: '',
     },
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const { isLoadingForm, updateUserDetailsForFromApi, handelSumbit } =
@@ -162,6 +203,9 @@ function VenderUser() {
       data: data!,
       isBranch,
       setIsBranchAction,
+      branchList,
+      isAdd,
+      setIsAddAction,
     });
 
   useEffect(() => {
@@ -198,7 +242,7 @@ function VenderUser() {
             {/* Search and Filter */}
             <div className="flex items-center justify-center gap-1.5">
               <Button
-                onClick={() => setIsAdd(true)}
+                onClick={() => handleAddClick()}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <PlusSquare className="w-5 h-5" /> Add User
@@ -233,18 +277,23 @@ function VenderUser() {
                 asChild
                 onClick={() => {
                   setValue('isEditUser', undefined);
-                  setIsAdd(false);
+                  setIsAddAction(false);
                 }}
               >
                 <X />
               </DialogClose>
             </DialogHeader>
 
-            <EditAddForm form={editUserForm} />
+            <EditAddForm
+              form={editUserForm}
+              isBranch={isBranch!}
+              setIsBranchAction={setIsBranchAction}
+              branchList={branchList}
+            />
 
             <DialogFooter>
               <Button
-                onClick={() => handelSumbit(fetchVendorUserList)}
+                onClick={async () => await handelSumbit(fetchVendorUserList)}
                 type="submit"
               >
                 Update Branch

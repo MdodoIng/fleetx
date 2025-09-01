@@ -258,3 +258,14 @@ export type TypeUpdateVendorUserReq = {
   phone: string;
   vendor_id: string;
 };
+
+export type TypeCreateVendorUserReq = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  password: string;
+  vendor_id: string;
+  branch_id: string;
+  cod_counter_type: number;
+};

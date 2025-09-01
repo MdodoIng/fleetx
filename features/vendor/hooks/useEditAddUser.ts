@@ -9,9 +9,11 @@ import {
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
   TypeAddVenderReq,
+  TypeBranch,
   TypeEditVenderReq,
   TypeUpdateVendorUserReq,
   TypeVender,
+  TypeVenderListItem,
   TypeVendorType,
   TypeVendorUserList,
 } from '@/shared/types/vender';
@@ -21,17 +23,23 @@ import { TypeEditUserSchema } from '../validations/editAddForm';
 
 type Props = {
   editUserForm: UseFormReturn<TypeEditUserSchema>;
-  data: TypeVendorUserList[];
-  isBranch: {
-    branch_id: string;
-    vendor_id: string;
+  data?: TypeVendorUserList[];
+  isBranch?: {
+    branch: TypeBranch;
+    vendor: TypeVenderListItem;
   };
   setIsBranchAction: Dispatch<
-    SetStateAction<{
-      branch_id: string;
-      vendor_id: string;
-    }>
+    SetStateAction<
+      | {
+          branch: TypeBranch;
+          vendor: TypeVenderListItem;
+        }
+      | undefined
+    >
   >;
+  branchList: TypeBranch[] | undefined;
+  isAdd: boolean;
+  setIsAddAction: Dispatch<SetStateAction<boolean>>;
 };
 
 export const useEditAddUser = ({
@@ -39,8 +47,12 @@ export const useEditAddUser = ({
   data,
   isBranch,
   setIsBranchAction,
+  branchList,
+  isAdd,
+  setIsAddAction,
 }: Props) => {
-  const { setValue, isEditUser } = useVenderStore.getState();
+  const { setValue, isEditUser, branchDetails, venderList } =
+    useVenderStore.getState();
   const { user } = useAuthStore.getState();
 
   const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -89,22 +101,15 @@ export const useEditAddUser = ({
 
     setIsLoadingForm(true);
     Object.entries(isEditUser!).forEach(([key, value]) => {
-      console.log(key);
-
       editUserForm.setValue(key as keyof TypeEditUserSchema, value as any);
-    });
-
-    setIsBranchAction({
-      branch_id: isEditUser?.vendor.branch_id,
-      vendor_id: isEditUser?.vendor.vendor_id,
     });
 
     setIsLoadingForm(false);
   };
 
   const requst: TypeUpdateVendorUserReq = {
-    branch_id: isBranch.branch_id,
-    vendor_id: isBranch.vendor_id,
+    branch_id: isBranch?.branch ? isBranch?.branch.id : '',
+    vendor_id: isBranch?.vendor ? isBranch?.vendor.id : '',
     cod_counter_type: isEditUser ? isEditUser.vendor.cod_counter_type! : 2,
     email: editUserFormValues.email,
     first_name: editUserFormValues.first_name,
@@ -117,7 +122,7 @@ export const useEditAddUser = ({
 
   const handelSumbit = async (fetchVendorUserList: () => Promise<void>) => {
     const isFormValid = await validateFormsAsync(
-      isEditUser ? 'Add' : undefined
+      isAdd === false ? 'Add' : undefined
     );
 
     if (!isFormValid) {
@@ -125,21 +130,34 @@ export const useEditAddUser = ({
       // Optional: Highlight invalid fields or show error message
       return;
     }
+    if (isAdd === true) {
+      try {
+        const res = await vendorService.createVendorUser(requst as any);
 
-    try {
-      console.log(user?.user_id, 'sgfds');
-      const res = await vendorService.updateVendorUser(
-        isEditUser?.vendor.user!,
-        requst
-      );
+        if (res.data) {
+          editUserForm.clearErrors();
+          editUserForm.reset();
+          await fetchVendorUserList();
+          setIsAddAction(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        const res = await vendorService.updateVendorUser(
+          isEditUser?.vendor.user!,
+          requst
+        );
 
-      editUserForm.clearErrors();
-      editUserForm.reset();
-      setIsBranchAction({ branch_id: '', vendor_id: '' });
-      setValue('isEditUser', undefined);
-      await fetchVendorUserList();
-    } catch (error) {
-      console.error(error);
+        editUserForm.clearErrors();
+        editUserForm.reset();
+        setIsBranchAction(undefined);
+        setValue('isEditUser', undefined);
+        await fetchVendorUserList();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

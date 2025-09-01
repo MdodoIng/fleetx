@@ -7,6 +7,7 @@ import {
   TypeBranch,
   TypeEditVenderReq,
   TypeVender,
+  TypeVenderListItem,
 } from '@/shared/types/vender';
 import {
   Dispatch,
@@ -47,21 +48,63 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
+import UserAndBranchSelecter from '@/shared/components/Layout/ProtectedLayout/Header/UserAndBranchSelecter';
 
 type Props = {
-  page: number;
-  nextSetItemTotal: any;
-  setPage: Dispatch<SetStateAction<number>>;
+  form: UseFormReturn<TypeEditUserSchema>;
+  setIsBranchAction: Dispatch<
+    SetStateAction<
+      | {
+          branch: TypeBranch;
+          vendor: TypeVenderListItem;
+        }
+      | undefined
+    >
+  >;
+  isBranch: {
+    branch: TypeBranch;
+    vendor: TypeVenderListItem;
+  };
+  branchList: TypeBranch[] | undefined;
 };
 
-const EditAddForm = ({ form }: { form: UseFormReturn<TypeEditUserSchema> }) => {
+const EditAddForm = ({
+  form,
+  isBranch,
+  setIsBranchAction,
+  branchList,
+}: Props) => {
+  const venderStore = useVenderStore();
+
   const handleSumbit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  };
+
+  const handleChangeBranch = (e: string) => {
+    const branch = branchList?.find((r) => r.id === e);
+    setIsBranchAction({
+      branch: branch!,
+      vendor: isBranch.vendor,
+    });
+  };
+  const handleChangeVender = (e: string) => {
+    const vender = venderStore.venderList?.find((r) => r.id === e);
+    setIsBranchAction({
+      vendor: vender!,
+      branch: undefined as any,
+    });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={handleSumbit} className=" flex flex-wrap gap-5">
+        <UserAndBranchSelecter
+          handleChangeBranch={handleChangeBranch}
+          handleChangeVender={handleChangeVender}
+          branchs={branchList}
+          selectedVendorValue={isBranch?.vendor}
+          selectedBranchValue={isBranch?.branch}
+        />
         <FormField
           control={form.control}
           name="first_name"

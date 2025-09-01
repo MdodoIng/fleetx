@@ -15,8 +15,6 @@ export const setBranchDetails = async () => {
   try {
     const res = await vendorService.getBranchDetails(venderStore.vendorId!);
 
-    console.log(res, 'afd');
-
     venderStore.setValue('branchDetails', res.data);
   } catch (error) {
     console.log(error);

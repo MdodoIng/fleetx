@@ -1,5 +1,5 @@
 'use client';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useVenderStore } from '@/store';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -11,6 +11,7 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
   const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole } =
     useAuthStore();
+  const venderStore = useVenderStore();
 
   const isActivePath = (path: string) => {
     return pathname === path;
@@ -27,12 +28,37 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   };
 
   const t = useTranslations();
+
+  const handleChangeBranch = (e: string) => {
+    const branch = venderStore.branchDetails?.find((r) => r.id === e);
+    venderStore.setValue('selectedBranch', branch);
+    venderStore.setValue('branchId', e);
+  };
+  const handleChangeVender = (e: string) => {
+    const vender = venderStore.venderList?.find((r) => r.id === e);
+    venderStore.setValue('selectedVendor', vender);
+    venderStore.setValue('vendorId', e);
+  };
+
+  const handleClear = () => {
+    venderStore.setValue('selectedBranch', undefined);
+    venderStore.setValue('branchId', undefined);
+    venderStore.setValue('selectedVendor', undefined);
+    venderStore.setValue('vendorId', undefined);
+  };
+
   return (
     <nav className="">
       <div className="ml-10 flex items-center md:space-x-4">
         <p className="">{t(title)}</p>
         <LocaleSwitcher />
-        <UserAndBranchSelecter />
+        <UserAndBranchSelecter
+          handleChangeBranch={handleChangeBranch}
+          handleChangeVender={handleChangeVender}
+          branchs={venderStore.branchDetails}
+          handleClear={handleClear}
+          
+        />
         <div className="flex ml-auto">
           {isAuthenticated ? (
             <Button onClick={logout} variant={'destructive'}>
