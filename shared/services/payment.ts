@@ -1,6 +1,8 @@
+import { useSharedStore } from '@/store';
 import { apiFetch } from '../lib/utils';
 import {
   TypeBalanceAlertReq,
+  TypeManualPaymentHistoryReportRes,
   TypePaymentAddReq,
   TypeWalletNotifyBalanceRes,
 } from '../types/payment';
@@ -39,5 +41,38 @@ export const paymentService = {
         body: JSON.stringify(request),
       }
     );
+  },
+
+  getManualPaymentHistoryReportUrl(
+    page: number,
+    perPage: number,
+    fromDate: Date | null,
+    toDate: Date | null,
+    vendorId: string,
+    branchId: string,
+    type: string | any
+  ) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/mashkor/list?page=' + page + '&page_size=' + perPage;
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    if (type) {
+      url = url + '&operation_type=' + type;
+    }
+    if (vendorId) {
+      url = url + '&vendor_id=' + vendorId;
+      if (branchId) {
+        url = url + '&branch_id=' + branchId;
+      }
+    }
+    return url;
+  },
+
+  getManualPaymentHistoryReport(
+    url: string
+  ): Promise<TypeManualPaymentHistoryReportRes> {
+    return apiFetch(configService.paymentServiceApiUrl() + url, {
+      method: 'GET',
+    });
   },
 };
