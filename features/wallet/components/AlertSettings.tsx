@@ -61,6 +61,7 @@ export function AlertSettings() {
   const fetchAlertLoader = async () => {
     setIsLoading(true);
 
+    if(!vendorId && !branchId) return
     try {
       const res = await paymentService.getWalletNotifyBalance(
         vendorId!,
@@ -99,10 +100,10 @@ export function AlertSettings() {
   };
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
+    const loadInitialAlertLoader = async () => {
       await fetchAlertLoader();
     };
-    loadInitialOrders();
+    loadInitialAlertLoader();
   }, [branchId, vendorId]);
 
   const onHandleClick = (value: MethodType) => {

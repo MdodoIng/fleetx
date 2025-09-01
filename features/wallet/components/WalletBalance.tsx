@@ -42,7 +42,7 @@ export function WalletBalance({
         </div>
         <div className="flex flex-col items-cemter justify-center gap-2">
           <Button 
-            disabled={isDisableAddCredit}
+            disabled={!isDisableAddCredit}
             onClick={() => setIsOpen(2)}
             className="bg-white text-indigo-600 hover:bg-gray-100"
           >

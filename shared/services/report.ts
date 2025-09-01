@@ -1,6 +1,6 @@
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { apiFetch } from '../lib/utils';
-import { TypeWalletTransactionHistoryRes } from '../types/report';
+import { TypBranchWalletBalanceReportRes, TypeWalletTransactionHistoryRes } from '../types/report';
 import { configService } from './app-config';
 
 export const reportService = {
@@ -48,7 +48,7 @@ export const reportService = {
 
   getBranchWalletBalanceReport(
     url: string
-  ): Promise<TypeWalletTransactionHistoryRes> {
+  ): Promise<TypBranchWalletBalanceReportRes> {
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });

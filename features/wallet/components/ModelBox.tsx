@@ -127,7 +127,7 @@ export default function ModelBox({
                       <Button
                         variant="outline"
                         onClick={() => {
-                          !walletStore.isDisableAddCredit && setIsOpen(2);
+                          walletStore.isDisableAddCredit && setIsOpen(2);
                           setAmount(opt.value);
                         }}
                         className="bg-yellow-50 border-yellow-300 text-gray-700 text-xs"

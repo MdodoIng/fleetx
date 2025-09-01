@@ -22,3 +22,20 @@ export type TypeWalletTransactionHistoryRes = {
   ];
   NEXT_SET_ITEMS_TOKEN: [number, string] | null;
 };
+
+export type TypBranchWalletBalanceReportRes = {
+  data: [
+    {
+      created_at: string;
+      name: string;
+      required_min_wallet_balance: string;
+      vendor: {
+        name: string;
+        business_name: string;
+        onboarding_type: number;
+      };
+      wallet_balance: string;
+    },
+  ];
+  NEXT_SET_ITEMS_TOKEN: [number, string] | null;
+};
