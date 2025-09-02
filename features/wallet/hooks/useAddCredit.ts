@@ -3,15 +3,17 @@
 
 import { checkBlockActivation } from '@/shared/services';
 import { paymentService } from '@/shared/services/payment';
-import { useVenderStore } from '@/store';
+import { useAuthStore, useVenderStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
 import * as React from 'react';
 import { toast } from 'sonner'; // or your own toaster
 
 export function useAddCredit() {
-  const { isCentralWalletEnabled } = useWalletStore.getState();
+  const { isCentralWalletEnabled, setValue } = useWalletStore.getState();
 
-  const { vendorId, branchId, isVendorAdmin } = useVenderStore.getState();
+  const { vendorId, branchId, isVendorAdmin, selectedBranch } =
+    useVenderStore.getState();
+  const { user } = useAuthStore.getState();
 
   const [dialogState, setDialogState] = React.useState<{
     open: boolean;
@@ -26,7 +28,6 @@ export function useAddCredit() {
 
   const closeDialog = () => setDialogState((s) => ({ ...s, open: false }));
 
-  // === Entry point (Angular: addCredit) ===
   const handleAddCredit = async () => {
     if (!vendorId) {
       toast.warning('Please select a vendor');
@@ -37,32 +38,42 @@ export function useAddCredit() {
 
       if (checkBlockActRes.data.blocked) {
         toast.error('Blocked by system policy');
-        return;
+        setValue('isShowAddCreditButton', false);
+        return false;
       }
 
       if (isCentralWalletEnabled) {
         openDialog({ isMultiplePayment: false, isCentral: true });
       } else {
-        if (isVendorAdmin && !branchId) {
+        if (isVendorAdmin) {
+          setValue('isMultiplePayment', true);
           openDialog({ isMultiplePayment: true, isCentral: false });
-        } else {
-          if (!branchId) {
+          if (branchId || selectedBranch?.id) {
+            setValue('isMultiplePayment', false);
             toast.warning('Please select a branch');
             return;
           }
+        } else {
+          if (!branchId || !selectedBranch?.id) {
+            toast.warning('Please select a branch');
+            return;
+          }
+          setValue('isMultiplePayment', false);
           openDialog({ isMultiplePayment: false, isCentral: false });
         }
       }
+      return true;
     } catch (e: any) {
       toast.error(e?.message ?? 'Failed to verify status');
+      return false;
     }
   };
 
   const submitAddCredit = async (amount: number) => {
     if (!vendorId) throw new Error('vendorId missing');
 
-    await handleAddCredit();
-
+    if (isCentralWalletEnabled) {
+    }
     await paymentService.addFleetxCredit({
       vendorId,
       branchId,

@@ -17,4 +17,4 @@ export const addressSchema = z.object({
   street_id: z.number().optional(),
 });
 
-export type TypeAddressSchemaSchema = z.infer<typeof addressSchema>;
+export type TypeAddressSchema = z.infer<typeof addressSchema>;

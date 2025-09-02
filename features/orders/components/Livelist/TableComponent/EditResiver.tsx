@@ -1,6 +1,6 @@
 import {
   addressSchema,
-  TypeAddressSchemaSchema,
+  TypeAddressSchema,
 } from '@/features/orders/validations/editResiver';
 import AddressLandmarkFields from '@/shared/components/InputSearch';
 import { Button } from '@/shared/components/ui/button';
@@ -46,7 +46,7 @@ const EditResiver = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<TypeAddressSchemaSchema>({
+  const form = useForm<TypeAddressSchema>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       address: data?.drop_off?.address || '',

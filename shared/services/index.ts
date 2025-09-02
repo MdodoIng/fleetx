@@ -14,6 +14,7 @@ import { Locale, useTranslations } from 'next-intl';
 import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
+import { TypeSuperSaverPromationRes } from '../types/index,d';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -86,7 +87,11 @@ export const verifyCustomerAddress = (request: any) =>
 
 export const getAllFreeBuddiesFromB2C = () =>
   apiFetch(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
-export const getSuperSaverPromation = (vendorId: string, branchId: string) =>
+
+export const getSuperSaverPromation = (
+  vendorId: string,
+  branchId: string
+): Promise<TypeSuperSaverPromationRes> =>
   apiFetch(
     configService.finServiceApiUrl() +
       '/super-saver-promotion-status/vendor/' +

@@ -15,6 +15,7 @@ import {
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
+import { TypeVendorPricingRuleRes } from '../types/index,d';
 
 export const vendorService = {
   create: (vendor: TypeAddVenderReq) =>
@@ -113,7 +114,10 @@ export const vendorService = {
   downloadVendorList: (url: string) =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
-  getVendorPricingRule: (vendorId: string, branchId: string) =>
+  getVendorPricingRule: (
+    vendorId: string,
+    branchId: string
+  ): Promise<TypeVendorPricingRuleRes> =>
     apiFetch(
       `${configService.vendorServiceApiUrl()}/pricing/delivery-fee/vendor/${vendorId}/branch/${branchId}`
     ),

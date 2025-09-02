@@ -40,6 +40,7 @@ import {
 import { Label } from '@/shared/components/ui/label';
 import { Input } from '@/shared/components/ui/input';
 import EditResiver from './EditResiver';
+import EditPayment from './EditPayment';
 
 interface OrdersPageProps {
   data: TypeOrderHistoryList[];
@@ -213,7 +214,7 @@ export default function TableComponent({
               </div>
 
               {/* Payment / Fee */}
-              <div className="border rounded p-3">
+              <div className="border rounded p-3 relative z-0">
                 <h3 className="font-medium text-gray-600 mb-1 flex items-center gap-1">
                   <CreditCard size={14} /> Payment
                 </h3>
@@ -228,6 +229,10 @@ export default function TableComponent({
                     Collect: {order.amount_to_collect} KD
                   </p>
                 )}
+                <EditPayment
+                  data={order}
+                  fetchOrderDetails={fetchOrderDetails}
+                />
               </div>
             </div>
 

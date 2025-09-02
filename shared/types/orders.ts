@@ -496,3 +496,8 @@ export type TypeUpdateAddressResponce = {
     primary_status: number;
   };
 };
+
+export interface TypeUpdatePaymentReq {
+  payment_type: number;
+  amount_to_collect: number;
+}

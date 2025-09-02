@@ -10,6 +10,7 @@ import {
   TypeRootOrderStatusHistoryHistory,
   TypeUpdateAddressReq,
   TypeUpdateAddressResponce,
+  TypeUpdatePaymentReq,
 } from '@/shared/types/orders';
 import { useAuthStore, useVenderStore } from '@/store';
 import { useSharedStore } from '@/store/sharedStore';
@@ -39,7 +40,7 @@ export const orderService = {
       { method: 'POST', body: JSON.stringify(request) }
     ),
 
-  updatePayment: (payment: any, orderUuid: string) =>
+  updatePayment: (payment: TypeUpdatePaymentReq, orderUuid: string) =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/update/${orderUuid}/payment`,
       { method: 'PUT', body: JSON.stringify(payment) }
