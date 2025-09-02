@@ -9,7 +9,6 @@ import {
 } from '@/shared/types/orders';
 import { useEffect, useMemo, useState } from 'react';
 
-
 function buildStatusHistory(
   order: TypeOrderHistoryList,
   orderHistorys: TypeOrderStatusHistoryHistory
@@ -128,14 +127,23 @@ function buildStatusHistory(
   });
 }
 
-export function useOrderStatusHistory(order: TypeOrderHistoryList) {
+export function useOrderStatusHistory(
+  order: TypeOrderHistoryList,
+  isOrderLiveIsTable: boolean
+) {
   const [orderHistorys, setOrderHistorys] =
     useState<TypeOrderStatusHistoryHistory>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!order?.id) return;
+    if (isOrderLiveIsTable) {
+      setOrderHistorys(undefined);
+    }
+  }, [isOrderLiveIsTable]);
+
+  useEffect(() => {
+    if (!order?.id || isOrderLiveIsTable) return;
     const loadInitialOrders = async () => {
       try {
         setLoading(true);

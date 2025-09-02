@@ -7,6 +7,7 @@ import {
 import { apiFetch } from '../lib/utils';
 import {
   TypBranchWalletBalanceReportRes,
+  TypeDashboardDetailsResponse,
   TypeWalletTransactionHistoryRes,
 } from '../types/report';
 import { configService } from './app-config';
@@ -139,8 +140,6 @@ export const reportService = {
     const currentUserRole = user?.roles?.[0];
     const hasBranchInToken = user?.user?.vendor?.branch_id;
 
-    // showVendorBranchCard is declared here to match the behavior of the old code
-    // which sets a member variable. It's not used in the URL construction itself.
     let showVendorBranchCard: boolean = false;
 
     switch (currentUserRole) {
@@ -167,8 +166,7 @@ export const reportService = {
         }
         break;
       default:
-        // For any other roles or if no role is present, no vendor/branch params are added,
-        // consistent with the fall-through of the old switch logic.
+    
         break;
     }
 
@@ -179,7 +177,7 @@ export const reportService = {
     return url;
   },
 
-  getDashboardDetails(url: string): Promise<any> {
+  getDashboardDetails(url: string): Promise<TypeDashboardDetailsResponse> {
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });

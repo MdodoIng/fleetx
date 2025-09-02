@@ -14,6 +14,15 @@ import { useOrderStore } from '@/store/useOrderStore';
 import { useAuthStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import LoadingPage from '../../loading';
+import { Input } from '@/shared/components/ui/input';
+import { fleetService } from '@/shared/services/fleet';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,23 +31,9 @@ export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const venderStore = useVenderStore();
   const authStore = useAuthStore();
-
-  const [isEditDetails, setIsEditDetails] = useState(false);
-  const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
-    undefined
-  );
-  const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
-    undefined
-  );
-  const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
-  const [selectedAccountManager, setSelectedAccountManager] = useState<
-    string | undefined
-  >(undefined);
-  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
-    undefined
-  );
+
+  const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
     orderStore?.orderHistoryListData &&
@@ -47,21 +42,36 @@ export default function OrderTrackingDashboard() {
       : ({} as TypeOrderHistoryList)
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(10);
+  const { driverId, setValue } = useOrderStore();
+  const [driverList, setDriverList] =
+    useState<TypeFleetDriverResponse['data']>();
+
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
 
-  const fetchOrderDetails = async (perPage: number) => {
+  const isOrderLiveIsTable =
+    authStore.user?.roles?.some((role) =>
+      [
+        'OPERATION_MANAGER',
+        'FINANCE_MANAGER',
+        'VENDOR_ACCOUNT_MANAGER',
+        'SALES_HEAD',
+      ].includes(role as any)
+    ) ?? false;
+
+  const fetchOrderDetails = async () => {
     setIsLoading(true);
 
-    const searchAll = isEditDetails ? null : true;
+    const searchAll = authStore.user?.roles.includes('FINANCE_MANAGER')
+      ? null
+      : true;
 
     const url = orderService.getOrderStatusUrl(
+      1,
       page,
-      perPage,
       ordernNumber,
       searchCustomer,
-      searchDriver,
+      driverId!,
       searchAll
     );
 
@@ -75,7 +85,7 @@ export default function OrderTrackingDashboard() {
           setSelectedOrder(orderStore.orderStatusListData[0]);
         }
       }
-      // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
+      setNextSetItemsToken(res.count! < page ? null : true);
       setIsLoading(false);
     } catch (err: any) {
       setIsLoading(false);
@@ -90,17 +100,43 @@ export default function OrderTrackingDashboard() {
     }
   };
 
+  const fetchDriverData = async () => {
+    if (!isOrderLiveIsTable) return;
+
+    try {
+      const driverResult = await fleetService.getDriver();
+
+      if (driverResult.data) {
+        setDriverList(driverResult.data);
+      }
+    } catch (error: any) {
+      console.error('Error fetching driver data:', error);
+      setDriverList(undefined);
+    }
+  };
+
   useEffect(() => {
     const loadInitialOrders = async () => {
-      await fetchOrderDetails(perPage);
+      await fetchOrderDetails();
     };
     loadInitialOrders();
-  }, [venderStore.branchId]);
+  }, [
+    venderStore.selectedBranch?.id,
+    page,
+    venderStore.selectedVendor?.id,
+    driverId,
+    searchCustomer,
+    ordernNumber,
+  ]);
 
-  const isOrderLiveIsTable =
-    authStore.user?.roles.includes('OPERATION_MANAGER');
+  useEffect(() => {
+    fetchDriverData();
+  }, [isOrderLiveIsTable]);
 
-  const { statusHistory } = useOrderStatusHistory(selectedOrder);
+  const { statusHistory } = useOrderStatusHistory(
+    selectedOrder,
+    isOrderLiveIsTable
+  );
 
   useEffect(() => {
     if (
@@ -121,41 +157,74 @@ export default function OrderTrackingDashboard() {
     }
   }
 
-  if (isLoading || !orderStore.orderStatusListData) return <LoadingPage />;
-
-  console.log(selectedOrder);
-
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
       {/* Left Panel - Orders List */}
 
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between ">
-          <h2 className="text-xl font-semibold text-gray-900">Active Orders</h2>
-        </div>
+        {!isOrderLiveIsTable && (
+          <div className="flex items-center justify-between ">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Active Orders
+            </h2>
+          </div>
+        )}
 
         {/* Search and Filter */}
         <div className="flex items-center justify-center gap-1.5">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search by Order No, Customer, Phone"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <select
-            value={selectedFilter}
-            onChange={(e) => setSelectedFilter(e.target.value)}
-            className=" px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option>All Orders</option>
-            <option>Active</option>
-            <option>Confirmed</option>
-            <option>Urgent</option>
-          </select>
+          {isOrderLiveIsTable ? (
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search Order No"
+                  value={ordernNumber}
+                  onChange={(e) => setOrdernNumber(e.target.value)}
+                  className=""
+                />
+              </div>
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search Customer"
+                  value={searchCustomer}
+                  onChange={(e) => setSearchCustomer(e.target.value)}
+                  className=""
+                />
+              </div>
+
+              <div className="flex items-center justify-center gap-1.5">
+                <Select
+                  value={String(driverId)}
+                  onValueChange={(value) => setValue('driverId', Number(value))}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select an Driver" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="null">All Driver</SelectItem>
+                    {driverList?.agents.map((item, idx) => (
+                      <SelectItem key={idx} value={String(item.fleet_id)}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search by Order No, Customer, Phone"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 "
+              />
+            </div>
+          )}
+
           <div
             hidden={isOrderLiveIsTable}
             className="flex gap-2 border bg-white rounded-md"
@@ -181,8 +250,13 @@ export default function OrderTrackingDashboard() {
         <TableComponent
           data={orderStore?.orderStatusListData!}
           isRating={false}
+          page={page}
+          setPage={setPage}
+          fetchOrderDetails={fetchOrderDetails}
+          nextSetItemTotal={nextSetItemsToken}
         />
-      ) : (
+      ) : orderStore?.orderStatusListData &&
+        orderStore?.orderStatusListData?.length > 0 ? (
         <>
           {isStyleTabel === 'grid' && (
             <GridComponent
@@ -197,6 +271,8 @@ export default function OrderTrackingDashboard() {
             <ListComponent data={orderStore?.orderStatusListData!} />
           )}
         </>
+      ) : (
+        'Empty'
       )}
     </div>
   );

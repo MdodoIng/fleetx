@@ -8,9 +8,11 @@ import {
   TypeRootEstimatedDeliveryReturnFromApi,
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
+  TypeUpdateAddressReq,
+  TypeUpdateAddressResponce,
 } from '@/shared/types/orders';
 import { useAuthStore, useVenderStore } from '@/store';
-import {  useSharedStore } from '@/store/sharedStore';
+import { useSharedStore } from '@/store/sharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>
@@ -43,7 +45,10 @@ export const orderService = {
       { method: 'PUT', body: JSON.stringify(payment) }
     ),
 
-  updateAddress: (address: any, orderUuid: string) =>
+  updateAddress: (
+    address: TypeUpdateAddressReq,
+    orderUuid: string
+  ): Promise<TypeUpdateAddressResponce> =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/update/${orderUuid}/drop-off`,
       { method: 'PUT', body: JSON.stringify(address) }
@@ -57,15 +62,14 @@ export const orderService = {
     perPage: number,
     searchOrder?: string,
     searchCustomer?: string,
-    searchDriver?: string,
+    searchDriver?: string | number,
     searchAll: boolean | null = true
   ) {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
     const currentUser = getDecodedAccessToken();
     const { branchId, vendorId } = useVenderStore.getState();
     const { user } = useAuthStore.getState();
-    
-    
+
     switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':

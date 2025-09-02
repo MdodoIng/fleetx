@@ -39,3 +39,20 @@ export type TypBranchWalletBalanceReportRes = {
   ];
   NEXT_SET_ITEMS_TOKEN: [number, string] | null;
 };
+
+interface TypeDashboardDetailsResponse {
+  data: {
+    total_cash_collected: number;
+    total_delivery_fees: number;
+    total_failed_orders: number;
+    payment_methods: {
+      cod: number;
+      online: number;
+    };
+    delivery_models: {
+      on_demand: number;
+      grouped: number;
+      bulk: number;
+    };
+  };
+}

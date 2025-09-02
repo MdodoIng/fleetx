@@ -1,6 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   MapPin,
   User,
@@ -13,36 +20,79 @@ import {
   Navigation,
   Info,
   Receipt,
+  Edit,
 } from 'lucide-react';
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 import Rating from './Rating';
 import { useSharedStore } from '@/store';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
+import { Label } from '@/shared/components/ui/label';
+import { Input } from '@/shared/components/ui/input';
+import EditResiver from './EditResiver';
 
 interface OrdersPageProps {
   data: TypeOrderHistoryList[];
   isRating?: boolean;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  nextSetItemTotal: any;
+  fetchOrderDetails: () => Promise<void>;
 }
 
 export default function TableComponent({
   data,
   isRating = true,
+  page,
+  setPage,
+  nextSetItemTotal,
+  fetchOrderDetails,
 }: OrdersPageProps) {
-  const [page, setPage] = useState(1);
   const [rating, setRating] = useState(0);
   const { appConstants } = useSharedStore();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const handleClick = (value: number) => {
     setRating(value);
   };
-  const pageSize = 5;
 
-  const paginated = data?.slice((page - 1) * pageSize, page * pageSize);
+  const handleLoadMore = useCallback(() => {
+    setPage((prev) => prev + 10); // load 10 more items
+  }, []);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [handleLoadMore]);
 
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6">
-        {paginated.map((order) => (
+        {data.map((order) => (
           <div
             key={order.id}
             className="bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100"
@@ -105,7 +155,7 @@ export default function TableComponent({
               </div>
 
               {/* Receiver */}
-              <div className="flex flex-col p-3 rounded-lg border bg-gray-50 ">
+              <div className="flex flex-col p-3 rounded-lg border bg-gray-50 relative z-0">
                 <span className="text-xs text-gray-400 flex items-center gap-1">
                   <User size={14} /> Receiver
                 </span>
@@ -118,6 +168,10 @@ export default function TableComponent({
                 <span className="text-xs text-gray-500 flex items-center gap-1">
                   <MapPin size={12} /> {order.to}
                 </span>
+                <EditResiver
+                  data={order}
+                  fetchOrderDetails={fetchOrderDetails}
+                />
               </div>
 
               {/* Driver */}
@@ -183,22 +237,17 @@ export default function TableComponent({
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-6 gap-2 bg-white w-full shadow rounded-md py-3">
-        {Array.from({ length: Math.ceil(data.length / pageSize) }).map(
-          (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                page === i + 1
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              {i + 1}
-            </button>
-          )
-        )}
+
+      <div
+        hidden={nextSetItemTotal === null}
+        className="flex justify-center mt-6 gap-2 bg-white w-full shadow rounded-md py-3"
+      >
+        <div
+          ref={loadMoreRef}
+          className="flex justify-center items-center py-4 text-gray-500"
+        >
+          Loading more...
+        </div>
       </div>
     </div>
   );
