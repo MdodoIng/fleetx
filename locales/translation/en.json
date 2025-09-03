@@ -35,7 +35,7 @@
     },
     "insights": "Insights",
     "insightsSubMenu": {
-      "orderTrend": "Order Trend",
+      "overview": "Overview",
       "churnReasons": "Churn Reasons",
       "firstOrder": "First Order",
       "affReferrals": "Affiliator Referrals",

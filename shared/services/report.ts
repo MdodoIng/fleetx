@@ -166,7 +166,6 @@ export const reportService = {
         }
         break;
       default:
-    
         break;
     }
 
@@ -178,6 +177,105 @@ export const reportService = {
   },
 
   getDashboardDetails(url: string): Promise<TypeDashboardDetailsResponse> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getDashboardInsight(fromDate: Date | null, toDate: Date | null) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/performance/dashboard/insights';
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getChurnReasonsInsights(fromDate: Date | null, toDate: Date | null) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/funnel/retention/churn-reason/insights';
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getFirstOrderInsight(fromDate: Date | null, toDate: Date | null) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/first-order/insight';
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getFirstOrderList(
+    page: number,
+    perPage: number,
+    fromDate: Date | null,
+    toDate: Date | null
+  ) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = `/first-orders/list?page_size=${perPage}&page=${page}`;
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getReferralsURLs(
+    page: number,
+    perPage: number,
+    refBy: string,
+    fromDate?: Date | null,
+    toDate?: Date | null,
+    ref_type: any = 1
+  ): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    const { selectedAffiliator } = useOrderStore.getState();
+
+    let url = `/referral/report/orders?page_size=${perPage}&page=${page}&ref_type=${ref_type}`;
+
+    if (fromDate) {
+      url = url + '&from_date=' + getFormattedDate(fromDate);
+    }
+    if (toDate) {
+      url = url + '&to_date=' + getFormattedDate(toDate);
+    }
+    if (refBy) {
+      url = url + '&ref_by=' + refBy;
+    } else if (selectedAffiliator) {
+      url = url + '&ref_by=' + selectedAffiliator;
+    }
+    return url;
+  },
+
+  getReferrals(url: string): Promise<any> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getZoneGrowth(region_id: number, year: number) {
+    let url = '/zone/growth/insight';
+    const queryParams = [];
+
+    if (region_id) {
+      queryParams.push(`region_id=${region_id}`);
+    }
+    if (year) {
+      queryParams.push(`year=${year}`);
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`;
+    }
+
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });

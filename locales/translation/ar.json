@@ -35,7 +35,7 @@
     },
     "insights": "الرؤى",
     "insightsSubMenu": {
-      "orderTrend": "اتجاه الطلب",
+      "overview": "نظرة عامة",
       "churnReasons": "أسباب التوقف",
       "firstOrder": "الطلب الأول",
       "affReferrals": "إحالات المسوقين",

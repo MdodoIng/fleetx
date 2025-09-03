@@ -124,8 +124,8 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     icon: 'icon-insights',
     children: [
       {
-        labelKey: 'menuItems.insightsSubMenu.orderTrend',
-        route: '/insights/order-trend',
+        labelKey: 'menuItems.insightsSubMenu.overview',
+        route: '/insights/overview',
         icon: 'icon-order-trend',
         roles: [
           'FINANCE_MANAGER',

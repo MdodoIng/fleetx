@@ -253,4 +253,10 @@ export const orderService = {
       ('0' + date.getDate()).slice(-2)
     );
   },
+
+  getZone() {
+    return apiFetch(`${configService.orderServiceApiUrl()}/zone/list`, {
+      method: 'GET',
+    });
+  },
 };

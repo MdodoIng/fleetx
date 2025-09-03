@@ -42,6 +42,7 @@ interface OrderState {
   orderHistoryListData: TypeOrderHistoryList[] | undefined;
   OLDER_DATE: string;
   isEditDetails: boolean;
+  selectedAffiliator: any;
   //
   // actions
   updateDeliveryModel: (deliveryModel: number) => void;
@@ -74,6 +75,7 @@ const initialState: OrderState | any = {
   orderHistoryListData: undefined,
   OLDER_DATE: '2023-01-01',
   isEditDetails: false,
+  selectedAffiliator: null,
 };
 
 export const useOrderStore = create<OrderState>()(

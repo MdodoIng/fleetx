@@ -203,7 +203,9 @@ export const vendorService = {
     ),
 
   getAffiliation: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/get-all`),
+    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/get-all`, {
+      method: 'GET',
+    }),
 
   getOpsFinUser: () =>
     apiFetch(`${configService.vendorServiceApiUrl()}/ops-fin-user`),
