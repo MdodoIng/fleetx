@@ -6,14 +6,37 @@ import { useSharedStore, useVenderStore, useWalletStore } from '@/store';
 import { useAddCredit } from '../../hooks/useAddCredit';
 import { useEffect, useState } from 'react';
 import { vendorService } from '@/shared/services/vender';
+import { TypeBranch } from '@/shared/types/vender';
+import { Label } from '@/shared/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import z from 'zod/v3';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  addCreditDebitformSchema,
+  TypeAddCreditDebitformSchema,
+} from '../../validations/paymentForm';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/shared/components/ui/form';
 
 type BranchData = {
-  branch: string;
+  branch: TypeBranch;
   currentAmount: number;
-  rechargeAmount: any;
+  rechargeAmount: number;
 };
 
-const AddCredit = ({
+const PaymentForm = ({
   amount,
   setAmount,
   recommendations,
@@ -26,10 +49,17 @@ const AddCredit = ({
 }) => {
   const [data, setData] = useState<BranchData[]>();
   const sheredStore = useSharedStore();
-  const { submitAddCredit } = useAddCredit();
-  const { isCentralWalletEnabled, isMultiplePayment, isAddCreditDebit } =
-    useWalletStore();
+  const { submitAddCredit, submitCreditDebitPrepare } = useAddCredit();
+  const {
+    isCentralWalletEnabled,
+    isMultiplePayment,
+    isAddCreditDebit,
+    setValue,
+    prepareMashkor,
+  } = useWalletStore();
   const { branchDetails } = useVenderStore();
+  const [paymentType, setPaymentType] = useState('');
+  const [note, setNote] = useState('');
 
   const handleRechargeChange = (index: number, value: any) => {
     const updated = data && [...data];
@@ -38,7 +68,19 @@ const AddCredit = ({
   };
 
   const totalRecharge =
-    data && data.reduce((sum, item) => sum + item.rechargeAmount, 0);
+    data &&
+    data?.reduce((sum, item) => sum + (Number(item.rechargeAmount) || 0), 0);
+
+  const addCreditDebitform = useForm<TypeAddCreditDebitformSchema>({
+    resolver: zodResolver(addCreditDebitformSchema),
+    defaultValues: {
+      paymentType: 'credit',
+      amount: 0,
+      note: '',
+    },
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
+  });
 
   useEffect(() => {
     if (!isMultiplePayment) return;
@@ -50,7 +92,7 @@ const AddCredit = ({
             item.id
           );
           return {
-            branch: item.name,
+            branch: item,
             currentAmount: Number(res.data.wallet_balance),
             rechargeAmount: 0,
           };
@@ -64,7 +106,81 @@ const AddCredit = ({
   return (
     <>
       {isAddCreditDebit ? (
-        <></>
+        <>
+          <Form {...addCreditDebitform}>
+            <div className=" space-y-6 ">
+              <FormField
+                control={addCreditDebitform.control}
+                name="paymentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Payment Type</Label>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Payment Type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="credit">Credit Card</SelectItem>
+                        <SelectItem value="debit">Debit Card</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addCreditDebitform.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="amount">Amount</Label>
+                    <FormControl>
+                      <Input
+                        id="amount"
+                        placeholder="Enter amount"
+                        type="number"
+                        {...field}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          field.onChange(value);
+                        }}
+                        onBlur={(e) => {
+                          const value = Number(e.target.value);
+                          field.onChange(value);
+                          field.onBlur();
+                        }}
+                        value={field.value === 0 ? '' : String(field.value)}
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addCreditDebitform.control}
+                name="note"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="note">Note</Label>
+                    <FormControl>
+                      <Input
+                        id="note"
+                        placeholder="You can add some notes here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </Form>
+        </>
       ) : (
         <>
           {isMultiplePayment ? (
@@ -87,7 +203,7 @@ const AddCredit = ({
                 <tbody>
                   {data?.map((item, idx) => (
                     <tr key={idx} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-3">{item.branch}</td>
+                      <td className="py-2 px-3">{item.branch.name}</td>
                       <td
                         className={`py-2 px-3 ${item.currentAmount < 0 ? 'text-red-600' : ''}`}
                       >
@@ -95,11 +211,12 @@ const AddCredit = ({
                       </td>
                       <td className="py-2 px-3">
                         <Input
-                          value={String(item.rechargeAmount)}
+                          type="number"
+                          value={item.rechargeAmount}
                           onChange={(e) =>
-                            handleRechargeChange(idx, Number(e.target.value))
+                            handleRechargeChange(idx, e.target.value)
                           }
-                          className="w-20 px-2 py-1 border rounded text-right"
+                          className="w-20 px-2 py-1 border rounded text-right appearance-none"
                         />
                       </td>
                     </tr>
@@ -135,7 +252,7 @@ const AddCredit = ({
           )}
         </>
       )}
-      <div hidden={isMultiplePayment}>
+      <div hidden={isMultiplePayment || isAddCreditDebit}>
         <p className="flex items-center gap-2 text-sm font-medium mb-3">
           💡 Smart Recharge Recommendation
         </p>
@@ -177,7 +294,11 @@ const AddCredit = ({
       </p>
 
       <Button
-        onClick={() => submitAddCredit(amount)}
+        onClick={() =>
+          isAddCreditDebit
+            ? submitCreditDebitPrepare(addCreditDebitform)
+            : submitAddCredit(data || amount)
+        }
         className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 "
       >
         Add Credit
@@ -186,4 +307,4 @@ const AddCredit = ({
   );
 };
 
-export default AddCredit;
+export default PaymentForm;

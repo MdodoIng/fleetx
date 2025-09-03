@@ -52,7 +52,12 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     labelKey: 'menuItems.vendor',
     route: '/vendor',
     icon: 'icon-vendor',
-    roles: ['OPERATION_MANAGER', 'VENDOR_ACCOUNT_MANAGER', 'SALES_HEAD'],
+    roles: [
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+      'FINANCE_MANAGER',
+    ],
     children: [
       {
         labelKey: 'menuItems.vendorSubMenu.vendorList',
@@ -112,11 +117,86 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
       },
     ],
   },
+
+  {
+    labelKey: 'menuItems.insights',
+    route: '/insights',
+    icon: 'icon-insights',
+    children: [
+      {
+        labelKey: 'menuItems.insightsSubMenu.orderTrend',
+        route: '/insights/order-trend',
+        icon: 'icon-order-trend',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.churnReasons',
+        route: '/insights/churn-reasons',
+        icon: 'icon-churn-reasons',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.firstOrder',
+        route: '/insights/first-order',
+        icon: 'icon-first-order',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.affReferrals',
+        route: '/insights/aff_referrals',
+        icon: 'icon-aff-referrals',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.userReferrals',
+        route: '/insights/user_referrals',
+        icon: 'icon-user-referrals',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.zoneGrowth',
+        route: '/insights/zone-growth',
+        icon: 'icon-zone-growth',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+    ],
+  },
+
   {
     labelKey: 'menuItems.salesFunnel',
-    route: '/sales-funnel',
+    route: '/order/sales-funnel',
     icon: 'icon-funnel',
-    roles: ['SALES_HEAD', "OPERATION_MANAGER","FINANCE_MANAGER"],
+    roles: ['SALES_HEAD', 'OPERATION_MANAGER', 'FINANCE_MANAGER'],
   },
   {
     labelKey: 'menuItems.rating',

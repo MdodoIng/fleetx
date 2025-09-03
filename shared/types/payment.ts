@@ -12,6 +12,22 @@ export type TypePaymentAddReq = {
   reason: string;
 };
 
+export type TypeInitiateReq =
+  | {
+      vendor_id: string;
+      amount: number;
+      language: string;
+      branch_payments?: {
+        branch_id: string;
+        amount: number;
+      }[];
+    }
+  | {
+      vendor_id: string;
+      amount: number;
+      language: string;
+    };
+
 export type TypeWalletNotifyBalanceRes = {
   data: {
     id: string;
@@ -53,4 +69,16 @@ export type TypeManualPaymentHistoryReportRes = {
     wallet_type: number;
   }[];
   count: number;
+};
+
+export type TypePrepareMashkorReq = {
+  vendor_id: string;
+  branch_id: string;
+  amount: number;
+  note: string;
+};
+
+export type TypeCreateDebitMashkorReq = {
+  txn_number: number;
+  amount: number;
 };

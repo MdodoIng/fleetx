@@ -33,14 +33,14 @@
       "editProfile": "تعديل الحساب",
       "invoice": "الفاتورة"
     },
-    "insights": "البيانات",
+    "insights": "الرؤى",
     "insightsSubMenu": {
-      "overview": "نظرة عامة",
+      "orderTrend": "اتجاه الطلب",
       "churnReasons": "أسباب التوقف",
-      "firstOrderExperience": "تقييم أول تجربة",
-      "referrals": "التوصيات",
-      "zoneGrowth": "نطاق التوسع",
-      "userReferrals": "User Referrals"
+      "firstOrder": "الطلب الأول",
+      "affReferrals": "إحالات المسوقين",
+      "userReferrals": "إحالات المستخدمين",
+      "zoneGrowth": "نمو المنطقة"
     },
     "salesFunnel": "مركز المبيعات",
     "rating": "التقييم",

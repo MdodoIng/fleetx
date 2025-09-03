@@ -7,6 +7,9 @@ import { useAuthStore } from './useAuthStore';
 import { fa, tr } from 'zod/v4/locales';
 import { use } from 'react';
 import { getSuperSaverPromation } from '@/shared/services';
+import { TypeBranch, TypeVender } from '@/shared/types/vender';
+import { TypepaymentSchema } from '@/features/orders/validations/editPayment';
+import { TypeAddCreditDebitformSchema } from '@/features/wallet/validations/paymentForm';
 
 export async function getVendorWalletBalanceInit() {
   const { branchId, vendorId, selectedVendor, selectedBranch } =
@@ -32,7 +35,9 @@ export async function getVendorWalletBalanceInit() {
       setValue('walletBalance', res.data.wallet_balance.toString());
       setValue(
         'isRechargedOrWalletBalance',
-        res.data.recharged_count > 0 || res.data.wallet_balance != 0
+        (
+          res.data.recharged_count > 0 || res.data.wallet_balance !== 0
+        ).toString()
       );
     }
   } catch (err: any) {
@@ -73,15 +78,14 @@ export function toShowAddCreditButton() {
 }
 
 async function getSuperSaverPromotion() {
+  const { vendorId, branchId, selectedBranch, selectedVendor } =
+    useVenderStore.getState();
   const {
-    vendorId,
-    branchId,
-    selectedBranch,
-    selectedVendor,
+    setValue,
+    successOrdersCount,
     isAchievedSuperSaver,
     isActiveSuperSaver,
-  } = useVenderStore.getState();
-  const { setValue, successOrdersCount } = useWalletStore.getState();
+  } = useWalletStore.getState();
 
   try {
     const res = await getSuperSaverPromation(
@@ -330,10 +334,22 @@ export interface WalletState {
   areaFare: any;
   deliveryRuleSlabs: any;
   isMultiplePayment: boolean;
+  prepareMashkor:
+    | {
+        type: TypeAddCreditDebitformSchema['paymentType'] | undefined;
+        txnNumber: number;
+        amount: number;
+        branch: TypeBranch | undefined;
+        vendor: TypeVender | undefined;
+      }
+    | undefined;
 }
 
 export interface WalletActions {
-  setValue: (key: keyof WalletState, value: any) => void;
+  setValue: <K extends keyof WalletState>(
+    key: K,
+    value: WalletState[K]
+  ) => void;
   getCentralWalletEnabled: () => {};
   clearAll: () => void;
   checkWallet: () => void;
@@ -367,6 +383,7 @@ const initialState: WalletState = {
   deliveryRuleSlabs: null,
   superSaverAchivedWalletMessages: '',
   isMultiplePayment: false,
+  prepareMashkor: undefined,
 };
 
 export const useWalletStore = create<WalletState & WalletActions>()(
@@ -447,7 +464,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
         switch (user?.roles[0]) {
           case 'FINANCE_MANAGER':
             set({
-              isDisableAddCredit: true,
+              isDisableAddCredit: false,
               walletBalance: '-',
               isAddCreditDebit: true,
             });
@@ -459,7 +476,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
           case 'VENDOR_ACCOUNT_MANAGER':
           case 'SALES_HEAD':
             set({
-              isDisableAddCredit: true,
+              isDisableAddCredit: false,
               walletBalance: '-',
               isAddCreditDebit: false,
             });

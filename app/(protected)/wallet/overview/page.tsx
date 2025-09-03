@@ -23,8 +23,10 @@ export default function WalletPage() {
     isCentralWalletEnabled,
     checkWallet,
     setTabBasedOnRole,
+    setValue,
+    prepareMashkor,
   } = useWalletStore();
-  const { handleAddCredit } = useAddCredit();
+  const { handleAddCredit, handlePrepareMashkor } = useAddCredit();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState<Number | undefined>(undefined);
@@ -34,6 +36,7 @@ export default function WalletPage() {
       await setTabBasedOnRole();
     };
     setTab();
+    setValue('isDisableAddCredit', true);
   }, []);
 
   useEffect(() => {
@@ -48,7 +51,11 @@ export default function WalletPage() {
     venderStore.selectedVendor,
   ]);
 
-  console.log(venderStore.selectedVendor?.id, 'sagfda');
+  useEffect(() => {
+    if (prepareMashkor) {
+      handlePrepareMashkor({ setIsOpen: setIsOpen });
+    }
+  });
 
   return (
     <div className="p-6 grid gap-6 grid-cols-1 md:grid-cols-2">
