@@ -9,6 +9,7 @@ import {
   TypBranchWalletBalanceReportRes,
   TypeDashboardDetailsResponse,
   TypeWalletTransactionHistoryRes,
+  TypeZoneGrowthResponce,
 } from '../types/report';
 import { configService } from './app-config';
 
@@ -261,7 +262,10 @@ export const reportService = {
     });
   },
 
-  getZoneGrowth(region_id: number, year: number) {
+  getZoneGrowth(
+    region_id: number,
+    year: number
+  ): Promise<TypeZoneGrowthResponce> {
     let url = '/zone/growth/insight';
     const queryParams = [];
 

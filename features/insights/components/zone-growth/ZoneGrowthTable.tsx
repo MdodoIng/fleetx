@@ -1,4 +1,6 @@
+import { TypeZoneGrowth } from '@/shared/types/report';
 import Image from 'next/image';
+import NoData from '../user_referrals/NoData';
 
 const monthNames = [
   '',
@@ -16,20 +18,12 @@ const monthNames = [
   'December',
 ];
 
-export default function ZoneGrowthTable({ data }) {
-  if (!data.length) {
-    return (
-      <div className="text-center mt-12">
-        <Image
-          src="/images/nodata.png"
-          alt="No data"
-          width={120}
-          height={120}
-        />
-        <p className="mt-4 text-gray-500">Whoops! no data found</p>
-      </div>
-    );
+export default function ZoneGrowthTable({ data }: { data: TypeZoneGrowth[] }) {
+  if (!data?.length) {
+    return <NoData />;
   }
+
+  const orderData = data.sort((a, b) => a.month - b.month);
 
   return (
     <div className="overflow-x-auto">
@@ -44,7 +38,7 @@ export default function ZoneGrowthTable({ data }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, idx) => (
+          {orderData.map((row, idx) => (
             <tr
               key={row.month}
               className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}

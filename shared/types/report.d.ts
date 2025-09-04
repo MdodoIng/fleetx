@@ -56,3 +56,22 @@ interface TypeDashboardDetailsResponse {
     };
   };
 }
+
+export interface TypeZoneGrowth {
+  id: string;
+  zone: {
+    region_id: string;
+    region_name: string;
+  };
+  created_at: string | null;
+  active_branches_count: number;
+  inactive_branches_count: number;
+  not_ordered_branches_count: number;
+  all_branches_count: number;
+  month: number;
+  year: number;
+}
+
+export interface TypeZoneGrowthResponce {
+  data: TypeZoneGrowth[];
+}

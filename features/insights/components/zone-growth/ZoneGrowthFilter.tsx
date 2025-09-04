@@ -8,12 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { useMemo } from 'react';
+import { TypeZoneData } from '@/shared/types/orders';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 
 interface Props {
-  zones: { id: string; region_name: string }[];
-  selectedZone: string;
-  onZoneChange: (zone: string) => void;
+  zones: TypeZoneData[];
+  selectedZone: number;
+  onZoneChange: Dispatch<SetStateAction<number | undefined>>;
   selectedYear: number;
   onYearChange: (year: number) => void;
 }
@@ -37,12 +38,15 @@ export default function ZoneGrowthFilter({
           <label className="text-sm font-medium text-gray-600 mb-1">
             Select Zone
           </label>
-          <Select value={selectedZone} onValueChange={onZoneChange}>
+          <Select
+            value={String(selectedZone)}
+            onValueChange={(value) => onZoneChange(Number(value))}
+          >
             <SelectTrigger className="w-48">
               <SelectValue placeholder="All Zones" />
             </SelectTrigger>
             <SelectContent>
-              {zones.map((z) => (
+              {zones?.map((z) => (
                 <SelectItem key={z.id} value={z.id}>
                   {z.region_name}
                 </SelectItem>

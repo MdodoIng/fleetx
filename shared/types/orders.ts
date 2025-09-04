@@ -501,3 +501,18 @@ export interface TypeUpdatePaymentReq {
   payment_type: number;
   amount_to_collect: number;
 }
+
+export interface TypeZoneResponce {
+  data: TypeZoneData[];
+}
+
+export interface TypeZoneData {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted: boolean;
+  region_name: string;
+  region_description: string;
+  is_active: boolean;
+  boundary_coordinates: [number, number][][];
+}

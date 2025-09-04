@@ -11,6 +11,7 @@ import {
   TypeUpdateAddressReq,
   TypeUpdateAddressResponce,
   TypeUpdatePaymentReq,
+  TypeZoneResponce,
 } from '@/shared/types/orders';
 import { useAuthStore, useVenderStore } from '@/store';
 import { useSharedStore } from '@/store/sharedStore';
@@ -254,7 +255,7 @@ export const orderService = {
     );
   },
 
-  getZone() {
+  getZone(): Promise<TypeZoneResponce> {
     return apiFetch(`${configService.orderServiceApiUrl()}/zone/list`, {
       method: 'GET',
     });
