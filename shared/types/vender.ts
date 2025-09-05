@@ -269,3 +269,16 @@ export type TypeCreateVendorUserReq = {
   branch_id: string;
   cod_counter_type: number;
 };
+
+export type TypeOpsFinUser = {
+  id: string;
+  email: string;
+  phone: string;
+  first_name: string;
+  last_name: string;
+  created_by: null;
+};
+
+export interface TypeOpsFinUserResponce {
+  data: TypeOpsFinUser[];
+}

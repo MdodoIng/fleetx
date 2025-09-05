@@ -6,6 +6,7 @@ import {
   TypeBranch,
   TypeCreateVendorUserReq,
   TypeEditVenderReq,
+  TypeOpsFinUserResponce,
   TypeUpdateVendorUserReq,
   TypeVender,
   TypeVenderList,
@@ -207,6 +208,6 @@ export const vendorService = {
       method: 'GET',
     }),
 
-  getOpsFinUser: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/ops-fin-user`),
+  getOpsFinUser: (): Promise<TypeOpsFinUserResponce> =>
+    apiFetch(`${configService.userServiceApiUrl()}/all-ops-fin/users`),
 };

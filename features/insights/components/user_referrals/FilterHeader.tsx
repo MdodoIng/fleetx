@@ -1,10 +1,20 @@
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import { TypeOpsFinUser } from '@/shared/types/vender';
 import { format } from 'date-fns';
 import { CalendarIcon, Download } from 'lucide-react';
-
 
 export default function FilterHeader({
   users,
@@ -16,6 +26,16 @@ export default function FilterHeader({
   onToDateChange,
   onApplyFilter,
   onExport,
+}: {
+  users: TypeOpsFinUser[];
+  selectedUser: string;
+  onUserChange: (value: string) => void;
+  fromDate: Date | undefined;
+  toDate: Date | undefined;
+  onFromDateChange: (date: Date | undefined) => void;
+  onToDateChange: (date: Date | undefined) => void;
+  onApplyFilter: (apply: boolean) => void;
+  onExport: () => void;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b bg-gray-100 rounded-t-md">
@@ -24,7 +44,10 @@ export default function FilterHeader({
         <label className="text-sm font-medium text-muted-foreground mb-1">
           Users
         </label>
-        <Select value={selectedUser} onValueChange={onUserChange}>
+        <Select
+          value={selectedUser}
+          onValueChange={(value) => onUserChange(value)}
+        >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select user" />
           </SelectTrigger>
@@ -58,7 +81,7 @@ export default function FilterHeader({
               <Calendar
                 mode="single"
                 selected={fromDate}
-                onSelect={onFromDateChange}
+                onSelect={(value) => onFromDateChange(value)}
               />
             </PopoverContent>
           </Popover>
@@ -82,13 +105,13 @@ export default function FilterHeader({
               <Calendar
                 mode="single"
                 selected={toDate}
-                onSelect={onToDateChange}
+                onSelect={(value) => onToDateChange(value)}
               />
             </PopoverContent>
           </Popover>
         </div>
 
-        <Button variant="default" onClick={onApplyFilter}>
+        <Button variant="default" onClick={() => onApplyFilter(true)}>
           Select
         </Button>
       </div>

@@ -13,6 +13,7 @@ import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { CHURN_REASONS } from '@/shared/constants/storageConstants';
 
 interface DateRange {
   from?: Date;
@@ -24,34 +25,21 @@ interface ChurnReason {
   total: number;
 }
 
-const CHURN_REASONS = [
-  { id: 'LOW_USAGE', name: 'Low Usage' },
-  { id: 'HIGH_PRICING', name: 'High Pricing' },
-  { id: 'POOR_SUPPORT', name: 'Poor Support' },
-  { id: 'ALTERNATIVE_FOUND', name: 'Found Alternative' },
-  { id: 'OTHER', name: 'Other' },
-];
-
 function ChurnReasons() {
-  const [date, setDate] = useState<DateRange>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-  });
+  const [date, setDate] = useState<DateRange>();
   const [churnReasons, setChurnReasons] = useState<ChurnReason[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchChurnReasonsData = async () => {
-    if (!date.from || !date.to || date.from > date.to) return;
-
     setIsLoading(true);
     try {
       const response = await reportService.getChurnReasonsInsights(
-        date.from,
-        date.to
+        date?.from!,
+        date?.to!
       );
 
       const mapped: ChurnReason[] = CHURN_REASONS.map((reason) => {
-        const match = response.data?.find((x: any) => x.reason === reason.id);
+        const match = response?.data?.find((x: any) => x.reason === reason.id);
         return {
           reason: reason.name,
           total: match?.total || 0,

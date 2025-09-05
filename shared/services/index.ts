@@ -14,7 +14,10 @@ import { Locale, useTranslations } from 'next-intl';
 import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
-import { TypeSuperSaverPromationRes } from '../types/index,d';
+import {
+  TypeFirstOrderInsightResponse,
+  TypeSuperSaverPromationRes,
+} from '../types/index,d';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -100,19 +103,31 @@ export const getSuperSaverPromation = (
       branchId
   );
 
-export const getFirstOrderInsight = (fromDate: Date, toDate: Date) => {
+export const getFirstOrderInsight = (
+  fromDate: Date | null,
+  toDate: Date | null
+): Promise<TypeFirstOrderInsightResponse> => {
   const { getFormattedDate } = useSharedStore.getState();
-  const params = new URLSearchParams({
-    from_date: getFormattedDate(fromDate),
-    to_date: getFormattedDate(toDate),
+  let url = '/first-order/insight';
+  url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
+  url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+  return apiFetch(configService.rateServiceApiUrl() + url, {
+    method: 'GET',
   });
-  return apiFetch(
-    configService.rateServiceApiUrl() +
-      `/first-order/insight?${params.toString()}`
-  );
 };
-export const getFirstOrderList = (url: string) =>
-  apiFetch(configService.rateServiceApiUrl() + url);
+
+export const getFirstOrderList = (
+  page: number,
+  perPage: number,
+  fromDate: Date | null,
+  toDate: Date | null
+) => {
+  const { getFormattedDate } = useSharedStore.getState();
+  let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
+  url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+  url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+  return apiFetch(configService.rateServiceApiUrl() + url);
+};
 export const getFirstOrderPickUpRate = (value: any) =>
   apiFetch(
     configService.rateServiceApiUrl() + '/first/order/pickup/rating/' + value

@@ -8,6 +8,8 @@ import { apiFetch } from '../lib/utils';
 import {
   TypBranchWalletBalanceReportRes,
   TypeDashboardDetailsResponse,
+  TypeDashboardInsightResponce,
+  TypeSalesFunnelRetentionRespose,
   TypeWalletTransactionHistoryRes,
   TypeZoneGrowthResponce,
 } from '../types/report';
@@ -72,7 +74,7 @@ export const reportService = {
     nextSetItemTotal: any[] | null
   ) {
     const { getFormattedDate } = useSharedStore.getState();
-    let url = '/wallet/list?page_size=' + perPage;
+    let url = '/wallet/list?page_size=' + perPage + '&page=1';
     url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
     url = orderId ? url + '&txn_number=' + orderId : url;
@@ -183,10 +185,13 @@ export const reportService = {
     });
   },
 
-  getDashboardInsight(fromDate: Date | null, toDate: Date | null) {
+  getDashboardInsight(
+    fromDate: Date | null,
+    toDate: Date | null
+  ): Promise<TypeDashboardInsightResponce> {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/performance/dashboard/insights';
-    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
@@ -196,17 +201,7 @@ export const reportService = {
   getChurnReasonsInsights(fromDate: Date | null, toDate: Date | null) {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/funnel/retention/churn-reason/insights';
-    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
-    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
-    return apiFetch(configService.reportServiceApiUrl() + url, {
-      method: 'GET',
-    });
-  },
-
-  getFirstOrderInsight(fromDate: Date | null, toDate: Date | null) {
-    const { getFormattedDate } = useSharedStore.getState();
-    let url = '/first-order/insight';
-    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
@@ -283,5 +278,78 @@ export const reportService = {
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });
+  },
+
+  getSalesFunnelActivation(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/activation/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionRespose> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/retention/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
+    return apiFetch(
+      configService.reportServiceApiUrl() +
+        '/funnel/retention/no-order-has-wallet/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelReactivationUsers() {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/reactivation/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelActivationInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/activation/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+  getSalesFunnelRetentionInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/retention/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention2Insight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() +
+        '/funnel/retention/no-order-has-wallet/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelReactivationInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/reactivation/insights',
+      {
+        method: 'GET',
+      }
+    );
   },
 };

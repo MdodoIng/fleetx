@@ -452,14 +452,6 @@ export const useWalletStore = create<WalletState & WalletActions>()(
       setTabBasedOnRole: async () => {
         const { user } = useAuthStore.getState();
 
-        if (
-          user?.roles.includes('FINANCE_MANAGER') ||
-          user?.roles.includes('SALES_HEAD') ||
-          user?.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
-          user?.roles.includes('OPERATION_MANAGER')
-        ) {
-          get().getCentralWalletEnabled();
-        }
 
         switch (user?.roles[0]) {
           case 'FINANCE_MANAGER':

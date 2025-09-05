@@ -57,30 +57,6 @@ const AffiliateReferrals = () => {
 
   const { exportOrdersToCSV } = useTableExport();
 
-  const fetchInitialData = async () => {
-    try {
-      const affRes = await vendorService.getAffiliation();
-      setAffiliators(affRes.data || []);
-
-      const url = reportService.getReferralsURLs(
-        1,
-        page,
-        selectedAffiliator!,
-        date.from,
-        date.to,
-        1
-      );
-
-      const referralRes = await reportService.getReferrals(url);
-      setVendorBranch(referralRes.vendorBranch || []);
-      transformReferralData(referralRes.data);
-      setTotalCount(referralRes.count || 0);
-    } catch (err: any) {
-      console.error('Error fetching initial data:', err.message);
-      console.error('Logged error:', err.message);
-    }
-  };
-
   const transformReferralData = (result: any[]) => {
     const mapped = result.map((element) => {
       const affiliatorName =
@@ -141,17 +117,13 @@ const AffiliateReferrals = () => {
   };
 
   useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  useEffect(() => {
     fetchReferralDetails();
   }, [date, selectedAffiliator]);
 
   return (
     <div className="flex flex-col items-center bg-gray-50 p-4">
       <div className="flex items-center justify-between w-full  bg-gray-200 px-4 py-3 rounded mb-4">
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           <Select
             value={selectedAffiliator}
             onValueChange={(value) => setSelectedAffiliator(value)}

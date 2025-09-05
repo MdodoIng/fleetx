@@ -40,6 +40,7 @@ export default function useInsightBoard() {
         selectedFromDate,
         selectedToDate
       );
+
       const data = res.data;
 
       const firstWalletRechargesPercentage =
@@ -58,12 +59,23 @@ export default function useInsightBoard() {
           : '0%';
 
       setMetrics({
-        ...data,
+        totalSignups: data.total_signups || 0,
+        totalRecharges: data.total_recharges || 0,
+        totalFirstTimeRecharges: data.total_first_time_recharges || 0,
+        totalOrders: data.total_orders || 0,
+        firstWalletRecharges: data.first_wallet_recharges || 0,
+        totalActivated: data.total_activated || 0,
+        totalFirstTimeOrders: data.total_first_time_orders || 0,
+        totalFunnelActivated: data.total_funnel_activated || 0,
+        activeBranchCount: data.active_branch_count || 0,
+        inactiveBranchCount: data.inactive_branch_count || 0,
+        upToDateActiveCount: data.up_to_date_active_count || 0,
+        reactivatedFunnelCount: data.reactivated_funnel_count || 0,
         firstWalletRechargesPercentage,
         totalActivatedPercentage,
       });
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Server error');
+      toast.error(err.response?.data?.message || 'Server error');
       console.error(err);
     }
   };

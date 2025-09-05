@@ -30,9 +30,15 @@ import { useSharedStore, useVenderStore } from '@/store';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { OperationType } from '@/shared/types/orders';
 import { cn } from '@/shared/lib/utils';
+import { vendorService } from '@/shared/services/vender';
+import { TypeBranch } from '@/shared/types/vender';
 
 interface OrdersPageProps {
-  data: TypeWalletTransactionHistoryRes['data'];
+  data: [
+    TypeWalletTransactionHistoryRes['data'][number] & {
+      branch: TypeBranch | undefined;
+    },
+  ];
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;
@@ -49,7 +55,7 @@ export default function TableComponent({
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const handleLoadMore = useCallback(() => {
-    setPage((prev) => prev + 10); // load 10 more items
+    setPage((prev) => prev + 10); 
   }, []);
 
   useEffect(() => {
@@ -71,9 +77,8 @@ export default function TableComponent({
     };
   }, [handleLoadMore]);
 
-  
-  console.log(venderStore.selectedVendor, "venderStore.selectedVendor")
-  
+
+
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">
@@ -82,9 +87,7 @@ export default function TableComponent({
           const operation_type = OperationType.find(
             (x) => x.key === txn?.operation_type
           );
-          const branch = venderStore.branchDetails?.find(
-            (branch) => branch.id === txn.branch_id
-          );
+
           return (
             <div
               key={idx}
@@ -103,9 +106,9 @@ export default function TableComponent({
                   <span className="font-semibold text-gray-700">
                     FleetX{' '}
                     <span className="text-sm font-normal">
-                      {branch?.main_branch
-                        ? 'Main Branch' + ' ' + branch?.name
-                        : branch?.name}
+                      {txn.branch?.main_branch
+                        ? 'Main Branch' + ' ' + txn.branch?.name
+                        : txn.branch?.name}
                     </span>
                   </span>
                 </div>
@@ -124,7 +127,7 @@ export default function TableComponent({
                     <User2 size={14} /> User.
                   </span>
                   <span className="text-sm font-medium text-gray-800">
-                    {venderStore.selectedVendor?.name}
+                    {txn.branch?.vendor.name}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">

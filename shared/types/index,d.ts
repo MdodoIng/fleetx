@@ -34,3 +34,10 @@ export interface TypeVendorPricingRuleRes {
     special_area_set: any;
   };
 }
+
+export type TypeFirstOrderInsightResponse = {
+  data: {
+    avg_rating: number;
+    improvements: string[];
+  };
+};

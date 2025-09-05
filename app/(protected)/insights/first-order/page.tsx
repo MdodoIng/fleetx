@@ -22,25 +22,19 @@ import { format } from 'date-fns';
 import { CalendarIcon, Download } from 'lucide-react';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
-
-const RATE_REASONS = [
-  { id: 'LOW_USAGE', name: 'Low Usage' },
-  { id: 'HIGH_PRICING', name: 'High Pricing' },
-  { id: 'POOR_SUPPORT', name: 'Poor Support' },
-  { id: 'ALTERNATIVE_FOUND', name: 'Found Alternative' },
-  { id: 'OTHER', name: 'Other' },
-];
+import { getFirstOrderInsight, getFirstOrderList } from '@/shared/services';
+import { RATE_REASONS_EN } from '@/shared/constants/storageConstants';
 
 function FirstOrderInsights() {
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-  });
+  const [date, setDate] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>();
   const [selectedVendor, setSelectedVendor] = useState<string | undefined>();
   const [driverRating, setDriverRating] = useState<number>(0);
   const [insightTiles, setInsightTiles] = useState<any[]>([]);
   const [tableData, setTableData] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,9 +42,10 @@ function FirstOrderInsights() {
 
   const fetchInsights = async () => {
     try {
-      const res = await reportService.getFirstOrderInsight(date.from, date.to);
+      const res = await getFirstOrderInsight(date?.from!, date?.to!);
+
       setDriverRating(res.data?.avg_rating || 0);
-      const tiles = RATE_REASONS.map((reason) => {
+      const tiles = RATE_REASONS_EN.map((reason) => {
         const match = res.data?.improvements?.find(
           (x: any) => x.improvement_type === reason.id
         );
@@ -68,20 +63,20 @@ function FirstOrderInsights() {
   const fetchTableData = async () => {
     setIsLoading(true);
     try {
-      const res = await reportService.getFirstOrderList(
+      const res = await getFirstOrderList(
         1,
         page,
-        date.from,
-        date.to
+        date?.from!,
+        date?.to!
       );
       const transformed =
-        res.data?.map((item: any) => ({
+        res?.data?.map((item: any) => ({
           orderId: item.order_id,
           vendor: item.vendor_name,
           branch: item.branch_name,
           rating: item.rating?.toFixed(1),
           improvementType:
-            RATE_REASONS.find((r) => r.id === item.improvement_type)?.name ||
+            RATE_REASONS_EN.find((r) => r.id === item.improvement_type)?.name ||
             '',
           orderNumbers: item.order_numbers?.join(', '),
         })) || [];
@@ -135,16 +130,13 @@ function FirstOrderInsights() {
               />
             </PopoverContent>
           </Popover>
-
         </div>
-
- 
       </div>
 
       {/* Rating Card + Insight Tiles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#30d9c4] rounded-xl p-6 shadow-lg text-white relative">
-          <img src="/star.svg" className="absolute top-4 left-4 w-12 h-12" />
+          <img src="/images/star.svg" className="absolute top-4 left-4 w-12 h-12" />
           <h3 className="text-2xl font-bold tracking-widest">
             PICKUP <span className="font-light">RATING</span>
           </h3>
@@ -180,7 +172,7 @@ function FirstOrderInsights() {
         />
       ) : (
         <div className="text-center text-gray-500 mt-10">
-          <img src="/nodata.png" className="mx-auto mb-4 w-24" />
+          <img src="/images/nodata.png" className="mx-auto mb-4 w-24" />
           <p>Whoops! No data found</p>
         </div>
       )}

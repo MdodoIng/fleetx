@@ -102,6 +102,9 @@ const PaymentForm = ({
     };
     fetchData();
   }, [isMultiplePayment, branchDetails]);
+  
+  
+  console.log(isAddCreditDebit, "isAddCreditDebit")
 
   return (
     <>

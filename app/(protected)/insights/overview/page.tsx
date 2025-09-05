@@ -24,10 +24,7 @@ interface DateRange {
 }
 
 function Overview() {
-  const [date, setDate] = useState<DateRange>({
-    from: new Date(new Date().setMonth(new Date().getMonth() - 3)),
-    to: new Date(),
-  });
+  const [date, setDate] = useState<DateRange>();
 
   const {
     selectedFromDate,

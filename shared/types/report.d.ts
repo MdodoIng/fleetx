@@ -75,3 +75,29 @@ export interface TypeZoneGrowth {
 export interface TypeZoneGrowthResponce {
   data: TypeZoneGrowth[];
 }
+
+export interface TypeDashboardInsight {
+  total_signups: number;
+  total_recharges: number;
+  total_first_time_recharges: number;
+  total_orders: number;
+  total_first_time_orders: number;
+  first_wallet_recharges: number;
+  total_activated: number;
+  total_funnel_activated: number;
+  active_branch_count: number;
+  inactive_branch_count: number;
+  up_to_date_active_count: number;
+  reactivated_funnel_count: number;
+}
+
+export interface TypeDashboardInsightResponce {
+  data: TypeDashboardInsight;
+}
+
+export type TypeSalesFunnelRetentionRespose = {
+  data: {
+    funnel_users: [];
+    repeated_churn: [];
+  };
+};

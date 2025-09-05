@@ -36,7 +36,6 @@ export default function WalletPage() {
       await setTabBasedOnRole();
     };
     setTab();
-    setValue('isDisableAddCredit', true);
   }, []);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ export default function WalletPage() {
         <WalletBalance setIsOpen={setIsOpen} />
         <AlertSettings />
       </div>
-      <RecentTransactions />
+      <RecentTransactions isOpen={isOpen} />
 
       <ModelBoxCredit isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>

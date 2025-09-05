@@ -55,15 +55,6 @@ export default function ModelBoxCredit({
     },
   ];
 
-  const handleSubmit = async () => {
-    const value = parseFloat(String(amount));
-    if (Number.isNaN(value) || value <= 0) return;
-    try {
-      await submitAddCredit(value);
-    } catch (err: any) {
-      console.log(err.error?.message || err.message);
-    }
-  };
 
   return (
     <>

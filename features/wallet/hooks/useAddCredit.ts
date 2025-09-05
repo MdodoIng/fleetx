@@ -9,7 +9,10 @@ import {
 } from '@/shared/types/payment';
 import { TypeBranch } from '@/shared/types/vender';
 import { useAuthStore, useVenderStore } from '@/store';
-import { useWalletStore } from '@/store/useWalletStore';
+import {
+  getVendorWalletBalanceInit,
+  useWalletStore,
+} from '@/store/useWalletStore';
 import { Dispatch, useState, SetStateAction } from 'react';
 import { toast } from 'sonner';
 import { TypeAddCreditDebitformSchema } from '../validations/paymentForm';
@@ -68,21 +71,36 @@ export function useAddCredit() {
       prepareMashkor.txnNumber &&
       prepareMashkor.type
     ) {
-      useVenderStore.setState({
-        branchId: prepareMashkor.branch.id,
-        vendorId: prepareMashkor.vendor.id,
-        selectedBranch: prepareMashkor.branch,
-        selectedVendor: prepareMashkor.vendor,
-      });
+      if (
+        selectedBranch?.id !== prepareMashkor.branch.id ||
+        selectedVendor?.id !== prepareMashkor.vendor.id
+      ) {
+        useVenderStore.setState({
+          branchId: prepareMashkor.branch.id,
+          vendorId: prepareMashkor.vendor.id,
+          selectedBranch: prepareMashkor.branch,
+          selectedVendor: prepareMashkor.vendor,
+        });
+      }
       setIsOpen(2);
     }
   };
 
   const handleAddCredit = async () => {
-    if (!vendorId) {
+    if (!vendorId || (!selectedVendor?.id && isAddCreditDebit)) {
       toast.warning('Please select a vendor');
-      return;
+      return false;
     }
+
+    if (isAddCreditDebit) {
+      if (
+        (vendorId! && branchId!) ||
+        (selectedBranch?.id && selectedVendor?.id!)
+      ) {
+        setValue('isDisableAddCredit', true);
+      }
+    }
+
     try {
       const checkBlockActRes = await checkBlockActivation(
         vendorId! || selectedVendor?.id!,
@@ -95,34 +113,27 @@ export function useAddCredit() {
         return false;
       }
 
-      if (
-        (vendorId! && branchId!) ||
-        (selectedBranch?.id && selectedVendor?.id!)
-      ) {
-        // setValue('isDisableAddCredit', true);
-      }
-
       if (isCentralWalletEnabled) {
         setValue('isMultiplePayment', false);
         openDialog({ isMultiplePayment: false, isCentral: true });
       } else {
         if (isVendorAdmin) {
-          setValue('isMultiplePayment', true);
-          openDialog({ isMultiplePayment: true, isCentral: false });
-          if (branchId || selectedBranch?.id) {
-            setValue('isMultiplePayment', false);
+          if (!selectedBranch?.id) {
             toast.warning('Please select a branch');
-            return;
+            return false;
           }
+          setValue('isMultiplePayment', false);
+          openDialog({ isMultiplePayment: false, isCentral: false });
         } else {
           if (!branchId || !selectedBranch?.id) {
             toast.warning('Please select a branch');
-            return;
+            return false;
           }
           setValue('isMultiplePayment', false);
           openDialog({ isMultiplePayment: false, isCentral: false });
         }
       }
+
       return true;
     } catch (e: any) {
       toast.error(e?.message ?? 'Failed to verify status');
@@ -227,9 +238,11 @@ export function useAddCredit() {
     try {
       if (prepareMashkor.type === 'credit') {
         await paymentService.addMashkorCredit(reqoust);
+        await getVendorWalletBalanceInit();
         toast.success('Amount credited successfully');
       } else {
         await paymentService.addMashkorDebit(reqoust);
+        await getVendorWalletBalanceInit();
         toast.success('Amount debited successfully');
       }
       setValue('prepareMashkor', undefined);
@@ -248,6 +261,6 @@ export function useAddCredit() {
     submitAddCredit,
     submitCreditDebitPrepare,
     submitCreditDebitConformed,
-    handlePrepareMashkor
+    handlePrepareMashkor,
   };
 }

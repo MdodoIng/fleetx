@@ -145,7 +145,7 @@ export const paymentService = {
 
   addMashkorDebit(request: TypeCreateDebitMashkorReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() + '/prepare/mashkor-debit',
+      configService.paymentServiceApiUrl() + '/add/mashkor-debit',
       {
         method: 'POST',
         body: JSON.stringify(request),

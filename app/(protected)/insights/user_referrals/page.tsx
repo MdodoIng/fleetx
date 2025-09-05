@@ -4,6 +4,7 @@ import FilterHeader from '@/features/insights/components/user_referrals/FilterHe
 import NoData from '@/features/insights/components/user_referrals/NoData';
 import ReferralTable from '@/features/insights/components/user_referrals/ReferralTable';
 import useUserReferrals from '@/features/insights/hooks/useUserReferrals';
+import { useAuthStore } from '@/store';
 import { Loader2 } from 'lucide-react';
 
 export default function ReferralDashboard() {
@@ -13,23 +14,30 @@ export default function ReferralDashboard() {
     totalCount,
     page,
     setPage,
-    exportReferrals,
     exporting,
+    selectedUser,
+    setSelectedUser,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    setTrigger,
+    users,
   } = useUserReferrals();
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <FilterHeader
-        users={[]} // Assuming users will be fetched or passed down
-        selectedUser={null} // Initialize as null or appropriate default
-        onUserChange={() => {}} // Placeholder function
-        fromDate={null} // Initialize as null or appropriate default
-        toDate={null} // Initialize as null or appropriate default
-        onFromDateChange={() => {}} // Placeholder function
-        onToDateChange={() => {}} // Placeholder function
-        onApplyFilter={() => {}} // Placeholder function
-        onExport={exportReferrals} // Pass the export function from useReferrals
+        users={users}
+        selectedUser={selectedUser}
+        onUserChange={setSelectedUser}
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
+        onApplyFilter={setTrigger}
+        onExport={() => {}}
       />
 
       {/* Table or No Data */}
