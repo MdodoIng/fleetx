@@ -1,3 +1,4 @@
+import { BalanceReportItem } from '@/features/wallet/type';
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { useOrderStore } from '@/store/useOrderStore';
@@ -48,8 +49,11 @@ function useTableExport() {
   };
 
   const exportOrdersToCSV = (
-    data: TypeOrderHistoryList[] | TypeWalletTransactionHistoryRes['data'],
-    type: 'wallet history' | 'order history',
+    data:
+      | TypeOrderHistoryList[]
+      | TypeWalletTransactionHistoryRes['data']
+      | BalanceReportItem[],
+    type: 'wallet history' | 'order history' | 'balance-report',
     fname?: string
   ) => {
     if (!data || data.length === 0) return;
@@ -90,6 +94,11 @@ function useTableExport() {
           'delivery_model',
           'delivery_distance',
         ];
+        break;
+      case 'balance-report':
+        const firstItem = data[0];
+        keys = firstItem ? Object.keys(firstItem) : [];
+        break;
     }
 
     const csvContent =

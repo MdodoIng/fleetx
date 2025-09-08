@@ -20,5 +20,5 @@ export type TypeWalletTransactionHistoryRes = {
       delivery_distance: string;
     },
   ];
-  NEXT_SET_ITEMS_TOKEN: [number, string];
+  NEXT_SET_ITEMS_TOKEN: [number, string] | null;
 };

@@ -22,8 +22,16 @@ import { persist } from 'zustand/middleware';
 import { TypeBranch, TypeVender } from '@/shared/types/vender';
 import { useVenderStore } from './useVenderStore';
 import { typePostRating, TypeRootRatingResponse } from '@/shared/types/rating';
-import { checkZoneBusyModeIsEnabled, getAllFreeBuddiesFromB2C, getDiffrenceBwCurrentAndLastUpdatedETP, getFleetZonePickUpTrendAPINew, getSuperSaverPromation, logError, setSuperSaverWalletInfoMessage, toValidateOperationalHours } from '@/shared/services';
-
+import {
+  checkZoneBusyModeIsEnabled,
+  getAllFreeBuddiesFromB2C,
+  getDiffrenceBwCurrentAndLastUpdatedETP,
+  getFleetZonePickUpTrendAPINew,
+  getSuperSaverPromation,
+  logError,
+  setSuperSaverWalletInfoMessage,
+  toValidateOperationalHours,
+} from '@/shared/services';
 
 export interface SharedState {
   surveyCount: number;
@@ -87,9 +95,47 @@ export interface SharedActions {
   removeLocalStorage: (key: string) => void;
   clearLocalStorage: () => void;
   setValue: (key: keyof SharedState, value: any) => void;
+  clearAll: () => unknown;
   getFleetZonePickUpTrend: () => Promise<void>;
   getAllFreeBuddiesOnLoad: () => Promise<void>;
 }
+
+const initialState: SharedState = {
+  surveyCount: 0,
+  isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
+  smsPathURL: undefined,
+  resetPasswordPathUrl: undefined,
+  currentRates: undefined,
+  orderNumberRate: undefined,
+  improvements: [],
+  appConstants: null,
+  rate: null,
+  foodicsReference: null,
+  foodicsIsAlreadyConnected: undefined,
+  foodicsCanceledMessage: false,
+  foodicsAssociatedToVendorAdmin: false,
+  isRateFirstOrderPickUp: false,
+  whatsAppUpdateAddress: null,
+  whatsAppUpdateAddressMessage: null,
+  fleetZonePickUpTrend: [],
+  freeDriverData: [],
+  currentStatusZoneETPTrend: undefined,
+  currentZoneId: undefined,
+  defaultZoneId: undefined,
+  isAthuGurad: false,
+  operationalHours: null,
+  activeBusyModeDetails: null,
+  defaultBusyModeDetails: null,
+  isShowVersionUpdateBtn: false,
+  switchToGridView: false,
+  isShowSwitchButtonInLiveOrder: false,
+  isShowTopArrowWhileScroll: false,
+  isEnglishShowTopArrowButton: false,
+  bulkOrderNo: undefined,
+  encryptedBulkOrderNo: undefined,
+  bulkOrderPrimaryStatus: undefined,
+  isValidCancelOrReschedule: undefined,
+};
 
 export const useSharedStore = create<SharedState & SharedActions>()(
   persist(
@@ -98,37 +144,12 @@ export const useSharedStore = create<SharedState & SharedActions>()(
 
       return {
         // Initial State
-        surveyCount: 0,
-        isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
-        improvements: [],
-        appConstants: null,
-        rate: null,
-        foodicsReference: null,
-        foodicsCanceledMessage: false,
-        foodicsAssociatedToVendorAdmin: false,
-        isRateFirstOrderPickUp: false,
-        whatsAppUpdateAddress: null,
-        whatsAppUpdateAddressMessage: null,
-        fleetZonePickUpTrend: [],
-        freeDriverData: [],
-        currentStatusZoneETPTrend: undefined,
-        isAthuGurad: false,
-        operationalHours: null,
-        activeBusyModeDetails: null,
-        defaultBusyModeDetails: null,
-        isShowVersionUpdateBtn: false,
-        switchToGridView: false,
-        isShowSwitchButtonInLiveOrder: false,
-        isShowTopArrowWhileScroll: false,
-        isEnglishShowTopArrowButton: false,
-        bulkOrderNo: undefined,
-        encryptedBulkOrderNo: undefined,
-        bulkOrderPrimaryStatus: undefined,
-        isValidCancelOrReschedule: undefined,
+        ...initialState,
 
         // Actions
 
         setValue: (key: keyof SharedState, value: any) => set({ [key]: value }),
+        clearAll: () => set({ ...initialState }),
         isMobile: () => {
           if (typeof navigator === 'undefined') return false;
           const toMatch = [

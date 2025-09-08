@@ -13,6 +13,7 @@ export interface AuthData {
   roles: UserRole[];
   token: string;
   user: User;
+  user_id?: string;
 }
 
 export interface User {

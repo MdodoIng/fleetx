@@ -19,12 +19,15 @@ import { statusColors, paymentMap } from '@/features/orders/constants';
 import Rating from './Rating';
 import { useSharedStore } from '@/store';
 
-
 interface OrdersPageProps {
   data: TypeOrderHistoryList[];
+  isRating?: boolean;
 }
 
-export default function TableComponent({ data }: OrdersPageProps) {
+export default function TableComponent({
+  data,
+  isRating = true,
+}: OrdersPageProps) {
   const [page, setPage] = useState(1);
   const [rating, setRating] = useState(0);
   const { appConstants } = useSharedStore();
@@ -37,7 +40,7 @@ export default function TableComponent({ data }: OrdersPageProps) {
   const paginated = data?.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <div className="p-6 bg-gray-50">
+    <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6">
         {paginated.map((order) => (
           <div
@@ -64,16 +67,18 @@ export default function TableComponent({ data }: OrdersPageProps) {
                   <Clock size={12} />
                   {new Date(order.creation_date).toLocaleString()}
                 </span>
-                <Rating
-                  initial={0}
-                  order={order}
-                  onChange={(value) => console.log('Selected Rating:', value)}
-                />
+                {isRating && (
+                  <Rating
+                    initial={0}
+                    order={order}
+                    onChange={(value) => console.log('Selected Rating:', value)}
+                  />
+                )}
               </div>
             </div>
 
             {/* Order Details */}
-            <div className="grid md:grid-cols-6 w-full gap-4 text-sm">
+            <div className="grid md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] w-full gap-4 text-sm">
               <div className="flex flex-col p-3 rounded-lg border bg-gray-50">
                 <span className="text-xs text-gray-400 flex items-center gap-1">
                   <Receipt size={14} /> Order No.

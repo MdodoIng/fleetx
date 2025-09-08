@@ -19,9 +19,10 @@ import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Fragment, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fi } from 'zod/v4/locales';
-import AddressLandmarkFields from '../ui/LandmarkFields';
+
 import dynamic from 'next/dynamic';
 import { TypePickUpSchema } from '../../validations/order';
+import AddressLandmarkFields from '@/shared/components/InputSearch';
 // const AddressLandmarkFields = dynamic(() => import('../ui/LandmarkFields'), {
 //   ssr: false,
 //   loading: () => <p>Loading Map...</p>,

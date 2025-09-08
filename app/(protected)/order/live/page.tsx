@@ -11,7 +11,7 @@ import {
   TypeOrderStatusHistoryHistory,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import LoadingPage from '../../loading';
 
@@ -20,6 +20,7 @@ export default function OrderTrackingDashboard() {
   const [selectedFilter, setSelectedFilter] = useState('All Orders');
   const [ordernNumber, setOrdernNumber] = useState('');
   const orderStore = useOrderStore();
+  const venderStore = useVenderStore();
   const authStore = useAuthStore();
 
   const [isEditDetails, setIsEditDetails] = useState(false);
@@ -47,6 +48,7 @@ export default function OrderTrackingDashboard() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
 
   const fetchOrderDetails = async (perPage: number) => {
@@ -69,6 +71,7 @@ export default function OrderTrackingDashboard() {
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
         if (orderStore.orderStatusListData) {
+          console.log(orderStore.orderStatusListData, 'fafa');
           setSelectedOrder(orderStore.orderStatusListData[0]);
         }
       }
@@ -89,22 +92,24 @@ export default function OrderTrackingDashboard() {
 
   useEffect(() => {
     const loadInitialOrders = async () => {
-      await fetchOrderDetails(20);
+      await fetchOrderDetails(perPage);
     };
     loadInitialOrders();
-  }, []);
+  }, [venderStore.branchId]);
 
   const isOrderLiveIsTable =
     authStore.user?.roles.includes('OPERATION_MANAGER');
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
-  // useEffect(() => {
-  //   // Refetch when selectedOrder.id changes
-  //   refetch();
-  // }, [selectedOrder.id, refetch]);
-
-
+  useEffect(() => {
+    if (
+      orderStore.orderStatusListData &&
+      orderStore.orderStatusListData.length > 0
+    ) {
+      setSelectedOrder(orderStore.orderStatusListData[0]);
+    }
+  }, [orderStore.orderStatusListData]);
 
   function handleTableChange(style: 'grid' | 'list') {
     if (document.startViewTransition) {
@@ -117,6 +122,8 @@ export default function OrderTrackingDashboard() {
   }
 
   if (isLoading || !orderStore.orderStatusListData) return <LoadingPage />;
+
+  console.log(selectedOrder);
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
@@ -171,7 +178,10 @@ export default function OrderTrackingDashboard() {
       </div>
 
       {isOrderLiveIsTable ? (
-        <TableComponent data={orderStore?.orderStatusListData!} />
+        <TableComponent
+          data={orderStore?.orderStatusListData!}
+          isRating={false}
+        />
       ) : (
         <>
           {isStyleTabel === 'grid' && (

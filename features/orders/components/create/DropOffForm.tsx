@@ -16,15 +16,13 @@ import {
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
-import {
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '../../../wallet/validations/order';
+
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
-import AddressLandmarkFields from '../ui/LandmarkFields';
 import { M_PLUS_1p } from 'next/font/google';
+import { TypeDropOffSchema } from '../../validations/order';
+import AddressLandmarkFields from '@/shared/components/InputSearch';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;

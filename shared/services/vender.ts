@@ -1,36 +1,64 @@
+import { useVenderStore } from '@/store';
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
-  RootTypeBranch,
+  TypeAddVenderReq,
   TypeBranch,
+  TypeCreateVendorUserReq,
+  TypeEditVenderReq,
+  TypeUpdateVendorUserReq,
   TypeVender,
+  TypeVenderList,
+  TypeVenderListRes,
+  TypeVenderRes,
+  TypeVendorUserListRes,
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
 
 export const vendorService = {
-  create: (vendor: any) =>
+  create: (vendor: TypeAddVenderReq) =>
     apiFetch(`${configService.vendorServiceApiUrl()}/create`, {
       method: 'POST',
       body: JSON.stringify(vendor),
     }),
 
-  update: (vendor: any) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/update/${vendor.id}`, {
+  update: (req: TypeEditVenderReq) =>
+    apiFetch(`${configService.vendorServiceApiUrl()}/update/${req.id}`, {
       method: 'PUT',
-      body: JSON.stringify(vendor),
+      body: JSON.stringify(req),
     }),
 
-  getVendorDetails: (id: string): Promise<TypeVender> =>
+  getVendorDetails: (id: string): Promise<TypeVenderRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
 
-  getVendorInfo: (id: string): Promise<{ data: TypeBranch['vendor'] }> =>
+  getVendorInfo: (id: string): Promise<{ data: TypeVender }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
 
-  getVendorList: (url: string) =>
+  setVendorListurl: (
+    perPage: number | null,
+    searchVendor?: string | null,
+    NEXT_SET_ITEMS_TOKEN?: string[] | null
+  ) => {
+    const { getVendorAccoutManagerId, selectedAccountManager } =
+      useVenderStore.getState();
+    getVendorAccoutManagerId();
+    let url = '/vendors-list?';
+    url = perPage ? url + 'page_size=' + perPage : url;
+    url = searchVendor ? url + '&search=' + searchVendor : url;
+    NEXT_SET_ITEMS_TOKEN?.forEach((element) => {
+      url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
+    });
+    if (selectedAccountManager) {
+      url = url + '&account_manager=' + selectedAccountManager;
+    }
+    return url;
+  },
+
+  getVendorList: (url: string): Promise<TypeVenderListRes> =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
-  getBranchDetails: (id: string): Promise<RootTypeBranch> =>
+  getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details?id=${id}`),
 
   getBranchDetailByBranchId: (
@@ -39,17 +67,11 @@ export const vendorService = {
       branch_id: string;
     },
     options?: any
-  ): Promise<RootTypeBranch> =>
+  ): Promise<any> =>
     apiFetch(`${configService.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),
       ...options,
-    }),
-
-  createVendorUser: (user: any) =>
-    apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
-      method: 'POST',
-      body: JSON.stringify(user),
     }),
 
   getAddressByMobile: (vendorId: string, branchId: string, mobile: string) =>
@@ -132,11 +154,11 @@ export const vendorService = {
 
   getVendorUserList: (
     perPage: number,
-    search?: string,
+    search?: string | null,
     vendorId?: string,
     branchId?: string,
-    nextSetItemTotal?: string[]
-  ) => {
+    nextSetItemTotal?: string[] | null
+  ): Promise<TypeVendorUserListRes> => {
     let url = `/vendor/users?page_size=${perPage}`;
     if (search) url += `&search=${search}`;
     if (vendorId) url += `&vendor_id=${vendorId}`;
@@ -147,7 +169,7 @@ export const vendorService = {
     return apiFetch(`${configService.userServiceApiUrl()}${url}`);
   },
 
-  updateVendorUser: (userId: string, request: any) =>
+  updateVendorUser: (userId: string, request: TypeUpdateVendorUserReq) =>
     apiFetch(
       `${configService.userServiceApiUrl()}/vendor/user/update/${userId}`,
       {
@@ -155,6 +177,12 @@ export const vendorService = {
         body: JSON.stringify(request),
       }
     ),
+
+  createVendorUser: (user: TypeCreateVendorUserReq): Promise<any> =>
+    apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+    }),
 
   getCompanyBilling: (vendorId: string) =>
     apiFetch(

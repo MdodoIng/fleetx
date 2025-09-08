@@ -46,7 +46,7 @@ export default function OrderTrackingDashboard() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState(null);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
 
   const [date, setDate] = useState<{ from: Date; to: Date }>();
 
@@ -63,12 +63,13 @@ export default function OrderTrackingDashboard() {
           searchOrder,
           date?.from!,
           date?.to!,
-          nextSetItemTotal
+          null
         );
         const walletHistoryRes =
           await reportService.getWalletHistory(walletHistoryUrl);
 
         setWalletHistory(walletHistoryRes.data!);
+        setNextSetItemTotal(walletHistoryRes.NEXT_SET_ITEMS_TOKEN);
       } else {
         console.warn(
           'vendorId or branchId is null. Cannot fetch wallet balance.'
@@ -99,7 +100,7 @@ export default function OrderTrackingDashboard() {
 
   const { exportOrdersToCSV } = useTableExport();
 
-  console.log(walletHistory, 'weew');
+  console.log(walletHistory , 'weew');
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
@@ -200,7 +201,12 @@ export default function OrderTrackingDashboard() {
       </div>
 
       {walletHistory?.length ? (
-        <TableComponent data={walletHistory!} page={page} setPage={setPage} />
+        <TableComponent
+          data={walletHistory!}
+          page={page}
+          setPage={setPage}
+          nextSetItemTotal={nextSetItemTotal}
+        />
       ) : (
         <>no data</>
       )}
