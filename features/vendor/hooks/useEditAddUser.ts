@@ -51,8 +51,14 @@ export const useEditAddUser = ({
   isAdd,
   setIsAddAction,
 }: Props) => {
-  const { setValue, isEditUser, branchDetails, venderList } =
-    useVenderStore.getState();
+  const {
+    setValue,
+    isEditUser,
+    branchDetails,
+    venderList,
+    selectedBranch,
+    selectedVendor,
+  } = useVenderStore.getState();
   const { user } = useAuthStore.getState();
 
   const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -102,6 +108,10 @@ export const useEditAddUser = ({
     setIsLoadingForm(true);
     Object.entries(isEditUser!).forEach(([key, value]) => {
       editUserForm.setValue(key as keyof TypeEditUserSchema, value as any);
+    });
+    setIsBranchAction({
+      vendor: selectedVendor!,
+      branch: selectedBranch!,
     });
 
     setIsLoadingForm(false);

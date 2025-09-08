@@ -2,10 +2,10 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist_Mono, Montserrat } from 'next/font/google';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
   subsets: ['latin'],
 });
 
@@ -28,7 +28,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${montserrat.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

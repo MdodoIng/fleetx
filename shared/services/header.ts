@@ -1,4 +1,4 @@
-'use clinet';
+'use client';
 import { environment } from '@/environments/environment';
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';

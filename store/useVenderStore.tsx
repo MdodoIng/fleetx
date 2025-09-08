@@ -2,6 +2,7 @@ import {
   TypeBranch,
   TypeVender,
   TypeVenderList,
+  TypeVenderListItem,
   TypeVendorUserList,
 } from '@/shared/types/vender';
 import { get } from 'react-hook-form';
@@ -16,7 +17,7 @@ export interface VenderState {
   branchId: string | null;
   branchName: string | null;
   selectedVendorName: string | null;
-  selectedVendor: TypeVender | undefined;
+  selectedVendor: TypeVenderListItem | undefined;
   selectedBranch: TypeBranch | undefined;
   isVendorAdmin: boolean;
   selectedAccountManager: string | undefined;
