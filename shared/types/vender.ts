@@ -282,3 +282,18 @@ export type TypeOpsFinUser = {
 export interface TypeOpsFinUserResponce {
   data: TypeOpsFinUser[];
 }
+
+export type TypeGetCompanyBillingResponse = {
+  data: {
+    id: string;
+    company_legal_name: string;
+    tin: string;
+    company_legal_address: string;
+  };
+};
+
+export type TypeUpdateCompanyBillingRequest = {
+  company_legal_name?: string;
+  company_legal_address?: string;
+  tin?: string;
+};

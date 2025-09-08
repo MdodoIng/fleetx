@@ -352,4 +352,24 @@ export const reportService = {
       }
     );
   },
+
+  downloadInvoiceReport(
+    vendorId: any,
+    branchId: any,
+    month: any,
+    year: any
+  ): Promise<{ data: { invoice_file: string } }> {
+    const url =
+      '/vendor/invoice/get/' +
+      vendorId +
+      '/branch/' +
+      branchId +
+      '?month=' +
+      month +
+      '&year=' +
+      year;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
 };

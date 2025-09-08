@@ -3,7 +3,7 @@ import { SUB_MENU } from './routes';
 
 export interface MenuItem {
   labelKey: string;
-  route: string;
+  route?: string;
   roles?: UserRole[];
   icon: string;
   children?: MenuItem[];
@@ -19,7 +19,6 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
   },
   {
     labelKey: 'menuItems.order',
-    route: '/order',
     icon: 'icon-order',
     children: [
       {
@@ -120,7 +119,6 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
   },
   {
     labelKey: 'menuItems.billing',
-    route: '/billing',
     icon: 'icon-billing',
     roles: ['VENDOR_USER'],
     children: [

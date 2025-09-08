@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 import { Button } from '@/shared/components/ui/button';
 import UserAndBranchSelecter from './UserAndBranchSelecter';
+import Notification from './Notification';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
@@ -63,6 +64,7 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
           handleClear={handleClear}
         />
         <div className="flex ml-auto">
+          <Notification />
           {isAuthenticated ? (
             <Button onClick={logout} variant={'destructive'}>
               Logout

@@ -4,8 +4,6 @@ import { persist } from 'zustand/middleware';
 import { useSharedStore } from './sharedStore';
 import { useVenderStore } from './useVenderStore';
 import { useAuthStore } from './useAuthStore';
-import { fa, tr } from 'zod/v4/locales';
-import { use } from 'react';
 import { getSuperSaverPromation } from '@/shared/services';
 import { TypeBranch, TypeVender } from '@/shared/types/vender';
 import { TypepaymentSchema } from '@/features/orders/validations/editPayment';

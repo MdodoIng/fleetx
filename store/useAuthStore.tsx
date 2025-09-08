@@ -201,7 +201,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       user: {
         ...decoded,
         token: data.data.token,
-        
       },
     });
     localStorage.setItem(storageKeys.refreshTime, new Date().toString());
