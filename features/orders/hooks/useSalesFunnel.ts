@@ -5,9 +5,9 @@ import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
 import { getAccountManagerList } from '@/shared/services/user';
 import { FunnelRow, FunnelType, User, Zone } from '../types/useSalesFunnel';
+import { useFilterAndGroup } from './useFilterAndGroup';
 
 export function useSalesFunnel() {
-  // filter options
   const [types] = useState<FunnelType[]>([
     { id: 1, name: 'Activation' },
     { id: 2, name: 'Retention' },
@@ -59,41 +59,42 @@ export function useSalesFunnel() {
         res = await reportService.getSalesFunnelRetention2();
       else res = await reportService.getSalesFunnelReactivationUsers();
 
-      console.log(res)
+      console.log(res);
       setSalesFunnelData(res.data);
       setPageCount(1);
     };
     load();
   }, [selectedType]);
 
-  const filterAndPaginate = useCallback(() => {
+  const filterAndGroup = useCallback(() => {
     if (!salesFunnelData) return;
-    let filtered = salesFunnelData
+
+    // Normalize data source
+    let filtered: FunnelRow[] = [];
+
+    if (selectedType === 3) {
+      // Type 3: structured object with repeated_churn
+      const churnData = (salesFunnelData as any)?.repeated_churn ?? [];
+      filtered = Array.isArray(churnData) ? churnData : [];
+    } else {
+      // Types 1, 2, 4: flat array
+      const flatData = (salesFunnelData as any)?.data ?? [];
+      filtered = Array.isArray(flatData) ? flatData : [];
+    }
+
+    // Apply filters
+    filtered = filtered
       .filter((u) => !selectedZone || u.region_id === selectedZone)
       .filter((u) =>
         searchUser
-          ? u.user_name.toLowerCase().includes(searchUser.toLowerCase())
+          ? u.user_name?.toLowerCase().includes(searchUser.toLowerCase())
           : true
       )
       .filter((u) =>
         selectedManager ? u.account_manager === selectedManager : true
       );
 
-    if (selectedType === 4) {
-      const max = pageCount * PAGE_SIZE;
-      filtered = filtered.slice(0, max);
-      setIsLoadMoreCompleted(filtered.length < salesFunnelData.length);
-    }
-
-    // helper: set “no data” flag
-    const checkNoData = (
-      a: number,
-      b: number,
-      c: number,
-      d: number,
-      e: number
-    ) => a + b + c + d + e === 0;
-
+    // Group by funnel stage
     let col1: FunnelRow[] = [];
     let col2: FunnelRow[] = [];
     let col3: FunnelRow[] = [];
@@ -138,8 +139,9 @@ export function useSalesFunnel() {
         col4 = filtered.filter(
           (u) => u.funnel_stage === funnelStage.NoOrderHasWalletRetained
         );
-        col5 = salesFunnelData // repeatedChurn was handled server-side in Angular
-          .filter((u) => u.funnel_stage === funnelStage.PotentialChurn);
+        col5 = filtered.filter(
+          (u) => u.funnel_stage === funnelStage.PotentialChurn
+        );
         break;
       case 4:
         col1 = filtered.filter((u) => u.funnel_stage === funnelStage.Churned);
@@ -154,35 +156,34 @@ export function useSalesFunnel() {
         break;
     }
 
+    // Set grouped columns
     setFirstColumn(col1);
     setSecondColumn(col2);
     setThirdColumn(col3);
     setFourthColumn(col4);
     setFifthColumn(col5);
 
-    setIsNoData(
-      checkNoData(
-        col1.length,
-        col2.length,
-        col3.length,
-        col4.length,
-        col5.length
-      )
-    );
+    // Set no-data flag
+    const total =
+      col1.length + col2.length + col3.length + col4.length + col5.length;
+    setIsNoData(total === 0);
   }, [
     salesFunnelData,
     selectedType,
     selectedZone,
     selectedManager,
     searchUser,
-    pageCount,
+    setFirstColumn,
+    setSecondColumn,
+    setThirdColumn,
+    setFourthColumn,
+    setFifthColumn,
+    setIsNoData,
   ]);
 
-  // re-filter whenever dependencies change
   useEffect(() => {
-    filterAndPaginate();
-  }, [filterAndPaginate]);
-
+    filterAndGroup();
+  }, [filterAndGroup]);
   // handlers
   const onTypeChange = (id: string) => {
     setSelectedType(Number(id));

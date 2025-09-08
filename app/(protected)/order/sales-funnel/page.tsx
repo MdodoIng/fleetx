@@ -106,3 +106,4 @@ export default withAuth(FunnelPage, [
   'OPERATION_MANAGER',
   'FINANCE_MANAGER',
 ]);
+

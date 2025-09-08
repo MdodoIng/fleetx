@@ -408,9 +408,7 @@ function Dashboard() {
 }
 
 export default withAuth(Dashboard, [
-  'VENDOR_USER',
-  'FINANCE_MANAGER',
   'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
   'SALES_HEAD',
+  'FINANCE_MANAGER',
 ]);

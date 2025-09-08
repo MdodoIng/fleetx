@@ -420,7 +420,7 @@ function FunnelSegment({
     <div
       className="relative h-[90px]"
       style={{
-        marginLeft: `${offset}px`,
+        marginInline: `${offset}px`,
         borderLeft: '45px solid transparent',
         borderRight: '45px solid transparent',
         borderTop: `76px solid ${color}`,

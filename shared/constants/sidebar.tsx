@@ -14,7 +14,8 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
   {
     labelKey: 'menuItems.dashboard',
     route: '/dashboard',
-    icon: 'icon-dashboard', // Example icon class
+    icon: 'icon-dashboard',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   {
     labelKey: 'menuItems.order',
@@ -117,11 +118,34 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
       },
     ],
   },
-
+  {
+    labelKey: 'menuItems.billing',
+    route: '/billing',
+    icon: 'icon-billing',
+    roles: ['VENDOR_USER'],
+    children: [
+      {
+        labelKey: 'menuItems.billingSubMenu.editProfile',
+        route: '/billing/edit-profile',
+        icon: 'icon-edit-profile',
+      },
+      {
+        labelKey: 'menuItems.billingSubMenu.invoice',
+        route: '/billing/invoice',
+        icon: 'icon-invoice',
+      },
+    ],
+  },
   {
     labelKey: 'menuItems.insights',
     route: '/insights',
     icon: 'icon-insights',
+    roles: [
+      'FINANCE_MANAGER',
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+    ],
     children: [
       {
         labelKey: 'menuItems.insightsSubMenu.overview',
@@ -202,5 +226,6 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     labelKey: 'menuItems.rating',
     route: '/rating',
     icon: 'icon-star',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
 ] as const;
