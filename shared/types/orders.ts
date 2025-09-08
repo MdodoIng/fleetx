@@ -18,7 +18,6 @@ export type TypePickUp = {
   longitude: string;
 };
 
-
 export type TypeDropOffs = {
   id: number;
   order_index: number | any;
@@ -157,8 +156,6 @@ export type TypeOrderHistoryList = TypeLiveOrderItem & {
   primary_order_status?: any;
 };
 
-
-
 export interface TypeOrders {
   vendor_id: string;
   branch_id: string;
@@ -211,6 +208,8 @@ export type TypeLiveOrderDropOff = {
   street: string;
   area_id: number;
   block_id: number;
+  building_id?: number;
+  building?: string;
   landmark: string;
   latitude: string;
   longitude: string;
@@ -281,7 +280,6 @@ export type TypeRootLiveOrderList = {
   count: number;
 };
 
-
 export type TypeOrderStatusHistoryHistory = {
   status_history: {
     primary_order_status: number;
@@ -302,8 +300,6 @@ export type TypeStatusHistoryForUi = {
   completed: boolean;
   display: boolean;
 };
-
-
 
 export const OrderStatusCSS = [
   { key: 0, value: 'NEW' },
@@ -408,3 +404,115 @@ export const OperationType = [
   { key: 6, value: 'MashkorDebit', color: 'bg-purple-100 text-purple-600' },
   { key: 7, value: 'MashkorDebit', color: 'bg-pink-100 text-pink-600' },
 ] as const;
+
+export interface TypeUpdateAddressReq {
+  floor: string;
+  room_number: string;
+  latitude: string;
+  longitude: string;
+  landmark: string;
+  area: string;
+  area_id: number;
+  block: string;
+  block_id: number;
+  street: string;
+  street_id: number;
+  address: string;
+}
+export type TypeUpdateAddressResponce = {
+  data: {
+    order_number: string;
+    status: number;
+    vendor_id: string;
+    branch_id: string;
+    vendor_order_id: string;
+    pick_up: {
+      area: string;
+      block: string;
+      street: string;
+      area_id: number;
+      block_id: number;
+      landmark: string;
+      latitude: string;
+      longitude: string;
+      street_id: number;
+      paci_number: string;
+      customer_name: string;
+      mobile_number: string;
+    };
+    drop_off: {
+      latitude: string;
+      longitude: string;
+      paci_number: null;
+      area: string;
+      block: string;
+      street: string;
+      landmark: string;
+      building: null;
+      floor: string;
+      room_number: string;
+      address: null;
+      customer_name: string;
+      mobile_number: string;
+      specific_driver_instructions: null;
+      area_id: number;
+      block_id: number;
+      street_id: number;
+      building_id: null;
+    };
+    customer_name: string;
+    mobile_number: string;
+    created_at: string;
+    payment_type: number;
+    amount_to_collect: string;
+    fulfill: {
+      driver_id: number;
+      driver_name: string;
+      driver_phone: string;
+      tracking_link: string;
+      driver_job_status: number;
+      distance_travelled: string;
+      completed_at: null;
+      canceled_at: null;
+    };
+    order_group: {
+      id: string;
+      created_at: string;
+      updated_at: string;
+      deleted: boolean;
+      order_type: number;
+      created_by: string;
+      created_from: string;
+      delivery_model: number;
+      need_delivery_calculation: boolean;
+      calculation_rule_id: string;
+      cod_counter_type: number;
+      counter_barcode: null;
+      api_request_payload: {};
+      is_high_priveleged_vendor_order: boolean;
+      bike_order: boolean;
+    };
+    source: number;
+    primary_status: number;
+  };
+};
+
+export interface TypeUpdatePaymentReq {
+  payment_type: number;
+  amount_to_collect: number;
+}
+
+export interface TypeZoneResponce {
+  data: TypeZoneData[];
+}
+
+export interface TypeZoneData {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted: boolean;
+  region_name: string;
+  region_description: string;
+  is_active: boolean;
+  boundary_coordinates: [number, number][][];
+}

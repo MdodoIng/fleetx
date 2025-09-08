@@ -6,10 +6,11 @@ import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 import { Button } from '@/shared/components/ui/button';
 import UserAndBranchSelecter from './UserAndBranchSelecter';
+import Notification from './Notification';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole } =
+  const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole, user } =
     useAuthStore();
   const venderStore = useVenderStore();
 
@@ -38,13 +39,17 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
     const vender = venderStore.venderList?.find((r) => r.id === e);
     venderStore.setValue('selectedVendor', vender);
     venderStore.setValue('vendorId', e);
+    venderStore.setValue('selectedBranch', undefined);
+    venderStore.setValue('branchId', undefined);
   };
 
   const handleClear = () => {
     venderStore.setValue('selectedBranch', undefined);
     venderStore.setValue('branchId', undefined);
-    venderStore.setValue('selectedVendor', undefined);
-    venderStore.setValue('vendorId', undefined);
+    if (!user?.roles.includes('VENDOR_USER')) {
+      venderStore.setValue('vendorId', undefined);
+      venderStore.setValue('selectedVendor', undefined);
+    }
   };
 
   return (
@@ -57,9 +62,9 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
           handleChangeVender={handleChangeVender}
           branchs={venderStore.branchDetails}
           handleClear={handleClear}
-          
         />
         <div className="flex ml-auto">
+          <Notification />
           {isAuthenticated ? (
             <Button onClick={logout} variant={'destructive'}>
               Logout

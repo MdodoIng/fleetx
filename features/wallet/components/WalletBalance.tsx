@@ -11,10 +11,13 @@ import {
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { TypeWallet } from '@/shared/types/vender';
-import { useSharedStore } from '@/store';
-import { useWalletStore } from '@/store/useWalletStore';
+import { useSharedStore, useVenderStore } from '@/store';
+import {
+  getVendorWalletBalanceInit,
+  useWalletStore,
+} from '@/store/useWalletStore';
 import { Lightbulb, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export function WalletBalance({
   setIsOpen,
@@ -23,8 +26,21 @@ export function WalletBalance({
 }) {
   const sharedStore = useSharedStore();
   const { walletBalance, isDisableAddCredit } = useWalletStore();
+  const { vendorId, branchId, selectedBranch, selectedVendor } =
+    useVenderStore();
 
   const isLowBalence = Number(walletBalance) < 3;
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        await getVendorWalletBalanceInit();
+      } catch (error) {
+        console.error('Failed to fetch wallet balance:', error);
+      }
+    };
+    fetchBalance();
+  }, [vendorId, branchId, selectedBranch, selectedVendor]);
 
   return (
     <Card className=" bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-full flex ">
@@ -41,8 +57,8 @@ export function WalletBalance({
           )}
         </div>
         <div className="flex flex-col items-cemter justify-center gap-2">
-          <Button 
-            disabled={isDisableAddCredit}
+          <Button
+            disabled={!isDisableAddCredit}
             onClick={() => setIsOpen(2)}
             className="bg-white text-indigo-600 hover:bg-gray-100"
           >

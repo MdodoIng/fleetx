@@ -1,6 +1,18 @@
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import {
+  useAuthStore,
+  useOrderStore,
+  useSharedStore,
+  useVenderStore,
+} from '@/store';
 import { apiFetch } from '../lib/utils';
-import { TypeWalletTransactionHistoryRes } from '../types/report';
+import {
+  TypBranchWalletBalanceReportRes,
+  TypeDashboardDetailsResponse,
+  TypeDashboardInsightResponce,
+  TypeSalesFunnelRetentionRespose,
+  TypeWalletTransactionHistoryRes,
+  TypeZoneGrowthResponce,
+} from '../types/report';
 import { configService } from './app-config';
 
 export const reportService = {
@@ -48,7 +60,7 @@ export const reportService = {
 
   getBranchWalletBalanceReport(
     url: string
-  ): Promise<TypeWalletTransactionHistoryRes> {
+  ): Promise<TypBranchWalletBalanceReportRes> {
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });
@@ -62,7 +74,7 @@ export const reportService = {
     nextSetItemTotal: any[] | null
   ) {
     const { getFormattedDate } = useSharedStore.getState();
-    let url = '/wallet/list?page_size=' + perPage;
+    let url = '/wallet/list?page_size=' + perPage + '&page=1';
     url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
     url = orderId ? url + '&txn_number=' + orderId : url;
@@ -106,6 +118,256 @@ export const reportService = {
   },
 
   getWalletHistory(url: string): Promise<TypeWalletTransactionHistoryRes> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getDashboardUrl({
+    selectedFromDate,
+    selectedToDate,
+  }: {
+    selectedFromDate?: Date;
+    selectedToDate?: Date;
+  }): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    const { user } = useAuthStore.getState();
+    const { vendorId, branchId } = useVenderStore.getState();
+    const { driverId } = useOrderStore.getState();
+
+    const from = selectedFromDate ? getFormattedDate(selectedFromDate) : '';
+    const to = selectedToDate ? getFormattedDate(selectedToDate) : '';
+
+    let url = `/dashboard-data?from_date=${from}&to_date=${to}`;
+
+    const currentUserRole = user?.roles?.[0];
+    const hasBranchInToken = user?.user?.vendor?.branch_id;
+
+    let showVendorBranchCard: boolean = false;
+
+    switch (currentUserRole) {
+      case 'OPERATION_MANAGER':
+      case 'VENDOR_ACCOUNT_MANAGER':
+      case 'SALES_HEAD':
+      case 'FINANCE_MANAGER': // Corrected 'finance_manger' to 'FINANCE_MANAGER' based on UserRole enum
+        showVendorBranchCard = true;
+        if (vendorId) {
+          url += `&vendor_id=${vendorId}`;
+        }
+        if (branchId) {
+          url += `&branch_id=${branchId}`;
+        }
+        break;
+      case 'VENDOR_USER':
+        if (hasBranchInToken) {
+          showVendorBranchCard = false;
+        } else {
+          showVendorBranchCard = true;
+          if (branchId) {
+            url += `&branch_id=${branchId}`;
+          }
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (driverId) {
+      url += `&driver_id=${driverId}`;
+    }
+
+    return url;
+  },
+
+  getDashboardDetails(url: string): Promise<TypeDashboardDetailsResponse> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getDashboardInsight(
+    fromDate: Date | null,
+    toDate: Date | null
+  ): Promise<TypeDashboardInsightResponce> {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/performance/dashboard/insights';
+    url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getChurnReasonsInsights(fromDate: Date | null, toDate: Date | null) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = '/funnel/retention/churn-reason/insights';
+    url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getFirstOrderList(
+    page: number,
+    perPage: number,
+    fromDate: Date | null,
+    toDate: Date | null
+  ) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url = `/first-orders/list?page_size=${perPage}&page=${page}`;
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getReferralsURLs(
+    page: number,
+    perPage: number,
+    refBy: string,
+    fromDate?: Date | null,
+    toDate?: Date | null,
+    ref_type: any = 1
+  ): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    const { selectedAffiliator } = useOrderStore.getState();
+
+    let url = `/referral/report/orders?page_size=${perPage}&page=${page}&ref_type=${ref_type}`;
+
+    if (fromDate) {
+      url = url + '&from_date=' + getFormattedDate(fromDate);
+    }
+    if (toDate) {
+      url = url + '&to_date=' + getFormattedDate(toDate);
+    }
+    if (refBy) {
+      url = url + '&ref_by=' + refBy;
+    } else if (selectedAffiliator) {
+      url = url + '&ref_by=' + selectedAffiliator;
+    }
+    return url;
+  },
+
+  getReferrals(url: string): Promise<any> {
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getZoneGrowth(
+    region_id: number,
+    year: number
+  ): Promise<TypeZoneGrowthResponce> {
+    let url = '/zone/growth/insight';
+    const queryParams = [];
+
+    if (region_id) {
+      queryParams.push(`region_id=${region_id}`);
+    }
+    if (year) {
+      queryParams.push(`year=${year}`);
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`;
+    }
+
+    return apiFetch(configService.reportServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getSalesFunnelActivation(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/activation/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionRespose> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/retention/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
+    return apiFetch(
+      configService.reportServiceApiUrl() +
+        '/funnel/retention/no-order-has-wallet/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelReactivationUsers() {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/reactivation/users',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelActivationInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/activation/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+  getSalesFunnelRetentionInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/retention/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelRetention2Insight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() +
+        '/funnel/retention/no-order-has-wallet/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getSalesFunnelReactivationInsight(): Promise<any> {
+    return apiFetch(
+      configService.reportServiceApiUrl() + '/funnel/reactivation/insights',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  downloadInvoiceReport(
+    vendorId: any,
+    branchId: any,
+    month: any,
+    year: any
+  ): Promise<{ data: { invoice_file: string } }> {
+    const url =
+      '/vendor/invoice/get/' +
+      vendorId +
+      '/branch/' +
+      branchId +
+      '?month=' +
+      month +
+      '&year=' +
+      year;
     return apiFetch(configService.reportServiceApiUrl() + url, {
       method: 'GET',
     });

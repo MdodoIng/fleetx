@@ -44,30 +44,37 @@ const SideBar = ({
         {user && <span>{user.user.first_name}</span>}
       </div>
       <div className="gap-6 grid">
-        {filteredMenu.map((item, index) => (
-          <div key={index}>
-            <Link href={item.route} prefetch={true} className="grid gap-2 ">
-              <span>{t(item.labelKey)}</span>
-            </Link>
-            {item.children && (
-              <div className="flex flex-col gap-2 ml-6">
-                {item.children.map((child, childIndex) => (
-                  <Link
-                    key={childIndex}
-                    href={child.route}
-                    prefetch={true}
-                    className={cn(
-                      'flex items-center gap-2',
-                      header?.title === child.labelKey && 'invert'
-                    )}
-                  >
-                    <span>{t(child.labelKey)}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+        {filteredMenu.map((item, index) => {
+ 
+
+          return (
+            <div key={index}>
+              <Link
+                href={item?.route || '#'}
+                className="grid gap-2 "
+              >
+                <span>{t(item.labelKey)}</span>
+              </Link>
+              {item.children && (
+                <div className="flex flex-col gap-2 ml-6">
+                  {item.children.map((child, childIndex) => (
+                    <Link
+                      key={childIndex}
+                      href={child?.route || '#'}
+                      prefetch={true}
+                      className={cn(
+                        'flex items-center gap-2',
+                        header?.title === child.labelKey && 'invert'
+                      )}
+                    >
+                      <span>{t(child.labelKey)}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </aside>
   );

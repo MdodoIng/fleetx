@@ -17,8 +17,7 @@ import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { format } from 'date-fns';
 import { OperationType } from '@/shared/types/orders';
 
-
-export function RecentTransactions() {
+export function RecentTransactions({ isOpen }: { isOpen: any }) {
   const [walletHistory, setWalletHistory] =
     useState<TypeWalletTransactionHistoryRes['data']>();
   const venderStore = useVenderStore();
@@ -61,7 +60,7 @@ export function RecentTransactions() {
       await fetchVendorWalletBalance();
     };
     loadInitialWalletBalance();
-  }, [venderStore.vendorId, venderStore.branchId]);
+  }, [venderStore.vendorId, venderStore.branchId, isOpen]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);

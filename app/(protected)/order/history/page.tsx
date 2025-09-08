@@ -49,6 +49,7 @@ export default function OrderTrackingDashboard() {
   const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
     undefined
   );
+  const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
     orderStore?.orderHistoryListData &&
@@ -57,20 +58,17 @@ export default function OrderTrackingDashboard() {
       : ({} as TypeOrderHistoryList)
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [date, setDate] = useState<{ from: Date; to: Date }>();
 
-  const fetchOrderDetails = async (perPage: number) => {
+  const fetchOrderDetails = async () => {
     setIsLoading(true);
-    useOrderStore.setState({
-      orderHistoryListData: undefined,
-    });
 
     const searchAll = isEditDetails ? null : true;
 
     const url = orderService.getOrderHistoryUrl(
-      10,
+      page,
       date?.from,
       date?.to,
       ordernNumber,
@@ -85,7 +83,7 @@ export default function OrderTrackingDashboard() {
       if (res.data) {
         orderStore.setSourceForTable('orderHistoryListData', res.data);
       }
-      // setNextSetItemsToken(res.NEXT_SET_ITEMS_TOKEN || null);
+      setNextSetItemsToken(res.count! < page ? null : true);
       setIsLoading(false);
     } catch (err: any) {
       setIsLoading(false);
@@ -102,17 +100,13 @@ export default function OrderTrackingDashboard() {
 
   useEffect(() => {
     const loadInitialOrders = async () => {
-      await fetchOrderDetails(20);
+      await fetchOrderDetails();
     };
 
     loadInitialOrders();
-  }, [venderStore.branchId]);
+  }, [venderStore.selectedBranch?.id, venderStore.selectedBranch?.id, page]);
 
   const { exportOrdersToCSV } = useTableExport();
-
-  if (isLoading || !orderStore.orderHistoryListData) return <LoadingPage />;
-
-  console.log(orderStore.orderHistoryListData, 'weew');
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden ">
@@ -207,8 +201,15 @@ export default function OrderTrackingDashboard() {
         </div>
       </div>
 
-      {orderStore?.orderHistoryListData.length ? (
-        <TableComponent data={orderStore?.orderHistoryListData!} />
+      {orderStore?.orderHistoryListData?.length ? (
+        <TableComponent
+          data={orderStore?.orderHistoryListData!}
+          isRating={false}
+          page={page}
+          setPage={setPage}
+          fetchOrderDetails={fetchOrderDetails}
+          nextSetItemTotal={nextSetItemsToken}
+        />
       ) : (
         <>no data</>
       )}

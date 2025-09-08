@@ -1,6 +1,7 @@
 'use client';
 import { AlertSettings } from '@/features/wallet/components/AlertSettings';
-import ModelBox from '@/features/wallet/components/ModelBox';
+import ModelBoxCredit from '@/features/wallet/components/ModelBoxCredit';
+import ModelBox from '@/features/wallet/components/ModelBoxCredit';
 import { RecentTransactions } from '@/features/wallet/components/RecentTransactions';
 import { WalletBalance } from '@/features/wallet/components/WalletBalance';
 import { useAddCredit } from '@/features/wallet/hooks/useAddCredit';
@@ -22,18 +23,38 @@ export default function WalletPage() {
     isCentralWalletEnabled,
     checkWallet,
     setTabBasedOnRole,
+    setValue,
+    prepareMashkor,
   } = useWalletStore();
-  const { handleAddCredit } = useAddCredit();
+  const { handleAddCredit, handlePrepareMashkor } = useAddCredit();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState<Number | undefined>(undefined);
 
   useEffect(() => {
-    setTabBasedOnRole();
-    handleAddCredit();
-  }, [venderStore.vendorId]);
+    const setTab = async () => {
+      await setTabBasedOnRole();
+    };
+    setTab();
+  }, []);
 
-  // console.log(wallet);
+  useEffect(() => {
+    const fetchData = async () => {
+      await handleAddCredit();
+    };
+    fetchData();
+  }, [
+    venderStore.branchId,
+    venderStore.vendorId,
+    venderStore.selectedBranch,
+    venderStore.selectedVendor,
+  ]);
+
+  useEffect(() => {
+    if (prepareMashkor) {
+      handlePrepareMashkor({ setIsOpen: setIsOpen });
+    }
+  });
 
   return (
     <div className="p-6 grid gap-6 grid-cols-1 md:grid-cols-2">
@@ -41,9 +62,9 @@ export default function WalletPage() {
         <WalletBalance setIsOpen={setIsOpen} />
         <AlertSettings />
       </div>
-      <RecentTransactions />
+      <RecentTransactions isOpen={isOpen} />
 
-      <ModelBox isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ModelBoxCredit isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 }

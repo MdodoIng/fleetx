@@ -22,3 +22,82 @@ export type TypeWalletTransactionHistoryRes = {
   ];
   NEXT_SET_ITEMS_TOKEN: [number, string] | null;
 };
+
+export type TypBranchWalletBalanceReportRes = {
+  data: [
+    {
+      created_at: string;
+      name: string;
+      required_min_wallet_balance: string;
+      vendor: {
+        name: string;
+        business_name: string;
+        onboarding_type: number;
+      };
+      wallet_balance: string;
+    },
+  ];
+  NEXT_SET_ITEMS_TOKEN: [number, string] | null;
+};
+
+interface TypeDashboardDetailsResponse {
+  data: {
+    total_cash_collected: number;
+    total_delivery_fees: number;
+    total_failed_orders: number;
+    payment_methods: {
+      cod: number;
+      online: number;
+    };
+    delivery_models: {
+      on_demand: number;
+      grouped: number;
+      bulk: number;
+    };
+  };
+}
+
+export interface TypeZoneGrowth {
+  id: string;
+  zone: {
+    region_id: string;
+    region_name: string;
+  };
+  created_at: string | null;
+  active_branches_count: number;
+  inactive_branches_count: number;
+  not_ordered_branches_count: number;
+  all_branches_count: number;
+  month: number;
+  year: number;
+}
+
+export interface TypeZoneGrowthResponce {
+  data: TypeZoneGrowth[];
+}
+
+export interface TypeDashboardInsight {
+  total_signups: number;
+  total_recharges: number;
+  total_first_time_recharges: number;
+  total_orders: number;
+  total_first_time_orders: number;
+  first_wallet_recharges: number;
+  total_activated: number;
+  total_funnel_activated: number;
+  active_branch_count: number;
+  inactive_branch_count: number;
+  up_to_date_active_count: number;
+  reactivated_funnel_count: number;
+}
+
+export interface TypeDashboardInsightResponce {
+  data: TypeDashboardInsight;
+}
+
+export type TypeSalesFunnelRetentionRespose = {
+  data: {
+    funnel_users: [];
+    repeated_churn: [];
+  };
+};

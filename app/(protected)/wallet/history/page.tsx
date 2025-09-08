@@ -27,6 +27,8 @@ import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import TableComponent from '@/features/wallet/components/history/TableComponent';
 import { set } from 'zod/v3';
+import { vendorService } from '@/shared/services/vender';
+import { TypeBranch } from '@/shared/types/vender';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,31 +52,38 @@ export default function OrderTrackingDashboard() {
 
   const [date, setDate] = useState<{ from: Date; to: Date }>();
 
-  const [walletHistory, setWalletHistory] =
-    useState<TypeWalletTransactionHistoryRes['data']>();
+  const [walletHistory, setWalletHistory] = useState<
+    [
+      TypeWalletTransactionHistoryRes['data'][number] & {
+        branch: TypeBranch | undefined;
+      },
+    ]
+  >();
   const venderStore = useVenderStore();
 
   const fetchVendorWalletBalance = async () => {
     setIsLoading(true);
     try {
-      if (venderStore.vendorId) {
-        const walletHistoryUrl = reportService.getWalletHistoryUrl(
-          page,
-          searchOrder,
-          date?.from!,
-          date?.to!,
-          null
-        );
-        const walletHistoryRes =
-          await reportService.getWalletHistory(walletHistoryUrl);
+      const walletHistoryUrl = reportService.getWalletHistoryUrl(
+        page,
+        searchOrder,
+        date?.from!,
+        date?.to!,
+        null
+      );
+      const walletHistoryRes =
+        await reportService.getWalletHistory(walletHistoryUrl);
 
-        setWalletHistory(walletHistoryRes.data!);
-        setNextSetItemTotal(walletHistoryRes.NEXT_SET_ITEMS_TOKEN);
-      } else {
-        console.warn(
-          'vendorId or branchId is null. Cannot fetch wallet balance.'
-        );
-      }
+      const walletHistorydata = await Promise.all(
+        walletHistoryRes.data.map(async (item) => {
+          const branchRes = (
+            await vendorService.getBranchDetails(item.vendor_id)
+          ).data.find((x) => x.id === item.branch_id);
+          return { ...item, branch: branchRes };
+        })
+      );
+      setWalletHistory(walletHistorydata as any);
+      setNextSetItemTotal(walletHistoryRes.NEXT_SET_ITEMS_TOKEN);
     } catch (err: any) {
       const errorMessage =
         err.error?.message ||
@@ -90,6 +99,7 @@ export default function OrderTrackingDashboard() {
     const loadInitialWalletBalance = async () => {
       await fetchVendorWalletBalance();
     };
+    console.log(page);
     loadInitialWalletBalance();
   }, [venderStore.vendorId, venderStore.branchId, page, date?.from, date?.to]);
 
@@ -99,8 +109,6 @@ export default function OrderTrackingDashboard() {
   };
 
   const { exportOrdersToCSV } = useTableExport();
-
-  console.log(walletHistory , 'weew');
 
   return (
     <div className="flex bg-gray-50 flex-col items-center overflow-hidden">

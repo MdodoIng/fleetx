@@ -3,7 +3,7 @@ import { SUB_MENU } from './routes';
 
 export interface MenuItem {
   labelKey: string;
-  route: string;
+  route?: string;
   roles?: UserRole[];
   icon: string;
   children?: MenuItem[];
@@ -14,11 +14,11 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
   {
     labelKey: 'menuItems.dashboard',
     route: '/dashboard',
-    icon: 'icon-dashboard', // Example icon class
+    icon: 'icon-dashboard',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   {
     labelKey: 'menuItems.order',
-    route: '/order',
     icon: 'icon-order',
     children: [
       {
@@ -52,7 +52,12 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     labelKey: 'menuItems.vendor',
     route: '/vendor',
     icon: 'icon-vendor',
-    roles: ['OPERATION_MANAGER', 'VENDOR_ACCOUNT_MANAGER', 'SALES_HEAD'],
+    roles: [
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+      'FINANCE_MANAGER',
+    ],
     children: [
       {
         labelKey: 'menuItems.vendorSubMenu.vendorList',
@@ -113,14 +118,112 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
+    labelKey: 'menuItems.billing',
+    icon: 'icon-billing',
+    roles: ['VENDOR_USER'],
+    children: [
+      {
+        labelKey: 'menuItems.billingSubMenu.editProfile',
+        route: '/billing/edit-profile',
+        icon: 'icon-edit-profile',
+      },
+      {
+        labelKey: 'menuItems.billingSubMenu.invoice',
+        route: '/billing/invoice',
+        icon: 'icon-invoice',
+      },
+    ],
+  },
+  {
+    labelKey: 'menuItems.insights',
+    route: '/insights',
+    icon: 'icon-insights',
+    roles: [
+      'FINANCE_MANAGER',
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+    ],
+    children: [
+      {
+        labelKey: 'menuItems.insightsSubMenu.overview',
+        route: '/insights/overview',
+        icon: 'icon-order-trend',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.churnReasons',
+        route: '/insights/churn-reasons',
+        icon: 'icon-churn-reasons',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.firstOrder',
+        route: '/insights/first-order',
+        icon: 'icon-first-order',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.affReferrals',
+        route: '/insights/aff_referrals',
+        icon: 'icon-aff-referrals',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.userReferrals',
+        route: '/insights/user_referrals',
+        icon: 'icon-user-referrals',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: 'menuItems.insightsSubMenu.zoneGrowth',
+        route: '/insights/zone-growth',
+        icon: 'icon-zone-growth',
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+    ],
+  },
+
+  {
     labelKey: 'menuItems.salesFunnel',
-    route: '/sales-funnel',
+    route: '/order/sales-funnel',
     icon: 'icon-funnel',
-    roles: ['SALES_HEAD'],
+    roles: ['SALES_HEAD', 'OPERATION_MANAGER', 'FINANCE_MANAGER'],
   },
   {
     labelKey: 'menuItems.rating',
     route: '/rating',
     icon: 'icon-star',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
 ] as const;

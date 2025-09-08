@@ -2,7 +2,6 @@
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Edit, LocateIcon, Phone, Pin, Type, User2, X } from 'lucide-react';
-import TableComponent from './TableComponent';
 import {
   TypeBranch,
   TypeEditVenderReq,

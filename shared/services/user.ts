@@ -112,7 +112,9 @@ export const getAccountManagerList = (
 ) => {
   let url = `/vendor-acount-manager/list?page=${page}&page_size=${perPage}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
-  return fetch(`${getUserServiceApiUrl}${url}`);
+  return apiFetch(`${getUserServiceApiUrl}${url}`, {
+    method: 'GET',
+  });
 };
 
 export const createAccountManager = (request: any) =>

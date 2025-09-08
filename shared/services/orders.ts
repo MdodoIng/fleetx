@@ -8,9 +8,13 @@ import {
   TypeRootEstimatedDeliveryReturnFromApi,
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
+  TypeUpdateAddressReq,
+  TypeUpdateAddressResponce,
+  TypeUpdatePaymentReq,
+  TypeZoneResponce,
 } from '@/shared/types/orders';
 import { useAuthStore, useVenderStore } from '@/store';
-import {  useSharedStore } from '@/store/sharedStore';
+import { useSharedStore } from '@/store/sharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>
@@ -37,13 +41,16 @@ export const orderService = {
       { method: 'POST', body: JSON.stringify(request) }
     ),
 
-  updatePayment: (payment: any, orderUuid: string) =>
+  updatePayment: (payment: TypeUpdatePaymentReq, orderUuid: string) =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/update/${orderUuid}/payment`,
       { method: 'PUT', body: JSON.stringify(payment) }
     ),
 
-  updateAddress: (address: any, orderUuid: string) =>
+  updateAddress: (
+    address: TypeUpdateAddressReq,
+    orderUuid: string
+  ): Promise<TypeUpdateAddressResponce> =>
     apiFetch(
       `${configService.orderServiceApiUrl()}/update/${orderUuid}/drop-off`,
       { method: 'PUT', body: JSON.stringify(address) }
@@ -57,15 +64,14 @@ export const orderService = {
     perPage: number,
     searchOrder?: string,
     searchCustomer?: string,
-    searchDriver?: string,
+    searchDriver?: string | number,
     searchAll: boolean | null = true
   ) {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
     const currentUser = getDecodedAccessToken();
     const { branchId, vendorId } = useVenderStore.getState();
     const { user } = useAuthStore.getState();
-    
-    
+
     switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
@@ -247,5 +253,11 @@ export const orderService = {
       '-' +
       ('0' + date.getDate()).slice(-2)
     );
+  },
+
+  getZone(): Promise<TypeZoneResponce> {
+    return apiFetch(`${configService.orderServiceApiUrl()}/zone/list`, {
+      method: 'GET',
+    });
   },
 };

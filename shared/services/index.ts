@@ -14,6 +14,10 @@ import { Locale, useTranslations } from 'next-intl';
 import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
+import {
+  TypeFirstOrderInsightResponse,
+  TypeSuperSaverPromationRes,
+} from '../types/index,d';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -86,7 +90,11 @@ export const verifyCustomerAddress = (request: any) =>
 
 export const getAllFreeBuddiesFromB2C = () =>
   apiFetch(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
-export const getSuperSaverPromation = (vendorId: string, branchId: string) =>
+
+export const getSuperSaverPromation = (
+  vendorId: string,
+  branchId: string
+): Promise<TypeSuperSaverPromationRes> =>
   apiFetch(
     configService.finServiceApiUrl() +
       '/super-saver-promotion-status/vendor/' +
@@ -95,19 +103,31 @@ export const getSuperSaverPromation = (vendorId: string, branchId: string) =>
       branchId
   );
 
-export const getFirstOrderInsight = (fromDate: Date, toDate: Date) => {
+export const getFirstOrderInsight = (
+  fromDate: Date | null,
+  toDate: Date | null
+): Promise<TypeFirstOrderInsightResponse> => {
   const { getFormattedDate } = useSharedStore.getState();
-  const params = new URLSearchParams({
-    from_date: getFormattedDate(fromDate),
-    to_date: getFormattedDate(toDate),
+  let url = '/first-order/insight';
+  url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
+  url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+  return apiFetch(configService.rateServiceApiUrl() + url, {
+    method: 'GET',
   });
-  return apiFetch(
-    configService.rateServiceApiUrl() +
-      `/first-order/insight?${params.toString()}`
-  );
 };
-export const getFirstOrderList = (url: string) =>
-  apiFetch(configService.rateServiceApiUrl() + url);
+
+export const getFirstOrderList = (
+  page: number,
+  perPage: number,
+  fromDate: Date | null,
+  toDate: Date | null
+) => {
+  const { getFormattedDate } = useSharedStore.getState();
+  let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
+  url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+  url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+  return apiFetch(configService.rateServiceApiUrl() + url);
+};
 export const getFirstOrderPickUpRate = (value: any) =>
   apiFetch(
     configService.rateServiceApiUrl() + '/first/order/pickup/rating/' + value

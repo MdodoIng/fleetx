@@ -37,10 +37,10 @@
     "insightsSubMenu": {
       "overview": "Overview",
       "churnReasons": "Churn Reasons",
-      "firstOrderExperience": "First Order Experience",
-      "referrals": "Affiliator Referrals",
-      "zoneGrowth": "Zone Growth",
-      "userReferrals": "User Referrals"
+      "firstOrder": "First Order",
+      "affReferrals": "Affiliator Referrals",
+      "userReferrals": "User Referrals",
+      "zoneGrowth": "Zone Growth"
     },
     "salesFunnel": "Sales Funnel",
     "rating": "Rating",

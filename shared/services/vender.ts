@@ -6,6 +6,9 @@ import {
   TypeBranch,
   TypeCreateVendorUserReq,
   TypeEditVenderReq,
+  TypeGetCompanyBillingResponse,
+  TypeOpsFinUserResponce,
+  TypeUpdateCompanyBillingRequest,
   TypeUpdateVendorUserReq,
   TypeVender,
   TypeVenderList,
@@ -15,6 +18,7 @@ import {
   TypeWalletResponce,
 } from '../types/vender';
 import { configService } from './app-config';
+import { TypeVendorPricingRuleRes } from '../types/index,d';
 
 export const vendorService = {
   create: (vendor: TypeAddVenderReq) =>
@@ -113,7 +117,10 @@ export const vendorService = {
   downloadVendorList: (url: string) =>
     apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
 
-  getVendorPricingRule: (vendorId: string, branchId: string) =>
+  getVendorPricingRule: (
+    vendorId: string,
+    branchId: string
+  ): Promise<TypeVendorPricingRuleRes> =>
     apiFetch(
       `${configService.vendorServiceApiUrl()}/pricing/delivery-fee/vendor/${vendorId}/branch/${branchId}`
     ),
@@ -184,23 +191,35 @@ export const vendorService = {
       body: JSON.stringify(user),
     }),
 
-  getCompanyBilling: (vendorId: string) =>
-    apiFetch(
-      `${configService.vendorServiceApiUrl()}/company/billing/get/${vendorId}`
-    ),
 
-  updateCompanyBilling: (vendorId: string, request: any) =>
-    apiFetch(
+
+  getAffiliation: () =>
+    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/get-all`, {
+      method: 'GET',
+    }),
+
+  getOpsFinUser: (): Promise<TypeOpsFinUserResponce> =>
+    apiFetch(`${configService.userServiceApiUrl()}/all-ops-fin/users`),
+
+  getCompanyBilling(vendorId: string): Promise<TypeGetCompanyBillingResponse> {
+    return apiFetch(
+      `${configService.vendorServiceApiUrl()}/company/billing/get/${vendorId}`,
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  updateCompanyBilling(
+    vendorId: string,
+    request: TypeUpdateCompanyBillingRequest
+  ): Promise<any> {
+    return apiFetch(
       `${configService.vendorServiceApiUrl()}/company/billing/update/${vendorId}`,
       {
         method: 'PUT',
         body: JSON.stringify(request),
       }
-    ),
-
-  getAffiliation: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/get-all`),
-
-  getOpsFinUser: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/ops-fin-user`),
+    );
+  },
 };

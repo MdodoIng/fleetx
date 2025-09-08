@@ -22,7 +22,7 @@ function BalanceReport(): JSX.Element {
   const fetchCentralWalletBalance = async (): Promise<
     BalanceReportItem[] | undefined
   > => {
-    if (!venderStore.vendorId) {
+    if (!venderStore.selectedVendor?.id) {
       console.warn('No vendor ID available for central wallet');
       return [];
     }
@@ -30,7 +30,7 @@ function BalanceReport(): JSX.Element {
     try {
       const url = reportService.getVendorBalanceUrl(
         page,
-        venderStore.vendorId,
+        venderStore.selectedVendor?.id,
         nextSetItemTotal
       );
       const res = await reportService.getVendorBalanceReport(url);
@@ -45,74 +45,46 @@ function BalanceReport(): JSX.Element {
   const fetchBranchWalletBalances = async (): Promise<
     BalanceReportItem[] | undefined
   > => {
-    const allVendors = venderStore.venderList || [];
-
-    if (allVendors.length === 0) {
-      console.warn('No vendors available');
-      return [];
-    }
-
     try {
-      // Process vendors in parallel for better performance
-      const vendorPromises = allVendors.map(async (vendor) => {
-        try {
-          const allBranches = await vendorService.getBranchDetails(vendor.id);
-          const branches = allBranches?.data || [];
+      const url = reportService.getBranchWalletBalanceUrl(
+        page,
+        venderStore.selectedVendor?.id!,
+        venderStore.selectedBranch?.id!,
+        nextSetItemTotal
+      );
+      const res = await reportService.getBranchWalletBalanceReport(url);
 
-          console.log(branches, 'branches');
+      if (!res.data) {
+        return [];
+      }
 
-          if (branches.length === 0) {
-            console.warn(`No branches found for vendor: ${vendor.name}`);
-            return [];
-          }
-
-          // Process branches in parallel for each vendor
-          const branchPromises = branches.map(async (branch: TypeBranch) => {
-            try {
-              const url = reportService.getBranchWalletBalanceUrl(
-                page,
-                vendor.id!,
-                branch.id!,
-                nextSetItemTotal
-              );
-              const res = await reportService.getBranchWalletBalanceReport(url);
-
-              if (!res.data) {
-                return [];
-              }
-
-              return res.data.map((r) => ({
-                vendor: vendor.name,
-                branch: branch.name,
-                walletBalance: r?.balance?.balance_amount || 0,
-                minWalletBalance: branch.required_min_wallet_balance || 0,
-              }));
-            } catch (error) {
-              console.error(
-                `Failed to fetch balance for branch ${branch.name}:`,
-                error
-              );
-              return []; // Return empty array to continue processing other branches
-            }
-          });
-
-          const branchResults = await Promise.all(branchPromises);
-          return branchResults.flat();
-        } catch (error) {
-          console.error(
-            `Failed to fetch branches for vendor ${vendor.name}:`,
-            error
+      return await Promise.all(
+        res.data.map(async (r) => {
+          const vendor = venderStore.venderList?.find(
+            (item) =>
+              r.vendor.name.toLocaleLowerCase() ===
+              item.name.toLocaleLowerCase()
           );
-          return []; // Continue processing other vendors
-        }
-      });
+          // console.clear();
+          console.log(vendor);
 
-      const vendorResults = await Promise.all(vendorPromises);
-      // @ts-ignore
-      return vendorResults.flat() || undefined;
+          return {
+            vendor: r?.vendor.name,
+            branch:
+              venderStore.selectedBranch?.name! ||
+              vendor?.main_branch.name ||
+              'N/A',
+            walletBalance: Number(r?.wallet_balance) || 0,
+            minWalletBalance: Number(r?.required_min_wallet_balance) || 0,
+          };
+        })
+      );
     } catch (error) {
-      console.error('Failed to fetch branch wallet balances:', error);
-      throw error;
+      console.error(
+        `Failed to fetch balance for branch ${venderStore.selectedBranch?.name}:`,
+        error
+      );
+      return []; // Return empty array to continue processing other branches
     }
   };
 
@@ -153,7 +125,12 @@ function BalanceReport(): JSX.Element {
       await fetchBalanceReport();
     };
     loadFetchBalanceReport();
-  }, [venderStore.vendorId, venderStore.branchId, page, isCentralWallet]);
+  }, [
+    venderStore.selectedVendor?.id,
+    venderStore.selectedBranch?.id,
+    page,
+    isCentralWallet,
+  ]);
 
   console.log(data, 'aeefeafsafaaf');
 

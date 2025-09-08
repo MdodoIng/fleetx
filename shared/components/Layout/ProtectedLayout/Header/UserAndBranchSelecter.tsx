@@ -80,6 +80,7 @@ const UserAndBranchSelecter: React.FC<Props> = ({
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectGroup>
+              {/*<SelectItem value={' '}>All Vender</SelectItem>*/}
               <SelectLabel>Vender</SelectLabel>
               {venderList?.map((item, key) => (
                 <SelectItem key={key} value={item.id}>
@@ -100,17 +101,23 @@ const UserAndBranchSelecter: React.FC<Props> = ({
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectGroup>
-              <SelectLabel>Branch</SelectLabel>
-              {branchs?.map((item, key) => (
-                <SelectItem key={key} value={item.id}>
-                  {item.name}{' '}
-                  {item.main_branch && (
-                    <span className="rounded-full bg-gray-300 text-xs px-2.5 leading-0 py-2 pb-3 mr-auto">
-                      main Barnch
-                    </span>
-                  )}
-                </SelectItem>
-              ))}
+              {branchs && (
+                <>
+                  {/*<SelectItem value={'null'}>All Branchs</SelectItem>*/}
+
+                  <SelectLabel>Branch</SelectLabel>
+                  {branchs?.map((item, key) => (
+                    <SelectItem key={key} value={item.id}>
+                      {item.name}{' '}
+                      {item.main_branch && (
+                        <span className="rounded-full bg-gray-300 text-xs px-2.5 leading-0 py-2 pb-3 mr-auto">
+                          main Barnch
+                        </span>
+                      )}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
             </SelectGroup>
           </SelectContent>
         </Select>

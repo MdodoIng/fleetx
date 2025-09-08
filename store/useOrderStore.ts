@@ -42,6 +42,7 @@ interface OrderState {
   orderHistoryListData: TypeOrderHistoryList[] | undefined;
   OLDER_DATE: string;
   isEditDetails: boolean;
+  selectedAffiliator: any;
   //
   // actions
   updateDeliveryModel: (deliveryModel: number) => void;
@@ -55,6 +56,7 @@ interface OrderState {
     clearData?: boolean
   ) => void;
   clearAll: () => unknown;
+  setValue: <K extends keyof OrderState>(key: K, value: OrderState[K]) => void;
 }
 
 const initialState: OrderState | any = {
@@ -73,6 +75,7 @@ const initialState: OrderState | any = {
   orderHistoryListData: undefined,
   OLDER_DATE: '2023-01-01',
   isEditDetails: false,
+  selectedAffiliator: null,
 };
 
 export const useOrderStore = create<OrderState>()(
@@ -80,6 +83,9 @@ export const useOrderStore = create<OrderState>()(
     (set, get) => ({
       ...initialState,
 
+      setValue(key, value) {
+        set({ [key]: value });
+      },
       clearAll: () => set({ ...initialState }),
       updateDeliveryModel: (deliveryModel: number) => {
         const delivery = TypeDelivery.find((x) => x.key === deliveryModel);

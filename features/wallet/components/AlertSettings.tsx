@@ -11,7 +11,7 @@ import { Input } from '@/shared/components/ui/input';
 import { paymentService } from '@/shared/services/payment';
 
 import { TypeBalanceAlertReq } from '@/shared/types/payment';
-import { useVenderStore } from '@/store';
+import { useSharedStore, useVenderStore } from '@/store';
 import { useEffect, useState } from 'react';
 
 type MethodType = 'email' | 'phone';
@@ -19,7 +19,10 @@ type MethodType = 'email' | 'phone';
 export function AlertSettings() {
   const [alertValue, setAlertValue] = useState('');
   const [method, setMethod] = useState<MethodType[]>(['email']);
-  const { vendorId, branchId } = useVenderStore();
+  const { vendorId, branchId, selectedBranch, selectedVendor } =
+    useVenderStore();
+
+  const { appConstants } = useSharedStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const isCentralWalletEnabled = false;
@@ -61,10 +64,12 @@ export function AlertSettings() {
   const fetchAlertLoader = async () => {
     setIsLoading(true);
 
+    if (!branchId || !selectedBranch?.id) return;
+
     try {
       const res = await paymentService.getWalletNotifyBalance(
-        vendorId!,
-        branchId!
+        vendorId! || selectedVendor?.id!,
+        branchId! || selectedBranch?.id!
       );
 
       if (res?.data) {
@@ -94,16 +99,15 @@ export function AlertSettings() {
         err.message ||
         'An unknown error occurred while fetching orders.';
 
-      console.error('Error in fetchOrderDetails:', errorMessage);
+      console.error('Error in fetch', errorMessage);
     }
   };
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
-      await fetchAlertLoader();
-    };
-    loadInitialOrders();
-  }, [branchId, vendorId]);
+    if (branchId || selectedBranch?.id) {
+      fetchAlertLoader();
+    }
+  }, [branchId, selectedBranch?.id, vendorId, selectedVendor?.id]);
 
   const onHandleClick = (value: MethodType) => {
     setMethod((prev) => {
@@ -133,7 +137,7 @@ export function AlertSettings() {
             onChange={(e) => setAlertValue(e.target.value)}
             className="w-40"
           />
-          <span>KD</span>
+          <span>{appConstants?.currency}</span>
         </div>
 
         <div className="flex gap-4">
