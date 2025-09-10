@@ -12,11 +12,10 @@ import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import logo from '@/assets/images/logo.webp';
-
 
 import main_padding from '@/styles/padding';
 import Image from 'next/image';
@@ -92,19 +91,21 @@ export default function SignUpForm() {
     }
   };
 
-  const onSubmit = async (data: TypeSignUpForm) => {
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const data = form.watch();
     console.log('Submitted:', data, form.formState.errors);
     const request: TypeSingUpRequest = {
-      business_name: data.businessName,
-      full_name: data.fullName,
-      business_type: data.businessType,
-      email: data.email,
-      name: data.fullName,
-      password: data.password,
-      confirm_password: data.confirmPassword,
+      business_name: data?.businessName,
+      full_name: data?.fullName,
+      business_type: data?.businessType,
+      email: data?.email,
+      name: data?.fullName,
+      password: data?.password,
+      confirm_password: data?.confirmPassword,
       branches: {
-        mobile_number: data.phone,
-        name: data.fullName,
+        mobile_number: data?.phone,
+        name: data?.fullName,
         address: { ...data },
       },
     };
@@ -142,7 +143,7 @@ export default function SignUpForm() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={(e) => onSubmit(e)}
           className="flex flex-col gap-6 w-full"
         >
           <AnimatePresence mode="wait">
@@ -383,21 +384,11 @@ export default function SignUpForm() {
             </Button>
 
             <Button
-              type={step < steps.length - 1 ? 'button' : 'submit'}
+              type={'button'}
               className="flex-1 rounded-full"
-              onClick={
-                step < steps.length - 1 ? nextStep : form.handleSubmit(onSubmit)
-              }
+              onClick={step < steps.length - 1 ? nextStep : (e) => onSubmit(e)}
             >
               {t(step < steps.length - 1 ? 'continue' : 'submit')}
-            </Button>
-
-            <Button
-              type={'submit'}
-              className="flex-1 rounded-full"
-              onClick={() => form.handleSubmit(onSubmit)}
-            >
-              {t('submit')}
             </Button>
           </div>
         </form>
