@@ -14,10 +14,10 @@ export default function LocaleSwitcher() {
         },
         {
           value: 'ar',
-          label: 'arabic',
+          label: 'عربي',
         },
       ]}
-      label={'languges'}
+      label={'languages'}
     />
   );
 }

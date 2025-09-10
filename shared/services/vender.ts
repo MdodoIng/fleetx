@@ -17,27 +17,27 @@ import {
   TypeVendorUserListRes,
   TypeWalletResponce,
 } from '../types/vender';
-import { configService } from './app-config';
+import { appConfig } from './app-config';
 import { TypeVendorPricingRuleRes } from '../types/index,d';
 
 export const vendorService = {
   create: (vendor: TypeAddVenderReq) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/create`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/create`, {
       method: 'POST',
       body: JSON.stringify(vendor),
     }),
 
   update: (req: TypeEditVenderReq) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/update/${req.id}`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/update/${req.id}`, {
       method: 'PUT',
       body: JSON.stringify(req),
     }),
 
   getVendorDetails: (id: string): Promise<TypeVenderRes> =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/details?id=${id}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/details?id=${id}`),
 
   getVendorInfo: (id: string): Promise<{ data: TypeVender }> =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/vendor-info/${id}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/vendor-info/${id}`),
 
   setVendorListurl: (
     perPage: number | null,
@@ -60,10 +60,10 @@ export const vendorService = {
   },
 
   getVendorList: (url: string): Promise<TypeVenderListRes> =>
-    apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}${url}`),
 
   getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/branch-details?id=${id}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details?id=${id}`),
 
   getBranchDetailByBranchId: (
     branch: {
@@ -72,7 +72,7 @@ export const vendorService = {
     },
     options?: any
   ): Promise<any> =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/branch-details-branchid`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),
       ...options,
@@ -80,7 +80,7 @@ export const vendorService = {
 
   getAddressByMobile: (vendorId: string, branchId: string, mobile: string) =>
     apiFetch(
-      `${configService.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
+      `${appConfig.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),
 
   getVendorWalletBalance: (
@@ -90,19 +90,19 @@ export const vendorService = {
     let url = `/${vendorId}`;
     if (branchId) url += `/branch/${branchId}`;
     return apiFetch(
-      `${configService.vendorServiceApiUrl()}${url}/wallet/balance`
+      `${appConfig.vendorServiceApiUrl()}${url}/wallet/balance`
     );
   },
 
   getAllVendorBranches: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/vendor-branches`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/vendor-branches`),
 
   getAllVendors: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/vendors`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/vendors`),
 
   updateVendorBulkUploadMapping: (request: any) =>
     apiFetch(
-      `${configService.vendorServiceApiUrl()}/mapping/bulk-upload-template/add`,
+      `${appConfig.vendorServiceApiUrl()}/mapping/bulk-upload-template/add`,
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -111,23 +111,23 @@ export const vendorService = {
 
   getVendorBulkUploadMapping: (vendorId: string) =>
     apiFetch(
-      `${configService.vendorServiceApiUrl()}/mapping/bulk-upload-template/get/${vendorId}`
+      `${appConfig.vendorServiceApiUrl()}/mapping/bulk-upload-template/get/${vendorId}`
     ),
 
   downloadVendorList: (url: string) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}${url}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}${url}`),
 
   getVendorPricingRule: (
     vendorId: string,
     branchId: string
   ): Promise<TypeVendorPricingRuleRes> =>
     apiFetch(
-      `${configService.vendorServiceApiUrl()}/pricing/delivery-fee/vendor/${vendorId}/branch/${branchId}`
+      `${appConfig.vendorServiceApiUrl()}/pricing/delivery-fee/vendor/${vendorId}/branch/${branchId}`
     ),
 
   updateVendorAddress: (vendorId: string, address: any) =>
     apiFetch(
-      `${configService.vendorServiceApiUrl()}/branch/location/edit/${vendorId}`,
+      `${appConfig.vendorServiceApiUrl()}/branch/location/edit/${vendorId}`,
       {
         method: 'PUT',
         body: JSON.stringify(address),
@@ -135,16 +135,16 @@ export const vendorService = {
     ),
 
   getAffiliationList: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/list/`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/list/`),
 
   activateAffiliation: (request: any) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/subscribe`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/subscribe`, {
       method: 'POST',
       body: JSON.stringify(request),
     }),
 
   deactivateAffiliation: (request: any) =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/unsubscribe`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/unsubscribe`, {
       method: 'POST',
       body: JSON.stringify(request),
     }),
@@ -173,12 +173,12 @@ export const vendorService = {
     nextSetItemTotal?.forEach((el) => {
       url += `&NEXT_SET_ITEMS_TOKEN=${el}`;
     });
-    return apiFetch(`${configService.userServiceApiUrl()}${url}`);
+    return apiFetch(`${appConfig.userServiceApiUrl()}${url}`);
   },
 
   updateVendorUser: (userId: string, request: TypeUpdateVendorUserReq) =>
     apiFetch(
-      `${configService.userServiceApiUrl()}/vendor/user/update/${userId}`,
+      `${appConfig.userServiceApiUrl()}/vendor/user/update/${userId}`,
       {
         method: 'PUT',
         body: JSON.stringify(request),
@@ -186,7 +186,7 @@ export const vendorService = {
     ),
 
   createVendorUser: (user: TypeCreateVendorUserReq): Promise<any> =>
-    apiFetch(`${configService.userServiceApiUrl()}/vendor-user-register`, {
+    apiFetch(`${appConfig.userServiceApiUrl()}/vendor-user-register`, {
       method: 'POST',
       body: JSON.stringify(user),
     }),
@@ -194,16 +194,16 @@ export const vendorService = {
 
 
   getAffiliation: () =>
-    apiFetch(`${configService.vendorServiceApiUrl()}/affiliation/get-all`, {
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/get-all`, {
       method: 'GET',
     }),
 
   getOpsFinUser: (): Promise<TypeOpsFinUserResponce> =>
-    apiFetch(`${configService.userServiceApiUrl()}/all-ops-fin/users`),
+    apiFetch(`${appConfig.userServiceApiUrl()}/all-ops-fin/users`),
 
   getCompanyBilling(vendorId: string): Promise<TypeGetCompanyBillingResponse> {
     return apiFetch(
-      `${configService.vendorServiceApiUrl()}/company/billing/get/${vendorId}`,
+      `${appConfig.vendorServiceApiUrl()}/company/billing/get/${vendorId}`,
       {
         method: 'GET',
       }
@@ -215,7 +215,7 @@ export const vendorService = {
     request: TypeUpdateCompanyBillingRequest
   ): Promise<any> {
     return apiFetch(
-      `${configService.vendorServiceApiUrl()}/company/billing/update/${vendorId}`,
+      `${appConfig.vendorServiceApiUrl()}/company/billing/update/${vendorId}`,
       {
         method: 'PUT',
         body: JSON.stringify(request),

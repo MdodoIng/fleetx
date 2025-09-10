@@ -1,8 +1,8 @@
 'use client';
 import LoadingPage from '@/app/loading';
 import { isMounted } from '@/shared/lib/hooks';
-import { storageKeys } from '@/shared/lib/storageKeys';
-import type { UserRole } from '@/shared/types/auth';
+import { UserRole } from '@/shared/types/user';
+
 import { useAuthStore } from '@/store';
 import Link from 'next/link';
 import { useEffect } from 'react';

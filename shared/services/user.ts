@@ -1,132 +1,130 @@
-import { configService } from '@/shared/services/app-config';
-import { User, UserLogin } from '@/shared/types/auth';
+import { User } from '@/features/orders/types/useSalesFunnel';
 import { apiFetch } from '../lib/utils';
+import { AuthRoot, UserLogin } from '../types/auth';
+import { appConfig } from './app-config';
+import { TypeSingUpRequest } from '../types/user';
 
-const getUserServiceApiUrl = configService.userServiceApiUrl();
-const getvendorServiceApiUrl = configService.vendorServiceApiUrl();
 
-export const authenticate = (user: UserLogin) =>
-  fetch(`${getUserServiceApiUrl}/authenticate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...user }),
-  });
+const getUserServiceApiUrl = appConfig.userServiceApiUrl();
+const getVendorServiceApiUrl = appConfig.vendorServiceApiUrl();
 
-export const restUserPassword = (user: User) =>
-  fetch(`${getUserServiceApiUrl}/vendor-password-reset`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user),
-  });
+export const userService = {
+  authenticate: (user: UserLogin): Promise<AuthRoot> =>
+    apiFetch(`${getUserServiceApiUrl}/authenticate`, {
+      method: 'POST',
+      body: JSON.stringify({ ...user }),
+    }),
 
-export const restPassword = (user: User) =>
-  fetch(`${getUserServiceApiUrl}/resetpassword`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user),
-  });
+  refreshToken: (token: any): Promise<AuthRoot> =>
+    apiFetch(`${getUserServiceApiUrl}/refreshtoken`, {
+      method: 'POST',
+      body: JSON.stringify(token),
+    }),
 
-export const signUp = (request: any) =>
-  fetch(`${getvendorServiceApiUrl}/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  restUserPassword: (user: User) =>
+    apiFetch(`${getUserServiceApiUrl}/vendor-password-reset`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+    }),
 
-export const forgotPassword = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/password/forgot`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  restPassword: (user: User) =>
+    apiFetch(`${getUserServiceApiUrl}/resetpassword`, {
+      method: 'POST',
+      body: JSON.stringify(user),
+    }),
 
-export const validateForgotPassword = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/password/validate/reset-link`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  signUp: (request: TypeSingUpRequest) =>
+    apiFetch(`${getVendorServiceApiUrl}/signup`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const resetForgotPassword = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/password/reset`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  forgotPassword: (request: { email: any }) =>
+    apiFetch(`${getUserServiceApiUrl}/password/forgot`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const changePassword = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/my/password/change`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  validateForgotPassword: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/password/validate/reset-link`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const slaAccepted = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/sla/accept`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  resetForgotPassword: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/password/reset`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const addNotes = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/note/add`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  changePassword: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/my/password/change`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const getNoteDetails = (userId: string) =>
-  fetch(`${getUserServiceApiUrl}/note/list/${userId}`);
+  slaAccepted: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/sla/accept`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const getUserNoteDetails = (userId: string) =>
-  fetch(`${getUserServiceApiUrl}/get/${userId}`);
+  addNotes: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/note/add`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const affiliationRegenerate = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/affiliation/regenerate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  getNoteDetails: (userId: string) =>
+    apiFetch(`${getUserServiceApiUrl}/note/list/${userId}`),
 
-export const getAreaRestriction = () =>
-  fetch(`${getUserServiceApiUrl}/areas/restriction/get`);
+  getUserNoteDetails: (userId: string) =>
+    apiFetch(`${getUserServiceApiUrl}/get/${userId}`),
 
-export const createAreaRestriction = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/areas/restriction/create`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  affiliationRegenerate: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/affiliation/regenerate`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
 
-export const updateAreaRestriction = (request: any, id: string) =>
-  fetch(`${getUserServiceApiUrl}/areas/restriction/update/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  getAreaRestriction: () =>
+    apiFetch(`${getUserServiceApiUrl}/areas/restriction/get`),
 
-export const getAccountManagerList = (
-  page: number,
-  perPage: number,
-  search?: string | null
-) => {
-  let url = `/vendor-acount-manager/list?page=${page}&page_size=${perPage}`;
-  if (search) url += `&search=${encodeURIComponent(search)}`;
-  return apiFetch(`${getUserServiceApiUrl}${url}`, {
-    method: 'GET',
-  });
+  createAreaRestriction: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/areas/restriction/create`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
+
+  updateAreaRestriction: (request: any, id: string) =>
+    apiFetch(`${getUserServiceApiUrl}/areas/restriction/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(request),
+    }),
+
+  getAccountManagerList: (
+    page: number,
+    perPage: number,
+    search?: string | null
+  ) => {
+    let url = `/vendor-account-manager/list?page=${page}&page_size=${perPage}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    return apiFetch(`${getUserServiceApiUrl}${url}`, {
+      method: 'GET',
+    });
+  },
+
+  createAccountManager: (request: any) =>
+    apiFetch(`${getUserServiceApiUrl}/vendor-account-manager/create`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }),
+
+  updateAccountManager: (request: any, id: string) =>
+    apiFetch(`${getUserServiceApiUrl}/vendor-account-manager/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(request),
+    }),
 };
 
-export const createAccountManager = (request: any) =>
-  fetch(`${getUserServiceApiUrl}/vendor-acount-manager/create`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
-
-export const updateAccountManager = (request: any, id: string) =>
-  fetch(`${getUserServiceApiUrl}/vendor-acount-manager/update/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+export default userService;

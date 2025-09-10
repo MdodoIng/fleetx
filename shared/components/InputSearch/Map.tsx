@@ -7,7 +7,6 @@ import {
 } from '@react-google-maps/api';
 import { environment } from '@/environments/environment';
 import { mashkorMap } from '@/shared/constants/mapStyle';
-import { isMounted } from '@/shared/lib/hooks';
 
 const containerStyle = {
   width: '100%',

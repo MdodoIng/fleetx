@@ -1,9 +1,9 @@
 import { environment } from '@/environments/environment';
 import { apiFetch } from '../lib/utils';
 import { typePostRating, TypeRootRatingResponse } from '../types/rating';
-import { configService } from './app-config';
+import { appConfig } from './app-config';
 import { useSharedStore } from '@/store';
-import { AuthData, DecodedToken } from '../types/auth';
+import { AuthData, DecodedToken } from '../types/user';
 import {
   commonConstants,
   storageConstants,
@@ -55,14 +55,14 @@ export const getDeliveryRate = (
   orderNumber: string
 ): Promise<TypeRootRatingResponse> =>
   apiFetch(
-    configService.rateServiceApiUrl() + '/order/delivery/' + orderNumber,
+    appConfig.rateServiceApiUrl() + '/order/delivery/' + orderNumber,
     {
       method: 'GET',
     }
   );
 
 export const setDeliveryRate = (request: typePostRating) =>
-  apiFetch(configService.rateServiceApiUrl() + '/order/delivery/rate', {
+  apiFetch(appConfig.rateServiceApiUrl() + '/order/delivery/rate', {
     method: 'POST',
     body: JSON.stringify(request),
   });
@@ -70,19 +70,19 @@ export const getCurrentIPInfo = () => apiFetch('http://ipinfo.io/json'); // Note
 export const getCurrentIPWhois = () =>
   apiFetch('https://ipwhois.app/json/?lang=en'); // Note: client-side only
 export const connectFoodics = () =>
-  apiFetch(configService.userServiceApiUrl() + '/foodics/connect');
+  apiFetch(appConfig.userServiceApiUrl() + '/foodics/connect');
 export const associateFoodics = (request: any) =>
-  apiFetch(configService.vendorServiceApiUrl() + '/foodics/branch/associate', {
+  apiFetch(appConfig.vendorServiceApiUrl() + '/foodics/branch/associate', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
 export const validateVerifyCustomerAddress = (request: string) =>
   apiFetch(
-    configService.orderServiceApiUrl() + '/validate/customer/address/' + request
+    appConfig.orderServiceApiUrl() + '/validate/customer/address/' + request
   );
 export const verifyCustomerAddress = (request: any) =>
-  apiFetch(configService.orderServiceApiUrl() + '/verify/customer/address', {
+  apiFetch(appConfig.orderServiceApiUrl() + '/verify/customer/address', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
@@ -96,7 +96,7 @@ export const getSuperSaverPromation = (
   branchId: string
 ): Promise<TypeSuperSaverPromationRes> =>
   apiFetch(
-    configService.finServiceApiUrl() +
+    appConfig.finServiceApiUrl() +
       '/super-saver-promotion-status/vendor/' +
       vendorId +
       '/branch/' +
@@ -111,7 +111,7 @@ export const getFirstOrderInsight = (
   let url = '/first-order/insight';
   url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
   url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
-  return apiFetch(configService.rateServiceApiUrl() + url, {
+  return apiFetch(appConfig.rateServiceApiUrl() + url, {
     method: 'GET',
   });
 };
@@ -126,11 +126,11 @@ export const getFirstOrderList = (
   let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
   url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
   url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
-  return apiFetch(configService.rateServiceApiUrl() + url);
+  return apiFetch(appConfig.rateServiceApiUrl() + url);
 };
 export const getFirstOrderPickUpRate = (value: any) =>
   apiFetch(
-    configService.rateServiceApiUrl() + '/first/order/pickup/rating/' + value
+    appConfig.rateServiceApiUrl() + '/first/order/pickup/rating/' + value
   );
 
 export const checkBlockActivation = (
@@ -139,23 +139,23 @@ export const checkBlockActivation = (
 ): Promise<TypeCheckBlockActivationRes> => {
   const url = branchId ? `${vendorId}/${branchId}` : vendorId;
   return apiFetch(
-    configService.finServiceApiUrl() + '/wallet/recharge/blocked/' + url
+    appConfig.finServiceApiUrl() + '/wallet/recharge/blocked/' + url
   );
 };
 
 export const getZone = (request: any) =>
-  apiFetch(configService.orderServiceApiUrl() + '/pickup/address/zone', {
+  apiFetch(appConfig.orderServiceApiUrl() + '/pickup/address/zone', {
     method: 'POST',
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
 export const getFleetZonePickUpTrendAPI = () =>
-  apiFetch(configService.fleetServiceApiUrl() + '/zone-pickup/trend');
+  apiFetch(appConfig.fleetServiceApiUrl() + '/zone-pickup/trend');
 export const getFleetZonePickUpTrendAPINew = () =>
-  apiFetch(configService.awsApiGatewayBaseUrl() + '/zone/pickup-agg-data');
+  apiFetch(appConfig.awsApiGatewayBaseUrl() + '/zone/pickup-agg-data');
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
-    configService.orderServiceApiUrl() +
+    appConfig.orderServiceApiUrl() +
       '/get-customer-bulk-order/' +
       encryptedOrderNo
   );

@@ -1,19 +1,21 @@
-'use clinet';
-import { Button } from '@/shared/components/ui/button';
+'use client';
+import { Button } from '../ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { classForInput } from '@/shared/components/ui/input';
+} from '../ui/form';
+import { classForInput } from '../ui/input';
 import { cn } from '@/shared/lib/utils';
+import { Icon } from '@iconify/react/dist/iconify.js';
 import { MapPin } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { Control } from 'react-hook-form';
-import SearchResults from './searchList';
-import { TypePickUpSchema } from '../../../features/orders/validations/order';
+
+
 
 const LandmarkInput = ({
   control,
@@ -31,12 +33,14 @@ const LandmarkInput = ({
   setIsMapOpen,
   setIsInputBlur,
   setIsInputVal,
-  formLabel,
+  fieldPlaceholder,
+
   selectedItems,
   location,
 }: {
   control: Control<any, any, any>;
-  fieldName: 'address';
+  fieldName: string;
+  fieldPlaceholder: string;
   setIsInputBlur: React.Dispatch<React.SetStateAction<boolean>>;
   selectedItems: Locs[] | undefined;
   handleRemoveAddress: (removed: any) => void;
@@ -51,51 +55,64 @@ const LandmarkInput = ({
   isInputBlur: boolean;
   isMapOpen: boolean;
   isMap: boolean;
-  formLabel?: string;
+
   location?: string;
 }) => {
   const selectedItem = [
     {
       name_en: location
-        ? landmarkValues?.[location as keyof typeof landmarkValues]?.area!
-        : landmarkValues?.area!,
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.area
+        : landmarkValues?.area,
       loc_type: 'area',
     },
     {
       name_en: location
-        ? landmarkValues?.[location as keyof typeof landmarkValues]?.block!
-        : landmarkValues?.block!,
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.block
+        : landmarkValues?.block,
       loc_type: 'block',
     },
     {
       name_en: location
-        ? landmarkValues?.[location as keyof typeof landmarkValues]?.street!
-        : landmarkValues?.street!,
+        ? landmarkValues?.[location as keyof typeof landmarkValues]?.street
+        : landmarkValues?.street,
       loc_type: 'street',
     },
     {
       name_en:
         landmarkValues && location
           ? landmarkValues?.[
-              location?.replace('.', '') as keyof typeof landmarkValues
-            ]?.building!
-          : landmarkValues?.building!,
+            location?.replace('.', '') as keyof typeof landmarkValues
+          ]?.building
+          : landmarkValues?.building,
       loc_type: 'building',
     },
   ];
 
+  const t = useTranslations('component.common.inputSearch');
+  const placeholderInput = t(
+    landmarkValues.building
+      ? 'empty'
+      : landmarkValues.street
+        ? 'empty'
+        : landmarkValues.block
+          ? 'placeholderBlock'
+          : landmarkValues.area
+            ? 'placeholderArea'
+            : 'placeholder'
+  );
+
   return (
     <FormItem
+      id="landmark-input-container"
       className={
         isMapOpen
           ? 'w-[calc(100%-20px)] mx-auto absolute top-0 z-50 bg-white'
           : ''
       }
-      onBlur={() => setTimeout(() => setIsInputBlur(false), 1000)}
-      // onMouseLeave={() => setTimeout(() => setIsInputBlur(false), 1000)}
       onFocus={() => setIsInputBlur(true)}
+      onClick={() => setIsInputBlur(true)}
     >
-      {!isMapOpen && <FormLabel>{formLabel}</FormLabel>}
+      {!isMapOpen && <FormLabel>{fieldName || t('label')}</FormLabel>}
       <FormControl className="relative z-0">
         <div className={cn('flex gap-3 items-center ', classForInput)}>
           {selectedItem.map((item, key) => {
@@ -106,9 +123,13 @@ const LandmarkInput = ({
                 key={key}
                 type="button"
                 onClick={() => handleRemoveAddress(item)}
-                className="cursor-pointer text-red-500 shrink-0 flex items-center gap-1 border border-red-300 rounded-full px-2 py-1 text-sm hover:bg-red-100"
+                className="cursor-pointer text-dark-grey shrink-0 flex items-center gap-1 border border-[#9D9E9E] rounded-full pl-3 pr-1 py-1 text-sm  bg-off-white group hover:border-red-400 duration-100"
               >
-                <span className="font-bold">×</span> {item.name_en}
+                {item.name_en}
+                <Icon
+                  icon="carbon:close-outline"
+                  className="size-4 group-hover:text-red-400 duration-100"
+                />
               </button>
             );
           })}
@@ -118,8 +139,8 @@ const LandmarkInput = ({
             }}
             value={isInputVal}
             disabled={landmarkValues.building ? true : false}
-            placeholder={`Landmark`}
-            className="outline-0 border-none bg-yellow-500 w-full flex disabled:hidden"
+            placeholder={fieldPlaceholder || placeholderInput}
+            className="outline-0 border-none  w-full flex disabled:hidden"
             onKeyDown={(e) => handleEnter(e)}
           />
 

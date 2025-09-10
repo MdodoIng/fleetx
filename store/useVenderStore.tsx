@@ -1,15 +1,10 @@
-import {
-  TypeBranch,
-  TypeVender,
-  TypeVenderList,
-  TypeVenderListItem,
-  TypeVendorUserList,
-} from '@/shared/types/vender';
+
 import { get } from 'react-hook-form';
 import { create } from 'zustand';
 
 import { persist } from 'zustand/middleware';
 import { useAuthStore } from './useAuthStore';
+import { TypeBranch, TypeVenderList, TypeVenderListItem, TypeVendorUserList } from '@/shared/types/vender';
 
 export interface VenderState {
   branchDetails: TypeBranch[] | undefined;
@@ -31,7 +26,7 @@ export interface VenderActions {
   clearAll: () => void;
   setValue: (key: keyof VenderState, value: any) => void;
   updateSelectedBranch: (branchId?: string) => void;
-  getVendorAccoutManagerId: () => void;
+  getVendorAccountManagerId: () => void;
 }
 
 const initialState: VenderState = {
@@ -61,7 +56,7 @@ export const useVenderStore = create<VenderState & VenderActions>()(
         }
       },
 
-      getVendorAccoutManagerId: () => {
+      getVendorAccountManagerId: () => {
         const { user } = useAuthStore.getState();
         if (user?.roles.includes('VENDOR_ACCOUNT_MANAGER')) {
           const selectedAccountManager = get().selectedAccountManager;
