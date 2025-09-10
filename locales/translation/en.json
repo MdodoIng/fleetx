@@ -1,7 +1,4 @@
 {
-  "HomePage": {
-    "title": "Hello world!"
-  },
   "menuItems": {
     "dashboard": "Dashboard",
     "order": "Order",
@@ -120,5 +117,127 @@
     "pleaseSelectAVendor": "Please select a vendor",
     "newVersionIsAvailable": "New version is available.",
     "pleaseClickHereToUpdate": "Please click here to update."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your FleetX account",
+      "emailLabel": "Email*",
+      "passwordLabel": "Password*",
+      "passwordPlaceholder": "Enter your Password",
+      "forgotPassword": "Forgot Password?",
+      "submit": "Sign In",
+      "error": "Invalid email or password",
+      "loading": "Signing in..."
+    },
+    "passwordReset": {
+      "dialogTitle": "Enter Email",
+      "heading": "Enter your email to continue",
+      "subheading": "Enter your registered email ID to reset your password.",
+      "emailLabel": "Email*",
+      "emailPlaceholder": "your@email.com",
+      "submitButton": "Continue",
+      "closeButtonLabel": "Close"
+    },
+    "register": {
+      "title": "Create an Account",
+      "subtitle": "Start delivering with FleetX",
+      "emailLabel": "Email Address",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "submit": "Register / Login",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginHere": "Login here"
+    },
+    "business": {
+      "cta": "Don't have an account yet?",
+      "button": "Create a Business Account",
+      "promo": "Start delivering today with FleetX — fast, reliable, and simple."
+    },
+    "contact": {
+      "help": "Questions? We're here to help!",
+      "phone": "+965 223 456 78",
+      "supportNote": "Our local team speaks Arabic & English"
+    },
+    "promoBanner": {
+      "badge": "Trusted by 500+ businesses in Kuwait",
+      "headlineRich": "Send your orders <span>quickly</span> and <span>easily</span>.",
+      "subHeadline": "Join Kuwait’s most trusted delivery network.",
+      "features": {
+        "pickup": "Pick up in 30 to 90 minutes",
+        "tracking": "Track every order live",
+        "drivers": "Trained Professional Drivers",
+        "support": "Order & Shipment support 24/7",
+        "noFees": "No setup fees - start today"
+      },
+      "contact": {
+        "title": "Questions? We're here to help!",
+        "subtitle": "Our local team speaks Arabic & English",
+        "phone": "+965 222 41 222"
+      }
+    },
+    "businessForm": {
+      "title0": "Create Your Account In Seconds",
+      "title1": "Create Your Account",
+      "title2": "Where is your location?",
+      "tagline0": "Start delivering today with FleetX - fast, reliable, and simple.",
+      "tagline1": "Join Kuwait's most trusted delivery network.",
+      "tagline2": "So our drivers can find you quickly!",
+      "fields": {
+        "businessName": {
+          "label": "Business Name*",
+          "placeholder": "eg: Ahmed's Restaurant"
+        },
+        "fullName": {
+          "label": "Your Full Name*",
+          "placeholder": "Your full name"
+        },
+        "phone": {
+          "label": "Phone Number*",
+          "placeholder1": "+965",
+          "placeholder2": "12345678"
+        },
+        "businessType": {
+          "label": "Business Type*",
+          "placeholder": "Select"
+        },
+        "address": {
+          "label": "Address*",
+          "placeholder": "Select Area, Block, Street..."
+        },
+        "landmark": {
+          "label": "Help our driver find you (Landmark)*",
+          "placeholder": "eg: Next to Pink Bakery, Behind Ikea"
+        },
+        "email": {
+          "label": "Email*",
+          "placeholder": "your@email.com"
+        },
+        "password": {
+          "label": "Password*",
+          "placeholder": "Enter Password"
+        },
+        "confirmPassword": {
+          "label": "Confirm Password*",
+          "placeholder": "Re-enter Password"
+        }
+      },
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Submit",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginHere": "Sign in"
+    }
+  },
+  "component": {
+    "common": {
+      "inputSearch": {
+        "label": "Address*",
+        "placeholder": "Select Area, Block, Street...",
+        "placeholderArea": "Select Block, Street...",
+        "placeholderBlock": "Select Street...",
+        "empty": ""
+      }
+    }
   }
 }

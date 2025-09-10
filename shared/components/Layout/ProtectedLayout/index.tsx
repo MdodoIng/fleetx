@@ -4,8 +4,9 @@ import Header from './Header';
 import SideBar from './Sidebar';
 import { SearchX } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
-import { setBranchDetails, updateZoneAndSome } from '@/shared/services/header';
+
 import { useSharedStore, useVenderStore } from '@/store';
+import { setBranchDetails, updateZoneAndSome } from '@/shared/services/header';
 
 interface BaseLayoutProps {
   children: React.ReactNode;

@@ -1,9 +1,4 @@
 import { create } from 'zustand';
-import { jwtDecode } from 'jwt-decode';
-
-import { toast } from 'sonner';
-import { environment } from '@/environments/environment';
-import { ErrorMessages } from '@/shared/constants/commonMessages';
 import { kuwait, bahrain, qatar } from '@/shared/constants/countryConstants';
 import {
   storageConstants,
@@ -12,16 +7,10 @@ import {
   BAHRAIN,
   QATAR,
 } from '@/shared/constants/storageConstants';
-import { configService } from '@/shared/services/app-config';
-import { setUserLocale } from '@/shared/services/locale';
-import { AuthData, DecodedToken } from '@/shared/types/auth';
-import { useTranslations, Locale } from 'next-intl';
+
 import { TypeZoneETPTrend } from '@/shared/types/orders';
-import { apiFetch } from '@/shared/lib/utils';
 import { persist } from 'zustand/middleware';
-import { TypeBranch, TypeVender } from '@/shared/types/vender';
-import { useVenderStore } from './useVenderStore';
-import { typePostRating, TypeRootRatingResponse } from '@/shared/types/rating';
+
 import {
   checkZoneBusyModeIsEnabled,
   getAllFreeBuddiesFromB2C,
@@ -30,8 +19,11 @@ import {
   getSuperSaverPromation,
   logError,
   setSuperSaverWalletInfoMessage,
+  // toValidateOperationalHours,
   toValidateOperationalHours,
 } from '@/shared/services';
+
+import { environment } from '@/environments/environment';
 
 export interface SharedState {
   surveyCount: number;

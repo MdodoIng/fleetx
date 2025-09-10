@@ -31,7 +31,6 @@ import {
   TypeUpdateAddressReq,
 } from '@/shared/types/orders';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Value } from '@radix-ui/react-select';
 import { Edit } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';

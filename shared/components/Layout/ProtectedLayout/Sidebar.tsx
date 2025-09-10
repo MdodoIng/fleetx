@@ -1,7 +1,7 @@
 'use client';
 import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
 import { cn } from '@/shared/lib/utils';
-import { UserRole } from '@/shared/types/auth';
+import { UserRole } from '@/shared/types/user';
 import { useAuthStore } from '@/store';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';

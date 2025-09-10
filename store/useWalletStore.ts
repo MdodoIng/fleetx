@@ -5,9 +5,8 @@ import { useSharedStore } from './sharedStore';
 import { useVenderStore } from './useVenderStore';
 import { useAuthStore } from './useAuthStore';
 import { getSuperSaverPromation } from '@/shared/services';
-import { TypeBranch, TypeVender } from '@/shared/types/vender';
-import { TypepaymentSchema } from '@/features/orders/validations/editPayment';
 import { TypeAddCreditDebitformSchema } from '@/features/wallet/validations/paymentForm';
+import { TypeBranch, TypeVender } from '@/shared/types/vender';
 
 export async function getVendorWalletBalanceInit() {
   const { branchId, vendorId, selectedVendor, selectedBranch } =
@@ -449,7 +448,6 @@ export const useWalletStore = create<WalletState & WalletActions>()(
 
       setTabBasedOnRole: async () => {
         const { user } = useAuthStore.getState();
-
 
         switch (user?.roles[0]) {
           case 'FINANCE_MANAGER':

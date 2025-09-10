@@ -74,3 +74,35 @@ export interface DecodedToken {
   orig_iat?: number;
   exp?: number;
 }
+
+
+export interface TypeSingUpRequest  {
+  name: string;
+  business_name: string;
+  business_type: number;
+  email: string;
+  full_name: string;
+  password?: string;
+  confirm_password?: string;
+  is_business: boolean;
+  aff_ref_code?: string;
+  branches: {
+    mobile_number: string;
+    name: string;
+    address: {
+      landmark: string;
+      area: string;
+      area_id: number;
+      block: string;
+      block_id: number;
+      street: string;
+      street_id: number;
+      latitude: string;
+      longitude: string;
+      building_id: number;
+      building: string;
+      paci_number: string;
+    };
+  };
+  reference: null;
+}

@@ -1,11 +1,23 @@
 'use client';
 
-import * as Select from '@radix-ui/react-select';
-import { Check, Languages } from 'lucide-react';
-import clsx from 'clsx';
+import * as React from 'react';
+import { Check, Globe, Languages } from 'lucide-react';
 import { useTransition } from 'react';
 import { setUserLocale } from '@/shared/services/locale';
 import { Locale } from '@/locales/config';
+
+import { cn } from '@/shared/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+
+import { getDirection } from '@/shared/lib/helpers/getDirection';
+
 
 type Props = {
   defaultValue: string;
@@ -29,44 +41,48 @@ export default function LocaleSwitcherSelect({
 
   return (
     <div className="relative">
-      <Select.Root defaultValue={defaultValue} onValueChange={onChange}>
-        <Select.Trigger
+      <Select defaultValue={defaultValue} onValueChange={onChange}>
+        <SelectTrigger
           aria-label={label}
-          className={clsx(
-            'rounded-sm p-2 transition-colors hover:bg-slate-200',
-            isPending && 'pointer-events-none opacity-60'
+          size="sm"
+          className={cn(
+            "flex w-full items-center justify-between rounded-md  !border-none bg-black/25 px-4 py-4 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50 ring-offset-background focus:ring-0 focus:ring-ring focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0 [&_svg:not([class*='text-'])]:hidden ",
+            isPending &&
+            'pointer-events-none opacity-60 starting:opacity-0 starting:translate-y-10 ',
+            'hover:bg-black/50'
           )}
         >
-          <Select.Icon>
-            <Languages className="h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900" />
-          </Select.Icon>
-        </Select.Trigger>
-        <Select.Portal>
-          <Select.Content
-            align="end"
-            className="min-w-[8rem] overflow-hidden rounded-sm bg-white py-1 shadow-md"
-            position="popper"
-          >
-            <Select.Viewport>
-              {items.map((item) => (
-                <Select.Item
+          <SelectValue>
+            <Globe className="h-5 w-5 text-white" />
+            <p className="capitalize">
+              {items.find((item) => item.value !== defaultValue)?.value || ''}
+            </p>
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+
+            {items.map((item) => {
+              const { dirState } = getDirection(item.value);
+              return (
+                <SelectItem
                   key={item.value}
-                  className="flex cursor-default items-center px-3 py-2 text-base data-[highlighted]:bg-slate-100"
                   value={item.value}
+                  className={cn(
+                    'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+                    item.value === defaultValue && 'font-medium',
+                    dirState ? 'font-arabic' : 'font-english'
+                  )}
                 >
-                  <div className="mr-2 w-[1rem]">
-                    {item.value === defaultValue && (
-                      <Check className="h-5 w-5 text-slate-600" />
-                    )}
-                  </div>
-                  <span className="text-slate-900">{item.label}</span>
-                </Select.Item>
-              ))}
-            </Select.Viewport>
-            <Select.Arrow className="fill-white text-white" />
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
+                  <span className="flex items-center">
+                    <span>{item.label}</span>
+                  </span>
+                </SelectItem>
+              );
+            })}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

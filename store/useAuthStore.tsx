@@ -1,5 +1,5 @@
 import { storageKeys } from '@/shared/lib/storageKeys';
-import { configService } from '@/shared/services/app-config';
+
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 import { create } from 'zustand';
@@ -8,16 +8,17 @@ import { COOKIE_AFF_REF_CODE } from '@/shared/constants/storageConstants';
 
 import { isMounted } from '@/shared/lib/hooks';
 
-import { authenticate } from '@/shared/services/user';
 import type {
   AuthRoot,
   DecodedToken,
   UserLogin,
   UserRole,
-} from '@/shared/types/auth';
+} from '@/shared/types/user';
 import { clearAllStore, useSharedStore, useVenderStore } from '.';
+import { appConfig } from '@/shared/services/app-config';
+import userService from '@/shared/services/user';
 
-const userApiUrl = configService.userServiceApiUrl();
+const userApiUrl = appConfig.userServiceApiUrl();
 
 type AuthState = {
   user: AuthRoot['data'] | null;
@@ -117,13 +118,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     };
 
     try {
-      const res = await authenticate(userLogin);
+      const res = await userService.authenticate(userLogin);
 
-      if (res.ok) {
-        const json = (await res.json()) as AuthRoot;
-        localStorage.setItem(storageKeys.authAppToken, json.data.token);
+      if (res.data) {
+        localStorage.setItem(storageKeys.authAppToken, res.data.token);
 
-        const tokenPayload = get().getDecodedAccessToken(json.data.token);
+        const tokenPayload = get().getDecodedAccessToken(res.data.token);
         if (tokenPayload?.roles[0] === 'VENDOR_USER') {
           if (!tokenPayload.user.vendor?.sla_accepted) {
             set({ isLoading: false });
@@ -144,7 +144,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         localStorage.setItem(
           storageKeys.userContext,
-          JSON.stringify({ token: json.data.token })
+          JSON.stringify({ token: res.data.token })
         );
         localStorage.setItem(storageKeys.refreshTime, new Date().toString());
 
@@ -153,7 +153,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         set({
-          user: json.data,
+          user: res.data,
           isAuthenticated: true,
           isLoading: false,
         });
@@ -182,25 +182,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const tokenPayload = get().getDecodedAccessToken();
     if (!tokenPayload) return;
 
-    const res = await fetch(userApiUrl + '/refresh-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: tokenPayload.token }),
-    });
+    const res = await userService.refreshToken({ token: tokenPayload.token });
 
-    if (!res.ok) throw new Error('Failed to refresh token');
-
-    const data = await res.json();
     localStorage.setItem(
       storageKeys.userContext,
-      JSON.stringify({ token: data.data.token })
+      JSON.stringify({ token: res.data.token })
     );
-    const decoded: any = jwtDecode(data.data.token!);
+    const decoded: any = jwtDecode(res.data.token!);
 
     set({
       user: {
         ...decoded,
-        token: data.data.token,
+        token: res.data.token,
       },
     });
     localStorage.setItem(storageKeys.refreshTime, new Date().toString());
