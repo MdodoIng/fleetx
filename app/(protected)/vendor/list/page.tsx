@@ -12,7 +12,7 @@ function VenderList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
-  const { isEditVenderId, getVendorAccoutManagerId, setValue } =
+  const { isEditVenderId, getVendorAccountManagerId, setValue } =
     useVenderStore();
   const [isCentralWallet, setIsCentralWallet] = useState(false);
   const [searchValue, setSearchValue] = useState<string | null>(null);
@@ -23,7 +23,7 @@ function VenderList(): JSX.Element {
     setIsLoading(true);
 
     try {
-      getVendorAccoutManagerId();
+      getVendorAccountManagerId();
       const url = vendorService.setVendorListurl(page, searchValue, null);
 
       try {

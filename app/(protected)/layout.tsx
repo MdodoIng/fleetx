@@ -8,7 +8,7 @@ import { isMounted } from '@/shared/lib/hooks';
 import LoadingPage from '../loading';
 import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
 import { usePathname, useRouter } from 'next/navigation';
-import { useGetSidebarMeta } from '@/shared/lib/helpers';
+import { useGetSidebarMeta } from '@/shared/lib/helpers/index';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

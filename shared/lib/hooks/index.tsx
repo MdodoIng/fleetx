@@ -13,9 +13,9 @@ export const useDebounce = (callback: (...args: any) => any, delay: number) => {
   return debouncedCallback;
 };
 
-export function useRTL(): {
-  state: boolean;
-  setRtl: 'rtl' | 'ltr';
+export function useDir(): {
+  dirState: boolean;
+  setDir: 'rtl' | 'ltr';
 } {
   const [direction, setDirection] = useState<boolean>(false);
   const locale = useLocale() ?? 'en';
@@ -33,7 +33,7 @@ export function useRTL(): {
   }, [locale]);
 
   return {
-    state: direction,
-    setRtl: direction ? 'rtl' : 'ltr',
+    dirState: direction,
+    setDir: direction ? 'rtl' : 'ltr',
   };
 }

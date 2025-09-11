@@ -2,7 +2,10 @@ import { TypePickUpSchema } from '@/features/orders/validations/order';
 import { useOrderStore } from '@/store/useOrderStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { APP_SIDEBAR_MENU } from '../constants/sidebar';
+import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
+import { UserRole } from '@/shared/types/user';
+import { MenuItem } from '@/shared/types/constants';
+import { useAuthStore } from '@/store';
 
 export function makeLoc(
   type: string,
@@ -52,3 +55,22 @@ export const useGetSidebarMeta = (pathname: string) => {
 
   return { title: '', roles: [] };
 };
+
+export function filterMenuByRole(menu: MenuItem[]) {
+  const { user } = useAuthStore.getState();
+  return menu
+    .filter(
+      (item) =>
+        !item.roles || item.roles.some((role) => user?.roles.includes(role))
+    )
+    .map((item) => ({
+      ...item,
+      children: item.children
+        ? item.children.filter(
+            (child) =>
+              !child.roles ||
+              child.roles.some((role) => user?.roles.includes(role))
+          )
+        : undefined,
+    }));
+}

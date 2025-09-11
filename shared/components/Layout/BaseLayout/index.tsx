@@ -1,4 +1,3 @@
-import Footer from './Footer';
 import Header from './Header';
 
 interface BaseLayoutProps {
@@ -7,10 +6,9 @@ interface BaseLayoutProps {
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <Header />
-      <main className="flex-grow container mx-auto py-8 px-6">{children}</main>
-      <Footer />
+      <main className="">{children}</main>
     </div>
   );
 };

@@ -4,9 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
+
+import Notification from './Notification';
 import { Button } from '@/shared/components/ui/button';
 import UserAndBranchSelecter from './UserAndBranchSelecter';
-import Notification from './Notification';
+import { cn } from '@/shared/lib/utils';
+import main_padding from '@/styles/padding';
+import { Profiler } from 'react';
+import Profile from './Profile';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
@@ -28,7 +33,7 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
     return `${baseClass} ${isActivePath(path) ? activeClass : inactiveClass}`;
   };
 
-  const t = useTranslations();
+  const t = useTranslations('component.common.header');
 
   const handleChangeBranch = (e: string) => {
     const branch = venderStore.branchDetails?.find((r) => r.id === e);
@@ -53,28 +58,18 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   };
 
   return (
-    <nav className="">
-      <div className="ml-10 flex items-center md:space-x-4">
-        <p className="">{t(title)}</p>
-        <LocaleSwitcher />
-        <UserAndBranchSelecter
-          handleChangeBranch={handleChangeBranch}
-          handleChangeVender={handleChangeVender}
-          branchs={venderStore.branchDetails}
-          handleClear={handleClear}
-        />
-        <div className="flex ml-auto">
-          <Notification />
-          {isAuthenticated ? (
-            <Button onClick={logout} variant={'destructive'}>
-              Logout
-            </Button>
-          ) : (
-            <Link href="/register" className={navLinkClass('/register')}>
-              <Button>Register</Button>
-            </Link>
-          )}
-        </div>
+    <nav
+      className={cn(
+        'bg-white flex items-center justify-between h-full sticky top-0 z-50',
+        main_padding.dashboard.x,
+        main_padding.dashboard.y
+      )}
+    >
+      <p className="font-medium">{t('title')}</p>
+      <div className="flex items-center gap-4 h-full ">
+        <Notification />
+        <Profile />
+        <LocaleSwitcher variant="dashboard" />
       </div>
     </nav>
   );

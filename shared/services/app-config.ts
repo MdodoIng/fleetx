@@ -1,6 +1,6 @@
 import { environment } from '@/environments/environment';
 
-export const AppConfigService = {
+export const appConfig = {
   _getApiServiceUrl(path: string): string {
     return `${environment.API_GATEWAY_BASE_URL}/${path}`;
   },
@@ -54,4 +54,4 @@ export const AppConfigService = {
   },
 };
 
-export const configService = AppConfigService;
+

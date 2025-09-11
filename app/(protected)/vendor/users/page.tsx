@@ -72,12 +72,14 @@ function VenderUser() {
         vendor: TypeVenderListItem;
       }
     | undefined
-  >(undefined);
+  >({
+    branch: selectedBranch!,
+    vendor: selectedVendor!,
+  });
   const [isAdd, setIsAddAction] = useState(false);
   const [branchList, setBranchList] = useState<TypeBranch[]>();
   const [tableData, setTableData] = useState<any[]>([]);
 
-  // Updated main function
   const fetchVendorUserList = async (): Promise<void> => {
     setIsLoading(true);
 
@@ -113,11 +115,12 @@ function VenderUser() {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    if (isBranch?.vendor.id || selectedVendor?.id) {
+    if (isBranch?.vendor?.id || selectedVendor?.id) {
       fetchBranchDetails();
     }
-  }, [isBranch?.vendor.id]);
+  }, [isBranch?.vendor?.id]);
 
   const handleEditClick = async (
     item: TypeVendorUserList,

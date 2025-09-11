@@ -1,11 +1,13 @@
 'use client';
 import LoadingPage from '@/app/loading';
 import { isMounted } from '@/shared/lib/hooks';
-import { storageKeys } from '@/shared/lib/storageKeys';
-import type { UserRole } from '@/shared/types/auth';
-import { useAuthStore } from '@/store';
+import { UserRole } from '@/shared/types/user';
+
+import { useAuthStore, useSharedStore } from '@/store';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Button } from '../../ui/button';
 
 // HOC for role-based access control
 export function withAuth<P extends object>(
@@ -23,9 +25,18 @@ export function withAuth<P extends object>(
       user,
     } = useAuthStore();
 
+    const { setValue } = useSharedStore();
+    const { push } = useRouter();
+    const pathname = usePathname();
+
     useEffect(() => {
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
+
+    const handleClickToLogin = () => {
+      setValue('lastPathname', pathname);
+      push('/auth/login');
+    };
 
     if (isLoading) {
       return <LoadingPage />;
@@ -41,12 +52,12 @@ export function withAuth<P extends object>(
             <p className="text-gray-600 dark:text-gray-300 mb-8">
               Please log in to access this page.
             </p>
-            <Link
-              href="/auth/login"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            <Button
+              onClick={() => handleClickToLogin()}
+              variant={'destructive'}
             >
               Go to Login
-            </Link>
+            </Button>
           </div>
         </div>
       );
@@ -63,10 +74,10 @@ export function withAuth<P extends object>(
               You don't have permission to access this page.
             </p>
             <Link
-              href="/"
+              href="/order/create"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
             >
-              Go Home
+              Go Order
             </Link>
           </div>
         </div>

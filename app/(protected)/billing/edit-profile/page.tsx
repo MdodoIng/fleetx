@@ -1,6 +1,5 @@
 'use client';
 
-import { Toaster } from 'sonner';
 import {
   Card,
   CardContent,
@@ -25,7 +24,6 @@ const EditProfilePage = () => {
 
   return (
     <>
-      <Toaster position="top-right" richColors />
       <Card className="w-full  mx-auto mt-10">
         <CardHeader>
           <CardTitle className="text-[#30d9c4] text-xl font-extrabold text-center">

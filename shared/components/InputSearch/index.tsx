@@ -10,25 +10,24 @@ import React, {
 } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import { getArea, getBlock, getBuildings, getStreet } from '@/shared/services';
-
-const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
+const MyMap = dynamic(() => import('@/shared/components/InputSearch/Map'), {
   ssr: false,
   loading: () => <p>Loading map...</p>,
 });
 
-import { makeLoc } from '@/shared/lib/helpers';
 import dynamic from 'next/dynamic';
 
 import { useOrderStore } from '@/store/useOrderStore';
-import { TypePickUpSchema } from '@/features/orders/validations/order';
 import LandmarkInput from './LandmarkInput';
 import SearchResults from './searchList';
+import { TypePickUpSchema } from '@/features/orders/validations/order';
+import { getArea, getBlock, getBuildings, getStreet } from '@/shared/services';
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
-  landmarkFieldName: 'address';
+  landmarkFieldName: string;
   isDisabled?: boolean;
+  landmarkFieldPlaceholder?: string;
   isMap?: boolean;
   location?: string;
 }
@@ -36,6 +35,7 @@ interface AddressLandmarkProps {
 export default function AddressLandmarkFields({
   form,
   landmarkFieldName,
+  landmarkFieldPlaceholder,
   isMap = false,
   location,
 }: AddressLandmarkProps) {
@@ -49,7 +49,7 @@ export default function AddressLandmarkFields({
   const [parentId, setParentId] = useState<string | number | undefined>(
     undefined
   );
-  const [selctedItems, setSelcectItems] = useState<Locs[]>();
+  const [selectedItems, setSelcectItems] = useState<Locs[]>();
   const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
   const [mapValues, setMapValues] = useState<{
     lat: number;
@@ -185,9 +185,7 @@ export default function AddressLandmarkFields({
           label: item.name_en,
         }));
 
-      setTimeout(() => {
-        setSearchData(items);
-      }, 50);
+      setSearchData(items);
     } catch (err) {
       console.error('Error fetching location data:', err);
       setSearchData([]);
@@ -230,8 +228,6 @@ export default function AddressLandmarkFields({
     setParentId(data.id);
     setIsInputVal('');
     setSearchData(undefined);
-    // setSelcectItems((prev) => (prev ? [...prev, data] : [data]));
-
     if (key === 'area') setCurrentLevel('block');
     if (key === 'block') setCurrentLevel('street');
     if (key === 'street') setCurrentLevel('building');
@@ -248,7 +244,6 @@ export default function AddressLandmarkFields({
   };
 
   const handleRemoveAddress = (removed: { loc_type: string }) => {
-    // setSelcectItems(selctedItems?.slice(0, index));
     if (removed.loc_type === 'area') {
       clearValues(['area', 'block', 'street', 'building']);
       setCurrentLevel('area');
@@ -293,14 +288,43 @@ export default function AddressLandmarkFields({
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const containers = document.querySelectorAll('#landmark-input-container');
+
+      let clickedInsideAny = false;
+
+      containers.forEach((el) => {
+        if (el.contains(target)) {
+          clickedInsideAny = true;
+        }
+      });
+
+      if (!clickedInsideAny) {
+        console.log('sadaafa');
+        setIsInputBlur(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      <div className="flex flex-col gap-4 w-full col-span-2 relative">
+      <div
+        id="landmark-input-container"
+        className="flex flex-col gap-4 w-full col-span-2 relative"
+      >
         {/* Landmark Inputs */}
         <LandmarkInput
           control={control}
           location={location}
           fieldName={landmarkFieldName}
+          fieldPlaceholder={landmarkFieldPlaceholder!}
           handleAddressClick={handleAddressClick}
           handleEnter={handleEnter}
           handleRemoveAddress={handleRemoveAddress}
@@ -308,20 +332,20 @@ export default function AddressLandmarkFields({
           landmarkValues={landmarkValues}
           loading={loading}
           searchData={searchData}
-          selectedItems={selctedItems}
+          selectedItems={selectedItems}
           setIsInputBlur={setIsInputBlur}
           setIsInputVal={setIsInputVal}
           setIsMapOpen={setIsMapOpen}
           isInputBlur={isInputBlur}
           isMapOpen={false}
           isMap={isMap}
-          formLabel="Landmark"
         />
-        {searchData && !isMapOpen && searchData?.length > 0 && (
+        {searchData && !isMapOpen && searchData?.length > 0 && isInputBlur && (
           <SearchResults
             handleAddressClick={handleAddressClick}
             loading={loading}
             searchData={searchData}
+            isMapOpen={false}
           />
         )}
       </div>
@@ -334,6 +358,7 @@ export default function AddressLandmarkFields({
               control={control}
               location={location}
               fieldName={landmarkFieldName}
+              fieldPlaceholder={landmarkFieldPlaceholder!}
               handleAddressClick={handleAddressClick}
               handleEnter={handleEnter}
               handleRemoveAddress={handleRemoveAddress}
@@ -341,7 +366,7 @@ export default function AddressLandmarkFields({
               landmarkValues={landmarkValues}
               loading={loading}
               searchData={searchData}
-              selectedItems={selctedItems}
+              selectedItems={selectedItems}
               setIsInputBlur={setIsInputBlur}
               setIsInputVal={setIsInputVal}
               setIsMapOpen={setIsMapOpen}
@@ -350,13 +375,17 @@ export default function AddressLandmarkFields({
               isMap={isMap}
             />
 
-            {searchData && isInputBlur && searchData?.length > 0 && (
-              <SearchResults
-                handleAddressClick={handleAddressClick}
-                loading={loading}
-                searchData={searchData}
-              />
-            )}
+            {searchData &&
+              isInputBlur &&
+              searchData?.length > 0 &&
+              isInputBlur && (
+                <SearchResults
+                  handleAddressClick={handleAddressClick}
+                  loading={loading}
+                  searchData={searchData}
+                  isMapOpen={isMapOpen}
+                />
+              )}
 
             <MyMap center={mapValues} />
           </div>

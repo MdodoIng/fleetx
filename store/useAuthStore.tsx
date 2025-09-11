@@ -1,5 +1,5 @@
 import { storageKeys } from '@/shared/lib/storageKeys';
-import { configService } from '@/shared/services/app-config';
+
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 import { create } from 'zustand';
@@ -8,32 +8,37 @@ import { COOKIE_AFF_REF_CODE } from '@/shared/constants/storageConstants';
 
 import { isMounted } from '@/shared/lib/hooks';
 
-import { authenticate } from '@/shared/services/user';
 import type {
   AuthRoot,
   DecodedToken,
   UserLogin,
   UserRole,
-} from '@/shared/types/auth';
+} from '@/shared/types/user';
 import { clearAllStore, useSharedStore, useVenderStore } from '.';
+import { appConfig } from '@/shared/services/app-config';
+import userService from '@/shared/services/user';
+import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
 
-const userApiUrl = configService.userServiceApiUrl();
+const userApiUrl = appConfig.userServiceApiUrl();
 
 type AuthState = {
   user: AuthRoot['data'] | null;
   userId?: string;
   isAuthenticated: boolean;
   isLoading: boolean;
+  tokenForRest: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  refreshToken: () => Promise<void>;
+  refreshToken: (token?: string | null) => Promise<void>;
   getDecodedAccessToken: (token?: string | null) => DecodedToken | undefined;
   triggerRefreshToken: () => Promise<void>;
   isAuthenticatedCheck: () => boolean;
   hasRole: (role: UserRole) => boolean;
   hasAnyRole: (roles: UserRole[]) => boolean;
   getAccessTokenTime: () => { orgTime: number; exp: number } | null;
+  handleAcceptSla: () => Promise<void>;
   clearAll: () => void;
+  setValue: <K extends keyof AuthState>(key: K, value: AuthState[K]) => void;
 };
 
 function getInitialAuthState(): boolean {
@@ -69,11 +74,13 @@ const initialState: AuthState | any = {
   user: null,
   isLoading: true,
   isAuthenticated: false,
+  tokenForRest: false,
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   ...initialState,
 
+  setValue: (key: keyof AuthState, value: any) => set({ [key]: value }),
   clearAll: () => set({ ...initialState }),
   hasRole: (role) => {
     const { user } = get();
@@ -117,16 +124,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     };
 
     try {
-      const res = await authenticate(userLogin);
+      const res = await userService.authenticate(userLogin);
 
-      if (res.ok) {
-        const json = (await res.json()) as AuthRoot;
-        localStorage.setItem(storageKeys.authAppToken, json.data.token);
+      if (res.data) {
+        localStorage.setItem(storageKeys.authAppToken, res.data.token);
 
-        const tokenPayload = get().getDecodedAccessToken(json.data.token);
+        const tokenPayload = get().getDecodedAccessToken(res.data.token);
         if (tokenPayload?.roles[0] === 'VENDOR_USER') {
           if (!tokenPayload.user.vendor?.sla_accepted) {
-            set({ isLoading: false });
+            set({ isLoading: false, tokenForRest: true });
             return false;
           } else {
             useVenderStore.setState({
@@ -144,7 +150,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         localStorage.setItem(
           storageKeys.userContext,
-          JSON.stringify({ token: json.data.token })
+          JSON.stringify({ token: res.data.token })
         );
         localStorage.setItem(storageKeys.refreshTime, new Date().toString());
 
@@ -153,12 +159,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         set({
-          user: json.data,
+          user: res.data,
           isAuthenticated: true,
           isLoading: false,
         });
 
-        return true;
+        return tokenPayload;
       }
 
       set({ isLoading: false });
@@ -171,6 +177,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return true;
   },
 
+  handleAcceptSla: async () => {
+    const { getLocalStorage } = useSharedStore.getState();
+    const tokenPayload = get().getDecodedAccessToken(
+      getLocalStorage(storageKeys.authAppToken)
+    );
+
+    const request = {
+      user_id: tokenPayload?.userId,
+    };
+    userService.slaAccepted(request).then(
+      () => {
+        get()
+          .refreshToken(tokenPayload?.token)
+          .then(() => {
+            useSharedStore.setState({
+              foodicsReference: null,
+              foodicsIsAlreadyConnected: false,
+            });
+           
+
+            set({ tokenForRest: false });
+          })
+          .catch((error: any) => {
+            console.log(error.message);
+          });
+      },
+      (error: any) => {
+        console.log(error.message);
+      }
+    );
+  },
+
   logout: () => {
     Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
@@ -178,30 +216,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  refreshToken: async () => {
-    const tokenPayload = get().getDecodedAccessToken();
+  refreshToken: async (token) => {
+    const tokenPayload = get().getDecodedAccessToken(token);
     if (!tokenPayload) return;
 
-    const res = await fetch(userApiUrl + '/refresh-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: tokenPayload.token }),
-    });
+    const res = await userService.refreshToken({ token: tokenPayload.token });
 
-    if (!res.ok) throw new Error('Failed to refresh token');
-
-    const data = await res.json();
     localStorage.setItem(
       storageKeys.userContext,
-      JSON.stringify({ token: data.data.token })
+      JSON.stringify({ token: res.data.token })
     );
-    const decoded: any = jwtDecode(data.data.token!);
+    const decoded: any = jwtDecode(res.data.token!);
 
     set({
       user: {
         ...decoded,
-        token: data.data.token,
+        token: res.data.token,
       },
+      isAuthenticated: true,
     });
     localStorage.setItem(storageKeys.refreshTime, new Date().toString());
   },

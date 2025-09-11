@@ -1,57 +1,57 @@
-import { UserRole } from '@/shared/types/auth';
 import { SUB_MENU } from './routes';
+import NewOrderIcon from '../components/icons/layout/NewOrderIcon';
+import { FC } from 'react';
+import { SidebarIconType } from '../components/icons/layout';
+import { UserRole } from '../types/user';
 
 export interface MenuItem {
   labelKey: string;
   route?: string;
   roles?: UserRole[];
-  icon: string;
+  icon?: SidebarIconType;
   children?: MenuItem[];
-  iconClass?: string;
 }
 
 export const APP_SIDEBAR_MENU: MenuItem[] = [
   {
-    labelKey: 'menuItems.dashboard',
+    labelKey: 'layout.menuItems.dashboard',
     route: '/dashboard',
-    icon: 'icon-dashboard',
+    icon: 'activeOrders',
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   {
-    labelKey: 'menuItems.order',
-    icon: 'icon-order',
+    labelKey: 'layout.menuItems.order',
+
     children: [
       {
-        labelKey: 'menuItems.orderSubMenu.newOrder',
+        labelKey: 'layout.menuItems.orderSubMenu.newOrder',
         route: SUB_MENU.NEW_ORDER_OLD.LINK,
-        icon: 'icon-new-order',
+        icon: 'newOrder',
       },
       {
-        labelKey: 'menuItems.orderSubMenu.bulkOrder',
+        labelKey: 'layout.menuItems.orderSubMenu.bulkOrder',
         route: '/order/bulk',
-        icon: 'icon-bulk-order',
+        icon: 'newOrder',
       },
       {
-        labelKey: 'menuItems.orderSubMenu.liveOrder',
+        labelKey: 'layout.menuItems.orderSubMenu.liveOrder',
         route: '/order/live',
-        icon: 'icon-live-order',
+        icon: 'activeOrders',
       },
       {
-        labelKey: 'menuItems.orderSubMenu.history',
+        labelKey: 'layout.menuItems.orderSubMenu.history',
         route: '/order/history',
-        icon: 'icon-history',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.orderSubMenu.bulkInsights',
+        labelKey: 'layout.menuItems.orderSubMenu.bulkInsights',
         route: '/order/bulk-insights',
-        icon: 'icon-insights',
+        icon: 'bulkInsights',
       },
     ],
   },
   {
-    labelKey: 'menuItems.vendor',
-    route: '/vendor',
-    icon: 'icon-vendor',
+    labelKey: 'layout.menuItems.vendor',
     roles: [
       'OPERATION_MANAGER',
       'VENDOR_ACCOUNT_MANAGER',
@@ -60,84 +60,81 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
     children: [
       {
-        labelKey: 'menuItems.vendorSubMenu.vendorList',
+        labelKey: 'layout.menuItems.vendorSubMenu.vendorList',
         route: '/vendor/list',
-        icon: 'icon-list',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.vendorSubMenu.addNewVendor',
+        labelKey: 'layout.menuItems.vendorSubMenu.addNewVendor',
         route: '/vendor/add',
-        icon: 'icon-add-vendor',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.vendorSubMenu.users',
+        labelKey: 'layout.menuItems.vendorSubMenu.users',
         route: '/vendor/users',
-        icon: 'icon-users',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.vendorSubMenu.accountManager',
+        labelKey: 'layout.menuItems.vendorSubMenu.accountManager',
         route: '/vendor/account-manager',
-        icon: 'icon-account-manager',
+        icon: 'history',
         roles: ['SALES_HEAD'],
       },
     ],
   },
   {
-    labelKey: 'menuItems.wallet',
-    route: '/wallet',
-    icon: 'icon-wallet',
+    labelKey: 'layout.menuItems.wallet',
     children: [
       {
-        labelKey: 'menuItems.walletSubMenu.myWallet',
+        labelKey: 'layout.menuItems.walletSubMenu.myWallet',
         route: '/wallet/overview',
-        icon: 'icon-my-wallet',
+        icon: 'myWallet',
       },
       {
-        labelKey: 'menuItems.walletSubMenu.history',
+        labelKey: 'layout.menuItems.walletSubMenu.history',
         route: '/wallet/history',
-        icon: 'icon-history',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.walletSubMenu.paymentHistory',
+        labelKey: 'layout.menuItems.walletSubMenu.paymentHistory',
         route: '/wallet/payment-history',
-        icon: 'icon-payment',
+        icon: 'history',
         roles: ['FINANCE_MANAGER'],
       },
       {
-        labelKey: 'menuItems.walletSubMenu.manualPayment',
+        labelKey: 'layout.menuItems.walletSubMenu.manualPayment',
         route: '/wallet/manual-payment',
-        icon: 'icon-manual-payment',
+        icon: 'myWallet',
         roles: ['FINANCE_MANAGER'],
       },
       {
-        labelKey: 'menuItems.walletSubMenu.balanceReport',
+        labelKey: 'layout.menuItems.walletSubMenu.balanceReport',
         route: '/wallet/balance-report',
-        icon: 'icon-report',
+        icon: 'myWallet',
         roles: ['FINANCE_MANAGER', 'OPERATION_MANAGER', 'SALES_HEAD'],
       },
     ],
   },
   {
-    labelKey: 'menuItems.billing',
-    icon: 'icon-billing',
+    labelKey: 'layout.menuItems.billing',
     roles: ['VENDOR_USER'],
+
     children: [
       {
-        labelKey: 'menuItems.billingSubMenu.editProfile',
+        labelKey: 'layout.menuItems.billingSubMenu.editProfile',
         route: '/billing/edit-profile',
-        icon: 'icon-edit-profile',
+        icon: 'history',
       },
       {
-        labelKey: 'menuItems.billingSubMenu.invoice',
+        labelKey: 'layout.menuItems.billingSubMenu.invoice',
         route: '/billing/invoice',
-        icon: 'icon-invoice',
+        icon: 'history',
       },
     ],
   },
   {
-    labelKey: 'menuItems.insights',
-    route: '/insights',
-    icon: 'icon-insights',
+    labelKey: 'layout.menuItems.insights',
+
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -146,9 +143,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
     children: [
       {
-        labelKey: 'menuItems.insightsSubMenu.overview',
+        labelKey: 'layout.menuItems.insightsSubMenu.overview',
         route: '/insights/overview',
-        icon: 'icon-order-trend',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -157,9 +154,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         ],
       },
       {
-        labelKey: 'menuItems.insightsSubMenu.churnReasons',
+        labelKey: 'layout.menuItems.insightsSubMenu.churnReasons',
         route: '/insights/churn-reasons',
-        icon: 'icon-churn-reasons',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -168,9 +165,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         ],
       },
       {
-        labelKey: 'menuItems.insightsSubMenu.firstOrder',
+        labelKey: 'layout.menuItems.insightsSubMenu.firstOrder',
         route: '/insights/first-order',
-        icon: 'icon-first-order',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -179,9 +176,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         ],
       },
       {
-        labelKey: 'menuItems.insightsSubMenu.affReferrals',
+        labelKey: 'layout.menuItems.insightsSubMenu.affReferrals',
         route: '/insights/aff_referrals',
-        icon: 'icon-aff-referrals',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -190,9 +187,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         ],
       },
       {
-        labelKey: 'menuItems.insightsSubMenu.userReferrals',
+        labelKey: 'layout.menuItems.insightsSubMenu.userReferrals',
         route: '/insights/user_referrals',
-        icon: 'icon-user-referrals',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -201,9 +198,9 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         ],
       },
       {
-        labelKey: 'menuItems.insightsSubMenu.zoneGrowth',
+        labelKey: 'layout.menuItems.insightsSubMenu.zoneGrowth',
         route: '/insights/zone-growth',
-        icon: 'icon-zone-growth',
+        icon: 'history',
         roles: [
           'FINANCE_MANAGER',
           'OPERATION_MANAGER',
@@ -215,15 +212,28 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
   },
 
   {
-    labelKey: 'menuItems.salesFunnel',
+    labelKey: 'layout.menuItems.others',
+    roles: ['VENDOR_USER'],
+    children: [
+      {
+        labelKey: 'layout.menuItems.othersSubMenu.integrations',
+        route: '/integrations',
+        icon: 'integrations',
+        roles: ['VENDOR_USER'],
+      },
+    ],
+  },
+
+  {
+    labelKey: 'layout.menuItems.salesFunnel',
     route: '/order/sales-funnel',
-    icon: 'icon-funnel',
     roles: ['SALES_HEAD', 'OPERATION_MANAGER', 'FINANCE_MANAGER'],
+    icon: 'history',
   },
   {
-    labelKey: 'menuItems.rating',
+    labelKey: 'layout.menuItems.rating',
     route: '/rating',
-    icon: 'icon-star',
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+    icon: 'history',
   },
 ] as const;

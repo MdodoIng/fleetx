@@ -1,5 +1,4 @@
 import { useSharedStore } from './sharedStore';
-import { useAuthStore } from './useAuthStore';
 import { useOrderStore } from './useOrderStore';
 import { useVenderStore } from './useVenderStore';
 import { useWalletStore } from './useWalletStore';

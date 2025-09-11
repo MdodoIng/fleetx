@@ -209,6 +209,15 @@ export const PAYMENTTYPE = {
   KNET: '2',
 };
 
+export const businessTypes = [
+  { id: 1, name: 'F&B (المأكولات و المشروبات)' },
+  { id: 2, name: 'Grocery(البقالة)' },
+  { id: 3, name: 'Flowers & Gifts (الزهور و الهدايا)' },
+  { id: 4, name: 'Retail (الجملة)' },
+  { id: 5, name: 'Other (أخرى)' },
+];
+
+
 export const KUWAIT = 'kuwait';
 export const BAHRAIN = 'bahrain';
 export const QATAR = 'qatar';
