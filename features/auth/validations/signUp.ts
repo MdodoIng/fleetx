@@ -20,6 +20,8 @@ export const signUpFormSchema = z.object({
   street_id: z.any(),
   building: z.string(),
   building_id: z.any(),
+  latitude: z.any(),
+  longitude: z.any(),
 });
 
 export type TypeSignUpForm = z.infer<typeof signUpFormSchema>;

@@ -11,7 +11,7 @@ import PickUpForm from '@/features/orders/components/create/PickUpForm';
 
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 
-import { hasValue } from '@/shared/lib/helpers';
+import { hasValue } from '@/shared/lib/helpers/index';
 import { vendorService } from '@/shared/services/vender';
 import {
   TypeDropOffs,

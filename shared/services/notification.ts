@@ -1,11 +1,11 @@
 import { useAuthStore, useVenderStore } from '@/store';
 import { apiFetch } from '../lib/utils';
-import { configService } from './app-config';
+import { appConfig } from './app-config';
 import { TypeNotificationsResponse } from '../types/notification';
 
 export const notificationService = {
   getNotification(url: string): Promise<TypeNotificationsResponse> {
-    return apiFetch(configService.notificationServiceApiUrl() + url, {
+    return apiFetch(appConfig.notificationServiceApiUrl() + url, {
       method: 'GET',
     });
   },

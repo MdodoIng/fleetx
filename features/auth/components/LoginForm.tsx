@@ -23,8 +23,10 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import ForgotPassword from './ForgotPassword';
 import { loginSchema, TypeLoginSchema } from '../validations/auth';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const { isAuthenticated, isLoading, login, isAuthenticatedCheck } =
     useAuthStore();
   const redirectToHome = useRedirectToHome();
@@ -69,10 +71,10 @@ const LoginForm = () => {
         priority
         className="h-[60px] w-auto object-contain"
       />
-          <div className="flex flex-col">
-            <h2 className="font-medium text-2xl">{t('login.title')}</h2>
-            <h4 className="">{t('login.subtitle')}</h4>
-          </div>
+      <div className="flex flex-col">
+        <h2 className="font-medium text-2xl">{t('login.title')}</h2>
+        <h4 className="">{t('login.subtitle')}</h4>
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -107,13 +109,26 @@ const LoginForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('login.passwordLabel')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={t('login.passwordPlaceholder')}
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder={t('login.passwordPlaceholder')}
+                          {...field}
+                        />
+                      </FormControl>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

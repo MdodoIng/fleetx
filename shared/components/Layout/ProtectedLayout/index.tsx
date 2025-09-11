@@ -31,9 +31,9 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
   }, [venderStore.branchId, venderStore.vendorId]);
 
   return (
-    <section className="flex items-start justify-start h-svh overflow-hidden">
+    <section className="flex items-start justify-start h-svh  w-full">
       <SideBar header={header} />
-      <div className="h-full overflow-y-auto w-full">
+      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0">
         <Header {...header} />
         {children}
       </div>

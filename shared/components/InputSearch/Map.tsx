@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   GoogleMap,
   Marker,
-  useJsApiLoader,
   Polyline,
+  useJsApiLoader,
 } from '@react-google-maps/api';
 import { environment } from '@/environments/environment';
 import { mashkorMap } from '@/shared/constants/mapStyle';
@@ -15,23 +17,17 @@ const containerStyle = {
   overflow: 'hidden',
 };
 
+type LatLng = { lat: number; lng: number };
+
 type Props = {
-  center:
-    | {
-        lat: number;
-        lng: number;
-      }
-    | {
-        lat: number;
-        lng: number;
-      }[];
+  center: LatLng | LatLng[];
   style?: any;
   showRoute?: boolean;
   pickupIcon?: string;
   dropoffIcon?: string;
 };
 
-export default function MyMap({
+export default function Map({
   center,
   style = mashkorMap,
   showRoute = true,
@@ -41,6 +37,58 @@ export default function MyMap({
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: environment.GOOGLE_KEY!,
   });
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const [mapCenter, setMapCenter] = useState<LatLng>({
+    lat: 29.3759,
+    lng: 47.9774,
+  });
+  const [zoom, setZoom] = useState(12);
+
+  const isArray = Array.isArray(center);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (isArray && center.length >= 2 && mapRef.current) {
+      const bounds = new google.maps.LatLngBounds();
+      center.forEach((point) => {
+        if (point.lat && point.lng) {
+          bounds.extend(new google.maps.LatLng(point.lat, point.lng));
+        }
+      });
+      mapRef.current.fitBounds(bounds, {
+        top: 50,
+        right: 50,
+        bottom: 50,
+        left: 50,
+      });
+    } else if (!isArray && center.lat && center.lng) {
+      setMapCenter({ lat: center.lat, lng: center.lng });
+      setZoom(15);
+    }
+  }, [center, isArray, isLoaded]);
+
+  const onLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    mapRef.current = null;
+  }, []);
+
+  const routePath =
+    isArray && showRoute && center.length >= 2
+      ? center.map((point) => ({ lat: point.lat, lng: point.lng }))
+      : [];
+
+  const polylineOptions = {
+    strokeColor: '#4F46E5',
+    strokeOpacity: 0.8,
+    strokeWeight: 1,
+    fillColor: '#4F46E5',
+    fillOpacity: 0.1,
+  };
 
   if (!isLoaded) {
     return (
@@ -55,59 +103,6 @@ export default function MyMap({
       </div>
     );
   }
-
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 29.3759, lng: 47.9774 });
-  const [zoom, setZoom] = useState(12);
-
-  const isArray = Array.isArray(center);
-
-  // Calculate bounds and center for multiple markers
-  useEffect(() => {
-    if (isArray && center.length >= 2 && mapRef.current) {
-      const bounds = new google.maps.LatLngBounds();
-
-      center.forEach((point) => {
-        if (point.lat && point.lng) {
-          bounds.extend(new google.maps.LatLng(point.lat, point.lng));
-        }
-      });
-
-      // Fit the map to show all markers with padding
-      mapRef.current.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50,
-      });
-    } else if (!isArray && center.lat && center.lng) {
-      setMapCenter({ lat: center.lat, lng: center.lng });
-      setZoom(15);
-    }
-  }, [center, isArray]);
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-    console.log('Map Ready:', map);
-  }, []);
-
-  const onUnmount = useCallback(() => {
-    mapRef.current = null;
-  }, []);
-
-  // Prepare route coordinates if showing route and have multiple points
-  const routePath =
-    isArray && showRoute && center.length >= 2
-      ? center.map((point) => ({ lat: point.lat, lng: point.lng }))
-      : [];
-
-  const polylineOptions = {
-    strokeColor: '#4F46E5',
-    strokeOpacity: 0.8,
-    strokeWeight: 1,
-    fillColor: '#4F46E5',
-    fillOpacity: 0.1,
-  };
 
   return (
     <div className="relative">
@@ -133,7 +128,7 @@ export default function MyMap({
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {/* Pickup Marker (first marker or single marker) */}
+        {/* Pickup Marker */}
         <Marker
           position={{
             lat: isArray
@@ -152,7 +147,7 @@ export default function MyMap({
           animation={google.maps.Animation.DROP}
         />
 
-        {/* Dropoff Marker (only if array with multiple locations) */}
+        {/* Dropoff Marker */}
         {isArray && center.length >= 2 && (
           <Marker
             position={{
@@ -169,16 +164,13 @@ export default function MyMap({
           />
         )}
 
-        {/* Additional markers if more than 2 locations */}
+        {/* Additional Waypoints */}
         {isArray &&
           center.length > 2 &&
           center.slice(2).map((point, index) => (
             <Marker
               key={`additional-${index}`}
-              position={{
-                lat: point.lat,
-                lng: point.lng,
-              }}
+              position={{ lat: point.lat, lng: point.lng }}
               icon={{
                 url: '/images/map-marker.svg',
                 scaledSize: new google.maps.Size(30, 30),
@@ -189,7 +181,7 @@ export default function MyMap({
             />
           ))}
 
-        {/* Route polyline */}
+        {/* Route Polyline */}
         {routePath.length >= 2 && (
           <Polyline path={routePath} options={polylineOptions} />
         )}

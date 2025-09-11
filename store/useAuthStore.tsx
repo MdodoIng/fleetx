@@ -17,6 +17,7 @@ import type {
 import { clearAllStore, useSharedStore, useVenderStore } from '.';
 import { appConfig } from '@/shared/services/app-config';
 import userService from '@/shared/services/user';
+import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
 
 const userApiUrl = appConfig.userServiceApiUrl();
 
@@ -25,16 +26,19 @@ type AuthState = {
   userId?: string;
   isAuthenticated: boolean;
   isLoading: boolean;
+  tokenForRest: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  refreshToken: () => Promise<void>;
+  refreshToken: (token?: string | null) => Promise<void>;
   getDecodedAccessToken: (token?: string | null) => DecodedToken | undefined;
   triggerRefreshToken: () => Promise<void>;
   isAuthenticatedCheck: () => boolean;
   hasRole: (role: UserRole) => boolean;
   hasAnyRole: (roles: UserRole[]) => boolean;
   getAccessTokenTime: () => { orgTime: number; exp: number } | null;
+  handleAcceptSla: () => Promise<void>;
   clearAll: () => void;
+  setValue: <K extends keyof AuthState>(key: K, value: AuthState[K]) => void;
 };
 
 function getInitialAuthState(): boolean {
@@ -70,11 +74,13 @@ const initialState: AuthState | any = {
   user: null,
   isLoading: true,
   isAuthenticated: false,
+  tokenForRest: false,
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   ...initialState,
 
+  setValue: (key: keyof AuthState, value: any) => set({ [key]: value }),
   clearAll: () => set({ ...initialState }),
   hasRole: (role) => {
     const { user } = get();
@@ -126,7 +132,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const tokenPayload = get().getDecodedAccessToken(res.data.token);
         if (tokenPayload?.roles[0] === 'VENDOR_USER') {
           if (!tokenPayload.user.vendor?.sla_accepted) {
-            set({ isLoading: false });
+            set({ isLoading: false, tokenForRest: true });
             return false;
           } else {
             useVenderStore.setState({
@@ -158,7 +164,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           isLoading: false,
         });
 
-        return true;
+        return tokenPayload;
       }
 
       set({ isLoading: false });
@@ -171,6 +177,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return true;
   },
 
+  handleAcceptSla: async () => {
+    const { getLocalStorage } = useSharedStore.getState();
+    const tokenPayload = get().getDecodedAccessToken(
+      getLocalStorage(storageKeys.authAppToken)
+    );
+
+    const request = {
+      user_id: tokenPayload?.userId,
+    };
+    userService.slaAccepted(request).then(
+      () => {
+        get()
+          .refreshToken(tokenPayload?.token)
+          .then(() => {
+            useSharedStore.setState({
+              foodicsReference: null,
+              foodicsIsAlreadyConnected: false,
+            });
+           
+
+            set({ tokenForRest: false });
+          })
+          .catch((error: any) => {
+            console.log(error.message);
+          });
+      },
+      (error: any) => {
+        console.log(error.message);
+      }
+    );
+  },
+
   logout: () => {
     Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
@@ -178,8 +216,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  refreshToken: async () => {
-    const tokenPayload = get().getDecodedAccessToken();
+  refreshToken: async (token) => {
+    const tokenPayload = get().getDecodedAccessToken(token);
     if (!tokenPayload) return;
 
     const res = await userService.refreshToken({ token: tokenPayload.token });
@@ -195,6 +233,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         ...decoded,
         token: res.data.token,
       },
+      isAuthenticated: true,
     });
     localStorage.setItem(storageKeys.refreshTime, new Date().toString());
   },

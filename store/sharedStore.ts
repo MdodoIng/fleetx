@@ -60,6 +60,8 @@ export interface SharedState {
   encryptedBulkOrderNo?: string;
   bulkOrderPrimaryStatus?: number;
   isValidCancelOrReschedule?: boolean;
+  lastPathname: string | undefined;
+  isCollapsed: boolean;
 }
 
 export interface SharedActions {
@@ -127,6 +129,7 @@ const initialState: SharedState = {
   encryptedBulkOrderNo: undefined,
   bulkOrderPrimaryStatus: undefined,
   isValidCancelOrReschedule: undefined,
+  isCollapsed: false,
 };
 
 export const useSharedStore = create<SharedState & SharedActions>()(
@@ -135,9 +138,8 @@ export const useSharedStore = create<SharedState & SharedActions>()(
       // Private helper functions within the store's scope
 
       return {
-        // Initial State
         ...initialState,
-
+        lastPathname: undefined,
         // Actions
 
         setValue: (key: keyof SharedState, value: any) => set({ [key]: value }),

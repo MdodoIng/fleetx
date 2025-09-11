@@ -13,7 +13,7 @@ import {
   TypeWalletTransactionHistoryRes,
   TypeZoneGrowthResponce,
 } from '../types/report';
-import { configService } from './app-config';
+import { appConfig } from './app-config';
 
 export const reportService = {
   getVendorBalanceUrl(
@@ -34,7 +34,7 @@ export const reportService = {
   getVendorBalanceReport(
     url: string
   ): Promise<TypeWalletTransactionHistoryRes> {
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -61,7 +61,7 @@ export const reportService = {
   getBranchWalletBalanceReport(
     url: string
   ): Promise<TypBranchWalletBalanceReportRes> {
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -118,7 +118,7 @@ export const reportService = {
   },
 
   getWalletHistory(url: string): Promise<TypeWalletTransactionHistoryRes> {
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -180,7 +180,7 @@ export const reportService = {
   },
 
   getDashboardDetails(url: string): Promise<TypeDashboardDetailsResponse> {
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -193,7 +193,7 @@ export const reportService = {
     let url = '/performance/dashboard/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -203,7 +203,7 @@ export const reportService = {
     let url = '/funnel/retention/churn-reason/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -219,7 +219,7 @@ export const reportService = {
     url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
     url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
 
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -252,7 +252,7 @@ export const reportService = {
   },
 
   getReferrals(url: string): Promise<any> {
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -275,14 +275,14 @@ export const reportService = {
       url += `?${queryParams.join('&')}`;
     }
 
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },
 
   getSalesFunnelActivation(): Promise<any> {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/activation/users',
+      appConfig.reportServiceApiUrl() + '/funnel/activation/users',
       {
         method: 'GET',
       }
@@ -291,7 +291,7 @@ export const reportService = {
 
   getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionRespose> {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/retention/users',
+      appConfig.reportServiceApiUrl() + '/funnel/retention/users',
       {
         method: 'GET',
       }
@@ -300,7 +300,7 @@ export const reportService = {
 
   getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
     return apiFetch(
-      configService.reportServiceApiUrl() +
+      appConfig.reportServiceApiUrl() +
         '/funnel/retention/no-order-has-wallet/users',
       {
         method: 'GET',
@@ -310,7 +310,7 @@ export const reportService = {
 
   getSalesFunnelReactivationUsers() {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/reactivation/users',
+      appConfig.reportServiceApiUrl() + '/funnel/reactivation/users',
       {
         method: 'GET',
       }
@@ -319,7 +319,7 @@ export const reportService = {
 
   getSalesFunnelActivationInsight(): Promise<any> {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/activation/insights',
+      appConfig.reportServiceApiUrl() + '/funnel/activation/insights',
       {
         method: 'GET',
       }
@@ -327,7 +327,7 @@ export const reportService = {
   },
   getSalesFunnelRetentionInsight(): Promise<any> {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/retention/insights',
+      appConfig.reportServiceApiUrl() + '/funnel/retention/insights',
       {
         method: 'GET',
       }
@@ -336,7 +336,7 @@ export const reportService = {
 
   getSalesFunnelRetention2Insight(): Promise<any> {
     return apiFetch(
-      configService.reportServiceApiUrl() +
+      appConfig.reportServiceApiUrl() +
         '/funnel/retention/no-order-has-wallet/insights',
       {
         method: 'GET',
@@ -346,7 +346,7 @@ export const reportService = {
 
   getSalesFunnelReactivationInsight(): Promise<any> {
     return apiFetch(
-      configService.reportServiceApiUrl() + '/funnel/reactivation/insights',
+      appConfig.reportServiceApiUrl() + '/funnel/reactivation/insights',
       {
         method: 'GET',
       }
@@ -368,7 +368,7 @@ export const reportService = {
       month +
       '&year=' +
       year;
-    return apiFetch(configService.reportServiceApiUrl() + url, {
+    return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
   },

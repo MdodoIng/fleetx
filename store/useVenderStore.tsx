@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 import { persist } from 'zustand/middleware';
 import { useAuthStore } from './useAuthStore';
-import { TypeBranch, TypeVenderList, TypeVenderListItem, TypeVendorUserList } from '@/shared/types/vender';
+import { TypeBranch, TypeVender, TypeVenderList, TypeVenderListItem, TypeVendorUserList } from '@/shared/types/vender';
 
 export interface VenderState {
   branchDetails: TypeBranch[] | undefined;
@@ -12,7 +12,7 @@ export interface VenderState {
   branchId: string | null;
   branchName: string | null;
   selectedVendorName: string | null;
-  selectedVendor: TypeVenderListItem | undefined;
+  selectedVendor: TypeVender | undefined;
   selectedBranch: TypeBranch | undefined;
   isVendorAdmin: boolean;
   selectedAccountManager: string | undefined;

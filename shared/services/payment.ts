@@ -9,12 +9,12 @@ import {
   TypePrepareMashkorReq,
   TypeWalletNotifyBalanceRes,
 } from '../types/payment';
-import { AppConfigService, configService } from './app-config';
+import { AppappConfig, appConfig } from './app-config';
 
 export const paymentService = {
   confirmWalletNotifyBalance(request: TypeBalanceAlertReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() +
+      appConfig.paymentServiceApiUrl() +
         '/wallet/settings/balance-alert/add',
       {
         method: 'POST',
@@ -31,14 +31,14 @@ export const paymentService = {
       url = url + '/branch/' + branchId;
     }
     url = url + '/wallet/settings/balance-alert/get';
-    return apiFetch(configService.paymentServiceApiUrl() + url, {
+    return apiFetch(appConfig.paymentServiceApiUrl() + url, {
       method: 'GET',
     });
   },
 
   addFleetxCredit(request: TypePaymentAddReq & any) {
     return apiFetch(
-      AppConfigService.paymentServiceApiUrl() + '/add/mashkor-credit',
+      AppappConfig.paymentServiceApiUrl() + '/add/mashkor-credit',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -74,7 +74,7 @@ export const paymentService = {
   getManualPaymentHistoryReport(
     url: string
   ): Promise<TypeManualPaymentHistoryReportRes> {
-    return apiFetch(configService.paymentServiceApiUrl() + url, {
+    return apiFetch(appConfig.paymentServiceApiUrl() + url, {
       method: 'GET',
     });
   },
@@ -101,13 +101,13 @@ export const paymentService = {
   },
 
   getPaymentHistoryReport(url: string): Promise<any> {
-    return apiFetch(configService.paymentServiceApiUrl() + url, {
+    return apiFetch(appConfig.paymentServiceApiUrl() + url, {
       method: 'GET',
     });
   },
 
   initiate(request: TypeInitiateReq): Promise<any> {
-    return apiFetch(configService.paymentServiceApiUrl() + '/initiate', {
+    return apiFetch(appConfig.paymentServiceApiUrl() + '/initiate', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -115,7 +115,7 @@ export const paymentService = {
 
   prepareMashkorCredit(request: TypePrepareMashkorReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() + '/prepare/mashkor-credit',
+      appConfig.paymentServiceApiUrl() + '/prepare/mashkor-credit',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -125,7 +125,7 @@ export const paymentService = {
 
   prepareMashkorDebit(request: TypePrepareMashkorReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() + '/prepare/mashkor-debit',
+      appConfig.paymentServiceApiUrl() + '/prepare/mashkor-debit',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -135,7 +135,7 @@ export const paymentService = {
 
   addMashkorCredit(request: TypeCreateDebitMashkorReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() + '/add/mashkor-credit',
+      appConfig.paymentServiceApiUrl() + '/add/mashkor-credit',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -145,7 +145,7 @@ export const paymentService = {
 
   addMashkorDebit(request: TypeCreateDebitMashkorReq): Promise<any> {
     return apiFetch(
-      configService.paymentServiceApiUrl() + '/add/mashkor-debit',
+      appConfig.paymentServiceApiUrl() + '/add/mashkor-debit',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -155,7 +155,7 @@ export const paymentService = {
 
   getBalanceOfBranches(vendorId: string): Promise<any> {
     const url = '/wallet/vendor/branches/balance/' + vendorId;
-    return apiFetch(configService.paymentServiceApiUrl() + url, {
+    return apiFetch(appConfig.paymentServiceApiUrl() + url, {
       method: 'GET',
     });
   },

@@ -7,10 +7,15 @@ import { associateFoodics } from '@/shared/services';
 
 export function useRedirectToHome() {
   const router = useRouter();
-  const { foodicsIsAlreadyConnected, foodicsReference } = useSharedStore();
+  const { foodicsIsAlreadyConnected, foodicsReference, lastPathname } =
+    useSharedStore();
   const { vendorId, branchId } = useVenderStore();
 
   const redirectToHomeLogic = async () => {
+    if (lastPathname) {
+      router.push(lastPathname);
+      return;
+    }
     if (foodicsIsAlreadyConnected) {
       router.push(MAIN_MENU.FODDICS_ON_BOARD.LINK);
       return;
@@ -26,8 +31,7 @@ export function useRedirectToHome() {
       return;
     }
 
-    // Default fallback
-    router.push(MAIN_MENU.DASHBOARD.LINK);
+    router.push('order/create');
   };
 
   const associateFoodicsToVendorAdmin = async () => {

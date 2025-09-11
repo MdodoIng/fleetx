@@ -2,7 +2,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { storageKeys } from './storageKeys';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useSharedStore } from '@/store';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,10 +12,15 @@ export async function apiFetch<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const { user } = useAuthStore.getState();
+  const { user, getDecodedAccessToken } = useAuthStore.getState();
+  const { getLocalStorage } = useSharedStore.getState();
+  const tokenPayload = getDecodedAccessToken(
+    getLocalStorage(storageKeys.authAppToken)
+  );
+  const token = user?.token || tokenPayload?.token;
   const defaultHeaders = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${user?.token}`,
+    Authorization: `Bearer ${token}`,
   };
 
   const headers = {

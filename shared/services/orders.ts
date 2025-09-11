@@ -1,6 +1,6 @@
 import { apiFetch } from '@/shared/lib/utils';
 import { getDecodedAccessToken } from '@/shared/services';
-import { configService } from '@/shared/services/app-config';
+import { appConfig } from '@/shared/services/app-config';
 import {
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
@@ -18,32 +18,32 @@ import { useSharedStore } from '@/store/sharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>
-    apiFetch<any>(`${configService.orderServiceApiUrl()}/on-demand/create`, {
+    apiFetch<any>(`${appConfig.orderServiceApiUrl()}/on-demand/create`, {
       method: 'POST',
       body: JSON.stringify(orders),
     }),
 
   createBulkOrders: (orders: any) =>
-    apiFetch(`${configService.orderServiceApiUrl()}/bulk/create`, {
+    apiFetch(`${appConfig.orderServiceApiUrl()}/bulk/create`, {
       method: 'POST',
       body: JSON.stringify(orders),
     }),
 
   dispatchBulkOrder: (request: any) =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/rescheduled-bulk-order/dispatch-now`,
+      `${appConfig.orderServiceApiUrl()}/rescheduled-bulk-order/dispatch-now`,
       { method: 'POST', body: JSON.stringify(request) }
     ),
 
   cancelBulkOrder: (request: any) =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/rescheduled-bulk-order/cancel`,
+      `${appConfig.orderServiceApiUrl()}/rescheduled-bulk-order/cancel`,
       { method: 'POST', body: JSON.stringify(request) }
     ),
 
   updatePayment: (payment: TypeUpdatePaymentReq, orderUuid: string) =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/update/${orderUuid}/payment`,
+      `${appConfig.orderServiceApiUrl()}/update/${orderUuid}/payment`,
       { method: 'PUT', body: JSON.stringify(payment) }
     ),
 
@@ -52,12 +52,12 @@ export const orderService = {
     orderUuid: string
   ): Promise<TypeUpdateAddressResponce> =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/update/${orderUuid}/drop-off`,
+      `${appConfig.orderServiceApiUrl()}/update/${orderUuid}/drop-off`,
       { method: 'PUT', body: JSON.stringify(address) }
     ),
 
   getOrderList: (url: string): Promise<TypeRootLiveOrderList> =>
-    apiFetch(`${configService.orderServiceApiUrl()}${url}`),
+    apiFetch(`${appConfig.orderServiceApiUrl()}${url}`),
 
   getOrderStatusUrl(
     page: number,
@@ -207,7 +207,7 @@ export const orderService = {
   getOrderStatusById: (
     id: string
   ): Promise<TypeRootOrderStatusHistoryHistory> =>
-    apiFetch(`${configService.orderServiceApiUrl()}/get-vendor-order/${id}`, {
+    apiFetch(`${appConfig.orderServiceApiUrl()}/get-vendor-order/${id}`, {
       method: 'GET',
     }),
 
@@ -215,34 +215,34 @@ export const orderService = {
     req: TypeEstimatedDelivery
   ): Promise<TypeRootEstimatedDeliveryReturnFromApi> =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/pre-order/delivery-calculate`,
+      `${appConfig.orderServiceApiUrl()}/pre-order/delivery-calculate`,
       { method: 'POST', body: JSON.stringify(req) }
     ),
 
   codLock: () =>
-    apiFetch(`${configService.orderServiceApiUrl()}/payment/lock`, {
+    apiFetch(`${appConfig.orderServiceApiUrl()}/payment/lock`, {
       method: 'POST',
       body: '',
     }),
 
   codUnLock: () =>
-    apiFetch(`${configService.orderServiceApiUrl()}/payment/unlock`, {
+    apiFetch(`${appConfig.orderServiceApiUrl()}/payment/unlock`, {
       method: 'POST',
       body: '',
     }),
 
   codLockConfig: () =>
-    apiFetch(`${configService.orderServiceApiUrl()}/payment/lock-config`),
+    apiFetch(`${appConfig.orderServiceApiUrl()}/payment/lock-config`),
 
   syncOrder: (order: any) =>
-    apiFetch(`${configService.orderServiceApiUrl()}/status/sync`, {
+    apiFetch(`${appConfig.orderServiceApiUrl()}/status/sync`, {
       method: 'POST',
       body: JSON.stringify(order),
     }),
 
   getOrderInfo: (orderNumber: string) =>
     apiFetch(
-      `${configService.orderServiceApiUrl()}/get-order-info/${orderNumber}`
+      `${appConfig.orderServiceApiUrl()}/get-order-info/${orderNumber}`
     ),
 
   getFormattedDate(date: Date) {
@@ -256,7 +256,7 @@ export const orderService = {
   },
 
   getZone(): Promise<TypeZoneResponce> {
-    return apiFetch(`${configService.orderServiceApiUrl()}/zone/list`, {
+    return apiFetch(`${appConfig.orderServiceApiUrl()}/zone/list`, {
       method: 'GET',
     });
   },

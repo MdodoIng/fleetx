@@ -37,12 +37,16 @@ import { TypeSingUpRequest } from '@/shared/types/user';
 import userService from '@/shared/services/user';
 import { cn } from '@/shared/lib/utils';
 import { signUpFormSchema, TypeSignUpForm } from '../validations/signUp';
+import { useAuthStore } from '@/store';
+import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
+import { toast } from 'sonner';
 
 const steps = ['Business Info', 'Personal Info', 'Location Info'];
 
 export default function SignUpForm() {
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const { login, user } = useAuthStore();
 
   const form = useForm<TypeSignUpForm>({
     resolver: zodResolver(signUpFormSchema),
@@ -50,7 +54,7 @@ export default function SignUpForm() {
       businessName: '',
       fullName: '',
       phone: '',
-      businessType: undefined,
+      businessType: 1,
       email: '',
       password: '',
       confirmPassword: '',
@@ -91,33 +95,51 @@ export default function SignUpForm() {
     }
   };
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const data = form.watch();
-    console.log('Submitted:', data, form.formState.errors);
+
+    const data = form.getValues();
+
     const request: TypeSingUpRequest = {
-      business_name: data?.businessName,
-      full_name: data?.fullName,
-      business_type: data?.businessType,
-      email: data?.email,
-      name: data?.fullName,
-      password: data?.password,
-      confirm_password: data?.confirmPassword,
+      business_name: data.businessName,
+      full_name: data.fullName,
+      business_type: data.businessType,
+      email: data.email,
+      name: data.fullName,
+      password: data.password,
+      confirm_password: data.confirmPassword,
       branches: {
-        mobile_number: data?.phone,
-        name: data?.fullName,
-        address: { ...data },
+        mobile_number: data.phone,
+        name: data.fullName,
+        address: {
+          area: data.area,
+          landmark: data?.landmark || '',
+          area_id: data.area_id || 0,
+          block: data.block || '',
+          block_id: data.block_id || 0,
+          street: data.street || '',
+          street_id: data.street_id || 0,
+          latitude: data.latitude || '',
+          longitude: data.longitude || '',
+          building_id: data.building_id || 0,
+          building: data.building || '',
+          paci_number: '',
+        },
       },
     };
 
-    userService
-      .signUp(request)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    try {
+      const res = await userService.signUp(request);
+      toast.info(
+        'Sign up successful! Please check your email to verify your account.'
+      );
+
+      await login(data.email, data.password);
+    } catch (error: any) {
+      toast.error(
+        error.message || 'An unexpected error occurred during sign up.'
+      );
+    }
   };
 
   const t = useTranslations('auth.businessForm');
@@ -142,10 +164,7 @@ export default function SignUpForm() {
       </div>
 
       <Form {...form}>
-        <form
-          onSubmit={(e) => onSubmit(e)}
-          className="flex flex-col gap-6 w-full"
-        >
+        <form className="flex flex-col gap-6 w-full">
           <AnimatePresence mode="wait">
             {step === 0 && (
               <motion.div

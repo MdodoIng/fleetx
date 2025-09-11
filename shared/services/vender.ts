@@ -44,9 +44,9 @@ export const vendorService = {
     searchVendor?: string | null,
     NEXT_SET_ITEMS_TOKEN?: string[] | null
   ) => {
-    const { getVendorAccoutManagerId, selectedAccountManager } =
+    const { getVendorAccountManagerId, selectedAccountManager } =
       useVenderStore.getState();
-    getVendorAccoutManagerId();
+    getVendorAccountManagerId();
     let url = '/vendors-list?';
     url = perPage ? url + 'page_size=' + perPage : url;
     url = searchVendor ? url + '&search=' + searchVendor : url;

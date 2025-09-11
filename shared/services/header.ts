@@ -22,10 +22,10 @@ export const setBranchDetails = async () => {
 };
 
 export const getVendorList = async () => {
-  const { selectedAccountManager, getVendorAccoutManagerId, setValue } =
+  const { selectedAccountManager, getVendorAccountManagerId, setValue } =
     useVenderStore.getState();
   const { user } = useAuthStore.getState();
-  getVendorAccoutManagerId();
+  getVendorAccountManagerId();
   if (
     user?.roles.includes('OPERATION_MANAGER') ||
     user?.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
@@ -90,6 +90,4 @@ export async function updateZoneAndSome() {
       // onBranchSelectionCheckZoneBusyModeIsActive(branch.address);
     }
   }
-
-
 }

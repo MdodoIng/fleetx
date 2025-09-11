@@ -1,8 +1,10 @@
-'use client'; // Mark as Client Component due to state and fetch
+'use client';
 
 import { notificationService } from '@/shared/services/notification';
 import { TypeNotificationItem } from '@/shared/types/notification';
+import bellIcon from '@/assets/icons/notification.svg';
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,10 +14,9 @@ export default function Notification() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true); // Track if more data is available
+  const [hasMore, setHasMore] = useState(true);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Fetch initial notifications
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -26,7 +27,7 @@ export default function Notification() {
         if (!response.data) throw new Error('Failed to fetch notifications');
         setNotifications(response.data);
         setNotificationCount(response.count || 0);
-        setHasMore(response.data.length === 10); // Assume more data if we get 10 items
+        setHasMore(response.data.length === 10);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -98,18 +99,19 @@ export default function Notification() {
   }, [isOpen]);
 
   return (
-    <div className="relative">
+    <div className="relative h-full aspect-square">
       <button
         onClick={toggleNotifications}
-        className="relative flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full hover:bg-gray-300"
+        className="relative flex items-center h-full w-full justify-center bg-off-white rounded-[8px] hover:bg-dark-grey/20"
         aria-label="Toggle notifications"
       >
-        <span className="text-xl">🔔</span>
-        {notificationCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
-            {notificationCount}
-          </span>
-        )}
+        <div className="relative z-0 ">
+          <Image src={bellIcon} alt="" className="size-6" />
+
+          {notificationCount > 0 && (
+            <span className="absolute top-0 right-0 inline-flex items-center justify-center size-2  text-xs font-bold text-white bg-[#FFD744] rounded-full" />
+          )}
+        </div>
       </button>
 
       {isOpen && (
@@ -129,10 +131,11 @@ export default function Notification() {
                 <button
                   key={idx}
                   type="button"
-                  className={`w-full text-left p-2 rounded-md mb-2 ${notification.color === 1
+                  className={`w-full text-left p-2 rounded-md mb-2 ${
+                    notification.color === 1
                       ? 'text-green-600 bg-green-50'
                       : 'text-red-600 bg-red-50'
-                    }`}
+                  }`}
                 >
                   <span>
                     {notification.color === 1 ? (

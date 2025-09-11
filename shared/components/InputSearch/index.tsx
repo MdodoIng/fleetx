@@ -23,8 +23,6 @@ import SearchResults from './searchList';
 import { TypePickUpSchema } from '@/features/orders/validations/order';
 import { getArea, getBlock, getBuildings, getStreet } from '@/shared/services';
 
-
-
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
   landmarkFieldName: string;
@@ -203,15 +201,15 @@ export default function AddressLandmarkFields({
       lat: Number(
         location
           ? landmarkValues?.[
-            location?.replace('.', '') as keyof typeof landmarkValues
-          ]?.latitude
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.latitude
           : landmarkValues?.latitude
       ),
       lng: Number(
         location
           ? landmarkValues?.[
-            location?.replace('.', '') as keyof typeof landmarkValues
-          ]?.longitude
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.longitude
           : landmarkValues?.longitude
       ),
     };
@@ -297,7 +295,6 @@ export default function AddressLandmarkFields({
 
       let clickedInsideAny = false;
 
-
       containers.forEach((el) => {
         if (el.contains(target)) {
           clickedInsideAny = true;
@@ -305,6 +302,7 @@ export default function AddressLandmarkFields({
       });
 
       if (!clickedInsideAny) {
+        console.log('sadaafa');
         setIsInputBlur(false);
       }
     };

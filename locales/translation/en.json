@@ -1,53 +1,64 @@
 {
-  "menuItems": {
-    "dashboard": "Dashboard",
-    "order": "Order",
-    "orderSubMenu": {
-      "newOrder": "New Order",
-      "bulkOrder": "Bulk Order",
-      "orderStatus": "Order Status",
-      "liveOrder": "Active Order",
-      "history": "History",
-      "bulkInsights": "Bulk Insights"
+  "layout": {
+    "menuItems": {
+      "dashboard": "Dashboard",
+      "order": "Order",
+      "orderSubMenu": {
+        "newOrder": "New Order",
+        "bulkOrder": "Bulk Order",
+        "orderStatus": "Order Status",
+        "liveOrder": "Active Order",
+        "history": "History",
+        "bulkInsights": "Bulk Insights"
+      },
+      "vendor": "Vendor",
+      "vendorSubMenu": {
+        "vendorList": "Vendor List",
+        "addNewVendor": "Add New Vendor",
+        "users": "Users",
+        "accountManager": "Account Manager"
+      },
+      "wallet": "Wallet",
+      "walletSubMenu": {
+        "myWallet": "My Wallet",
+        "history": "History",
+        "paymentHistory": "Payment History",
+        "manualPayment": "Manual Payment",
+        "balanceReport": "Balance Report"
+      },
+      "billing": "Billing",
+      "billingSubMenu": {
+        "editProfile": "Edit Profile",
+        "invoice": "Invoice"
+      },
+      "insights": "Insights",
+      "insightsSubMenu": {
+        "overview": "Overview",
+        "churnReasons": "Churn Reasons",
+        "firstOrder": "First Order",
+        "affReferrals": "Affiliator Referrals",
+        "userReferrals": "User Referrals",
+        "zoneGrowth": "Zone Growth"
+      },
+      "others": "Others",
+      "othersSubMenu": {
+        "integrations": "Integrations"
+      },
+      "salesFunnel": "Sales Funnel",
+      "rating": "Rating",
+      "changePassword": "Change Password",
+      "logout": "Logout",
+      "systemConfiguration": "Configuration",
+      "busyModeHistory": "Busy Mode History",
+      "zoneBusyModeHistory": "Zone Busy Mode History",
+      "integration": "Integration",
+      "editPickUp": "Edit Pick up"
     },
-    "vendor": "Vendor",
-    "vendorSubMenu": {
-      "vendorList": "Vendor List",
-      "addNewVendor": "Add New Vendor",
-      "users": "Users",
-      "accountManager": "Account Manager"
-    },
-    "wallet": "Wallet",
-    "walletSubMenu": {
-      "myWallet": "My Wallet",
-      "history": "History",
-      "paymentHistory": "Payment History",
-      "manualPayment": "Manual Payment",
-      "balanceReport": "Balance Report"
-    },
-    "billing": "Billing",
-    "billingSubMenu": {
-      "editProfile": "Edit Profile",
-      "invoice": "Invoice"
-    },
-    "insights": "Insights",
-    "insightsSubMenu": {
-      "overview": "Overview",
-      "churnReasons": "Churn Reasons",
-      "firstOrder": "First Order",
-      "affReferrals": "Affiliator Referrals",
-      "userReferrals": "User Referrals",
-      "zoneGrowth": "Zone Growth"
-    },
-    "salesFunnel": "Sales Funnel",
-    "rating": "Rating",
-    "changePassword": "Change Password",
-    "logout": "Logout",
-    "systemConfiguration": "Configuration",
-    "busyModeHistory": "Busy Mode History",
-    "zoneBusyModeHistory": "Zone Busy Mode History",
-    "integration": "Integration",
-    "editPickUp": "Edit Pick up"
+    "profile" : {
+      "changePassword" : "Change Password",
+      "editBilling": "Edit Billing Profile ",
+      "logout":"Logout"
+    }
   },
   "apiMessages": {
     "DATA_NOT_FOUND": "Data not found for the specific record",
@@ -227,6 +238,26 @@
       "submit": "Submit",
       "alreadyHaveAccount": "Already have an account?",
       "loginHere": "Sign in"
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "subtitle": "Please check out our service terms",
+      "sections": {
+        "cod": {
+          "heading": "If you're a business and using FleetX Dashboard for your customer deliveries:",
+          "rule1": "Cash on Delivery orders less than 50 KD will be paid by FleetX driver to you when picking up the order.",
+          "rule2": "Cash on Delivery orders more than 50 KD will be paid by FleetX drivers within 24 hours after delivering the order."
+        },
+        "waitTime": {
+          "heading": "",
+          "rule1": "FleetX driver can only wait up to 15 mins at the pickup location.",
+          "rule2": "If the driver waits for more than 15 mins, he/she will be released and the order will be cancelled."
+        }
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "accessDashboard": "Access My Dashboard"
+      }
     }
   },
   "component": {
@@ -237,6 +268,9 @@
         "placeholderArea": "Select Block, Street...",
         "placeholderBlock": "Select Street...",
         "empty": ""
+      },
+      "header": {
+        "title": "👋 Hi, Welcome to FleetX"
       }
     }
   }
