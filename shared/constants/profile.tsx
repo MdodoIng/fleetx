@@ -5,7 +5,7 @@ import { UserRole } from '../types/user';
 export const APP_PROFILE_MENU: MenuItem[] = [
   {
     labelKey: 'layout.profile.changePassword',
-    route: '/dashboard',
+    route: '/config/change-password',
     icon: 'password',
   },
   {

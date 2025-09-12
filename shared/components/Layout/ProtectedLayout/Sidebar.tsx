@@ -11,7 +11,7 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import collapseIcon from '@/assets/icons/window collapse.svg';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { iconMap } from '../../icons/layout';
 import { filterMenuByRole } from '@/shared/lib/helpers';
 
@@ -28,8 +28,33 @@ const SideBar = ({
 
   const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU);
 
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      !isCollapsed &&
+      event.target &&
+      !document.getElementById('sidebar')?.contains(event.target as Node)
+    ) {
+      setValue('isCollapsed', true);
+    }
+  };
+
+  useEffect(() => {
+    if (window.innerWidth > 1024 && !isCollapsed) return;
+
+    document.addEventListener('click', handleOutsideClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick, true);
+    };
+  }, [isCollapsed, setValue]);
+
   return (
-    <aside className="bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300">
+    <aside
+      className={cn(
+        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl',
+        isCollapsed && 'max-lg:-left-full '
+      )}
+    >
       <div
         onClick={() => setValue('isCollapsed', !isCollapsed)}
         className="flex justify-between items-center gap-6 w-full"

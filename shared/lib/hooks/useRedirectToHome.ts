@@ -31,7 +31,7 @@ export function useRedirectToHome() {
       return;
     }
 
-    router.push('order/create');
+    router.push('/order/create');
   };
 
   const associateFoodicsToVendorAdmin = async () => {

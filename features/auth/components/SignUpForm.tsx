@@ -45,7 +45,6 @@ const steps = ['Business Info', 'Personal Info', 'Location Info'];
 
 export default function SignUpForm() {
   const [step, setStep] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuthStore();
 
   const form = useForm<TypeSignUpForm>({
@@ -303,26 +302,13 @@ export default function SignUpForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('fields.password.label')}</FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder={t('fields.password.placeholder')}
-                            {...field}
-                          />
-                        </FormControl>
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword((prev) => !prev)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        >
-                          {showPassword ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
+                      <FormControl>
+                        <Input
+                          type={'password'}
+                          placeholder={t('fields.password.placeholder')}
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -337,6 +323,7 @@ export default function SignUpForm() {
                       <FormControl>
                         <Input
                           type="password"
+                          eyeBtnHide
                           placeholder={t('fields.confirmPassword.placeholder')}
                           {...field}
                         />

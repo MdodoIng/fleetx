@@ -15,12 +15,8 @@ export const editUserSchema = z.object({
     .min(8, 'Mobile number is required')
     .regex(/^[0-9]*$/, { message: 'Only numbers allowed' })
     .max(8),
-  password: z
-    .string()
-    .min(6, 'Password must be at least 8 characters'),
-  email: z
-    .string()
-    .email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 8 characters'),
+  email: z.string().email('Invalid email address'),
 });
 
 export type TypeEditUserSchema = z.infer<typeof editUserSchema>;

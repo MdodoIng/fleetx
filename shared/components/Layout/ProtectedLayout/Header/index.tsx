@@ -1,5 +1,5 @@
 'use client';
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -12,12 +12,17 @@ import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
 import { Profiler } from 'react';
 import Profile from './Profile';
+import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
+import hamburgerIon from '@/assets/icons/hamburger.svg';
+
+import Image from 'next/image';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
   const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole, user } =
     useAuthStore();
   const venderStore = useVenderStore();
+  const { isCollapsed, setValue } = useSharedStore();
 
   const isActivePath = (path: string) => {
     return pathname === path;
@@ -60,13 +65,30 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   return (
     <nav
       className={cn(
-        'bg-white flex items-center justify-between h-full sticky top-0 z-50',
+        'lg:bg-white bg-primary-blue flex items-center justify-between h-auto sticky top-0 z-50',
         main_padding.dashboard.x,
         main_padding.dashboard.y
       )}
     >
-      <p className="font-medium">{t('title')}</p>
-      <div className="flex items-center gap-4 h-full ">
+      <p className="font-medium max-lg:hidden">{t('title')}</p>
+      <div className="lg:hidden flex items-center gap-4">
+        <Button
+          variant={'ghost'}
+          onClick={() => setValue('isCollapsed', false)}
+        >
+          <Image
+            src={hamburgerIon}
+            alt=""
+            className="h-5 w-auto object-contain"
+          />
+        </Button>
+        <Image
+          src={logoCollapsed}
+          alt=""
+          className="h-10 w-auto object-contain"
+        />
+      </div>
+      <div className="flex items-center lg:gap-4 gap-0 h-full ">
         <Notification />
         <Profile />
         <LocaleSwitcher variant="dashboard" />

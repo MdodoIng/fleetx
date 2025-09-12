@@ -396,13 +396,38 @@ export const TypeDelivery = [
 ] as const;
 
 export const OperationType = [
-  { key: 1, value: 'Recharge', color: 'bg-green-100 text-green-600' },
-  { key: 2, value: 'Refund', color: 'bg-blue-100 text-blue-600' },
-  { key: 3, value: 'Adjustment', color: 'bg-yellow-100 text-yellow-700' },
-  { key: 4, value: 'DeductFee', color: 'bg-red-100 text-red-600' },
-  { key: 5, value: 'MashkorCredit', color: 'bg-emerald-100 text-emerald-600' },
-  { key: 6, value: 'MashkorDebit', color: 'bg-purple-100 text-purple-600' },
-  { key: 7, value: 'MashkorDebit', color: 'bg-pink-100 text-pink-600' },
+  {
+    key: 1,
+    value: 'Recharge',
+    color: 'bg-green-600',
+    arrow: 'up',
+  },
+  { key: 2, value: 'Refund', color: 'bg-blue-600', arrow: 'up' },
+  {
+    key: 3,
+    value: 'Adjustment',
+    color: 'bg-yellow-100 text-yellow-700',
+    arrow: 'up',
+  },
+  { key: 4, value: 'DeductFee', color: 'bg-red-600', arrow: 'down' },
+  {
+    key: 5,
+    value: 'MashkorCredit',
+    color: 'bg-emerald-600',
+    arrow: 'up',
+  },
+  {
+    key: 6,
+    value: 'MashkorDebit',
+    color: 'bg-purple-600',
+    arrow: 'down',
+  },
+  {
+    key: 7,
+    value: 'MashkorDebit',
+    color: 'bg-pink-600',
+    arrow: 'down',
+  },
 ] as const;
 
 export interface TypeUpdateAddressReq {

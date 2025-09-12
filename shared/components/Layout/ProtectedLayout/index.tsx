@@ -7,6 +7,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useSharedStore, useVenderStore } from '@/store';
 import { setBranchDetails, updateZoneAndSome } from '@/shared/services/header';
+import AlertMessage from './AlertMessage';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
@@ -23,7 +24,6 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
       await updateZoneAndSome();
     }
     callUpdateZone();
-    console.log('dfa');
   }, [updateZoneAndSome]);
 
   useMemo(async () => {
@@ -35,6 +35,7 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
       <SideBar header={header} />
       <div className="h-full overflow-y-auto w-full flex flex-col relative z-0">
         <Header {...header} />
+        <AlertMessage />
         {children}
       </div>
     </section>

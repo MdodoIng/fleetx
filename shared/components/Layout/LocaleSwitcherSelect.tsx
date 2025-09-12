@@ -56,19 +56,19 @@ export default function LocaleSwitcherSelect({
               'pointer-events-none opacity-60 starting:opacity-0 starting:translate-y-10 ',
             'hover:bg-black/50',
             variant === 'dashboard' &&
-              '!h-full bg-off-white text-dark-grey hover:bg-dark-grey/20 ',
-            isOpen && 'bg-primary-blue text-off-white'
+              '!h-full lg:bg-off-white bg-transparent text-dark-grey hover:bg-dark-grey/20 ',
+            isOpen && 'lg:!bg-primary-blue lg:!text-off-white !bg-off-white/10'
           )}
         >
           <SelectValue>
             <Globe
               className={cn(
-                'h-5 w-5 text-white',
-                variant === 'dashboard' && 'text-dark-grey',
-                isOpen && 'text-off-white'
+                'h-5 w-5 text-white ',
+                variant === 'dashboard' && 'lg:text-dark-grey',
+                isOpen && '!text-off-white'
               )}
             />
-            <p className="capitalize font-english">
+            <p className="capitalize font-english max-lg:hidden">
               {items.find((item) => item.value !== defaultValue)?.value || ''}
             </p>
           </SelectValue>

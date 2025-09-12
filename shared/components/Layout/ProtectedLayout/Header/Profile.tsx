@@ -36,29 +36,28 @@ export default function Profile() {
   const t = useTranslations();
   const { dirState } = useDir();
 
-  console.log(selectedVendor);
-
   const branch = selectedVendor?.branches.find((item) => item.id === branchId);
   const branchName = branch ? (dirState ? branch.name : branch.name_ar) : '';
 
+  console.log(isOpen);
+
   return (
-    <DropdownMenu onOpenChange={setIsOpen}>
+    <DropdownMenu onOpenChange={(open) => setIsOpen(open)}>
       <DropdownMenuTrigger
         asChild
         className={cn(
           'ring-0 focus:ring-0 focus-visible:outline-none focus-visible:ring-0',
-          isOpen && 'bg-primary-blue text-off-white'
+          isOpen && 'lg:!bg-primary-blue lg:!text-off-white !bg-off-white/10'
         )}
       >
         <Button
           variant="ghost"
           className={cn(
-            'flex items-center gap-3 px-4  bg-off-white hover:bg-dark-grey/20 rounded-md text-sm font-medium text-dark-grey',
-            isOpen && 'bg-primary-blue text-off-white'
+            'flex items-center gap-3 lg:px-4  lg:bg-off-white hover:bg-dark-grey/20 rounded-md text-sm font-medium text-dark-grey'
           )}
         >
-          <User className="size-5 " />
-          <span className="text-left flex flex-col gap-3 ">
+          <User className="size-5 max-lg:text-off-white " />
+          <span className="text-left flex flex-col gap-3 max-lg:hidden ">
             <div
               className={cn(
                 'font-medium text-[#262626] leading-1',
@@ -76,7 +75,12 @@ export default function Profile() {
               {branchName}
             </div>
           </span>
-          <ChevronDown className="h-4 w-4 ml-auto" />
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 ml-auto max-lg:hidden duration-500',
+              isOpen && 'rotate-180'
+            )}
+          />
         </Button>
       </DropdownMenuTrigger>
 
@@ -91,7 +95,7 @@ export default function Profile() {
               className="flex items-center gap-2 px-2 py-3 cursor-pointer"
             >
               <Link href={item.route!}>
-                <IconComponentMain className='text-dark-grey' />
+                <IconComponentMain className="text-dark-grey" />
                 <span>{t(item.labelKey as any)}</span>
               </Link>
             </DropdownMenuItem>
@@ -102,7 +106,7 @@ export default function Profile() {
           onClick={() => logout()}
           className="flex items-center gap-2 px-2 py-3 cursor-pointer"
         >
-          <PasswordIcon className='text-dark-grey' />
+          <PasswordIcon className="text-dark-grey" />
           <span>{t('layout.profile.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

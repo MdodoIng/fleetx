@@ -5,8 +5,7 @@ export const editVendorNameSchema = z.object({
     .string()
     .min(1, 'Customer name is required')
     .regex(/^[^\s].*/, { message: 'Cannot start with space' }),
-  name_ar: z
-    .string().optional(),
+  name_ar: z.string().optional(),
 
   cod_counter_type: z.number(),
 });
@@ -21,7 +20,8 @@ export const editVendorBranchSchema = z.object({
   mobile_number: z
     .string()
     .min(8, 'Mobile number is required')
-    .regex(/^[0-9]*$/, { message: 'Only numbers allowed' }).max(8),
+    .regex(/^[0-9]*$/, { message: 'Only numbers allowed' })
+    .max(8),
   main_branch: z.any(),
   address: z.object({
     address: z.any().optional(),
