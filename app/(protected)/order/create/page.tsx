@@ -35,6 +35,15 @@ import {
   TypeDropOffSchema,
   TypePickUpSchema,
 } from '@/features/orders/validations/order';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardFooter,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import AlertMessage from '@/features/orders/components/AlertMessage';
+import WalletCard from '@/features/orders/components/WalletCard';
 
 // Main component
 export default function ShippingForm() {
@@ -589,13 +598,15 @@ export default function ShippingForm() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-8 flex flex-col md:flex-row items-start justify-start gap-10 min-h-screen">
-      <div className="grid grid-cols-2 h-full rounded-md  gap-10 w-full">
-        {/* PICK UP FORM */}
-
+    <Dashboard>
+      <DashboardHeader>
+        <DashboardHeaderRight>
+          <AlertMessage type="laptop" />
+        </DashboardHeaderRight>
+        <WalletCard />
+      </DashboardHeader>
+      <DashboardContent className="grid grid-cols-2">
         <PickUpForm onSenderSubmit={onSenderSubmit} senderForm={pickUpForm} />
-
-        {/* DROP OFF FORM */}
 
         <div className="grid gap-4">
           {orderStore.dropOffs?.map((item, idx) => (
@@ -625,8 +636,9 @@ export default function ShippingForm() {
             </>
           )}
         </div>
+      </DashboardContent>
 
-        {/* Right Section */}
+      <DashboardFooter>
         <div className="flex items-center justify-between bg-white border rounded-lg shadow-sm  text-sm text-gray-700 w-full col-span-2 p-3">
           {/* Left Section */}
           <div className="flex items-center space-x-6">
@@ -674,7 +686,7 @@ export default function ShippingForm() {
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DashboardFooter>
+    </Dashboard>
   );
 }

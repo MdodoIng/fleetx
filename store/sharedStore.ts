@@ -16,7 +16,7 @@ import {
   getAllFreeBuddiesFromB2C,
   getDiffrenceBwCurrentAndLastUpdatedETP,
   getFleetZonePickUpTrendAPINew,
-  getSuperSaverPromation,
+  getSuperSaverPromotion,
   logError,
   setSuperSaverWalletInfoMessage,
   // toValidateOperationalHours,
@@ -262,7 +262,7 @@ export const useSharedStore = create<SharedState & SharedActions>()(
 
         setSuperSaverPromation: async (vendorId: string, branchId: string) => {
           try {
-            const res: any = await getSuperSaverPromation(vendorId, branchId);
+            const res: any = await getSuperSaverPromotion(vendorId, branchId);
             return setSuperSaverWalletInfoMessage(res.data);
           } catch (err: any) {
             logError(err.message);

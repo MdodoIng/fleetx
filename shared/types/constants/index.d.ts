@@ -1,4 +1,4 @@
-import { SidebarIconType } from "@/shared/components/icons/layout";
+import { SidebarIconType } from '@/shared/components/icons/layout';
 
 export interface MenuItem {
   labelKey: string;
@@ -7,3 +7,14 @@ export interface MenuItem {
   icon?: SidebarIconType;
   children?: MenuItem[];
 }
+
+interface RouteConfig {
+  path: string;
+  title: string;
+  subtitle: string;
+  icon: SidebarIconType;
+}
+
+export type Routes = {
+  [key: string]: RouteConfig;
+};

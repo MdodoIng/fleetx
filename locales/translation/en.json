@@ -4,62 +4,181 @@
       "dashboard": "Dashboard",
       "order": "Order",
       "orderSubMenu": {
-        "newOrder": "New Order",
-        "bulkOrder": "Bulk Order",
-        "orderStatus": "Order Status",
-        "liveOrder": "Active Order",
-        "history": "History",
-        "bulkInsights": "Bulk Insights"
+        "newOrder": {
+          "title": "New Order",
+          "subtitle": "Place your Order here"
+        },
+        "bulkOrder": {
+          "title": "Bulk Order",
+          "subtitle": "Place your Bulk Order here"
+        },
+        "orderStatus": {
+          "title": "Order Status",
+          "subtitle": "Check your Order Status here"
+        },
+        "liveOrder": {
+          "title": "Active Order",
+          "subtitle": "Check your Active Order here"
+        },
+        "history": {
+          "title": "History",
+          "subtitle": "Check your Order History here"
+        },
+        "bulkInsights": {
+          "title": "Bulk Insights",
+          "subtitle": "Check your Bulk Insights here"
+        }
       },
       "vendor": "Vendor",
       "vendorSubMenu": {
-        "vendorList": "Vendor List",
-        "addNewVendor": "Add New Vendor",
-        "users": "Users",
-        "accountManager": "Account Manager"
+        "vendorList": {
+          "title": "Vendor List",
+          "subtitle": "View all your registered vendors"
+        },
+        "addNewVendor": {
+          "title": "Add New Vendor",
+          "subtitle": "Register a new vendor account"
+        },
+        "users": {
+          "title": "Users",
+          "subtitle": "Manage vendor user accounts"
+        },
+        "accountManager": {
+          "title": "Account Manager",
+          "subtitle": "Assign and manage account managers"
+        }
       },
       "wallet": "Wallet",
       "walletSubMenu": {
-        "myWallet": "My Wallet",
-        "history": "History",
-        "paymentHistory": "Payment History",
-        "manualPayment": "Manual Payment",
-        "balanceReport": "Balance Report"
+        "myWallet": {
+          "title": "My Wallet",
+          "subtitle": "Check your current wallet balance"
+        },
+
+        "history": {
+          "title": "History",
+          "subtitle": "View your wallet transaction history"
+        },
+        "paymentHistory": {
+          "title": "Payment History",
+          "subtitle": "Review all past payment transactions"
+        },
+        "manualPayment": {
+          "title": "Manual Payment",
+          "subtitle": "Make a manual payment to your wallet"
+        },
+        "balanceReport": {
+          "title": "Balance Report",
+          "subtitle": "Generate a report of your wallet balance"
+        }
       },
-      "billing": "Billing",
+      "billing": {
+        "title": "Billing",
+        "subtitle": "Manage your billing information and invoices"
+      },
       "billingSubMenu": {
-        "editProfile": "Edit Profile",
-        "invoice": "Invoice"
+        "editProfile": {
+          "title": "Edit Profile",
+          "subtitle": "Update your billing profile details"
+        },
+        "invoice": {
+          "title": "Invoice",
+          "subtitle": "View and download your invoices"
+        }
       },
-      "insights": "Insights",
+      "insights": {
+        "title": "Insights",
+        "subtitle": "Access performance data and analytics"
+      },
       "insightsSubMenu": {
-        "overview": "Overview",
-        "churnReasons": "Churn Reasons",
-        "firstOrder": "First Order",
-        "affReferrals": "Affiliator Referrals",
-        "userReferrals": "User Referrals",
-        "zoneGrowth": "Zone Growth"
+        "overview": {
+          "title": "Overview",
+          "subtitle": "See a summary of your key metrics"
+        },
+        "churnReasons": {
+          "title": "Churn Reasons",
+          "subtitle": "Understand why customers are leaving"
+        },
+        "firstOrder": {
+          "title": "First Order",
+          "subtitle": "Analyze data related to first-time orders"
+        },
+        "affReferrals": {
+          "title": "Affiliator Referrals",
+          "subtitle": "Track referrals from affiliators"
+        },
+        "userReferrals": {
+          "title": "User Referrals",
+          "subtitle": "Monitor user-generated referrals"
+        },
+        "zoneGrowth": {
+          "title": "Zone Growth",
+          "subtitle": "View growth trends across different zones"
+        }
       },
-      "others": "Others",
+      "others": {
+        "title": "Others",
+        "subtitle": "Additional tools and settings"
+      },
       "othersSubMenu": {
-        "integrations": "Integrations"
+        "integrations": {
+          "title": "Integrations",
+          "subtitle": "Manage third-party integrations"
+        }
       },
-      "salesFunnel": "Sales Funnel",
-      "rating": "Rating",
-      "changePassword": "Change Password",
-      "logout": "Logout",
-      "systemConfiguration": "Configuration",
-      "busyModeHistory": "Busy Mode History",
-      "zoneBusyModeHistory": "Zone Busy Mode History",
-      "integration": "Integration",
-      "editPickUp": "Edit Pick up"
+      "salesFunnel": {
+        "title": "Sales Funnel",
+        "subtitle": "Track customer journey through the sales process"
+      },
+      "rating": {
+        "title": "Rating",
+        "subtitle": "View and manage customer ratings"
+      },
+      "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Update your account password"
+      },
+      "logout": {
+        "title": "Logout",
+        "subtitle": "Sign out of your account"
+      },
+      "systemConfiguration": {
+        "title": "Configuration",
+        "subtitle": "Adjust system-wide settings"
+      },
+      "busyModeHistory": {
+        "title": "Busy Mode History",
+        "subtitle": "View records of busy mode activations"
+      },
+      "zoneBusyModeHistory": {
+        "title": "Zone Busy Mode History",
+        "subtitle": "Review busy mode history by zone"
+      },
+      "integration": {
+        "title": "Integration",
+        "subtitle": "Connect with external services"
+      },
+      "editPickUp": {
+        "title": "Edit Pick up",
+        "subtitle": "Modify pickup location details"
+      }
     },
-    "profile" : {
-      "changePassword" : "Change Password",
-      "editBilling": "Edit Billing Profile ",
-      "logout":"Logout"
+    "profile": {
+      "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Update your profile password"
+      },
+      "editBilling": {
+        "title": "Edit Billing Profile ",
+        "subtitle": "Update your billing details"
+      },
+      "logout": {
+        "title": "Logout",
+        "subtitle": "Sign out from your profile"
+      }
     }
   },
+
   "apiMessages": {
     "DATA_NOT_FOUND": "Data not found for the specific record",
     "INVALID_REQUEST": "Invalid request",
@@ -271,6 +390,15 @@
       },
       "header": {
         "title": "👋 Hi, Welcome to FleetX"
+      }
+    },
+
+    "features": {
+      "orders": {
+        "walletCard": {
+          "title": "Wallet Balance:",
+          "button": "Recharge"
+        }
       }
     }
   }

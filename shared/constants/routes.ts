@@ -1,219 +1,400 @@
-export const MAIN_MENU = {
+import { MenuItem, Routes } from '../types/constants';
+
+export const routes: Routes = {
+  ORDER_CREATE: {
+    path: '/order/create',
+    title: 'layout.menuItems.orderSubMenu.newOrder.title',
+    subtitle: 'layout.menuItems.orderSubMenu.newOrder.subtitle',
+    icon: 'newOrder',
+  },
+  ORDER_BULK: {
+    path: '/order/bulk',
+    title: 'layout.menuItems.orderSubMenu.bulkOrder.title',
+    subtitle: 'layout.menuItems.orderSubMenu.bulkOrder.subtitle',
+    icon: 'newOrder',
+  },
+  ORDER_LIVE: {
+    path: '/order/live',
+    title: 'layout.menuItems.orderSubMenu.liveOrder.title',
+    subtitle: 'layout.menuItems.orderSubMenu.liveOrder.subtitle',
+    icon: 'activeOrders',
+  },
+  ORDER_HISTORY: {
+    path: '/order/history',
+    title: 'layout.menuItems.orderSubMenu.history.title',
+    subtitle: 'layout.menuItems.orderSubMenu.history.subtitle',
+    icon: 'history',
+  },
+  ORDER_BULK_INSIGHTS: {
+    path: '/order/bulk-insights',
+    title: 'layout.menuItems.orderSubMenu.bulkInsights.title',
+    subtitle: 'layout.menuItems.orderSubMenu.bulkInsights.subtitle',
+    icon: 'bulkInsights',
+  },
   DASHBOARD: {
-    TITLE: 'Dashboard',
-    LINK: '/dashboard',
+    path: '/dashboard',
+    title: 'layout.menuItems.dashboard',
+    subtitle: '', // Dashboard in JSON is a string, not an object with title/subtitle
+    icon: 'activeOrders',
   },
-  ORDER: {
-    TITLE: 'Order',
+  VENDOR_LIST: {
+    path: '/vendor/list',
+    title: 'layout.menuItems.vendorSubMenu.vendorList.title',
+    subtitle: 'layout.menuItems.vendorSubMenu.vendorList.subtitle',
+    icon: 'history',
   },
-  VENDOR: {
-    TITLE: 'Vendor',
+  VENDOR_ADD: {
+    path: '/vendor/add',
+    title: 'layout.menuItems.vendorSubMenu.addNewVendor.title',
+    subtitle: 'layout.menuItems.vendorSubMenu.addNewVendor.subtitle',
+    icon: 'history',
   },
-  WALLET: {
-    TITLE: 'Wallet',
+  VENDOR_USERS: {
+    path: '/vendor/users',
+    title: 'layout.menuItems.vendorSubMenu.users.title',
+    subtitle: 'layout.menuItems.vendorSubMenu.users.subtitle',
+    icon: 'history',
   },
-  BILLING: {
-    TITLE: 'Billing',
+  VENDOR_ACCOUNT_MANAGER: {
+    path: '/vendor/account-manager',
+    title: 'layout.menuItems.vendorSubMenu.accountManager.title',
+    subtitle: 'layout.menuItems.vendorSubMenu.accountManager.subtitle',
+    icon: 'history',
   },
-  INSIGHTS: {
-    TITLE: 'Insights',
+  WALLET_OVERVIEW: {
+    path: '/wallet/overview',
+    title: 'layout.menuItems.walletSubMenu.myWallet.title',
+    subtitle: 'layout.menuItems.walletSubMenu.myWallet.subtitle',
+    icon: 'myWallet',
+  },
+  WALLET_HISTORY: {
+    path: '/wallet/history',
+    title: 'layout.menuItems.walletSubMenu.history.title',
+    subtitle: 'layout.menuItems.walletSubMenu.history.subtitle',
+    icon: 'history',
+  },
+  WALLET_PAYMENT_HISTORY: {
+    path: '/wallet/payment-history',
+    title: 'layout.menuItems.walletSubMenu.paymentHistory.title',
+    subtitle: 'layout.menuItems.walletSubMenu.paymentHistory.subtitle',
+    icon: 'history',
+  },
+  WALLET_MANUAL_PAYMENT: {
+    path: '/wallet/manual-payment',
+    title: 'layout.menuItems.walletSubMenu.manualPayment.title',
+    subtitle: 'layout.menuItems.walletSubMenu.manualPayment.subtitle',
+    icon: 'myWallet',
+  },
+  WALLET_BALANCE_REPORT: {
+    path: '/wallet/balance-report',
+    title: 'layout.menuItems.walletSubMenu.balanceReport.title',
+    subtitle: 'layout.menuItems.walletSubMenu.balanceReport.subtitle',
+    icon: 'myWallet',
+  },
+  BILLING_EDIT_PROFILE: {
+    path: '/billing/edit-profile',
+    title: 'layout.profile.editBilling.title',
+    subtitle: 'layout.profile.editBilling.subtitle',
+    icon: 'history',
+  },
+  BILLING_INVOICE: {
+    path: '/billing/invoice',
+    title: 'layout.menuItems.billingSubMenu.invoice.title',
+    subtitle: 'layout.menuItems.billingSubMenu.invoice.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_OVERVIEW: {
+    path: '/insights/overview',
+    title: 'layout.menuItems.insightsSubMenu.overview.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.overview.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_CHURN_REASONS: {
+    path: '/insights/churn-reasons',
+    title: 'layout.menuItems.insightsSubMenu.churnReasons.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.churnReasons.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_FIRST_ORDER: {
+    path: '/insights/first-order',
+    title: 'layout.menuItems.insightsSubMenu.firstOrder.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.firstOrder.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_AFF_REFERRALS: {
+    path: '/insights/aff_referrals',
+    title: 'layout.menuItems.insightsSubMenu.affReferrals.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.affReferrals.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_USER_REFERRALS: {
+    path: '/insights/user_referrals',
+    title: 'layout.menuItems.insightsSubMenu.userReferrals.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.userReferrals.subtitle',
+    icon: 'history',
+  },
+  INSIGHTS_ZONE_GROWTH: {
+    path: '/insights/zone-growth',
+    title: 'layout.menuItems.insightsSubMenu.zoneGrowth.title',
+    subtitle: 'layout.menuItems.insightsSubMenu.zoneGrowth.subtitle',
+    icon: 'history',
+  },
+  OTHERS_INTEGRATIONS: {
+    path: '/integrations',
+    title: 'layout.menuItems.othersSubMenu.integrations.title',
+    subtitle: 'layout.menuItems.othersSubMenu.integrations.subtitle',
+    icon: 'integrations',
   },
   SALES_FUNNEL: {
-    TITLE: 'Sales Funnel',
-    LINK: '/order/sales-funnel',
+    path: '/order/sales-funnel',
+    title: 'layout.menuItems.salesFunnel.title',
+    subtitle: 'layout.menuItems.salesFunnel.subtitle',
+    icon: 'history',
   },
   RATING: {
-    TITLE: 'Rating',
-    LINK: '/rate/improvement/dashboard',
+    path: '/rating',
+    title: 'layout.menuItems.rating.title',
+    subtitle: 'layout.menuItems.rating.subtitle',
+    icon: 'history',
   },
-  RATING_BUDDIES: {
-    LINK: '/rate/improvement/buddies',
-  },
-  USER_RATE: {
-    LINK: '/cr/',
-  },
-  BULK: {
-    LINK: '/bk/',
-  },
-  BULK_UPDATE: {
-    LINK: '/bulk/:bulkId',
-  },
-  PICKUP_RATE: {
-    LINK: '/pr/',
-  },
-  AFF_REF_CODE: {
-    LINK: '/referral',
-    LINK_AUTH_GAURD: '?ref_code=',
-  },
-  WHATSAPP_CUSTOMER_ADDRESS_UPDATE: {
-    LINK: '/cu/',
-  },
-  WHATSAPP_ADDRESS_UPDATE: {
-    LINK: '/address/update/',
-  },
-  FODDICS_ON_BOARD: {
-    LINK: '/foodics/auto-onboard',
-    TITLE: 'Auto-onboard',
-  },
-  CUSTOMER_RATE: {
-    LINK: '/rate/customer-rate',
-  },
-  CASH_COLLECTED: {
-    TITLE: 'Cash Collected',
-    LINK: '/cash-collected',
-  },
-  CHANGE_PASSWORD: {
-    TITLE: 'Change Password',
-    LINK: '/config/change-password',
-  },
-  SYSTEM_CONFIGURATION: {
-    TITLE: 'Configuration',
-    LINK: '/config',
-  },
-  BUSY_MODE_HISTORY: {
-    TITLE: 'Busy Mode History',
-    LINK: '/busy-mode',
-  },
-  ZONE_BUSY_MODE_HISTORY: {
-    TITLE: 'Zone Busy Mode History',
-    LINK: '/zone-busy-mode',
-  },
-  INTEGRATION: {
-    TITLE: 'Integration',
-    LINK: '/integration',
-  },
-  ZONE_SETTINGS: {
-    TITLE: 'Zone Settings',
-    LINK: '/zone/zone-settings',
-  },
-  EDIT_PICK_UP: {
-    TITLE: 'Edit Pick up',
-    LINK: '/order/update-pickup-location',
-  },
-  LOGOUT: {
-    TITLE: 'Logout',
-    LINK: '/auth/logout',
-  },
-  LOGIN: {
-    TITLE: 'LogIn',
-    LINK: '/auth/login',
-  },
-  FORGOT_PASSWORD: {
-    TITLE: 'Forgot Password',
-    LINK: '/auth/forgot-password',
-  },
-  SELECT_DOMAIN: {
-    LINK: 'select/domain',
+  CONFIG_CHANGE_PASSWORD: {
+    path: '/config/change-password',
+    title: 'layout.profile.changePassword.title',
+    subtitle: 'layout.profile.changePassword.subtitle',
+    icon: 'password',
   },
 };
 
-export const SUB_MENU = {
-  NEW_ORDER: {
-    TITLE: 'New Order',
-    LINK: '/order/new-order',
+export const APP_SIDEBAR_MENU: MenuItem[] = [
+  {
+    labelKey: routes.DASHBOARD.title,
+    route: routes.DASHBOARD.path,
+    icon: routes.DASHBOARD.icon,
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
-  NEW_ORDER_OLD: {
-    TITLE: 'New Order',
-    LINK: '/order/create',
+  {
+    labelKey: 'layout.menuItems.order', // Parent item, no direct route title mapping
+    children: [
+      {
+        labelKey: routes.ORDER_CREATE.title,
+        route: routes.ORDER_CREATE.path,
+        icon: routes.ORDER_CREATE.icon,
+      },
+      {
+        labelKey: routes.ORDER_LIVE.title,
+        route: routes.ORDER_LIVE.path,
+        icon: routes.ORDER_LIVE.icon,
+      },
+      {
+        labelKey: routes.ORDER_HISTORY.title,
+        route: routes.ORDER_HISTORY.path,
+        icon: routes.ORDER_HISTORY.icon,
+      },
+      {
+        labelKey: routes.ORDER_BULK.title,
+        route: routes.ORDER_BULK.path,
+        icon: routes.ORDER_BULK.icon,
+      },
+      {
+        labelKey: routes.ORDER_BULK_INSIGHTS.title,
+        route: routes.ORDER_BULK_INSIGHTS.path,
+        icon: routes.ORDER_BULK_INSIGHTS.icon,
+      },
+    ],
   },
-  BULK_ORDER: {
-    TITLE: 'Bulk Order',
-    LINK: '/order/bulk-upload',
+  {
+    labelKey: 'layout.menuItems.vendor', // Parent item, no direct route title mapping
+    roles: [
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+      'FINANCE_MANAGER',
+    ],
+    children: [
+      {
+        labelKey: routes.VENDOR_LIST.title,
+        route: routes.VENDOR_LIST.path,
+        icon: routes.VENDOR_LIST.icon,
+      },
+      {
+        labelKey: routes.VENDOR_ADD.title,
+        route: routes.VENDOR_ADD.path,
+        icon: routes.VENDOR_ADD.icon,
+      },
+      {
+        labelKey: routes.VENDOR_USERS.title,
+        route: routes.VENDOR_USERS.path,
+        icon: routes.VENDOR_USERS.icon,
+      },
+      {
+        labelKey: routes.VENDOR_ACCOUNT_MANAGER.title,
+        route: routes.VENDOR_ACCOUNT_MANAGER.path,
+        icon: routes.VENDOR_ACCOUNT_MANAGER.icon,
+        roles: ['SALES_HEAD'],
+      },
+    ],
   },
-  ORDER_STATUS: {
-    TITLE: 'Order Status',
-    LINK: '/order/order-status',
+  {
+    labelKey: 'layout.menuItems.wallet', // Parent item, no direct route title mapping
+    children: [
+      {
+        labelKey: routes.WALLET_OVERVIEW.title,
+        route: routes.WALLET_OVERVIEW.path,
+        icon: routes.WALLET_OVERVIEW.icon,
+      },
+      {
+        labelKey: routes.WALLET_HISTORY.title,
+        route: routes.WALLET_HISTORY.path,
+        icon: routes.WALLET_HISTORY.icon,
+      },
+      {
+        labelKey: routes.WALLET_PAYMENT_HISTORY.title,
+        route: routes.WALLET_PAYMENT_HISTORY.path,
+        icon: routes.WALLET_PAYMENT_HISTORY.icon,
+        roles: ['FINANCE_MANAGER'],
+      },
+      {
+        labelKey: routes.WALLET_MANUAL_PAYMENT.title,
+        route: routes.WALLET_MANUAL_PAYMENT.path,
+        icon: routes.WALLET_MANUAL_PAYMENT.icon,
+        roles: ['FINANCE_MANAGER'],
+      },
+      {
+        labelKey: routes.WALLET_BALANCE_REPORT.title,
+        route: routes.WALLET_BALANCE_REPORT.path,
+        icon: routes.WALLET_BALANCE_REPORT.icon,
+        roles: ['FINANCE_MANAGER', 'OPERATION_MANAGER', 'SALES_HEAD'],
+      },
+    ],
   },
-  NEW_ORDER_STATUS: {
-    TITLE: 'Active Order',
-    LINK: '/order/live-order-status',
+  {
+    labelKey: 'layout.menuItems.billing.title',
+    roles: ['VENDOR_USER'],
+    children: [
+      {
+        labelKey: routes.BILLING_EDIT_PROFILE.title,
+        route: routes.BILLING_EDIT_PROFILE.path,
+        icon: routes.BILLING_EDIT_PROFILE.icon,
+      },
+      {
+        labelKey: routes.BILLING_INVOICE.title,
+        route: routes.BILLING_INVOICE.path,
+        icon: routes.BILLING_INVOICE.icon,
+      },
+    ],
   },
-  ORDER_HISTORY: {
-    TITLE: 'History',
-    LINK: '/order/list',
+  {
+    labelKey: 'layout.menuItems.insights.title', // Parent item, no direct route title mapping
+    roles: [
+      'FINANCE_MANAGER',
+      'OPERATION_MANAGER',
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+    ],
+    children: [
+      {
+        labelKey: routes.INSIGHTS_OVERVIEW.title,
+        route: routes.INSIGHTS_OVERVIEW.path,
+        icon: routes.INSIGHTS_OVERVIEW.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: routes.INSIGHTS_CHURN_REASONS.title,
+        route: routes.INSIGHTS_CHURN_REASONS.path,
+        icon: routes.INSIGHTS_CHURN_REASONS.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: routes.INSIGHTS_FIRST_ORDER.title,
+        route: routes.INSIGHTS_FIRST_ORDER.path,
+        icon: routes.INSIGHTS_FIRST_ORDER.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: routes.INSIGHTS_AFF_REFERRALS.title,
+        route: routes.INSIGHTS_AFF_REFERRALS.path,
+        icon: routes.INSIGHTS_AFF_REFERRALS.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: routes.INSIGHTS_USER_REFERRALS.title,
+        route: routes.INSIGHTS_USER_REFERRALS.path,
+        icon: routes.INSIGHTS_USER_REFERRALS.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+      {
+        labelKey: routes.INSIGHTS_ZONE_GROWTH.title,
+        route: routes.INSIGHTS_ZONE_GROWTH.path,
+        icon: routes.INSIGHTS_ZONE_GROWTH.icon,
+        roles: [
+          'FINANCE_MANAGER',
+          'OPERATION_MANAGER',
+          'VENDOR_ACCOUNT_MANAGER',
+          'SALES_HEAD',
+        ],
+      },
+    ],
   },
-  BULK_INSIGHTS: {
-    TITLE: 'Bulk Insights',
-    LINK: '/order/bulk-insights',
+  {
+    labelKey: 'layout.menuItems.others.title', // Parent item, no direct route title mapping
+    roles: ['VENDOR_USER'],
+    children: [
+      {
+        labelKey: routes.OTHERS_INTEGRATIONS.title,
+        route: routes.OTHERS_INTEGRATIONS.path,
+        icon: routes.OTHERS_INTEGRATIONS.icon,
+        roles: ['VENDOR_USER'],
+      },
+    ],
   },
-  MY_WALLET: {
-    TITLE: 'My Wallet',
-    LINK: '/wallet/mywallet',
+  {
+    labelKey: routes.SALES_FUNNEL.title,
+    route: routes.SALES_FUNNEL.path,
+    roles: ['SALES_HEAD', 'OPERATION_MANAGER', 'FINANCE_MANAGER'],
+    icon: routes.SALES_FUNNEL.icon,
   },
-  WALLET_HISTORY: {
-    TITLE: 'History',
-    LINK: '/wallet/history',
+  {
+    labelKey: routes.RATING.title,
+    route: routes.RATING.path,
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+    icon: routes.RATING.icon,
   },
-  PAYMENT_HISTORY: {
-    TITLE: 'Payment History',
-    LINK: '/wallet/payment-history',
+] as const;
+
+export const APP_PROFILE_MENU: MenuItem[] = [
+  {
+    labelKey: routes.CONFIG_CHANGE_PASSWORD.title,
+    route: routes.CONFIG_CHANGE_PASSWORD.path,
+    icon: routes.CONFIG_CHANGE_PASSWORD.icon,
   },
-  MANUAL_PAYMENT: {
-    TITLE: 'Manual Payment',
-    LINK: '/wallet/manual-payment',
+  {
+    labelKey: routes.BILLING_EDIT_PROFILE.title,
+    route: routes.BILLING_EDIT_PROFILE.path,
+    icon: routes.BILLING_EDIT_PROFILE.icon,
   },
-  BALANCE_REPORT: {
-    TITLE: 'Balance Report',
-    LINK: '/wallet/balance-report',
-  },
-  VENDOR_DETAILS: {
-    TITLE: 'Vendor List',
-    LINK: '/vendor/list',
-  },
-  ADD_NEW_VENDOR: {
-    TITLE: 'Add New Vendor',
-    LINK: '/vendor/create',
-  },
-  VENDOR_USER_LIST: {
-    TITLE: 'Users',
-    LINK: '/vendor/vendor-user-list',
-  },
-  ACCOUNT_MANAGER: {
-    TITLE: 'Account Manager',
-    LINK: '/vendor/vendor-account-manager',
-  },
-  CASH_COLLECTION_HISTORY: {
-    TITLE: 'History',
-    LINK: '/cash-collected/cash-collection-history',
-  },
-  SETTLEMENT_DUE: {
-    TITLE: 'Settle-Due',
-    LINK: '/cash-collected/settlement-due',
-  },
-  SETTLEMENTS: {
-    TITLE: 'Settlements',
-    LINK: '/cash-collected/settlement-history',
-  },
-  DOWNLOAD_INVOICE: {
-    TITLE: 'Invoice',
-    LINK: '/billing/invoice',
-  },
-  EDIT_PROFILE: {
-    TITLE: 'Edit Profile',
-    LINK: '/billing/edit/profile',
-  },
-  INSIGHT_OVERVIEW: {
-    TITLE: 'Overview',
-    LINK: '/insights/order-trend',
-  },
-  CHURN_REASONS: {
-    TITLE: 'Churn Reasons',
-    LINK: '/insights/churn-reasons',
-  },
-  FIRST_ORDER: {
-    TITLE: 'First Order Experience',
-    LINK: '/insights/first-order',
-  },
-  AFF_REFERRALS: {
-    TITLE: 'Affiliator Referrals',
-    LINK: '/insights/aff_referrals',
-  },
-  USER_REFERRALS: {
-    TITLE: 'User Referrals',
-    LINK: '/insights/user_referrals',
-  },
-  ZONE_GROWTH: {
-    TITLE: 'Zone Growth',
-    LINK: '/insights/zone-growth',
-  },
-};
+] as const;

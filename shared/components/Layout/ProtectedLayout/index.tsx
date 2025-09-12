@@ -7,16 +7,12 @@ import { useEffect, useMemo } from 'react';
 
 import { useSharedStore, useVenderStore } from '@/store';
 import { setBranchDetails, updateZoneAndSome } from '@/shared/services/header';
-import AlertMessage from './AlertMessage';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
-  header?: {
-    title: string;
-  };
 }
 
-const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
+const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   const sharedStore = useSharedStore();
   const venderStore = useVenderStore();
   useEffect(() => {
@@ -32,10 +28,10 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
 
   return (
     <section className="flex items-start justify-start h-svh  w-full">
-      <SideBar header={header} />
+      <SideBar />
       <div className="h-full overflow-y-auto w-full flex flex-col relative z-0">
-        <Header {...header} />
-        <AlertMessage />
+        <Header />
+
         {children}
       </div>
     </section>

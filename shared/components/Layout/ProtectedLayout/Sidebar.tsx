@@ -1,5 +1,4 @@
 'use client';
-import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
 import { cn } from '@/shared/lib/utils';
 import { UserRole } from '@/shared/types/user';
 import { useAuthStore, useSharedStore } from '@/store';
@@ -13,15 +12,10 @@ import collapseIcon from '@/assets/icons/window collapse.svg';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { iconMap } from '../../icons/layout';
-import { filterMenuByRole } from '@/shared/lib/helpers';
+import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
+import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
 
-const SideBar = ({
-  header,
-}: {
-  header?: {
-    title: string;
-  };
-}) => {
+const SideBar = () => {
   const { isCollapsed, setValue } = useSharedStore();
   const { user } = useAuthStore();
   const t = useTranslations();
@@ -47,6 +41,10 @@ const SideBar = ({
       document.removeEventListener('click', handleOutsideClick, true);
     };
   }, [isCollapsed, setValue]);
+
+  const { title } = useGetSidebarMeta();
+  
+  console.log(title)
 
   return (
     <aside
@@ -89,7 +87,7 @@ const SideBar = ({
                 href={item?.route || '#'}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
-                  header?.title === item.labelKey &&
+                  title === item.labelKey &&
                     'bg-white text-primary-blue hover:bg-off-white',
                   item.route &&
                     'hover:bg-dark-grey/40 px-3 py-2 pointer-events-auto'
@@ -111,14 +109,14 @@ const SideBar = ({
                         prefetch={true}
                         className={cn(
                           'flex items-center gap-2 px-3 rounded-[6px] py-2 bg-transparent hover:bg-dark-grey/40',
-                          header?.title === child.labelKey &&
+                          title === child.labelKey &&
                             'bg-white text-primary-blue hover:bg-off-white',
                           isCollapsed && 'justify-center px-2'
                         )}
                       >
                         <IconComponentSub
                           className={
-                            header?.title === child.labelKey
+                            title === child.labelKey
                               ? 'text-primary-blue'
                               : 'text-white'
                           }

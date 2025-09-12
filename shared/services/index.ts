@@ -54,12 +54,9 @@ export const getBuildings = (id: string) =>
 export const getDeliveryRate = (
   orderNumber: string
 ): Promise<TypeRootRatingResponse> =>
-  apiFetch(
-    appConfig.rateServiceApiUrl() + '/order/delivery/' + orderNumber,
-    {
-      method: 'GET',
-    }
-  );
+  apiFetch(appConfig.rateServiceApiUrl() + '/order/delivery/' + orderNumber, {
+    method: 'GET',
+  });
 
 export const setDeliveryRate = (request: typePostRating) =>
   apiFetch(appConfig.rateServiceApiUrl() + '/order/delivery/rate', {
@@ -91,7 +88,7 @@ export const verifyCustomerAddress = (request: any) =>
 export const getAllFreeBuddiesFromB2C = () =>
   apiFetch(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
 
-export const getSuperSaverPromation = (
+export const getSuperSaverPromotion = (
   vendorId: string,
   branchId: string
 ): Promise<TypeSuperSaverPromationRes> =>

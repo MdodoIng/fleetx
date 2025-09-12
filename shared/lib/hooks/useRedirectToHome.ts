@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { MAIN_MENU } from '@/shared/constants/routes';
+
 import { useSharedStore, useVenderStore } from '@/store';
 import { associateFoodics } from '@/shared/services';
 
@@ -17,12 +17,12 @@ export function useRedirectToHome() {
       return;
     }
     if (foodicsIsAlreadyConnected) {
-      router.push(MAIN_MENU.FODDICS_ON_BOARD.LINK);
+      router.push('/order/create');
       return;
     }
 
     if (branchId && foodicsReference) {
-      router.push(MAIN_MENU.FODDICS_ON_BOARD.LINK);
+      router.push('/order/create');
       return;
     }
 
@@ -40,10 +40,10 @@ export function useRedirectToHome() {
         vendorId,
         reference: foodicsReference,
       });
-      router.push(MAIN_MENU.DASHBOARD.LINK);
+      router.push('/order/create');
     } catch (error) {
       console.error('Failed to associate Foodics:', error);
-      router.push(MAIN_MENU.DASHBOARD.LINK);
+      router.push('/order/create');
     }
   };
 
