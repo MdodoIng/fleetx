@@ -1,7 +1,10 @@
 import { useAuthStore, useVenderStore } from '@/store';
 import { apiFetch } from '../lib/utils';
 import { appConfig } from './app-config';
-import { TypeNotificationsResponse } from '../types/notification';
+import {
+  TypeNotificationsResponse,
+  TypeOperationTimeApiResponse,
+} from '../types/notification';
 
 export const notificationService = {
   getNotification(url: string): Promise<TypeNotificationsResponse> {
@@ -52,5 +55,23 @@ export const notificationService = {
         break;
     }
     return url;
+  },
+
+  getOperationTimeApi(): Promise<TypeOperationTimeApiResponse> {
+    return apiFetch(
+      appConfig.orderServiceApiUrl() + '/config/operation/timing/get',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getBusyModeApi(): Promise<any> {
+    return apiFetch(
+      appConfig.orderServiceApiUrl() + '/config/busy-mode/status',
+      {
+        method: 'GET',
+      }
+    );
   },
 };

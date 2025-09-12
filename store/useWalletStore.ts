@@ -1,7 +1,7 @@
 import { vendorService } from '@/shared/services/vender';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useSharedStore } from './sharedStore';
+import { useSharedStore } from './useSharedStore';
 import { useVenderStore } from './useVenderStore';
 import { useAuthStore } from './useAuthStore';
 import { getSuperSaverPromotion } from '@/shared/services';
@@ -483,7 +483,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
                 isVendorAdmin: false,
               });
               getVendorWalletBalanceInit();
-              getSuperSaverPromotion();
+              getFunSuperSaverPromotion();
             } else {
               useVenderStore.setState({
                 isVendorAdmin: true,

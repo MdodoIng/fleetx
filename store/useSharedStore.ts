@@ -62,13 +62,14 @@ export interface SharedState {
   isValidCancelOrReschedule?: boolean;
   lastPathname: string | undefined;
   isCollapsed: boolean;
+  showLanguage: boolean;
 }
 
 export interface SharedActions {
   readAppConstants: () => Promise<void>;
   verifyAppVersionUpdate: (apiVersion: string) => void;
   calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => void;
-  triggerCalculatedTrend: (zoneId: number, branchId: string) => void;
+  triggerCalculatedTrend: (zoneId: number) => void;
   setSuperSaverPromation: (
     vendorId: string,
     branchId: string,
@@ -130,6 +131,7 @@ const initialState: SharedState = {
   bulkOrderPrimaryStatus: undefined,
   isValidCancelOrReschedule: undefined,
   isCollapsed: false,
+  showLanguage: false,
 };
 
 export const useSharedStore = create<SharedState & SharedActions>()(
@@ -338,7 +340,7 @@ export const useSharedStore = create<SharedState & SharedActions>()(
               const { getLocalStorage } = get();
               const branchId =
                 getLocalStorage(storageConstants.branch_id) || '';
-              get().triggerCalculatedTrend(get().currentZoneId!, branchId);
+              get().triggerCalculatedTrend(get().currentZoneId!);
             }
           } catch (err: any) {
             logError(err?.error?.message);
@@ -353,14 +355,14 @@ export const useSharedStore = create<SharedState & SharedActions>()(
               const { getLocalStorage } = get();
               const branchId =
                 getLocalStorage(storageConstants.branch_id) || '';
-              get().triggerCalculatedTrend(get().currentZoneId!, branchId);
+              get().triggerCalculatedTrend(get().currentZoneId!);
             }
           } catch (err: any) {
             logError(err);
           }
         },
 
-        triggerCalculatedTrend: async (zoneId: number, branchId: string) => {
+        triggerCalculatedTrend: async (zoneId: number) => {
           const {
             fleetZonePickUpTrend,
             freeDriverData,

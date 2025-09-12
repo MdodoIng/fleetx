@@ -398,7 +398,8 @@
         "walletCard": {
           "title": "Wallet Balance:",
           "button": "Recharge"
-        }
+        },
+        "alertMessage" :"Service Hours:"
       }
     }
   }

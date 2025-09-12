@@ -4,10 +4,16 @@ import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
 import { vendorService } from './vender';
 import { StoreApi, UseBoundStore } from 'zustand';
-import { SharedActions, SharedState } from '@/store/sharedStore';
+import {
+  SharedActions,
+  SharedState,
+} from '@/store/useSharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
 import { ca } from 'zod/v4/locales';
 import { useJsApiLoader } from '@react-google-maps/api';
+import { notificationService } from './notification';
+import { useNotificationStore } from '@/store/useNotificationStore';
+import { interval } from 'date-fns';
 
 export const setBranchDetails = async () => {
   const venderStore = useVenderStore.getState();
@@ -90,4 +96,107 @@ export async function updateZoneAndSome() {
       // onBranchSelectionCheckZoneBusyModeIsActive(branch.address);
     }
   }
+}
+
+export async function setHeadingForVendorBranch() {
+  const { user } = useAuthStore.getState();
+  const { getOperationalHours, activateBusyMode, getOperationalHoursTimer } =
+    useNotificationStore.getState();
+
+  const {
+    getFleetZonePickUpTrend,
+    getAllFreeBuddiesOnLoad,
+    setValue: setSharedValue,
+  } = useSharedStore.getState();
+
+  const { setValue: setVendorValue, branchName } = useVenderStore.getState();
+
+  if (!user) return;
+
+  // Trigger operational setup
+  getOperationalHours();
+  activateBusyMode();
+
+  if (environment.LOCAL_ADDRESS_ENABLED) {
+    getFleetZonePickUpTrend();
+
+    // Run every 12 hours
+    setInterval(
+      () => {
+        getOperationalHoursTimer();
+      },
+      12 * 60 * 60 * 1000
+    );
+  }
+
+  const fullName = `${user.user.first_name} ${user.user.last_name ?? ''}`;
+  const userMeta = {
+    name: fullName,
+    picture: '',
+  };
+
+  const role = user.roles[0];
+  const isVendorUser = role === 'VENDOR_USER';
+
+  if (
+    role === 'OPERATION_MANAGER' ||
+    role === 'VENDOR_ACCOUNT_MANAGER' ||
+    role === 'SALES_HEAD' ||
+    role === 'FINANCE_MANAGER'
+  ) {
+    if (environment.LOCAL_ADDRESS_ENABLED) {
+      getAllFreeBuddiesOnLoad();
+    }
+    setSharedValue('showLanguage', false);
+  }
+
+  if (isVendorUser) {
+    setSharedValue('showLanguage', false);
+
+    try {
+      const res = await vendorService.getVendorDetails(
+        user.user.vendor?.vendor_id
+      );
+      const branches = res?.data?.branches ?? [];
+
+      const branch = branches.find(
+        (b: any) => b.id === user.user.vendor?.branch_id
+      );
+
+      if (branch) {
+        setSharedValue(
+          'currentZoneId',
+          branch.branch_zone.length > 0
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id)
+            : undefined
+        );
+        setSharedValue(
+          'defaultZoneId',
+          branch.branch_zone.length > 0
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id)
+            : undefined
+        );
+
+        if (environment.LOCAL_ADDRESS_ENABLED) {
+          getAllFreeBuddiesOnLoad();
+        }
+
+        setVendorValue('branchName', branch.name);
+      } else {
+        setVendorValue('branchName', undefined);
+        setSharedValue('currentZoneId', undefined);
+        setSharedValue('defaultZoneId', undefined);
+
+        const mainBranch = branches.find((b: any) => b.main_branch === true);
+        if (mainBranch) {
+          setVendorValue('branchName', mainBranch.name);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch vendor details:', err);
+    }
+  }
+
+  // You can expose userMeta to your header UI if needed
+  return userMeta;
 }

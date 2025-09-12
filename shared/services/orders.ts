@@ -14,7 +14,7 @@ import {
   TypeZoneResponce,
 } from '@/shared/types/orders';
 import { useAuthStore, useVenderStore } from '@/store';
-import { useSharedStore } from '@/store/sharedStore';
+import { useSharedStore } from '@/store/useSharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>

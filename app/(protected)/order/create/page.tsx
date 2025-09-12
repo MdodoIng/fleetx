@@ -44,6 +44,7 @@ import {
 } from '@/shared/components/ui/dashboard';
 import AlertMessage from '@/features/orders/components/AlertMessage';
 import WalletCard from '@/features/orders/components/WalletCard';
+import { useNotificationStore } from '@/store/useNotificationStore';
 
 // Main component
 export default function ShippingForm() {
@@ -596,6 +597,10 @@ export default function ShippingForm() {
         break;
     }
   };
+
+  useEffect(() => {
+    useNotificationStore.getState().getOperationalHours();
+  }, []);
 
   return (
     <Dashboard>

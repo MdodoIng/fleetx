@@ -29,17 +29,16 @@ import { useState } from 'react';
 export default function Profile() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuthStore();
-  const { selectedBranch, branchDetails, branchId, selectedVendor } =
-    useVenderStore();
+  const {
+    selectedBranch,
+    branchDetails,
+    branchId,
+    selectedVendor,
+    branchName,
+  } = useVenderStore();
 
   const filteredMenu = filterMenuByRole(APP_PROFILE_MENU);
   const t = useTranslations();
-  const { dirState } = useDir();
-
-  const branch = selectedVendor?.branches.find((item) => item.id === branchId);
-  const branchName = branch ? (dirState ? branch.name : branch.name_ar) : '';
-
-  console.log(isOpen);
 
   return (
     <DropdownMenu onOpenChange={(open) => setIsOpen(open)}>

@@ -13,7 +13,7 @@ import {
 } from '@/shared/types/orders';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useSharedStore } from './sharedStore';
+import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
 
 interface DeliverySummary {
