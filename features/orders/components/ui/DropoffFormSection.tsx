@@ -1,11 +1,28 @@
+'use client';
 import { Button } from '@/shared/components/ui/button';
-import { CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Delete, Edit, Plus } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import {
+  Delete,
+  Edit,
+  LocateFixed,
+  Plus,
+  PlusCircle,
+  Trash,
+} from 'lucide-react';
 import DropoffForm from '../create/DropOffForm';
 import { TypeDropOffs } from '@/shared/types/orders';
 import { Dispatch, SetStateAction } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { TypeDropOffSchema } from '../../validations/order';
+import { Icon } from '@iconify/react';
+import { useTranslations } from 'next-intl';
+import { useOrderStore } from '@/store';
+import { cn } from '@/shared/lib/utils';
 
 type Props = {
   index?: number;
@@ -38,41 +55,76 @@ const DropoffFormSection = ({
   functionsDropoffs,
 }: Props) => {
   const isSingle = !index && !item;
+  const t = useTranslations('component.features.orders.create');
+
+  const orderStore = useOrderStore();
+
+  console.log(orderStore.dropOffs.length);
+
   return (
-    <div key={index} className="shadow bg-red-300">
-      <CardHeader className="bg-cyan-50 rounded-t-lg p-4 flex items-center justify-between">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-cyan-800">
-          Drop Off{' '}
-          {isSingle
-            ? dropOffFormValues.customer_name
-            : isDropIndex == index
-              ? dropOffFormValues.customer_name
-              : item?.customer_name}
+    <Card
+      key={index}
+      className="rounded-[8px] bg-white h-full border-[#2828281A] flex "
+    >
+      <CardHeader className="flex w-full justify-between items-center flex-wrap gap-4">
+        <CardTitle className="flex  gap-2  text-dark-grey">
+          <div className="size-12 aspect-square flex shrink-0 items-center justify-center  bg-off-white p-2 rounded-[8px] ">
+            <LocateFixed className="text-[#48B64F] size-6" />
+          </div>
+          <div className="flex flex-col  items-start justify-center">
+            <h2 className="text-lg font-medium">
+              {t.rich('dropOffForm.title', {
+                index: (chunks) => <>{chunks}</>,
+                value: index! + 1 || 1,
+              })}
+            </h2>
+            <p
+              hidden={isDropIndex !== index && !isSingle}
+              className="text-sm font-medium opacity-50"
+            >
+              {t('dropOffForm.subtitle')}
+            </p>
+          </div>
         </CardTitle>
         {isSingle || index === isDropIndex ? (
           <Button
-            // disabled={!isFormValid}
+            variant={'ghost'}
+            className="cursor-pointer text-primary-blue gap-1"
             onClick={() => functionsDropoffs('addOneDropoff')}
           >
-            <Plus /> dropOff {isSingle ? 123 : index! + 1}
+            <PlusCircle className="" />{' '}
+            {t.rich('dropOffForm.add-dropoff', {
+              index: (chunks) => <>{chunks}</>,
+              value:
+                orderStore.dropOffs.length === 0
+                  ? 2
+                  : orderStore.dropOffs.length + 1,
+            })}
           </Button>
         ) : (
-          <div className="grid-cols-2 grid gap-4">
-            <Button
+          <div className="grid-cols-2 grid gap-3">
+            <button
               onClick={() => functionsDropoffs('deleteDropOff', index!)}
-              variant="destructive"
+              className="cursor-pointer"
             >
-              <Delete />
-            </Button>
-            <Button
+              <Icon
+                icon={'uiw:delete'}
+                className="text-dark-grey size-6 shrink-0"
+              />
+            </button>
+            <button
               onClick={() => functionsDropoffs('editDropOffWithSave', index!)}
-              variant="secondary"
+              className="cursor-pointer"
             >
-              <Edit />
-            </Button>
+              <Icon
+                icon={'iconamoon:edit'}
+                className="text-dark-grey size-6 shrink-0"
+              />
+            </button>
           </div>
         )}
       </CardHeader>
+
       {isSingle ? (
         <DropoffForm
           recipientForm={dropOffForm}
@@ -88,7 +140,7 @@ const DropoffFormSection = ({
           />
         )
       )}
-    </div>
+    </Card>
   );
 };
 

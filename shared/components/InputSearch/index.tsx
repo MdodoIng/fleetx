@@ -17,7 +17,7 @@ const MyMap = dynamic(() => import('@/shared/components/InputSearch/Map'), {
 
 import dynamic from 'next/dynamic';
 
-import { useOrderStore } from '@/store/useOrderStore';
+
 import LandmarkInput from './LandmarkInput';
 import SearchResults from './searchList';
 import { TypePickUpSchema } from '@/features/orders/validations/order';
@@ -317,7 +317,7 @@ export default function AddressLandmarkFields({
     <>
       <div
         id="landmark-input-container"
-        className="flex flex-col gap-4 w-full col-span-2 relative"
+        className="flex flex-col gap-4 w-full sm:col-span-2 relative"
       >
         {/* Landmark Inputs */}
         <LandmarkInput
@@ -351,8 +351,8 @@ export default function AddressLandmarkFields({
       </div>
 
       {isMapOpen && (
-        <div className="fixed w-full h-full m-auto bg-black/25 z-50 inset-0 flex items-center justify-center ">
-          <div className="w-[max(400px,50%)] flex flex-col  bg-white rounded-lg relative z-0 ">
+        <div className="fixed w-full h-full m-auto bg-black/25 z-50 inset-0 flex rounded-[8px] items-center justify-center ">
+          <div className="w-[max(400px,50%)] mx-auto flex flex-col  bg-white  rounded-[8px] relative z-0 ">
             {/* Landmark Inputs */}
             <LandmarkInput
               control={control}

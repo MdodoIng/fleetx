@@ -13,7 +13,7 @@ import { mashkorMap } from '@/shared/constants/mapStyle';
 const containerStyle = {
   width: '100%',
   height: '400px',
-  borderRadius: '12px',
+  borderRadius: '8px',
   overflow: 'hidden',
 };
 

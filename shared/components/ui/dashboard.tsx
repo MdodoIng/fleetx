@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
-import { usePathname } from 'next/navigation';
 import { useGetSidebarMeta } from '@/shared/lib/helpers';
 import { iconMap } from '../icons/layout';
 import { useTranslations } from 'next-intl';
@@ -12,7 +11,7 @@ function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="dashboard"
       className={cn(
-        'bg-off-white text-black flex flex-col gap-6 py-6',
+        'bg-off-white text-black flex flex-col gap-6 py-6 h-full',
         main_padding.dashboard.x,
         className
       )}
@@ -25,7 +24,7 @@ function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dashboard-header"
-      className={cn('flex items-start justify-between gap-10', className)}
+      className={cn('flex items-start justify-between flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full ', className)}
       {...props}
     />
   );
@@ -60,7 +59,7 @@ function DashboardContent({
     <div
       data-slot="dashboard-content"
       className={cn(
-        'flex gap-10 items-start justify-center',
+        'flex gap-6 items-start justify-center',
         main_padding.dashboard.y,
         className
       )}
@@ -74,7 +73,7 @@ function DashboardFooter({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="dashboard-footer"
       className={cn(
-        'flex items-center sticky bottom-0 left-0 w-full',
+        'flex items-center md:sticky bottom-0 left-0 w-full',
         main_padding.dashboard.y,
         className
       )}

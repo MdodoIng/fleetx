@@ -23,6 +23,12 @@ import { Dispatch, SetStateAction } from 'react';
 import { M_PLUS_1p } from 'next/font/google';
 import { TypeDropOffSchema } from '../../validations/order';
 import AddressLandmarkFields from '@/shared/components/InputSearch';
+import { useTranslations } from 'next-intl';
+import { DollarSign, Info } from 'lucide-react';
+import { useSharedStore } from '@/store';
+import { Switch } from '@/shared/components/ui/switch';
+import BinaryToggle from '@/shared/components/ui/binaryToggle';
+import { is } from 'zod/v4/locales';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
@@ -37,179 +43,167 @@ const DropoffForm: React.FC<SenderFormProps> = ({
   isCOD,
   setIsCOD,
 }) => {
+  const { appConstants } = useSharedStore();
+  const t = useTranslations('component.features.orders.create');
   return (
     <Form {...recipientForm}>
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-        <Card className="rounded-lg shadow-lg">
-          <CardContent className="p-6 grid grid-cols-2  gap-4">
-            {/* orderNumber */}
-            <FormField
-              control={recipientForm.control}
-              name="order_index"
-              render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormLabel> orderNumber</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Recipient Name" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* customerName */}
-            <FormField
-              control={recipientForm.control}
-              name="customer_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>customerName</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 6045 9486" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* phone */}
-            <FormField
-              control={recipientForm.control}
-              name="mobile_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 3" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <AddressLandmarkFields
-              form={recipientForm}
-              landmarkFieldName="address"
-              isMap={true}
-            />
-
-            {/* apartmentNo */}
-            <FormField
-              control={recipientForm.control}
-              name="apartment_no"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>apartmentNo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 3" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Floor */}
-            <FormField
-              control={recipientForm.control}
-              name="floor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Floor</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 3" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Apt */}
-            <FormField
-              control={recipientForm.control}
-              name="additional_address"
-              render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormLabel>additionalAddress</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: 12" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Cash Collection */}
-            <div className="col-span-2 p-3 bg-yellow-100">
-              <div className="flex items-center justify-between">
-                <Label className="text-gray-500">
-                  Shall we collect cash from the recipient?
-                </Label>
-                <div className="flex gap-4 items-center">
-                  {/* YES Option */}
-                  <label
-                    className={cn(
-                      'flex items-center gap-2 cursor-pointer',
-                      isCOD === 1
-                        ? 'text-cyan-500 font-semibold'
-                        : 'text-gray-500'
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      value="yes"
-                      checked={isCOD === 1}
-                      onChange={() => {
-                        setIsCOD(1);
-                      }}
-                      className="accent-cyan-500 w-4 h-4"
+      <form onSubmit={(e) => e.preventDefault()}>
+        <CardContent
+          className={cn('mt-2 grid grid-cols-1 sm:grid-cols-2  gap-4')}
+        >
+          {/* phone */}
+          <FormField
+            control={recipientForm.control}
+            name="mobile_number"
+            render={({ field }) => (
+              <FormItem className="col-span-1 sm:col-span-2">
+                <FormLabel>{t('form.phone.label')}</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-[80px_1fr] gap-2 w-full ">
+                    <Input
+                      disabled
+                      defaultValue={t('form.phone.placeholder1')}
+                      placeholder={t('form.phone.placeholder1')}
+                      className=""
                     />
-                    YES
-                  </label>
-
-                  {/* NO Option */}
-                  <label
-                    className={cn(
-                      'flex items-center gap-2 cursor-pointer',
-                      isCOD === 2
-                        ? 'text-cyan-500 font-semibold'
-                        : 'text-gray-500'
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      value="no"
-                      checked={isCOD === 2}
-                      onChange={() => {
-                        setIsCOD(2);
-                      }}
-                      className="accent-cyan-500 w-4 h-4"
+                    <Input
+                      placeholder={t('form.phone.placeholder2')}
+                      {...field}
+                      className="w-full"
                     />
-                    NO
-                  </label>
-                </div>
-              </div>
-
-              <FormField
-                control={recipientForm.control}
-                name="amount_to_collect"
-                render={({ field }) => (
-                  <FormItem className="mt-4">
-                    <FormLabel>Amount</FormLabel>
-                    <FormControl className="bg-white">
-                      <Input
-                        disabled={isCOD === 2}
-                        required={isCOD === 1}
-                        placeholder="Ex: 10"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  </div>
+                </FormControl>
+                {field.value ? (
+                  <FormMessage />
+                ) : (
+                  <p className="inline-flex items-baseline gap-2 text-sm text-dark-grey/60">
+                    <Info className="size-4 translate-y-1" />
+                    {t('form.phone.warning-for-droppoff')}
+                  </p>
                 )}
+              </FormItem>
+            )}
+          />
+
+          {/* orderNumber */}
+          <FormField
+            control={recipientForm.control}
+            name="order_index"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2 col-span-1 ">
+                <FormLabel>{t('form.recipientName.label')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('form.recipientName.placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <AddressLandmarkFields
+            form={recipientForm}
+            isMap={true}
+            landmarkFieldName={t('form.address.label')}
+          />
+
+          {/* apartmentNo */}
+          <FormField
+            control={recipientForm.control}
+            name="apartment_no"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('form.apartment.label')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('form.recipientName.placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Floor */}
+          <FormField
+            control={recipientForm.control}
+            name="floor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('form.floor.label')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('form.floor.placeholder')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Apt */}
+          <FormField
+            control={recipientForm.control}
+            name="additional_address"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2 col-span-1">
+                <FormLabel>{t('form.additionalAddress.label')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('form.recipientName.placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Cash Collection */}
+          <div className="sm:col-span-2 col-span-1 px-3 py-4 rounded-[8px] bg-[#FDFDD4] border-[#FDFDD4] flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-dark-grey flex gap-1">
+                <DollarSign className="text-[#CD994D] size-4" />
+                {t('form.collectCash.label')}
+              </Label>
+
+              <BinaryToggle
+                defaultValue={isCOD}
+                className=""
+                onChange={(val) => setIsCOD(val)}
               />
             </div>
-          </CardContent>
-        </Card>
+
+            <span className="w-full h-[1px] bg-[#CAC4D0]" />
+
+            <FormField
+              control={recipientForm.control}
+              name="amount_to_collect"
+              render={({ field }) => (
+                <FormItem className="">
+                  <FormLabel>
+                    {t.rich('form.amount.label', {
+                      value: appConstants?.currency || 'KD',
+                    })}
+                  </FormLabel>
+                  <FormControl className="bg-white">
+                    <Input
+                      disabled={isCOD === 2}
+                      required={isCOD === 1}
+                      placeholder={t.rich('form.amount.placeholder', {
+                        value: appConstants?.currency || 'KD',
+                      })}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </CardContent>
       </form>
     </Form>
   );

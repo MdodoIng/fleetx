@@ -379,9 +379,9 @@ export default function SignUpForm() {
           <div className="flex justify-between pt-4 w-full gap-3">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               className={cn(
-                ' rounded-full overflow-hidden duration-300 px-10',
+                'cursor-pointer bg-[#6750A414] text-[#1D1B20]',
                 step === 0 && 'w-0 px-0 border-0'
               )}
               onClick={() => setStep((s) => s - 1)}

@@ -268,7 +268,10 @@ export default function OrderTrackingDashboard() {
           )}
 
           {isStyleTabel === 'list' && (
-            <ListComponent data={orderStore?.orderStatusListData!} />
+            <ListComponent
+              data={orderStore?.orderStatusListData!}
+              statusHistory={statusHistory}
+            />
           )}
         </>
       ) : (

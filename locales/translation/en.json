@@ -399,7 +399,74 @@
           "title": "Wallet Balance:",
           "button": "Recharge"
         },
-        "alertMessage" :"Service Hours:"
+        "create": {
+          "pickUpForm": {
+            "title": "Pick Up",
+            "subtitle": "Our team will collect your Parcel from here"
+          },
+          "dropOffForm": {
+            "title": "Drop-off Point <index>{value}</index>",
+            "subtitle": "We'll deliver your order here",
+            "add-dropoff": "Add Drop-off <index>{value}</index>"
+          },
+
+          "form": {
+            "senderName": {
+              "label": "Sender Name*",
+              "placeholder": "Manas Abdullah"
+            },
+            "phone": {
+              "label": "Phone*",
+              "placeholder1": "+965",
+              "placeholder2": "12345678",
+              "warning-for-droppoff": "We’ll fill your saved address if the number was used before. You can edit it"
+            },
+            "recipientName": {
+              "label": "Recipient Name*",
+              "placeholder": "Enter Customer Name"
+            },
+            "address": {
+              "label": "Address*",
+              "placeholder": "Select Area, Block, Street..."
+            },
+            "apartment": {
+              "label": "Apartment No. (Optional)",
+              "placeholder": "eg: 5"
+            },
+            "floor": {
+              "label": "Floor (Optional)",
+              "placeholder": "eg: Floor 3"
+            },
+            "additionalAddress": {
+              "label": "Additional Address (Optional)",
+              "placeholder": "eg: Mazaya"
+            },
+            "orderNumber": {
+              "label": "Order No. (Optional)",
+              "placeholder": "Enter Order no. – for your records"
+            },
+            "collectCash": {
+              "label": "Collect Cash from Recipient"
+            },
+            "amount": {
+              "label": "Amount ({value})",
+              "placeholder": "{value} 0.00"
+            }
+          },
+          "footer": {
+            "orderDetails": "Order Details",
+            "distance": "Distance:",
+            "drop-off": "Drop-off:",
+            "estTime": "Est. Time:",
+            "min": "Min",
+            "deliveryFee": "Delivery Fee:",
+            "button": {
+              "cancel": "Cancel",
+              "createOrder": "Create Order"
+            }
+          }
+        },
+        "alertMessage": "Service Hours:"
       }
     }
   }

@@ -15,8 +15,6 @@ import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { Control } from 'react-hook-form';
 
-
-
 const LandmarkInput = ({
   control,
   fieldName,
@@ -81,8 +79,8 @@ const LandmarkInput = ({
       name_en:
         landmarkValues && location
           ? landmarkValues?.[
-            location?.replace('.', '') as keyof typeof landmarkValues
-          ]?.building
+              location?.replace('.', '') as keyof typeof landmarkValues
+            ]?.building
           : landmarkValues?.building,
       loc_type: 'building',
     },
@@ -106,33 +104,40 @@ const LandmarkInput = ({
       id="landmark-input-container"
       className={
         isMapOpen
-          ? 'w-[calc(100%-20px)] mx-auto absolute top-0 z-50 bg-white'
-          : ''
+          ? 'w-[calc(100%-20px)] mx-auto absolute top-4 left-[10px] z-50'
+          : 'w-full overflow-hidden'
       }
       onFocus={() => setIsInputBlur(true)}
       onClick={() => setIsInputBlur(true)}
     >
       {!isMapOpen && <FormLabel>{fieldName || t('label')}</FormLabel>}
-      <FormControl className="relative z-0">
-        <div className={cn('flex gap-3 items-center ', classForInput)}>
-          {selectedItem.map((item, key) => {
-            if (!item.name_en) return null;
+      <FormControl className="relative z-0 w-full outline-hidden pr-10">
+        <div
+          className={cn(
+            'flex gap-3 items-center w-full overflow-hidden ',
+            classForInput
+          )}
+        >
+          <div className="flex gap-3 overflow-x-auto w-full max-w-max shrink-0 hide-scrollbar ">
+            {selectedItem.map((item, key) => {
+              if (!item.name_en) return null;
 
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleRemoveAddress(item)}
-                className="cursor-pointer text-dark-grey shrink-0 flex items-center gap-1 border border-[#9D9E9E] rounded-full pl-3 pr-1 py-1 text-sm  bg-off-white group hover:border-red-400 duration-100"
-              >
-                {item.name_en}
-                <Icon
-                  icon="carbon:close-outline"
-                  className="size-4 group-hover:text-red-400 duration-100"
-                />
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleRemoveAddress(item)}
+                  className="cursor-pointer text-dark-grey shrink-0 flex items-center gap-1 border border-[#9D9E9E] rounded-full pl-3 pr-1 py-1 text-sm  bg-off-white group hover:border-red-400 duration-100"
+                >
+                  {item.name_en}
+                  <Icon
+                    icon="carbon:close-outline"
+                    className="size-4 group-hover:text-red-400 duration-100"
+                  />
+                </button>
+              );
+            })}
+          </div>
           <input
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setIsInputVal(e.target.value);
@@ -140,7 +145,7 @@ const LandmarkInput = ({
             value={isInputVal}
             disabled={landmarkValues.building ? true : false}
             placeholder={fieldPlaceholder || placeholderInput}
-            className="outline-0 border-none  w-full flex disabled:hidden"
+            className="outline-0 border-none  w-full shrink-0 flex disabled:hidden"
             onKeyDown={(e) => handleEnter(e)}
           />
 
@@ -148,7 +153,7 @@ const LandmarkInput = ({
             <Button
               onClick={() => setIsMapOpen(!isMapOpen)}
               variant={isMapOpen ? 'default' : 'ghost'}
-              className="absolute right-0 top-0 "
+              className={cn('absolute right-0 top-0 h-full ', !isMapOpen && 'bg-white')}
             >
               {isMapOpen ? 'submit' : <MapPin />}
             </Button>
