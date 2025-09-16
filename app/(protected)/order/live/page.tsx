@@ -146,7 +146,7 @@ export default function OrderTrackingDashboard() {
   const t = useTranslations('component.features.orders.live');
 
   return (
-    <Dashboard>
+    <Dashboard className='h-auto'>
       <DashboardHeader>
         <DashboardHeaderRight />
         <div className="">

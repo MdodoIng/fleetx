@@ -29,7 +29,7 @@
           "subtitle": "تحقق من رؤيتك الجماعية هنا"
         }
       },
-      "vendor": "بائع",
+      "vendor": "البائع",
       "vendorSubMenu": {
         "vendorList": {
           "title": "قائمة البائعين",
@@ -59,7 +59,7 @@
           "subtitle": "عرض سجل معاملات محفظتك"
         },
         "paymentHistory": {
-          "title": "سجل الدفع",
+          "title": "سجل المدفوعات",
           "subtitle": "راجع جميع معاملات الدفع السابقة"
         },
         "manualPayment": {
@@ -68,7 +68,7 @@
         },
         "balanceReport": {
           "title": "تقرير الرصيد",
-          "subtitle": "إنشاء تقرير عن رصيد محفظتك"
+          "subtitle": "توليد تقرير عن رصيد محفظتك"
         }
       },
       "billing": {
@@ -77,16 +77,16 @@
       },
       "billingSubMenu": {
         "editProfile": {
-          "title": "تحرير الملف الشخصي",
+          "title": "تعديل الملف الشخصي",
           "subtitle": "تحديث تفاصيل ملف تعريف الفوترة الخاص بك"
         },
         "invoice": {
-          "title": "الفاتورة",
+          "title": "فاتورة",
           "subtitle": "عرض وتنزيل فواتيرك"
         }
       },
       "insights": {
-        "title": "الرؤى",
+        "title": "رؤى",
         "subtitle": "الوصول إلى بيانات الأداء والتحليلات"
       },
       "insightsSubMenu": {
@@ -96,7 +96,7 @@
         },
         "churnReasons": {
           "title": "أسباب التخلي",
-          "subtitle": "فهم أسباب مغادرة العملاء"
+          "subtitle": "فهم سبب مغادرة العملاء"
         },
         "firstOrder": {
           "title": "الطلب الأول",
@@ -112,7 +112,7 @@
         },
         "zoneGrowth": {
           "title": "نمو المنطقة",
-          "subtitle": "عرض اتجاهات النمو عبر مناطق مختلفة"
+          "subtitle": "عرض اتجاهات النمو عبر المناطق المختلفة"
         }
       },
       "others": {
@@ -122,7 +122,7 @@
       "othersSubMenu": {
         "integrations": {
           "title": "التكاملات",
-          "subtitle": "إدارة تكاملات الطرف الثالث"
+          "subtitle": "إدارة التكاملات الخارجية"
         }
       },
       "salesFunnel": {
@@ -158,7 +158,7 @@
         "subtitle": "الاتصال بالخدمات الخارجية"
       },
       "editPickUp": {
-        "title": "تحرير عملية الاستلام",
+        "title": "تعديل عملية الاستلام",
         "subtitle": "تعديل تفاصيل موقع الاستلام"
       }
     },
@@ -168,7 +168,7 @@
         "subtitle": "تحديث كلمة مرور ملفك الشخصي"
       },
       "editBilling": {
-        "title": "تحرير ملف تعريف الفوترة",
+        "title": "تعديل ملف تعريف الفوترة",
         "subtitle": "تحديث تفاصيل الفوترة الخاصة بك"
       },
       "logout": {
@@ -177,18 +177,93 @@
       }
     }
   },
+  "deliveryModel": {
+    "unidentified": "غير محدد",
+    "individual": "فردي",
+    "group": "مجموعة",
+    "bulk": "جماعي",
+    "massDeliveries": "تسليمات جماعية",
+    "superSaverIndividual": "فردي ذو توفير فائق",
+    "superSaverGroup": "مجموعة ذات توفير فائق"
+  },
+  "orderStatus": {
+    "NEW": {
+      "default": "NEW",
+      "history": "تم وضع الطلب."
+    },
+    "CONFIRMED": {
+      "default": "CONFIRMED",
+      "history": "تم تأكيد الطلب."
+    },
+    "BUDDY_UNASSIGNED": {
+      "default": "BUDDY_UNASSIGNED",
+      "history": "في انتظار السائق."
+    },
+    "BUDDY_ASSIGNED": {
+      "default": "BUDDY_ASSIGNED",
+      "history": "تم تعيين السائق."
+    },
+    "BUDDY_QUEUED": {
+      "default": "BUDDY_QUEUED",
+      "history": "الطلب في قائمة انتظار السائق."
+    },
+    "BUDDY_DECLINED": {
+      "default": "BUDDY_DECLINED",
+      "history": "رفض السائق ؛ إعادة التعيين."
+    },
+    "BUDDY_ACCEPTED": {
+      "default": "BUDDY_ACCEPTED",
+      "history": "قبل السائق ؛ في طريقه."
+    },
+    "PICKUP_STARTED": {
+      "default": "PICKUP_STARTED",
+      "history": "السائق يلتقط الطلب."
+    },
+    "ARRIVED_PICKUP": {
+      "default": "ARRIVED_PICKUP",
+      "history": "وصل السائق إلى موقع الاستلام."
+    },
+    "PICKED_UP": {
+      "default": "PICKED_UP",
+      "history": "تم التقاط الطلب."
+    },
+    "RESCHEDULED": {
+      "default": "RESCHEDULED",
+      "history": "تم إعادة جدولة الطلب."
+    },
+    "IN_DELIVERY": {
+      "default": "IN_DELIVERY",
+      "history": "الطلب قيد التسليم."
+    },
+    "ARRIVED_DESTINATION": {
+      "default": "ARRIVED_DESTINATION",
+      "history": "وصل الطلب."
+    },
+    "DELIVERED": {
+      "default": "DELIVERED",
+      "history": "تم تسليم الطلب."
+    },
+    "CANCELED": {
+      "default": "CANCELED",
+      "history": "تم إلغاء الطلب."
+    },
+    "DELIVERY_FAILED": {
+      "default": "DELIVERY_FAILED",
+      "history": "فشل التسليم. اتصل بالدعم."
+    }
+  },
   "apiMessages": {
     "DATA_NOT_FOUND": "لم يتم العثور على البيانات الخاصة بالسجل المحدد",
     "INVALID_REQUEST": "طلب غير صالح",
     "UPDATED_SUCCESSFULLY": "تم تحديث السجل بنجاح",
-    "ACTIVE_INACTIVE_NOT_FOUND": "لم يتم العثور على أي سجل للعملية (التنشيط/إلغاء التنشيط)",
+    "ACTIVE_INACTIVE_NOT_FOUND": "لم يتم العثور على سجل للعملية (نشط / غير نشط)",
     "BRANCH_NOT_FOUND": "لم يتم العثور على فرع للبائع",
     "VENDOR_CREATED": "تم إنشاء البائع بنجاح",
     "VENDOR_NAME_ALREADY_EXIST": "اسم البائع موجود بالفعل",
     "ORDER_CREATED": "تم وضع الطلب بنجاح",
     "ORDER_CANNOT_BE_MODIFIED": "لا يمكن تعديل الطلب",
     "ORDER_NOT_FOUND": "لم يتم العثور على الطلب",
-    "LOWER_STATUS_THAN_EXISTING": "حالة أقل من الحالة الموجودة",
+    "LOWER_STATUS_THAN_EXISTING": "حالة أقل من الحالة الحالية",
     "UPDATED_DELIEVERY_STATUS": "تم تحديث حالة التسليم بنجاح",
     "VENDOR_USER_CREATED": "تم إنشاء مستخدم البائع بنجاح",
     "VENDOR_USER_CREATION_INVALID_USER_REQUEST": "يرجى التحقق من التفاصيل المقدمة",
@@ -197,13 +272,13 @@
     "VENDOR_USER_PASSWORD_RESET_SUCCESS": "تم إعادة تعيين كلمة المرور بنجاح",
     "VENDOR_USER_NOT_FOUND": "لم يتم العثور على مستخدم البائع",
     "VENDOR_USER_PASSWORD_ALREADY_RESET": "تم إعادة تعيين كلمة مرور مستخدم البائع بالفعل",
-    "USER_EMAIL_PHONE_ALREADY_EXIST": "يوجد مستخدم بالفعل بنفس البريد الإلكتروني أو الهاتف.",
-    "WE_ARE_NOT_OPERATIONAL_AT_THE_MOMENT": "أنا آسف، نحن لسنا قيد التشغيل في الوقت الحالي",
+    "USER_EMAIL_PHONE_ALREADY_EXIST": "يوجد بالفعل مستخدم بنفس البريد الإلكتروني أو الهاتف.",
+    "WE_ARE_NOT_OPERATIONAL_AT_THE_MOMENT": "أنا آسف، نحن لسنا عاملين في الوقت الحالي",
     "SERVER_ERROR": "فشل الاتصال! يرجى التحقق من الإنترنت الخاص بك",
     "NO_MIN_VENDOR_WALLET_BALANCE": "ليس لديك رصيد كافٍ لوضع الطلب.",
-    "ORDER_PAYMENT_IS_SETTLED": "تم تسوية مبلغ الدفع عند الاستلام. لا يمكن تحديثه أكثر من ذلك.",
+    "ORDER_PAYMENT_IS_SETTLED": "تم تسوية مبلغ الدفع عند الاستلام للطلب. لا يمكن تحديثه أكثر من ذلك.",
     "PAYMENT_UPDATION_IS_LOCKED": "لا يمكن تحديث الدفع في هذا الوقت لأنه مقفل من قبل مدير المالية. يرجى المحاولة مرة أخرى لاحقًا",
-    "PAYMENT_LOCK_IS_DISABLED": "تم إلغاء قفل الدفع لذلك لا يمكنك إجراء التسوية",
+    "PAYMENT_LOCK_IS_DISABLED": "الدفع غير مقفل لذا لا يمكنك إجراء التسوية",
     "AMOUNT_MISSMACTH": "تم تغيير المبلغ. يرجى التحديث والمحاولة مرة أخرى",
     "CURRENT_PASSWORD_MISSMATCH": "كلمة المرور الحالية خاطئة",
     "INVALID_IMPROVMENT_TYPE": "لقد أدخلت بعض البيانات الخاطئة",
@@ -212,30 +287,30 @@
     "INVALID_ORDER_GROUP": "مجموعة طلبات غير صالحة",
     "INVALID_ORDER_RATING": "لا يمكنك تقييم هذا الطلب",
     "ZONE_NAME_ALREADY_EXISTS": "اسم المنطقة موجود بالفعل",
-    "BUSY_MODE_ACTIVATED": "أنا آسف، تم تنشيط وضع المشغول",
-    "ZONE_BUSY_MODE_ACTIVATED": "أنا آسف، تم تنشيط وضع المشغول في عملية الاستلام المحددة",
-    "API_ALREADY_ACTIVATED": "هذا تم تنشيطه بالفعل",
-    "ORDER_DELIVERED_OR_CANCELLED": "أنا آسف، لا يمكنك تعديل هذا الطلب لأنه تم إغلاقه بالفعل.",
+    "BUSY_MODE_ACTIVATED": "أنا آسف، وضع المشغول مفعل",
+    "ZONE_BUSY_MODE_ACTIVATED": "أنا آسف، وضع المشغول مفعل في عملية الاستلام المحددة",
+    "API_ALREADY_ACTIVATED": "هذا مفعل بالفعل",
+    "ORDER_DELIVERED_OR_CANCELLED": "أنا آسف، لا يمكنك تعديل هذا الطلب لأنه مغلق بالفعل.",
     "PHONE_ALREADY_EXIST": "الهاتف موجود بالفعل.",
-    "BRANCH_NAME_ALREADY_EXIST": "اسم الفرع موجود بالفعل. يرجى الاتصال بفريق دعم Mashkor",
+    "BRANCH_NAME_ALREADY_EXIST": "اسم الفرع موجود بالفعل. يرجى الاتصال بفريق دعم مشكور",
     "ADDRESS_ALREADY_VERIFIED": "العميل قام بالفعل بالتحقق من العنوان",
     "ORDER_STATUS_BEYOND_ADDR_UPDATE_BY_CUSTOMER": "بدأ التسليم بالفعل أو تم إلغاؤه",
     "VENDOR_BRANCH_INVOICE_NOT_GENERATED": "لم يتم إنشاء الفاتورة",
-    "AREA_BASED_RESTRICTION_ACTIVATED": "فشل إنشاء الطلب. تم تنشيط قيود المنطقة.",
-    "PHONE_ALREADY_USED": "يوجد مستخدم بالفعل بنفس الهاتف.",
-    "EMAIL_ALREADY_USED": "يوجد مستخدم بالفعل بنفس البريد الإلكتروني."
+    "AREA_BASED_RESTRICTION_ACTIVATED": "فشل إنشاء الطلب. تقييد المنطقة مفعل.",
+    "PHONE_ALREADY_USED": "يوجد بالفعل مستخدم بنفس رقم الهاتف.",
+    "EMAIL_ALREADY_USED": "يوجد بالفعل مستخدم بنفس البريد الإلكتروني."
   },
   "commonMessages": {
-    "errorMessage": "اووه، حدث خطأ ما.",
+    "errorMessage": "واو، حدث خطأ ما.",
     "AREA_RESTRICTION": "يمكنك الآن التسليم إلى المزيد من المناطق. تم زيادة نصف القطر من 10 إلى 15 كم.",
     "CHANGE_BRANCH_NEW_ORDER": "هل أنت متأكد من رغبتك في تغيير الفرع؟ يرجى التأكيد.",
-    "CLEAR_FILTER": "سيؤدي هذا إلى مسح جميع بياناتك المدخلة. يرجى التأكيد.",
-    "GROUPING_ORDERS_LIMIT": "أنا آسف، لقد وصلت إلى الحد الأقصى لجمع الطلبات.",
-    "GROUPING_ORDERS": "لاحظ أنه سيتم تعيين الطلبات لسائق واحد مما سيؤدي إلى زيادة وقت التسليم. <br> إذا كنت لا تفضل تجميع الطلبات، فيرجى وضعها واحدة تلو الأخرى.",
+    "CLEAR_FILTER": "سيتم مسح جميع بياناتك المدخلة. يرجى التأكيد.",
+    "GROUPING_ORDERS_LIMIT": "أنا آسف، لقد وصلت إلى الحد الأقصى لطلبات المجموعات.",
+    "GROUPING_ORDERS": "لاحظ أن الطلبات ستُعيّن لسائق واحد مما سيؤدي إلى زيادة وقت التسليم. <br> إذا كنت لا ترغب في تجميع الطلبات، فيرجى وضعها واحدة تلو الأخرى.",
     "DELETE_DROPOFF": "هل أنت متأكد من رغبتك في حذف نقطة التسليم؟ يرجى التأكيد",
     "DELETED_DROPOFF": "تم حذف نقطة التسليم بنجاح.",
     "SUCCESS_PLACE_ORDER": "تم وضع طلبك بنجاح، وسيكون السائق في موقع الاستلام قريبًا.",
-    "FRESHCHAT_CSAT_QUESTION": "هل وجدت موظف الدعم مفيدًا؟ <br/> هل قام موظف خدمة العملاء بخدمتك كما توقعت ؟",
+    "FRESHCHAT_CSAT_QUESTION": "هل وجدت وكيلنا مفيدًا؟ <br/> هل قام موظف خدمة العملاء بخدمتك كما توقعت ؟",
     "REORDER_CONFIRM": "هل تريد إعادة الطلب؟ يرجى التأكيد.",
     "OBJECT_DOES_NOT_EXIST": "OBJECT_DOES_NOT_EXIST",
     "pleaseEnterAllTheValues": "يرجى إدخال جميع القيم",
@@ -269,7 +344,7 @@
     },
     "register": {
       "title": "إنشاء حساب",
-      "subtitle": "ابدأ في التسليم مع FleetX",
+      "subtitle": "ابدأ التوصيل مع FleetX",
       "emailLabel": "عنوان البريد الإلكتروني",
       "usernameLabel": "اسم المستخدم",
       "passwordLabel": "كلمة المرور",
@@ -278,9 +353,9 @@
       "loginHere": "تسجيل الدخول هنا"
     },
     "business": {
-      "cta": "ليس لديك حساب بعد؟",
+      "cta": "ليس لديك حساب حتى الآن؟",
       "button": "إنشاء حساب تجاري",
-      "promo": "ابدأ في التسليم اليوم مع FleetX - سريع، موثوق، وبسيط."
+      "promo": "ابدأ التوصيل اليوم مع FleetX — سريع، موثوق، وبسيط."
     },
     "contact": {
       "help": "هل لديك أسئلة؟ نحن هنا للمساعدة!",
@@ -290,13 +365,13 @@
     "promoBanner": {
       "badge": "موثوق به من قبل أكثر من 500 شركة في الكويت",
       "headlineRich": "أرسل طلباتك <span>بسرعة</span> و <span>سهولة</span>.",
-      "subHeadline": "انضم إلى شبكة التوصيل الأكثر ثقة في الكويت.",
+      "subHeadline": "انضم إلى شبكة التوصيل الأكثر موثوقية في الكويت.",
       "features": {
-        "pickup": "الاستلام خلال 30 إلى 90 دقيقة",
+        "pickup": "الاستلام في 30 إلى 90 دقيقة",
         "tracking": "تتبع كل طلب مباشرة",
         "drivers": "سائقون محترفون مدربون",
-        "support": "دعم الطلبات والشحن على مدار الساعة طوال أيام الأسبوع",
-        "noFees": "بدون رسوم إعداد - ابدأ اليوم"
+        "support": "دعم الطلبات والشحنات على مدار الساعة",
+        "noFees": "لا توجد رسوم إعداد - ابدأ اليوم"
       },
       "contact": {
         "title": "هل لديك أسئلة؟ نحن هنا للمساعدة!",
@@ -307,9 +382,9 @@
     "businessForm": {
       "title0": "أنشئ حسابك في ثوانٍ",
       "title1": "أنشئ حسابك",
-      "title2": "أين موقعك؟",
-      "tagline0": "ابدأ في التسليم اليوم مع FleetX - سريع، موثوق، وبسيط.",
-      "tagline1": "انضم إلى شبكة التوصيل الأكثر ثقة في الكويت.",
+      "title2": "أين يقع موقعك؟",
+      "tagline0": "ابدأ التوصيل اليوم مع FleetX - سريع، موثوق، وبسيط.",
+      "tagline1": "انضم إلى شبكة التوصيل الأكثر موثوقية في الكويت.",
       "tagline2": "حتى يتمكن سائقونا من العثور عليك بسرعة!",
       "fields": {
         "businessName": {
@@ -331,11 +406,11 @@
         },
         "address": {
           "label": "العنوان*",
-          "placeholder": "حدد المنطقة، والقطعة، والشارع..."
+          "placeholder": "حدد المنطقة، والعمارة، والشارع..."
         },
         "landmark": {
           "label": "ساعد سائقنا في العثور عليك (معلم)*",
-          "placeholder": "مثل: بجوار Pink Bakery، خلف ايكيا"
+          "placeholder": "مثل: بجوار مخبز بينك، خلف ايكيا"
         },
         "email": {
           "label": "البريد الإلكتروني*",
@@ -357,12 +432,12 @@
       "loginHere": "تسجيل الدخول"
     },
     "terms": {
-      "title": "البنود والشروط",
+      "title": "الشروط والأحكام",
       "subtitle": "يرجى مراجعة شروط الخدمة الخاصة بنا",
       "sections": {
         "cod": {
-          "heading": "إذا كنت شركة وتستخدم لوحة تحكم FleetX لعمليات تسليم عملائك:",
-          "rule1": "سيتم دفع طلبات الدفع عند الاستلام التي تقل عن 50 دينار كويتي من قبل سائق FleetX لك عند استلام الطلب.",
+          "heading": "إذا كنت شركة وتستخدم لوحة معلومات FleetX لتوصيل عملائك:",
+          "rule1": "سيتم دفع طلبات الدفع عند الاستلام التي تقل عن 50 دينار كويتي من قبل سائق FleetX إليك عند استلام الطلب.",
           "rule2": "سيتم دفع طلبات الدفع عند الاستلام التي تزيد عن 50 دينار كويتي من قبل سائقي FleetX خلال 24 ساعة من تسليم الطلب."
         },
         "waitTime": {
@@ -381,8 +456,8 @@
     "common": {
       "inputSearch": {
         "label": "العنوان*",
-        "placeholder": "حدد المنطقة، والقطعة، والشارع...",
-        "placeholderArea": "حدد القطعة، والشارع...",
+        "placeholder": "حدد المنطقة، والعمارة، والشارع...",
+        "placeholderArea": "حدد العمارة، والشارع...",
         "placeholderBlock": "حدد الشارع...",
         "empty": ""
       },
@@ -398,8 +473,8 @@
         },
         "create": {
           "pickUpForm": {
-            "title": "مكان الاستلام",
-            "subtitle": "سيقوم فريقنا بجمع طردك من هنا"
+            "title": "استلام",
+            "subtitle": "سيتولى فريقنا استلام طردك من هنا"
           },
           "dropOffForm": {
             "title": "نقطة التسليم <index>{value}</index>",
@@ -423,7 +498,7 @@
             },
             "address": {
               "label": "العنوان*",
-              "placeholder": "حدد المنطقة، والقطعة، والشارع..."
+              "placeholder": "حدد المنطقة، والعمارة، والشارع..."
             },
             "apartment": {
               "label": "رقم الشقة (اختياري)",
@@ -431,7 +506,7 @@
             },
             "floor": {
               "label": "الطابق (اختياري)",
-              "placeholder": "مثل: الطابق الثالث"
+              "placeholder": "مثل: الطابق 3"
             },
             "additionalAddress": {
               "label": "عنوان إضافي (اختياري)",
@@ -462,7 +537,38 @@
             }
           }
         },
-        "alertMessage": "ساعات العمل:"
+        "live": {
+          "search": {
+            "default": "بحث حسب رقم الطلب، أو العميل، أو الهاتف",
+            "order": "بحث رقم الطلب",
+            "customer": "بحث العميل",
+            "driver": "حدد سائقًا"
+          },
+          "order": {
+            "title": "الطلبات",
+            "subtitle": "هنا يمكنك العثور على قائمة بجميع الطلبات النشطة"
+          },
+          "tracking": {
+            "title": "التتبع المباشر",
+            "subtitle": "تتبع طلبك مباشرة من هنا",
+            "driver": {
+              "defult": "السائق",
+              "call": "اتصل بالسائق"
+            }
+          },
+          "details": {
+            "title": "تفاصيل الطلب",
+            "subtitle": "نظرة عامة مفصلة على عملية طلبك",
+            "payment-method": "طريقة الدفع",
+            "delivery-fee": "رسوم التوصيل",
+            "staus-history": {
+              "in-progress": "قيد التنفيذ",
+              "pending": "معلق"
+            }
+          },
+          "mins": "دقائق"
+        },
+        "alertMessage": "أوقات العمل:"
       }
     }
   }

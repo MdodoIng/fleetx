@@ -29,6 +29,7 @@ import { useTranslations } from 'next-intl';
 import { useOrderStore, useSharedStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
 import { color } from 'framer-motion';
+import StatusStep from './StatusStep';
 
 interface GridComponentProps {
   selectedOrder: TypeOrderHistoryList | null;
@@ -286,33 +287,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
               {/* Timeline */}
               <div className="mt-4 space-y-5">
-                {statusHistory.map((status) => (
-                  <div key={status.id} className="flex gap-3 items-start">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-5 h-5 rounded-full ${
-                          status.completed
-                            ? 'bg-purple-600'
-                            : 'border border-gray-300'
-                        }`}
-                      />
-                      <div className="h-6 w-px bg-gray-200" />
-                    </div>
-                    <div>
-                      <p
-                        className={`text-sm font-medium ${
-                          status.completed ? 'text-purple-600' : 'text-gray-500'
-                        }`}
-                      >
-                        {status.text}
-                      </p>
-                      {status.time && (
-                        <p className="text-xs text-gray-400">
-                          {new Date(status.time).toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                {statusHistory.map((status, idx) => (
+                  <StatusStep key={idx} status={status} />
                 ))}
               </div>
             </>
