@@ -179,6 +179,82 @@
     }
   },
 
+  "deliveryModel": {
+    "unidentified": "Unidentified",
+    "individual": "Individual",
+    "group": "Group",
+    "bulk": "Bulk",
+    "massDeliveries": "Mass deliveries",
+    "superSaverIndividual": "Super Saver Individual",
+    "superSaverGroup": "Super Saver Group"
+  },
+  "orderStatus": {
+    "NEW": {
+      "default": "NEW",
+      "history": "Order placed."
+    },
+    "CONFIRMED": {
+      "default": "CONFIRMED",
+      "history": "Order confirmed."
+    },
+    "BUDDY_UNASSIGNED": {
+      "default": "BUDDY_UNASSIGNED",
+      "history": "Awaiting driver."
+    },
+    "BUDDY_ASSIGNED": {
+      "default": "BUDDY_ASSIGNED",
+      "history": "Driver assigned."
+    },
+    "BUDDY_QUEUED": {
+      "default": "BUDDY_QUEUED",
+      "history": "Order in driver's queue."
+    },
+    "BUDDY_DECLINED": {
+      "default": "BUDDY_DECLINED",
+      "history": "Driver declined; reassigning."
+    },
+    "BUDDY_ACCEPTED": {
+      "default": "BUDDY_ACCEPTED",
+      "history": "Driver accepted; en route."
+    },
+    "PICKUP_STARTED": {
+      "default": "PICKUP_STARTED",
+      "history": "Driver picking up order."
+    },
+    "ARRIVED_PICKUP": {
+      "default": "ARRIVED_PICKUP",
+      "history": "Driver arrived at pickup."
+    },
+    "PICKED_UP": {
+      "default": "PICKED_UP",
+      "history": "Order picked up."
+    },
+    "RESCHEDULED": {
+      "default": "RESCHEDULED",
+      "history": "Order rescheduled."
+    },
+    "IN_DELIVERY": {
+      "default": "IN_DELIVERY",
+      "history": "Order in delivery."
+    },
+    "ARRIVED_DESTINATION": {
+      "default": "ARRIVED_DESTINATION",
+      "history": "Order arrived."
+    },
+    "DELIVERED": {
+      "default": "DELIVERED",
+      "history": "Order delivered."
+    },
+    "CANCELED": {
+      "default": "CANCELED",
+      "history": "Order canceled."
+    },
+    "DELIVERY_FAILED": {
+      "default": "DELIVERY_FAILED",
+      "history": "Delivery failed. Contact support."
+    }
+  },
+
   "apiMessages": {
     "DATA_NOT_FOUND": "Data not found for the specific record",
     "INVALID_REQUEST": "Invalid request",
@@ -466,6 +542,40 @@
             }
           }
         },
+        "live": {
+          "search": {
+            "default": "Search by Order No, Customer, Phone",
+            "order": "Search Order No ",
+            "customer": "Search Customer",
+            "driver": "Select an Driver"
+          },
+
+          "order": {
+            "title": "Orders",
+            "subtitle": "Here you can find a list of all active order"
+          },
+          "tracking": {
+            "title": "Live Tracking",
+            "subtitle": "Track your order live right here",
+            "driver": {
+              "defult": "Driver",
+              "call": "Call Driver"
+            }
+          },
+          "details": {
+            "title": "Order Details",
+            "subtitle": "Detailed Overview of Your Order Process",
+            "payment-method": "Payment Method",
+            "delivery-fee": "Delivery Fee",
+            "staus-history": {
+              "in-progress": "In Progress",
+              "pending": "pending"
+            }
+          },
+
+          "mins": "Mins"
+        },
+
         "alertMessage": "Service Hours:"
       }
     }

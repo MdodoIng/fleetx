@@ -1,7 +1,7 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
 import { Grid, List, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
@@ -23,31 +23,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/shared/lib/utils';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All Orders');
   const [ordernNumber, setOrdernNumber] = useState('');
+  const [searchCustomer, setSearchCustomer] = useState('');
+  const [page, setPage] = useState(10);
+  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
+  const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [driverList, setDriverList] = useState<any>();
+
   const orderStore = useOrderStore();
   const venderStore = useVenderStore();
   const authStore = useAuthStore();
-  const [searchCustomer, setSearchCustomer] = useState('');
-
-  const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
+  const { driverId, setValue } = useOrderStore();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
-    orderStore?.orderHistoryListData &&
-      orderStore?.orderHistoryListData.length > 0
-      ? orderStore?.orderHistoryListData[0]
-      : ({} as TypeOrderHistoryList)
+    orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList)
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(10);
-  const { driverId, setValue } = useOrderStore();
-  const [driverList, setDriverList] =
-    useState<TypeFleetDriverResponse['data']>();
-
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
 
   const isOrderLiveIsTable =
     authStore.user?.roles?.some((role) =>
@@ -59,53 +62,46 @@ export default function OrderTrackingDashboard() {
       ].includes(role as any)
     ) ?? false;
 
-  const fetchOrderDetails = async () => {
-    setIsLoading(true);
-
-    const searchAll = authStore.user?.roles.includes('FINANCE_MANAGER')
-      ? null
-      : true;
-
-    const url = orderService.getOrderStatusUrl(
-      1,
+    const url = useMemo(() => {
+      return orderService.getOrderStatusUrl(
+         1,
+        page,
+        ordernNumber,
+        searchCustomer,
+        driverId!,
+       authStore.user?.roles?.includes('FINANCE_MANAGER') ? null : true,
+      );
+    }, [
       page,
+      venderStore.vendorId,
+      venderStore.branchId,
+      authStore.user,
       ordernNumber,
       searchCustomer,
-      driverId!,
-      searchAll
-    );
+      driverId,
+    ]);
 
+
+  const fetchOrderDetails = useCallback(async () => {
+    setIsLoading(true);
     try {
       const res = await orderService.getOrderList(url);
-
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
-        if (orderStore.orderStatusListData) {
-          console.log(orderStore.orderStatusListData, 'fafa');
-          setSelectedOrder(orderStore.orderStatusListData[0]);
-        }
+        setSelectedOrder(res.data[0]);
       }
       setNextSetItemsToken(res.count! < page ? null : true);
-      setIsLoading(false);
     } catch (err: any) {
+      console.error('Error fetching orders:', err.message || err);
+    } finally {
       setIsLoading(false);
-
-      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
-      const errorMessage =
-        err.error?.message ||
-        err.message ||
-        'An unknown error occurred while fetching orders.';
-
-      console.error('Error in fetchOrderDetails:', errorMessage);
     }
-  };
+  }, [url, page]);
 
-  const fetchDriverData = async () => {
+  const fetchDriverData = useCallback(async () => {
     if (!isOrderLiveIsTable) return;
-
     try {
       const driverResult = await fleetService.getDriver();
-
       if (driverResult.data) {
         setDriverList(driverResult.data);
       }
@@ -113,25 +109,15 @@ export default function OrderTrackingDashboard() {
       console.error('Error fetching driver data:', error);
       setDriverList(undefined);
     }
-  };
+  }, [isOrderLiveIsTable]);
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
-      await fetchOrderDetails();
-    };
-    loadInitialOrders();
-  }, [
-    venderStore.selectedBranch?.id,
-    page,
-    venderStore.selectedVendor?.id,
-    driverId,
-    searchCustomer,
-    ordernNumber,
-  ]);
+    fetchOrderDetails();
+  }, [fetchOrderDetails]);
 
   useEffect(() => {
     fetchDriverData();
-  }, [isOrderLiveIsTable]);
+  }, [fetchDriverData]);
 
   const { statusHistory } = useOrderStatusHistory(
     selectedOrder,
@@ -157,126 +143,134 @@ export default function OrderTrackingDashboard() {
     }
   }
 
+  const t = useTranslations('component.features.orders.live');
+
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
+    <Dashboard>
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className="">
+          {/* Search and Filter */}
+          <div className="flex justify-center gap-1.5">
+            {isOrderLiveIsTable ? (
+              <div className="flex gap-5">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder={t('search.order')}
+                    value={ordernNumber}
+                    onChange={(e) => setOrdernNumber(e.target.value)}
+                    className="!border-none !outline-none !ring-0 pr-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder={t('search.customer')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="!border-none !outline-none !ring-0 pr-10"
+                  />
+                </div>
 
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        {!isOrderLiveIsTable && (
-          <div className="flex items-center justify-between ">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Active Orders
-            </h2>
-          </div>
-        )}
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          {isOrderLiveIsTable ? (
-            <div className="flex items-center gap-5">
+                <div className="flex items-center justify-center gap-1.5">
+                  <Select
+                    value={String(driverId)}
+                    onValueChange={(value) =>
+                      setValue('driverId', Number(value))
+                    }
+                  >
+                    <SelectTrigger className="w-[180px] bg-white">
+                      <SelectValue placeholder={t('search.driver')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="null">All Driver</SelectItem>
+                      {driverList?.agents.map((item, idx) => (
+                        <SelectItem key={idx} value={String(item.fleet_id)}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
               <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   type="text"
-                  placeholder="Search Order No"
-                  value={ordernNumber}
-                  onChange={(e) => setOrdernNumber(e.target.value)}
-                  className=""
+                  placeholder={t('search.default')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 !border-none !outline-none !ring-0 pr-10"
                 />
               </div>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search Customer"
-                  value={searchCustomer}
-                  onChange={(e) => setSearchCustomer(e.target.value)}
-                  className=""
-                />
-              </div>
+            )}
 
-              <div className="flex items-center justify-center gap-1.5">
-                <Select
-                  value={String(driverId)}
-                  onValueChange={(value) => setValue('driverId', Number(value))}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select an Driver" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="null">All Driver</SelectItem>
-                    {driverList?.agents.map((item, idx) => (
-                      <SelectItem key={idx} value={String(item.fleet_id)}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ) : (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search by Order No, Customer, Phone"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 "
-              />
-            </div>
-          )}
-
-          <div
-            hidden={isOrderLiveIsTable}
-            className="flex gap-2 border bg-white rounded-md"
-          >
-            <button
-              onClick={() => handleTableChange('grid')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+            <div
+              hidden={isOrderLiveIsTable}
+              className="flex items-center justify-center border broder-[#2828281A] rounded-md"
+              style={{
+                border: '1px solid #2828281A',
+              }}
             >
-              <Grid className="w-5 h-5 text-gray-600" />
-            </button>
-            <span className="h-auto bg-gray-200 w-0.5 " />
-            <button
-              onClick={() => handleTableChange('list')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <List className="w-5 h-5 text-gray-600" />
-            </button>
+              {[
+                { type: 'grid', icon: Grid },
+                { type: 'list', icon: List },
+              ].map((item, idx) => (
+                <Fragment key={idx}>
+                  <button
+                    onClick={() =>
+                      handleTableChange(item.type as typeof isStyleTabel)
+                    }
+                    className={cn(
+                      'px-3 py-2 hover:bg-gray-100 rounded-lg flex items-center justify-center h-full',
+                      isStyleTabel === item.type
+                        ? ' bg-[#EEF6FE] text-primary-blue'
+                        : ' bg-transparent text-dark-grey'
+                    )}
+                  >
+                    <item.icon className="w-5 h-5 " />
+                  </button>
+                  <span className="h-full flex bg-[#2828281A] w-0.5 last:hidden" />
+                </Fragment>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </DashboardHeader>
+      <DashboardContent className="flex w-full">
+        {isOrderLiveIsTable ? (
+          <TableComponent
+            data={orderStore?.orderStatusListData!}
+            isRating={false}
+            page={page}
+            setPage={setPage}
+            fetchOrderDetails={fetchOrderDetails}
+            nextSetItemTotal={nextSetItemsToken}
+          />
+        ) : orderStore?.orderStatusListData &&
+          orderStore?.orderStatusListData?.length > 0 ? (
+          <>
+            {isStyleTabel === 'grid' && (
+              <GridComponent
+                selectedOrder={selectedOrder}
+                setSelectedOrder={setSelectedOrder}
+                statusHistory={statusHistory}
+              />
+            )}
 
-      {isOrderLiveIsTable ? (
-        <TableComponent
-          data={orderStore?.orderStatusListData!}
-          isRating={false}
-          page={page}
-          setPage={setPage}
-          fetchOrderDetails={fetchOrderDetails}
-          nextSetItemTotal={nextSetItemsToken}
-        />
-      ) : orderStore?.orderStatusListData &&
-        orderStore?.orderStatusListData?.length > 0 ? (
-        <>
-          {isStyleTabel === 'grid' && (
-            <GridComponent
-              orders={orderStore?.orderStatusListData!}
-              selectedOrder={selectedOrder}
-              setSelectedOrder={setSelectedOrder}
-              statusHistory={statusHistory}
-            />
-          )}
-
-          {isStyleTabel === 'list' && (
-            <ListComponent
-              data={orderStore?.orderStatusListData!}
-              statusHistory={statusHistory}
-            />
-          )}
-        </>
-      ) : (
-        'Empty'
-      )}
-    </div>
+            {isStyleTabel === 'list' && (
+              <ListComponent
+                data={orderStore?.orderStatusListData!}
+                statusHistory={statusHistory}
+              />
+            )}
+          </>
+        ) : (
+          'Empty'
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }

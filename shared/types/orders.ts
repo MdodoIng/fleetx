@@ -298,45 +298,63 @@ export type TypeStatusHistoryForUi = {
   subText: string;
   active: boolean;
   completed: boolean;
+  inProgress: boolean;
+  pending: boolean;
+  status: 'completed' | 'active' | 'inProgress' | 'pending';
+  previousState: number | null;
+  currentState: number | null;
   display: boolean;
 };
 
-export const OrderStatusCSS = [
-  { key: 0, value: 'NEW' },
-  { key: 10, value: 'CONFIRMED' },
-  { key: 20, value: 'BUDDY UNASSIGNED' },
-  { key: 30, value: 'BUDDY ASSIGNED' },
-  { key: 35, value: 'BUDDY QUEUED' },
-  { key: 40, value: 'BUDDY DECLINED' },
-  { key: 50, value: 'BUDDY ACCEPTED' },
-  { key: 60, value: 'PICKUP STARTED' },
-  { key: 70, value: 'ARRIVED PICKUP' },
-  { key: 80, value: 'PICKED UP' },
-  { key: 85, value: 'RESCHEDULED' },
-  { key: 90, value: 'IN DELIVERY' },
-  { key: 100, value: 'ARRIVED DESTINATION' },
-  { key: 110, value: 'DELIVERED' },
-  { key: 120, value: 'CANCELED' },
-  { key: 130, value: 'DELIVERY_FAILED' },
-] as const;
-
 export const OrderStatus = [
-  { key: 0, value: 'orderStatus.NEW' },
-  { key: 10, value: 'orderStatus.CONFIRMED' },
-  { key: 20, value: 'orderStatus.BUDDY_UNASSIGNED' },
-  { key: 30, value: 'orderStatus.BUDDY_ASSIGNED' },
-  { key: 35, value: 'orderStatus.BUDDY_QUEUED' },
-  { key: 40, value: 'orderStatus.BUDDY_DECLINED' },
-  { key: 50, value: 'orderStatus.BUDDY_ACCEPTED' },
-  { key: 60, value: 'orderStatus.PICKUP_STARTED' },
-  { key: 70, value: 'orderStatus.ARRIVED_PICKUP' },
-  { key: 80, value: 'orderStatus.PICKED_UP' },
-  { key: 85, value: 'orderStatus.RESCHEDULED' },
-  { key: 90, value: 'orderStatus.IN_DELIVERY' },
-  { key: 100, value: 'orderStatus.ARRIVED_DESTINATION' },
-  { key: 110, value: 'orderStatus.DELIVERED' },
-  { key: 120, value: 'orderStatus.CANCELED' },
-  { key: 130, value: 'orderStatus.DELIVERY_FAILED' },
+  { key: 0, value: 'orderStatus.NEW.default', color: 'bg-green-500' },
+  { key: 10, value: 'orderStatus.CONFIRMED.default', color: 'bg-yellow-500' },
+  {
+    key: 20,
+    value: 'orderStatus.BUDDY_UNASSIGNED.default',
+    color: 'bg-yellow-500',
+  },
+  {
+    key: 30,
+    value: 'orderStatus.BUDDY_ASSIGNED.default',
+    color: 'bg-yellow-500',
+  },
+  {
+    key: 35,
+    value: 'orderStatus.BUDDY_QUEUED.default',
+    color: 'bg-yellow-500',
+  },
+  { key: 40, value: 'orderStatus.BUDDY_DECLINED.default', color: 'bg-red-500' },
+  {
+    key: 50,
+    value: 'orderStatus.BUDDY_ACCEPTED.default',
+    color: 'bg-green-500',
+  },
+  {
+    key: 60,
+    value: 'orderStatus.PICKUP_STARTED.default',
+    color: 'bg-blue-500',
+  },
+  {
+    key: 70,
+    value: 'orderStatus.ARRIVED_PICKUP.default',
+    color: 'bg-blue-500',
+  },
+  { key: 80, value: 'orderStatus.PICKED_UP.default', color: 'bg-blue-500' },
+  { key: 85, value: 'orderStatus.RESCHEDULED.default', color: 'bg-yellow-500' },
+  { key: 90, value: 'orderStatus.IN_DELIVERY.default', color: 'bg-blue-500' },
+  {
+    key: 100,
+    value: 'orderStatus.ARRIVED_DESTINATION.default',
+    color: 'bg-blue-500',
+  },
+  { key: 110, value: 'orderStatus.DELIVERED.default', color: 'bg-green-500' },
+  { key: 120, value: 'orderStatus.CANCELED.default', color: 'bg-red-500' },
+  {
+    key: 130,
+    value: 'orderStatus.DELIVERY_FAILED.default',
+    color: 'bg-red-500',
+  },
 ] as const;
 
 export const ConfirmedStatus = [0, 10, 20];
@@ -367,22 +385,70 @@ export const OrderStatusMappingForTick = [
 ] as const;
 
 export const OrderStatusValues = {
-  NEW: 0,
-  CONFIRMED: 10,
-  BUDDY_UNASSIGNED: 20,
-  BUDDY_ASSIGNED: 30,
-  BUDDY_QUEUED: 35,
-  BUDDY_DECLINED: 40,
-  BUDDY_ACCEPTED: 50,
-  PICKUP_STARTED: 60,
-  ARRIVED_PICKUP: 70,
-  PICKED_UP: 80,
-  RESCHEDULED: 85,
-  IN_DELIVERY: 90,
-  ARRIVED_DESTINATION: 100,
-  DELIVERED: 110,
-  CANCELED: 120,
-  DELIVERY_FAILED: 130,
+  NEW: {
+    key: 0,
+    label: 'orderStatus.NEW.history',
+  },
+  CONFIRMED: {
+    key: 10,
+    label: 'orderStatus.CONFIRMED.history',
+  },
+  BUDDY_UNASSIGNED: {
+    key: 20,
+    label: 'orderStatus.BUDDY_UNASSIGNED.history',
+  },
+  BUDDY_ASSIGNED: {
+    key: 30,
+    label: 'orderStatus.BUDDY_ASSIGNED.history',
+  },
+  BUDDY_QUEUED: {
+    key: 35,
+    label: 'orderStatus.BUDDY_QUEUED.history',
+  },
+  BUDDY_DECLINED: {
+    key: 40,
+    label: 'orderStatus.BUDDY_DECLINED.history',
+  },
+  BUDDY_ACCEPTED: {
+    key: 50,
+    label: 'orderStatus.BUDDY_ACCEPTED.history',
+  },
+  PICKUP_STARTED: {
+    key: 60,
+    label: 'orderStatus.PICKUP_STARTED.history',
+  },
+  ARRIVED_PICKUP: {
+    key: 70,
+    label: 'orderStatus.ARRIVED_PICKUP.history',
+  },
+  PICKED_UP: {
+    key: 80,
+    label: 'orderStatus.PICKED_UP.history',
+  },
+  RESCHEDULED: {
+    key: 85,
+    label: 'orderStatus.RESCHEDULED.history',
+  },
+  IN_DELIVERY: {
+    key: 90,
+    label: 'orderStatus.IN_DELIVERY.history',
+  },
+  ARRIVED_DESTINATION: {
+    key: 100,
+    label: 'orderStatus.ARRIVED_DESTINATION.history',
+  },
+  DELIVERED: {
+    key: 110,
+    label: 'orderStatus.DELIVERED.history',
+  },
+  CANCELED: {
+    key: 120,
+    label: 'orderStatus.CANCELED.history',
+  },
+  DELIVERY_FAILED: {
+    key: 130,
+    label: 'orderStatus.DELIVERY_FAILED.history',
+  },
 } as const;
 
 export const TypeDelivery = [

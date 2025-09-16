@@ -48,7 +48,7 @@ export default function MyMap({
 
   const isArray = Array.isArray(center);
 
-  // Calculate bounds and center for multiple markers
+
   useEffect(() => {
     if (isArray && center.length >= 2 && mapRef.current) {
       const bounds = new google.maps.LatLngBounds();
@@ -59,7 +59,7 @@ export default function MyMap({
         }
       });
 
-      // Fit the map to show all markers with padding
+  
       mapRef.current.fitBounds(bounds, {
         top: 50,
         right: 50,
@@ -70,6 +70,7 @@ export default function MyMap({
       setMapCenter({ lat: center.lat, lng: center.lng });
       setZoom(15);
     }
+    console.log(center)
   }, [center, isArray]);
 
   const onLoad = useCallback((map: google.maps.Map) => {

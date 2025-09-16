@@ -68,7 +68,6 @@ export const orderService = {
     searchAll: boolean | null = true
   ) {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
-    const currentUser = getDecodedAccessToken();
     const { branchId, vendorId } = useVenderStore.getState();
     const { user } = useAuthStore.getState();
 

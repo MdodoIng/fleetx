@@ -1,6 +1,5 @@
 import {
   OrderStatus,
-  OrderStatusCSS,
   TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
@@ -138,8 +137,7 @@ export const useOrderStore = create<OrderState>()(
           data.forEach((element) => {
             const order: TypeOrderHistoryList = {} as TypeOrderHistoryList;
             Object.entries(element).forEach(([key, item]) => {
-              // @ts-ignore
-              order[key] = item as any;
+              order[key] = item;
             });
             order.id = element.id;
 
@@ -161,13 +159,10 @@ export const useOrderStore = create<OrderState>()(
             const statusObj = OrderStatus.find(
               (x) => x.key === element.primary_status
             );
-            // @ts-ignore
+
             order.status = statusObj ? statusObj.value : '';
 
-            const orders = OrderStatusCSS.find(
-              (x) => x.key === element.primary_status
-            );
-            const status = orders ? orders.value : '';
+            const status = statusObj ? statusObj.color : '';
             order.class_status = status.replace(' ', '_');
 
             order.from = element.pick_up.address
@@ -216,7 +211,7 @@ export const useOrderStore = create<OrderState>()(
               checkDeliveryAddressEditIsEnabled(element);
             order.payment_type = element.payment_type;
             order.drop_off = element.drop_off;
-            // @ts-ignore
+
             order.status_change_reason = element.status_change_reason
               ? element.status_change_reason.reason
               : undefined;
@@ -245,9 +240,7 @@ export const useOrderStore = create<OrderState>()(
 );
 
 function checkDeliveryAddressEditIsEnabled(event: TypeLiveOrderItem): boolean {
-  const orderStatus = OrderStatusCSS.find(
-    (x) => x.key === event.primary_status
-  );
+  const orderStatus = OrderStatus.find((x) => x.key === event.primary_status);
   const currentUser = getDecodedAccessToken();
   if (currentUser) {
     switch (currentUser.roles[0]) {

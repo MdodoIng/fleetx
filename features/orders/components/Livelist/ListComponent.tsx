@@ -99,7 +99,7 @@ const ListComponent: React.FC<{
         open={!!selectedOrder}
         onOpenChange={() => setSelectedOrder(null)}
       >
-        <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0">
           <DialogHeader className="px-6 pt-6">
             <DialogTitle className="text-xl font-semibold">
               Order Tracking – {selectedOrder?.fleetx_order_number}

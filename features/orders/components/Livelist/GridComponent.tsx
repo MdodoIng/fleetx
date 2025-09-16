@@ -1,237 +1,323 @@
 'use client';
 
-import React from 'react';
-import { MapPin, Clock, Phone, LocateFixed, ShipWheel } from 'lucide-react';
+import React, { Fragment } from 'react';
+import {
+  MapPin,
+  Clock,
+  Phone,
+  LocateFixed,
+  ShipWheel,
+  LucideProps,
+  Check,
+  Circle,
+  ShipWheelIcon,
+} from 'lucide-react';
 import {
   TypeOrderHistoryList,
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import MyMap from '@/shared/components/MyMap/Map';
 import { paymentMap } from '../../constants';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/shared/components/ui/card';
+import { useTranslations } from 'next-intl';
+import { useOrderStore, useSharedStore } from '@/store';
+import { cn } from '@/shared/lib/utils';
+import { color } from 'framer-motion';
 
 interface GridComponentProps {
-  orders: TypeOrderHistoryList[];
   selectedOrder: TypeOrderHistoryList | null;
   setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
   statusHistory: TypeStatusHistoryForUi[];
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
-  orders,
   selectedOrder,
   setSelectedOrder,
   statusHistory,
 }) => {
-  return (
-    <div className="grid grid-cols-12 gap-4 h-screen bg-gray-50 p-4">
-      {/* Left Panel - Orders List */}
-      <div className="col-span-3 flex flex-col bg-white rounded-xl shadow-sm">
-        {/* Orders Header */}
-        <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
-          <h3 className="text-sm font-medium text-gray-700">Orders</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Find a live or an active orders
-          </p>
-        </div>
+  const { orderStatusListData } = useOrderStore();
+  const t = useTranslations('component.features.orders.live');
+  const tD = useTranslations();
+  const { appConstants } = useSharedStore();
 
-        {/* Orders List */}
-        <div className="flex-1 overflow-y-auto">
-          {orders?.map((order) => (
+  const trackingData: {
+    name: string;
+    type?: 'driver';
+    location?: string;
+    cta: {
+      label: string;
+      link: string;
+    };
+    icon: {
+      icon: React.ForwardRefExoticComponent<
+        Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
+      >;
+      color: string;
+    };
+  }[] = [
+    {
+      name: selectedOrder?.customer_name_sender || '',
+      location: selectedOrder?.from || '',
+      cta: {
+        label: selectedOrder?.phone_number_sender,
+        link: `tel:${selectedOrder?.phone_number_sender}`,
+      },
+      icon: {
+        icon: MapPin,
+        color: '217, 119, 6',
+      },
+    },
+    {
+      name: selectedOrder?.customer_name || '',
+      location: selectedOrder?.to || '',
+      cta: {
+        label: selectedOrder?.phone_number,
+        link: `tel:${selectedOrder?.phone_number}`,
+      },
+      icon: {
+        icon: ShipWheel,
+        color: '72, 182, 79',
+      },
+    },
+    {
+      name: selectedOrder?.driver_name || '',
+      type: 'driver',
+      cta: {
+        label: t('tracking.driver.call'),
+        link: `tel:${selectedOrder?.driver_phone}`,
+      },
+      icon: {
+        icon: ShipWheel,
+        color: '0, 76, 247',
+      },
+    },
+  ];
+
+  return (
+    <div className="grid gap-4 grid-cols-12 w-full">
+      <Card className="col-span-3 flex flex-col w-full overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">
+            {t('order.title')}
+          </CardTitle>
+          <CardDescription>{t('order.subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex h-[calc(100vh-40px)] w-full overflow-y-auto px-4 flex-col gap-4">
+          {orderStatusListData?.map((order) => (
             <div
               key={order.id}
               style={{
                 viewTransitionName: order.fleetx_order_number,
+                border: `1px solid ${selectedOrder?.id === order.id ? '#004CF7' : '#2828281A'}`,
               }}
               onClick={() => setSelectedOrder(order)}
-              className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 flex items-start justify-between transition-colors ${
+              className={`p-4 cursor-pointer hover:bg-gray-50 flex justify-between transition-colors rounded-[8px] flex-col ${
                 selectedOrder?.id === order.id
-                  ? 'bg-blue-50 border-l-4 border-l-blue-500'
-                  : ''
+                  ? 'bg-[#004CF70D] text-primary-blue'
+                  : 'bg-white text-dark-grey'
               }`}
             >
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-gray-900">
+              <div className="flex w-full justify-between gap-1 items-start ">
+                <div className="flex flex-col">
+                  <span className="font-medium opacity-70 text-sm">
                     {order.fleetx_order_number}
                   </span>
+                  <p className="font-medium text-lg">{order.customer_name}</p>
                 </div>
-                <p className="text-sm text-gray-600">{order.customer_name}</p>
-                <p className="text-gray-500 text-sm flex items-center mt-6">
-                  <MapPin size={16} />
-                  {order.to}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-gray-500 flex-col h-full">
-                <span className="px-2 py-1 rounded-full text-xs font-medium text-white bg-red-400 ml-auto">
-                  {order.class_status}
-                </span>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  <span>{order.delivery_duration} Mins</span>
+                <div className="flex flex-col items-end text-xs">
+                  <span
+                    className={cn(
+                      'px-2 py-1 rounded-full text-white bg-red-400',
+                      order.class_status
+                    )}
+                  >
+                    {tD(order.status)}
+                  </span>
+                  <div className="flex items-center gap-1 mt-2">
+                    <Clock className="w-3 h-3" />
+                    <span>
+                      {Number(order.delivery_duration) - 4} -{' '}
+                      {Number(order.delivery_duration) + 4} {t('mins')}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <p className="text-sm flex items-center mt-4 shrink-0">
+                <MapPin size={16} />
+                {order.to}
+              </p>
             </div>
           ))}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Center Panel - Live Tracking Map */}
-      <div className="col-span-6 flex flex-col h-full overflow-y-auto">
-        {/* Map Header */}
-        <div className="p-6 bg-white border-b border-gray-200 rounded-xl">
-          <h3 className="text-lg font-semibold text-gray-900">Live Tracking</h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Live location updates right here
-          </p>
-        </div>
-
-        {selectedOrder && (
-          <>
-            <div className="bg-white rounded-2xl shadow p-4 w-full max-w-md space-y-4 mt-3">
-              {/* Order ID */}
-              <div className="text-gray-700 font-semibold">
-                {selectedOrder.fleetx_order_number}
-              </div>
-
-              {/* Pickup Location */}
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl text-green-300 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-green-300" />
+      <Card className="col-span-6 flex flex-col h-full overflow-y-auto">
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">
+            {t('details.title')}
+          </CardTitle>
+          <CardDescription>{t('details.subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex  px-4 flex-col gap-4">
+          {selectedOrder && (
+            <>
+              <Card className="p-6 flex flex-col">
+                {/* Order ID */}
+                <div className="text-gray-700 font-semibold">
+                  {selectedOrder.fleetx_order_number}
                 </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">
-                    {selectedOrder.customer_name_sender}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {selectedOrder.from}
-                  </div>
-                </div>
-                <button className="flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-lg text-sm text-gray-700">
-                  <Phone className="w-4 h-4" />{' '}
-                  {selectedOrder.phone_number_sender}
-                </button>
-              </div>
 
-              {/* Drop-off Location */}
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                  <LocateFixed className="w-5 h-5 text-green-500" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">
-                    {selectedOrder.customer_name}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {selectedOrder.to}
-                  </div>
-                </div>
-                <button className="flex items-center gap-2 px-2 py-1 bg-gray-100 rounded-lg text-sm text-gray-700">
-                  <Phone className="w-4 h-4" /> {selectedOrder.phone_number}
-                </button>
-              </div>
-
-              <hr />
-
-              {/* Driver Section */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                    <ShipWheel className="w-5 h-5 text-purple-500" />
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-400">Driver</div>
-                    <div className="font-medium text-gray-900">
-                      {selectedOrder.driver_name}
+                {trackingData.map((item, idx) => (
+                  <Fragment key={idx}>
+                    <div className="flex items-start gap-3 bg-white z-0">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center">
+                        <span
+                          style={{
+                            background: `rgba(${item.icon.color}, 0.2)`,
+                          }}
+                          className="flex size-10 rounded-[6px] items-center justify-center relative z-10"
+                        >
+                          <item.icon.icon
+                            className="w-5 h-5"
+                            style={{ color: `rgb(${item.icon.color})` }}
+                          />
+                          <span
+                            hidden={idx !== 0}
+                            className="h-full w-px border border-dashed border-dark-grey/50 absolute -bottom-full left-1/2 -translate-x-1/2 -z-10"
+                          />
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div
+                          hidden={item.type !== 'driver'}
+                          className="text-sm text-gray-500"
+                        >
+                          {t('tracking.driver.defult')}
+                        </div>
+                        <div className="font-medium text-gray-900">
+                          {item.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {item.location}
+                        </div>
+                      </div>
+                      <a
+                        href={item.cta.link}
+                        className={cn(
+                          'flex items-center gap-2 px-3 py-3 bg-off-white rounded-[6px] ',
+                          item.type === 'driver' &&
+                            'bg-[#059669] text-off-white'
+                        )}
+                      >
+                        <Phone className="size-4" />{' '}
+                        {item.type === 'driver'
+                          ? t('tracking.driver.call')
+                          : item.cta.label}
+                      </a>
                     </div>
-                  </div>
-                </div>
-                <button className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-600 rounded-lg font-medium">
-                  <Phone className="w-4 h-4" /> Call Driver
-                </button>
-              </div>
-            </div>
 
-            {/* Map Container */}
-            <div className="flex-1 relative bg-gray-100 mt-3 rounded-md shadow">
-              <MyMap
-                center={[
-                  {
-                    lat: Number(selectedOrder?.pick_up?.latitude) || 0,
-                    lng: Number(selectedOrder?.pick_up?.longitude) || 0,
-                  },
-                  {
-                    lat: Number(selectedOrder?.drop_off?.latitude) || 0,
-                    lng: Number(selectedOrder?.drop_off?.longitude) || 0,
-                  },
-                ]}
-              />
-            </div>
-          </>
-        )}
-      </div>
+                    <hr hidden={idx !== 1} className="border-[#CAC4D0]" />
+                  </Fragment>
+                ))}
+              </Card>
+
+              {/* Map Container */}
+              <Card className="">
+                <MyMap
+                  center={[
+                    {
+                      lat: Number(selectedOrder?.pick_up?.latitude) || 0,
+                      lng: Number(selectedOrder?.pick_up?.longitude) || 0,
+                    },
+                    {
+                      lat: Number(selectedOrder?.drop_off?.latitude) || 0,
+                      lng: Number(selectedOrder?.drop_off?.longitude) || 0,
+                    },
+                  ]}
+                />
+              </Card>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Right Panel - Order Details */}
-      <div className="col-span-3 bg-white rounded-xl shadow-sm p-4">
-        {selectedOrder && (
-          <>
-            {/* Header */}
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <p className="text-sm text-gray-500">Order Details</p>
-                <p className="text-lg font-semibold">
-                  {selectedOrder.customer_name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {paymentMap[selectedOrder.payment_type]}
-                </p>
+      <Card className="col-span-3 w-full">
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">
+            {t('tracking.title')}
+          </CardTitle>
+          <CardDescription>{t('tracking.subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex  px-4 flex-col gap-4">
+          {selectedOrder && (
+            <>
+              <div className="flex justify-between items-start mb-3">
+                <div className="grid gap-1">
+                  <p className="text-sm text-gray-500">Order Details</p>
+                  <p className="text-lg font-semibold">
+                    {selectedOrder.customer_name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {paymentMap[selectedOrder.payment_type]}
+                  </p>
+                </div>
+                <div className="text-right grid gap-1">
+                  <p className="font-semibold">
+                    {selectedOrder.fleetx_order_number}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedOrder.delivery_fee} KD
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold">
-                  {selectedOrder.fleetx_order_number}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {selectedOrder.delivery_fee} KD
-                </p>
-              </div>
-            </div>
 
-            {/* Timeline */}
-            <div className="mt-4 space-y-5">
-              {statusHistory
-                .filter((s) => s.display)
-                .map((status) => (
-                  <div key={status.id} className="flex gap-3 items-start">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-5 h-5 rounded-full ${
-                          status.completed
-                            ? 'bg-purple-600'
-                            : 'border border-gray-300'
-                        }`}
-                      />
-                      <div className="h-6 w-px bg-gray-200" />
-                    </div>
-                    <div>
-                      <p
-                        className={`text-sm font-medium ${
-                          status.completed ? 'text-purple-600' : 'text-gray-500'
-                        }`}
-                      >
-                        {status.text}
-                      </p>
-                      {status.time && (
-                        <p className="text-xs text-gray-400">
-                          {new Date(status.time).toLocaleString()}
+              {/* Timeline */}
+              <div className="mt-4 space-y-5">
+                {statusHistory
+                  .filter((s) => s.display)
+                  .map((status) => (
+                    <div key={status.id} className="flex gap-3 items-start">
+                      <div className="flex flex-col items-center">
+                        <div
+                          className={`w-5 h-5 rounded-full ${
+                            status.completed
+                              ? 'bg-purple-600'
+                              : 'border border-gray-300'
+                          }`}
+                        />
+                        <div className="h-6 w-px bg-gray-200" />
+                      </div>
+                      <div>
+                        <p
+                          className={`text-sm font-medium ${
+                            status.completed
+                              ? 'text-purple-600'
+                              : 'text-gray-500'
+                          }`}
+                        >
+                          {status.text}
                         </p>
-                      )}
+                        {status.time && (
+                          <p className="text-xs text-gray-400">
+                            {new Date(status.time).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </div>
-          </>
-        )}
-      </div>
+                  ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

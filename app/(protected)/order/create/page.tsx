@@ -17,7 +17,7 @@ import {
   useSharedStore,
   useVenderStore,
 } from '@/store';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   dropOffSchema,
@@ -27,8 +27,8 @@ import {
 } from '@/features/orders/validations/order';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { debounce } from 'lodash';
 import { vendorService } from '@/shared/services/vender';
+import { useDebounce } from '@/shared/lib/hooks';
 
 export default function ShippingForm() {
   const { user } = useAuthStore();
@@ -92,7 +92,7 @@ export default function ShippingForm() {
 
   const dropOffFormValues = dropOffForm.watch();
 
-  const { functionsDropoffs, validateFormsAsync } = useOrderCreate(
+  const { functionsDropoffs } = useOrderCreate(
     pickUpForm,
     dropOffForm,
     isCOD,
@@ -101,34 +101,7 @@ export default function ShippingForm() {
     setIsDropofIndex
   );
 
-  useEffect(() => {
-    readAppConstants();
-    updatePickUpDetailsForBranchUser();
-    updateDropOutDetailsForStore();
-    return () => {};
-  }, []);
-
-  // useEffect(() => {
-  //   const debouncedSearch = debounce((val: string) => {
-  //     searchAddressByMobileNumber(val);
-  //   }, 400);
-
-  //   const subscription = dropOffForm.watch((value, { name }) => {
-  //     if (name === 'mobile_number') {
-  //       const mobileNumber = value.mobile_number || '';
-  //       if (!dropOffForm.formState.errors.mobile_number) {
-  //         debouncedSearch(mobileNumber);
-  //       }
-  //     }
-  //   });
-
-  //   return () => {
-  //     subscription.unsubscribe();
-  //     debouncedSearch.cancel();
-  //   };
-  // }, [dropOffForm]);
-
-  const updatePickUpDetailsForBranchUser = async () => {
+  const updatePickUpDetailsForBranchUser = useCallback(async () => {
     if (branchId) {
       try {
         const res = await vendorService.getBranchDetailByBranchId({
@@ -137,8 +110,7 @@ export default function ShippingForm() {
         });
 
         Object.entries(res.data.address).forEach(([key, value]) => {
-          // @ts-ignore
-          pickUpForm.setValue(key as keyof typeof res.data.address, value);
+          pickUpForm.setValue(key as keyof TypePickUpSchema, value);
         });
 
         pickUpForm.setValue('customer_name', res.data.name);
@@ -147,9 +119,9 @@ export default function ShippingForm() {
         console.error('Error fetching branch ddetails:', error);
       }
     }
-  };
+  }, [branchId, vendorId, pickUpForm]);
 
-  const updateDropOutDetailsForStore = () => {
+  const updateDropOutDetailsForStore = useCallback(() => {
     if (
       user?.roles?.includes('VENDOR_USER') &&
       branchId &&
@@ -163,20 +135,53 @@ export default function ShippingForm() {
         }
       );
     }
-  };
+  }, [user, branchId, orderStore.dropOffs, isDropIndex, dropOffForm]);
 
-  const searchAddressByMobileNumber = async (mobileNumber: string) => {
-    // try {
-    //   const res = await vendorService.getAddressByMobile(
-    //     vendorId!,
-    //     branchId!,
-    //     mobileNumber
-    //   );
-    //   // dropOffForm.setValue('', res.data.address);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  };
+  const searchAddressByMobileNumber = useCallback(
+    async (mobileNumber: string) => {
+      try {
+        const res = await vendorService.getAddressByMobile(
+          vendorId!,
+          branchId!,
+          mobileNumber
+        );
+
+        console.log(res, 'afds');
+        if (res.data.address) {
+          dropOffForm.setValue('address', res.data.address);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [vendorId, branchId, dropOffForm]
+  );
+
+  const mobileNumber = dropOffForm.watch('mobile_number');
+
+  useEffect(() => {
+    const fetchIfValid = async () => {
+      if (!mobileNumber) return;
+
+      const isValid = await dropOffForm.trigger('mobile_number');
+      if (isValid) {
+        searchAddressByMobileNumber(mobileNumber);
+      }
+    };
+
+    fetchIfValid();
+  }, [mobileNumber, searchAddressByMobileNumber, dropOffForm]);
+
+  useEffect(() => {
+    readAppConstants();
+    updatePickUpDetailsForBranchUser();
+    updateDropOutDetailsForStore();
+    return () => {};
+  }, [
+    readAppConstants,
+    updateDropOutDetailsForStore,
+    updatePickUpDetailsForBranchUser,
+  ]);
 
   const isDropoffOne = orderStore.dropOffs
     ? orderStore.dropOffs.length
@@ -192,7 +197,7 @@ export default function ShippingForm() {
           <DashboardHeaderRight>
             <AlertMessage type="laptop" />
           </DashboardHeaderRight>
-          <WalletCard className='max-sm:w-full'   />
+          <WalletCard className="max-sm:w-full" />
         </DashboardHeader>
         <DashboardContent className="grid md:grid-cols-2 ">
           <PickUpForm senderForm={pickUpForm} />

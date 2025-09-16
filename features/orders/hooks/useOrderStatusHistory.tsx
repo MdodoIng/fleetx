@@ -1,131 +1,14 @@
 'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { orderService } from '@/shared/services/orders';
 import {
   OrderStatusValues,
   TypeOrderHistoryList,
-  TypeOrderList,
   TypeOrderStatusHistoryHistory,
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
-import { useEffect, useMemo, useState } from 'react';
-
-function buildStatusHistory(
-  order: TypeOrderHistoryList,
-  orderHistorys: TypeOrderStatusHistoryHistory
-): TypeStatusHistoryForUi[] {
-  const base: TypeStatusHistoryForUi[] = [
-    {
-      id: OrderStatusValues.CONFIRMED,
-      text: 'Your order is confirmed',
-      time: order?.created_at,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.BUDDY_ASSIGNED,
-      text: 'Buddy is assigned',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.BUDDY_UNASSIGNED,
-      text: 'Buddy is unassigned',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: false, // hidden by default
-    },
-    {
-      id: OrderStatusValues.PICKUP_STARTED,
-      text: 'Buddy is on the way to pickup',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.ARRIVED_PICKUP,
-      text: 'Arrived at pickup location',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.PICKED_UP,
-      text: 'Your order has been picked up',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.RESCHEDULED,
-      text: 'Your order has been rescheduled',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: orderHistorys?.status_history?.some(
-        (h) => h.primary_order_status === OrderStatusValues.RESCHEDULED
-      ),
-    },
-    {
-      id: OrderStatusValues.IN_DELIVERY,
-      text: 'Your order is on the way',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.ARRIVED_DESTINATION,
-      text: 'Your order has reached the destination',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-    {
-      id: OrderStatusValues.DELIVERED,
-      text: 'Delivered successfully',
-      time: null,
-      subText: '',
-      active: false,
-      completed: false,
-      display: true,
-    },
-  ];
-
-  // get last (current) status
-  const current =
-    orderHistorys?.status_history[orderHistorys?.status_history?.length - 1]
-      ?.primary_order_status;
-
-  // map over base to mark completed/active & add times
-  return base.map((s) => {
-    const history = orderHistorys?.status_history.find(
-      (h) => h.primary_order_status === s.id
-    );
-    return {
-      ...s,
-      time: history ? history.created_at : s.time,
-      completed: history ? true : false,
-      active: s.id === current,
-    };
-  });
-}
+import { useTranslations } from 'next-intl';
 
 export function useOrderStatusHistory(
   order: TypeOrderHistoryList,
@@ -136,6 +19,21 @@ export function useOrderStatusHistory(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchOrderHistory = async () => {
+    if (!order?.id || isOrderLiveIsTable) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await orderService.getOrderStatusById(order.id);
+      setOrderHistorys(res.data);
+    } catch (err: any) {
+      console.error('Error fetching order status history:', err);
+      setError(err.message || 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isOrderLiveIsTable) {
       setOrderHistorys(undefined);
@@ -143,50 +41,147 @@ export function useOrderStatusHistory(
   }, [isOrderLiveIsTable]);
 
   useEffect(() => {
-    if (!order?.id || isOrderLiveIsTable) return;
-    const loadInitialOrders = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await orderService.getOrderStatusById(order?.id);
-        setOrderHistorys(res.data);
-      } catch (err: any) {
-        console.error(
-          'Error fetching order status history:',
-          err || 'An unknown error occurred'
-        );
-        setError(err.message || 'An unknown error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadInitialOrders();
+    fetchOrderHistory();
   }, [order?.id]);
+  const t = useTranslations();
 
-  const statusHistory = useMemo(
-    () => buildStatusHistory(order, orderHistorys!),
-    [order, orderHistorys]
-  );
+  const statusHistory: TypeStatusHistoryForUi[] = useMemo(() => {
+    if (!orderHistorys) return [];
+    return BuildStatusHistory(order, orderHistorys, t);
+  }, [order, orderHistorys]);
 
   return {
     statusHistory,
     loading,
     error,
-    refetch: () => {
-      const loadOrders = async () => {
-        try {
-          setLoading(true);
-          setError(null);
-          const res = await orderService.getOrderStatusById(order?.id);
-          setOrderHistorys(res.data);
-        } catch (err: any) {
-          setError(err.message || 'An unknown error occurred');
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadOrders();
-    },
   };
+}
+
+function BuildStatusHistory(
+  order: TypeOrderHistoryList,
+  orderHistorys: TypeOrderStatusHistoryHistory,
+  t: () => string
+): TypeStatusHistoryForUi[] {
+  const base = [
+    {
+      id: OrderStatusValues.CONFIRMED.key,
+      text: t(OrderStatusValues.CONFIRMED.label),
+      time: order?.created_at,
+      subText: '',
+      display: true,
+    },
+
+    {
+      id: OrderStatusValues.BUDDY_ASSIGNED.key,
+      text: t(OrderStatusValues.BUDDY_ASSIGNED.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.BUDDY_UNASSIGNED.key,
+      text: t(OrderStatusValues.BUDDY_UNASSIGNED.label),
+      time: null,
+      subText: '',
+      display: false,
+    },
+    {
+      id: OrderStatusValues.PICKUP_STARTED.key,
+      text: t(OrderStatusValues.PICKUP_STARTED.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.ARRIVED_PICKUP.key,
+      text: t(OrderStatusValues.ARRIVED_PICKUP.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.PICKED_UP.key,
+      text: t(OrderStatusValues.PICKED_UP.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.RESCHEDULED.key,
+      text: t(OrderStatusValues.RESCHEDULED.label),
+      time: null,
+      subText: '',
+      display: orderHistorys?.status_history?.some(
+        (h) => h.primary_order_status === OrderStatusValues.RESCHEDULED.key
+      ),
+    },
+    {
+      id: OrderStatusValues.IN_DELIVERY.key,
+      text: t(OrderStatusValues.IN_DELIVERY.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.ARRIVED_DESTINATION.key,
+      text: t(OrderStatusValues.ARRIVED_DESTINATION.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+    {
+      id: OrderStatusValues.DELIVERED.key,
+      text: t(OrderStatusValues.DELIVERED.label),
+      time: null,
+      subText: '',
+      display: true,
+    },
+  ];
+
+  const formattedDate = (date: string | null) =>
+    date ? new Date(date).toLocaleString() : null;
+
+  const currentStatus =
+    orderHistorys?.status_history?.[orderHistorys.status_history.length - 1]
+      ?.primary_order_status;
+
+  const currentIndex = base.findIndex((s) => Number(s.id) === currentStatus);
+
+  return base
+    .filter((item) => item.display)
+    .map((step, index) => {
+      const history = orderHistorys?.status_history.find(
+        (h) => h.primary_order_status === step.id
+      );
+
+      const previousHistory = orderHistorys?.status_history.filter(
+        (h) => h.created_at < (history?.created_at || order?.created_at)
+      );
+
+      let status: 'completed' | 'active' | 'inProgress' | 'pending' = 'pending';
+      if (history) status = 'completed';
+      else if (step.id === currentStatus) status = 'active';
+      else if (index === currentIndex + 1) status = 'inProgress';
+
+      return {
+        ...step,
+        time: history
+          ? formattedDate(history.created_at)
+          : status === 'inProgress'
+            ? t(
+                'component.features.orders.live.details.staus-history.in-progress'
+              )
+            : t('component.features.orders.live.details.staus-history.pending'),
+        completed: status === 'completed',
+        active: status === 'active',
+        inProgress: status === 'inProgress',
+        pending: status === 'pending',
+        status,
+        previousState:
+          previousHistory?.length > 0
+            ? previousHistory[previousHistory.length - 1].primary_order_status
+            : null,
+        currentState: history?.primary_order_status ?? null,
+      };
+    });
 }
