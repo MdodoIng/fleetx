@@ -261,58 +261,59 @@ const GridComponent: React.FC<GridComponentProps> = ({
             <>
               <div className="flex justify-between items-start mb-3">
                 <div className="grid gap-1">
-                  <p className="text-sm text-gray-500">Order Details</p>
                   <p className="text-lg font-semibold">
                     {selectedOrder.customer_name}
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {paymentMap[selectedOrder.payment_type]}
+                  <p className="text-sm text-[#1D1B20]/70">
+                    {t('details.payment-method')}
+                  </p>
+                  <p className="text-sm text-[#1D1B20]/70">
+                    {t('details.delivery-fee')}
                   </p>
                 </div>
                 <div className="text-right grid gap-1">
-                  <p className="font-semibold">
+                  <p className="text-lg font-semibold">
                     {selectedOrder.fleetx_order_number}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {selectedOrder.delivery_fee} KD
+                  <p className="text-sm text-[#1D1B20]/70">
+                    {paymentMap[selectedOrder.payment_type]}
+                  </p>
+                  <p className="text-sm text-[#1D1B20]/70">
+                    {selectedOrder.delivery_fee} {appConstants?.currency}
                   </p>
                 </div>
               </div>
 
               {/* Timeline */}
               <div className="mt-4 space-y-5">
-                {statusHistory
-                  .filter((s) => s.display)
-                  .map((status) => (
-                    <div key={status.id} className="flex gap-3 items-start">
-                      <div className="flex flex-col items-center">
-                        <div
-                          className={`w-5 h-5 rounded-full ${
-                            status.completed
-                              ? 'bg-purple-600'
-                              : 'border border-gray-300'
-                          }`}
-                        />
-                        <div className="h-6 w-px bg-gray-200" />
-                      </div>
-                      <div>
-                        <p
-                          className={`text-sm font-medium ${
-                            status.completed
-                              ? 'text-purple-600'
-                              : 'text-gray-500'
-                          }`}
-                        >
-                          {status.text}
-                        </p>
-                        {status.time && (
-                          <p className="text-xs text-gray-400">
-                            {new Date(status.time).toLocaleString()}
-                          </p>
-                        )}
-                      </div>
+                {statusHistory.map((status) => (
+                  <div key={status.id} className="flex gap-3 items-start">
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`w-5 h-5 rounded-full ${
+                          status.completed
+                            ? 'bg-purple-600'
+                            : 'border border-gray-300'
+                        }`}
+                      />
+                      <div className="h-6 w-px bg-gray-200" />
                     </div>
-                  ))}
+                    <div>
+                      <p
+                        className={`text-sm font-medium ${
+                          status.completed ? 'text-purple-600' : 'text-gray-500'
+                        }`}
+                      >
+                        {status.text}
+                      </p>
+                      {status.time && (
+                        <p className="text-xs text-gray-400">
+                          {new Date(status.time).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </>
           )}
