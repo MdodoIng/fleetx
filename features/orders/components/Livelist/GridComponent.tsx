@@ -1,17 +1,7 @@
 'use client';
 
 import React, { Fragment } from 'react';
-import {
-  MapPin,
-  Clock,
-  Phone,
-  LocateFixed,
-  ShipWheel,
-  LucideProps,
-  Check,
-  Circle,
-  ShipWheelIcon,
-} from 'lucide-react';
+import { MapPin, Clock, Phone, ShipWheel, LucideProps } from 'lucide-react';
 import {
   TypeOrderHistoryList,
   TypeStatusHistoryForUi,
@@ -28,7 +18,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { useOrderStore, useSharedStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
-import { color } from 'framer-motion';
 import StatusStep from './StatusStep';
 
 interface GridComponentProps {
@@ -102,14 +91,14 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
   return (
     <div className="grid gap-4 grid-cols-12 w-full">
-      <Card className="col-span-3 flex flex-col w-full overflow-hidden">
+      <Card className="lg:col-span-3 md:col-span-6 col-span-12 flex flex-col w-full overflow-hidden">
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('order.title')}
           </CardTitle>
           <CardDescription>{t('order.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex h-[calc(100vh-40px)] w-full overflow-y-auto px-4 flex-col gap-4">
+        <CardContent className="flex h-[calc(100vh-40px)] w-full overflow-y-auto flex-col gap-4">
           {orderStatusListData?.map((order) => (
             <div
               key={order.id}
@@ -140,33 +129,36 @@ const GridComponent: React.FC<GridComponentProps> = ({
                   >
                     {tD(order.status)}
                   </span>
-                  <div className="flex items-center gap-1 mt-2">
-                    <Clock className="w-3 h-3" />
-                    <span>
-                      {Number(order.delivery_duration) - 4} -{' '}
-                      {Number(order.delivery_duration) + 4} {t('mins')}
-                    </span>
-                  </div>
                 </div>
               </div>
-              <p className="text-sm flex items-center mt-4 shrink-0">
-                <MapPin size={16} />
-                {order.to}
-              </p>
+              <div className="flex w-full justify-between gap-1 mt-4   items-start ">
+                <p className="text-sm flex items-center max-w-[10ch] overflow-hidden ">
+                  <MapPin size={16} />
+                  {order.to.substring(0, 20) +
+                    (order.to.length > 30 ? '...' : '')}
+                </p>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Clock className="w-3 h-3" />
+                  <span>
+                    {Number(order.delivery_duration) - 4} -{' '}
+                    {Number(order.delivery_duration) + 4} {t('mins')}
+                  </span>
+                </div>
+              </div>
             </div>
           ))}
         </CardContent>
       </Card>
 
       {/* Center Panel - Live Tracking Map */}
-      <Card className="col-span-6 flex flex-col h-full overflow-y-auto">
+      <Card className="md:col-span-6 col-span-12 flex flex-col h-full overflow-y-auto">
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('details.title')}
           </CardTitle>
           <CardDescription>{t('details.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex  px-4 flex-col gap-4">
+        <CardContent className="flex flex-col gap-4">
           {selectedOrder && (
             <>
               <Card className="p-6 flex flex-col">
@@ -250,17 +242,17 @@ const GridComponent: React.FC<GridComponentProps> = ({
       </Card>
 
       {/* Right Panel - Order Details */}
-      <Card className="col-span-3 w-full">
+      <Card className="lg:col-span-3 col-span-12 w-full">
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('tracking.title')}
           </CardTitle>
           <CardDescription>{t('tracking.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex  px-4 flex-col gap-4">
+        <CardContent className="flex  flex-col gap-4">
           {selectedOrder && (
             <>
-              <div className="flex justify-between items-start mb-3">
+              <div className="flex justify-between items-start">
                 <div className="grid gap-1">
                   <p className="text-lg font-semibold">
                     {selectedOrder.customer_name}

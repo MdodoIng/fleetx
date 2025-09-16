@@ -16,82 +16,130 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { useTranslations } from 'next-intl';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { cn } from '@/shared/lib/utils';
 
 const ListComponent: React.FC<{
-  data: TypeOrderHistoryList[];
   statusHistory: TypeStatusHistoryForUi[];
-}> = ({ data, statusHistory }) => {
+}> = ({ statusHistory }) => {
   const orderStore = useOrderStore();
   const [selectedOrder, setSelectedOrder] =
     useState<TypeOrderHistoryList | null>(null);
 
-  const statusMap: Record<string, string> = {
-    'orderStatus.CONFIRMED': 'Confirmed Orders',
-    'orderStatus.DRIVER_ASSIGNED': 'Drivers Coming to You',
-    'orderStatus.BUDDY_QUEUED': 'Waiting for Pickup',
-    'orderStatus.IN_DELIVERY': 'In Delivery',
+  const data = orderStore?.orderStatusListData;
+
+  const t = useTranslations('component.features.orders.live');
+  const tD = useTranslations();
+
+  const statusMap: Record<string, { title: string; subtitle: string }> = {
+    'orderStatus.CONFIRMED': {
+      title: t('status-map.CONFIRMED.title'),
+      subtitle: t('status-map.CONFIRMED.subtitle'),
+    },
+
+    'orderStatus.DRIVER_ASSIGNED': {
+      title: t('status-map.DRIVER_ASSIGNED.title'),
+      subtitle: t('status-map.DRIVER_ASSIGNED.subtitle'),
+    },
+    'orderStatus.BUDDY_QUEUED': {
+      title: t('status-map.BUDDY_QUEUED.title'),
+      subtitle: t('status-map.BUDDY_QUEUED.subtitle'),
+    },
+    'orderStatus.IN_DELIVERY': {
+      title: t('status-map.IN_DELIVERY.title'),
+      subtitle: t('status-map.IN_DELIVERY.subtitle'),
+    },
   };
 
-  const grouped = data.reduce(
+  const grouped = data?.reduce(
     (acc: Record<string, TypeOrderHistoryList[]>, order) => {
-      const col = statusMap[order.status] || 'Confirmed Orders';
-      if (!acc[col]) acc[col] = [];
-      acc[col].push(order);
+      const key =
+        Object.keys(statusMap).find(
+          (key) => statusMap[key].title === order.status
+        ) || 'orderStatus.CONFIRMED';
+      if (key) {
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(order);
+      }
       return acc;
     },
     {}
   );
 
+  console.log(grouped);
+
   return (
     <>
-      <div className="grid grid-cols-4 gap-4 p-4 bg-gray-100 min-h-screen">
+      <div className="grid grid-cols-4 gap-4 min-h-screen w-full">
         {Object.entries(statusMap).map(([key, label]) => (
-          <div
-            key={key}
-            className="bg-white rounded-lg p-4 shadow-sm flex flex-col"
-          >
-            <h2 className="text-sm font-semibold">{label}</h2>
-            <p className="text-xs text-gray-500 mb-2">
-              All your {label.toLowerCase()}
-            </p>
-
-            {grouped[label]?.map((order) => (
-              <div
-                key={order.fleetx_order_number}
-                onClick={() => setSelectedOrder(order)}
-                className={`rounded-lg border p-3 mb-3 flex justify-between items-start cursor-pointer ${
-                  statusColors[order.class_status] ||
-                  'bg-gray-100 text-gray-700'
-                }`}
-                style={{ viewTransitionName: order.fleetx_order_number }}
-              >
-                {/* Left: Order Info */}
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-900">
-                      {order.fleetx_order_number}
-                    </span>
+          <Card key={key} className="bg-white">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">
+                {label.title}
+              </CardTitle>
+              <CardDescription> {label.subtitle}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex h-[calc(100vh-40px)] w-full overflow-y-auto flex-col gap-4">
+              {grouped?.[key]?.map((order) => (
+                <div
+                  key={order.id}
+                  style={{
+                    viewTransitionName: order.fleetx_order_number,
+                    border: `1px solid ${selectedOrder?.id === order.id ? '#004CF7' : '#2828281A'}`,
+                  }}
+                  onClick={() => setSelectedOrder(order)}
+                  className={`p-4 cursor-pointer hover:bg-gray-50 flex justify-between transition-colors rounded-[8px] flex-col ${
+                    selectedOrder?.id === order.id
+                      ? 'bg-[#004CF70D] text-primary-blue'
+                      : 'bg-white text-dark-grey'
+                  }`}
+                >
+                  <div className="flex w-full justify-between gap-1 items-start ">
+                    <div className="flex flex-col">
+                      <span className="font-medium opacity-70 text-sm">
+                        {order.fleetx_order_number}
+                      </span>
+                      <p className="font-medium text-lg">
+                        {order.customer_name}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end text-xs">
+                      <span
+                        className={cn(
+                          'px-2 py-1 rounded-full text-white bg-red-400',
+                          order.class_status
+                        )}
+                      >
+                        {tD(order.status)}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600">{order.customer_name}</p>
-                  <p className="text-gray-500 text-sm flex items-center mt-6">
-                    <MapPin size={16} className="mr-1" />
-                    {order.to}
-                  </p>
-                </div>
-
-                {/* Right: Status & Duration */}
-                <div className="flex items-center justify-between text-xs text-gray-500 flex-col h-full ml-2">
-                  <span className="px-2 py-1 rounded-full text-xs font-medium text-white bg-red-400">
-                    {order.class_status}
-                  </span>
-                  <div className="flex items-center gap-1 mt-2">
-                    <Clock className="w-3 h-3" />
-                    <span>{order.delivery_duration} Mins</span>
+                  <div className="flex w-full justify-between gap-1 items-start mt-4 ">
+                    <p className="text-sm flex items-center  overflow-hidden">
+                      <MapPin size={16} />
+                      {order.to.substring(0, 20) +
+                        (order.to.length > 30 ? '...' : '')}
+                      
+                    </p>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Clock className="w-3 h-3" />
+                      <span>
+                        {Number(order.delivery_duration) - 4} -{' '}
+                        {Number(order.delivery_duration) + 4} {t('mins')}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </CardContent>
+          </Card>
         ))}
       </div>
 

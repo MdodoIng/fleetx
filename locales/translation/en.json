@@ -573,6 +573,25 @@
             }
           },
 
+          "status-map": {
+            "CONFIRMED": {
+              "title": "Confirmed Orders",
+              "subtitle": "All your confirmed orders are listed here"
+            },
+            "DRIVER_ASSIGNED": {
+              "title": "Drivers Coming to You",
+              "subtitle": "Drivers are on their way to pick up your order"
+            },
+            "BUDDY_QUEUED": {
+              "title": "Waiting for Pickup",
+              "subtitle": "Your order is waiting for pickup"
+            },
+            "IN_DELIVERY": {
+              "title": "In Delivery",
+              "subtitle": "Your order is currently in delivery"
+            }
+          },
+
           "mins": "Mins"
         },
 

@@ -38,7 +38,7 @@ export default function OrderTrackingDashboard() {
   const [ordernNumber, setOrdernNumber] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
   const [page, setPage] = useState(10);
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
+  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('list');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [driverList, setDriverList] = useState<any>();
@@ -59,28 +59,20 @@ export default function OrderTrackingDashboard() {
         'FINANCE_MANAGER',
         'VENDOR_ACCOUNT_MANAGER',
         'SALES_HEAD',
+        // "VENDOR_USER"
       ].includes(role as any)
     ) ?? false;
 
-    const url = useMemo(() => {
-      return orderService.getOrderStatusUrl(
-         1,
-        page,
-        ordernNumber,
-        searchCustomer,
-        driverId!,
-       authStore.user?.roles?.includes('FINANCE_MANAGER') ? null : true,
-      );
-    }, [
+  const url = useMemo(() => {
+    return orderService.getOrderStatusUrl(
+      1,
       page,
-      venderStore.vendorId,
-      venderStore.branchId,
-      authStore.user,
       ordernNumber,
-      searchCustomer,
-      driverId,
-    ]);
-
+      searchTerm,
+      driverId!,
+      authStore.user?.roles?.includes('VENDOR_USER') ? null : true
+    );
+  }, [page, authStore.user, ordernNumber, searchTerm, driverId]);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -146,96 +138,92 @@ export default function OrderTrackingDashboard() {
   const t = useTranslations('component.features.orders.live');
 
   return (
-    <Dashboard className='h-auto'>
+    <Dashboard className="h-auto">
       <DashboardHeader>
         <DashboardHeaderRight />
-        <div className="">
-          {/* Search and Filter */}
-          <div className="flex justify-center gap-1.5">
-            {isOrderLiveIsTable ? (
-              <div className="flex gap-5">
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder={t('search.order')}
-                    value={ordernNumber}
-                    onChange={(e) => setOrdernNumber(e.target.value)}
-                    className="!border-none !outline-none !ring-0 pr-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder={t('search.customer')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="!border-none !outline-none !ring-0 pr-10"
-                  />
-                </div>
-
-                <div className="flex items-center justify-center gap-1.5">
-                  <Select
-                    value={String(driverId)}
-                    onValueChange={(value) =>
-                      setValue('driverId', Number(value))
-                    }
-                  >
-                    <SelectTrigger className="w-[180px] bg-white">
-                      <SelectValue placeholder={t('search.driver')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="null">All Driver</SelectItem>
-                      {driverList?.agents.map((item, idx) => (
-                        <SelectItem key={idx} value={String(item.fleet_id)}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ) : (
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        {/* Search and Filter */}
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
+          {isOrderLiveIsTable ? (
+            <div className="flex sm:gap-5 gap-2 max-sm:w-full flex-wrap">
+              <div className="relative  max-sm:w-full">
                 <Input
                   type="text"
-                  placeholder={t('search.default')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 !border-none !outline-none !ring-0 pr-10"
+                  placeholder={t('search.order')}
+                  value={ordernNumber}
+                  onChange={(e) => setOrdernNumber(e.target.value)}
+                  className="!border-none !outline-none !ring-0 pr-10"
                 />
               </div>
-            )}
+              <div className="relative max-sm:w-full">
+                <Input
+                  type="text"
+                  placeholder={t('search.customer')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="!border-none !outline-none !ring-0 pr-10"
+                />
+              </div>
 
-            <div
-              hidden={isOrderLiveIsTable}
-              className="flex items-center justify-center border broder-[#2828281A] rounded-md"
-              style={{
-                border: '1px solid #2828281A',
-              }}
-            >
-              {[
-                { type: 'grid', icon: Grid },
-                { type: 'list', icon: List },
-              ].map((item, idx) => (
-                <Fragment key={idx}>
-                  <button
-                    onClick={() =>
-                      handleTableChange(item.type as typeof isStyleTabel)
-                    }
-                    className={cn(
-                      'px-3 py-2 hover:bg-gray-100 rounded-lg flex items-center justify-center h-full',
-                      isStyleTabel === item.type
-                        ? ' bg-[#EEF6FE] text-primary-blue'
-                        : ' bg-transparent text-dark-grey'
-                    )}
-                  >
-                    <item.icon className="w-5 h-5 " />
-                  </button>
-                  <span className="h-full flex bg-[#2828281A] w-0.5 last:hidden" />
-                </Fragment>
-              ))}
+              <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
+                <Select
+                  value={String(driverId)}
+                  onValueChange={(value) => setValue('driverId', Number(value))}
+                >
+                  <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white">
+                    <SelectValue placeholder={t('search.driver')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="null">All Driver</SelectItem>
+                    {driverList?.agents.map((item, idx) => (
+                      <SelectItem key={idx} value={String(item.fleet_id)}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+          ) : (
+            <div className="relative max-sm:w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder={t('search.default')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 !border-none !outline-none !ring-0 pr-10"
+              />
+            </div>
+          )}
+
+          <div
+            hidden={isOrderLiveIsTable}
+            className="flex items-center justify-center border broder-[#2828281A] rounded-md"
+            style={{
+              border: '1px solid #2828281A',
+            }}
+          >
+            {[
+              { type: 'grid', icon: Grid },
+              { type: 'list', icon: List },
+            ].map((item, idx) => (
+              <Fragment key={idx}>
+                <button
+                  onClick={() =>
+                    handleTableChange(item.type as typeof isStyleTabel)
+                  }
+                  className={cn(
+                    'px-3 py-2 hover:bg-gray-100 rounded-lg flex items-center justify-center h-full',
+                    isStyleTabel === item.type
+                      ? ' bg-[#EEF6FE] text-primary-blue'
+                      : ' bg-transparent text-dark-grey'
+                  )}
+                >
+                  <item.icon className="w-5 h-5 " />
+                </button>
+                <span className="h-full flex bg-[#2828281A] w-0.5 last:hidden" />
+              </Fragment>
+            ))}
           </div>
         </div>
       </DashboardHeader>
@@ -262,7 +250,7 @@ export default function OrderTrackingDashboard() {
 
             {isStyleTabel === 'list' && (
               <ListComponent
-                data={orderStore?.orderStatusListData!}
+             
                 statusHistory={statusHistory}
               />
             )}
