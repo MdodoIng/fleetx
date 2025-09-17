@@ -12,7 +12,8 @@ import { paymentService } from '@/shared/services/payment';
 
 import { TypeBalanceAlertReq } from '@/shared/types/payment';
 import { useSharedStore, useVenderStore } from '@/store';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 type MethodType = 'email' | 'phone';
 
@@ -54,22 +55,23 @@ export function AlertSettings() {
       const res = await paymentService.confirmWalletNotifyBalance(request);
 
       if (res) {
-        alert('✅ Wallet balance alert configured successfully!');
+        toast('✅ Wallet balance alert configured successfully!');
       }
     } catch (err: any) {
       console.error(err.response?.data?.message || err.message);
     }
   };
 
-  const fetchAlertLoader = async () => {
+  const fetchAlertLoader = useCallback(async () => {
     setIsLoading(true);
 
-    if (!branchId || !selectedBranch?.id) return;
+    console.log(branchId);
+    if (!branchId) return;
 
     try {
       const res = await paymentService.getWalletNotifyBalance(
-        vendorId! || selectedVendor?.id!,
-        branchId! || selectedBranch?.id!
+        selectedVendor?.id || vendorId!,
+        selectedBranch?.id || branchId!
       );
 
       if (res?.data) {
@@ -101,13 +103,11 @@ export function AlertSettings() {
 
       console.error('Error in fetch', errorMessage);
     }
-  };
+  }, [branchId, selectedBranch?.id, vendorId, selectedVendor?.id]);
 
   useEffect(() => {
-    if (branchId || selectedBranch?.id) {
-      fetchAlertLoader();
-    }
-  }, [branchId, selectedBranch?.id, vendorId, selectedVendor?.id]);
+    fetchAlertLoader();
+  }, [fetchAlertLoader]);
 
   const onHandleClick = (value: MethodType) => {
     setMethod((prev) => {

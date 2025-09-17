@@ -28,6 +28,19 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+function CardIcon({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="card-icon"
+      className={cn(
+        'flex items-center justify-center bg-off-white rounded-[8px] h-full aspect-square shrink-0 [&_svg]:text-primary-blue [&_svg]:size-[70%]',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
 function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -89,4 +102,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardIcon,
 };

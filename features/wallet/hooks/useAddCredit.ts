@@ -61,7 +61,7 @@ export function useAddCredit() {
   const handlePrepareMashkor = ({
     setIsOpen,
   }: {
-    setIsOpen: Dispatch<SetStateAction<Number | undefined>>;
+    setIsOpen: Dispatch<SetStateAction<number | undefined>>;
   }) => {
     if (!prepareMashkor) return;
     if (
@@ -125,7 +125,7 @@ export function useAddCredit() {
           setValue('isMultiplePayment', false);
           openDialog({ isMultiplePayment: false, isCentral: false });
         } else {
-          if (!branchId || !selectedBranch?.id) {
+          if (!branchId) {
             toast.warning('Please select a branch');
             return false;
           }

@@ -10,7 +10,7 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import collapseIcon from '@/assets/icons/window collapse.svg';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { iconMap } from '../../icons/layout';
 import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
 import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
@@ -22,15 +22,18 @@ const SideBar = () => {
 
   const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU);
 
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (
-      !isCollapsed &&
-      event.target &&
-      !document.getElementById('sidebar')?.contains(event.target as Node)
-    ) {
-      setValue('isCollapsed', true);
-    }
-  };
+  const handleOutsideClick = useCallback(
+    (event: MouseEvent) => {
+      if (
+        !isCollapsed &&
+        event.target &&
+        !document.getElementById('sidebar')?.contains(event.target as Node)
+      ) {
+        setValue('isCollapsed', true);
+      }
+    },
+    [isCollapsed, setValue]
+  );
 
   useEffect(() => {
     if (window.innerWidth > 1024 && !isCollapsed) return;
@@ -40,11 +43,9 @@ const SideBar = () => {
     return () => {
       document.removeEventListener('click', handleOutsideClick, true);
     };
-  }, [isCollapsed, setValue]);
+  }, [handleOutsideClick, isCollapsed]);
 
   const { title } = useGetSidebarMeta();
-  
-  console.log(title)
 
   return (
     <aside

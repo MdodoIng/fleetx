@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 export function WalletBalance({
   setIsOpen,
 }: {
-  setIsOpen: React.Dispatch<React.SetStateAction<Number | undefined>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const sharedStore = useSharedStore();
   const { walletBalance, isDisableAddCredit } = useWalletStore();

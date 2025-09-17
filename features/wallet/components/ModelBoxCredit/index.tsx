@@ -23,8 +23,8 @@ export default function ModelBoxCredit({
   isOpen,
   setIsOpen,
 }: {
-  isOpen: Number | undefined;
-  setIsOpen: Dispatch<SetStateAction<Number | undefined>>;
+  isOpen: number | undefined;
+  setIsOpen: Dispatch<SetStateAction<number | undefined>>;
 }) {
   const [amount, setAmount] = useState<number>(0);
   const [selected, setSelected] = useState<number | null>(null);
