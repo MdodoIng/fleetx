@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Separator } from '@/shared/components/ui/separator';
+import { useDir } from '@/shared/lib/hooks';
+import { cn } from '@/shared/lib/utils';
 import { useSharedStore } from '@/store';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
@@ -18,6 +20,7 @@ import { useTranslations } from 'next-intl';
 export default function DeliveryPricingCard() {
   const { appConstants } = useSharedStore();
   const t = useTranslations('component.features.wallet');
+  const { dirState } = useDir();
   return (
     <Card className="">
       <CardHeader className="flex justify-start ">
@@ -31,7 +34,10 @@ export default function DeliveryPricingCard() {
           </CardDescription>
           <Badge
             variant="default"
-            className="text-xs top-0 right-0 absolute max-md:hidden"
+            className={cn(
+              'text-xs top-0  absolute max-md:hidden',
+              dirState ? 'left-0' : 'right-0'
+            )}
           >
             {t.rich('flatDeliveryFee', {
               value: appConstants?.currency,

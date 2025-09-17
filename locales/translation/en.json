@@ -525,6 +525,7 @@
               "label": "Collect Cash from Recipient"
             },
             "amount": {
+              "default": "Amount",
               "label": "Amount ({value})",
               "placeholder": "{value} 0.00"
             },
@@ -691,8 +692,11 @@
         "branch": "Branch",
         "currentAmount": "Current Amount",
         "rechargeAmount": "Recharge Amount",
+        "transaction-type": "Transaction Type",
         "totalAmount": "Total Amount",
-        "creditAmount": "Credit Amount"
+        "creditAmount": "Credit Amount",
+        "balence": "Balence",
+        "user": "User"
       }
     }
   }

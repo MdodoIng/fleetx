@@ -1,18 +1,23 @@
 'use client';
-import { orderService } from '@/shared/services/orders';
-import { CalendarIcon, Download, Grid, List, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { addDays, format } from 'date-fns';
-
-import GridComponent from '@/features/orders/components/Livelist/GridComponent';
-import ListComponent from '@/features/orders/components/Livelist/ListComponent';
-import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 import {
-  TypeOrderHistoryList,
-  TypeOrderStatusHistoryHistory,
-} from '@/shared/types/orders';
+  CalendarIcon,
+  Download,
+  Search,
+  ListFilter,
+  CreditCard,
+  Clock,
+  User,
+  Phone,
+  MapPin,
+  DollarSign,
+  Dot,
+  User2,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { format } from 'date-fns';
+
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useVenderStore } from '@/store';
+import { useVenderStore, useSharedStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -22,53 +27,67 @@ import {
 } from '@/shared/components/ui/popover';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import LoadingPage from '../../loading';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
-import TableComponent from '@/features/wallet/components/history/TableComponent';
-import { set } from 'zod/v3';
 import { vendorService } from '@/shared/services/vender';
 import { TypeBranch } from '@/shared/types/vender';
+import {
+  Dashboard,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import { useTranslations } from 'next-intl';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsItem,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+  TableSigleListHeader,
+  TableSigleListHeaderLeft,
+  TableSigleListHeaderRight,
+} from '@/shared/components/ui/tableList';
+import { OperationType } from '@/shared/types/orders';
+import { TypePayment } from '@/shared/types/payment';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [ordernNumber, setOrdernNumber] = useState('');
-  const orderStore = useOrderStore();
-
-  const [isEditDetails, setIsEditDetails] = useState(false);
+  const { appConstants } = useSharedStore();
 
   const [searchOrder, setSearchOrder] = useState('');
-  const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
-
-  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
-    undefined
-  );
 
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<string | null>();
 
   const [date, setDate] = useState<{ from: Date; to: Date }>();
 
   const [walletHistory, setWalletHistory] = useState<
-    [
-      TypeWalletTransactionHistoryRes['data'][number] & {
-        branch: TypeBranch | undefined;
-      },
-    ]
+    (TypeWalletTransactionHistoryRes['data'][number] & {
+      branch: TypeBranch | undefined;
+    })[]
   >();
   const venderStore = useVenderStore();
 
-  const fetchVendorWalletBalance = async () => {
-    setIsLoading(true);
+  const fetchVendorWalletBalance = useCallback(async () => {
     try {
       const walletHistoryUrl = reportService.getWalletHistoryUrl(
         page,
         searchOrder,
-        date?.from!,
-        date?.to!,
+        date?.from,
+        date?.to,
         null
       );
       const walletHistoryRes =
@@ -82,85 +101,87 @@ export default function OrderTrackingDashboard() {
           return { ...item, branch: branchRes };
         })
       );
-      setWalletHistory(walletHistorydata as any);
+      setWalletHistory(walletHistorydata);
       setNextSetItemTotal(walletHistoryRes.NEXT_SET_ITEMS_TOKEN);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage =
-        err.error?.message ||
-        err.message ||
+        (err as { error?: { message?: string }; message?: string }).error
+          ?.message ||
+        (err as { message?: string }).message ||
         'An unknown error occurred while fetching wallet balance.';
       console.error('Error in fetchVendorWalletBalance:', errorMessage);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, searchOrder, date?.from, date?.to]);
 
   useEffect(() => {
     const loadInitialWalletBalance = async () => {
       await fetchVendorWalletBalance();
     };
-    console.log(page);
     loadInitialWalletBalance();
-  }, [venderStore.vendorId, venderStore.branchId, page, date?.from, date?.to]);
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return format(date, 'dd MMM yyyy, hh:mm a');
-  };
+  }, [fetchVendorWalletBalance]);
 
   const { exportOrdersToCSV } = useTableExport();
 
-  return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
+  const t = useTranslations();
 
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between ">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Wallet History
-          </h2>
-        </div>
+  return (
+    <Dashboard className="h-auto">
+      <DashboardHeader>
+        <DashboardHeaderRight />
 
         {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          <div className="relative">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between">
+          <div className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
+            <Input
               type="text"
               placeholder="Search by Order No, Customer, Phone"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 !border-none !outline-none !ring-0 "
             />
           </div>
-          <select
-            value={selectedFilter}
-            onChange={(e) => setSelectedFilter(e.target.value)}
-            className=" px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option>All Orders</option>
-            <option>Active</option>
-            <option>Confirmed</option>
-            <option>Urgent</option>
-          </select>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
+            <Select
+              value={selectedFilter}
+              onValueChange={(value) => setSelectedFilter(value)}
+            >
+              <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none relative pl-10">
+                <ListFilter className="absolute left-3" />
+                <SelectValue
+                  placeholder="All Transactions"
+                  className="text-dark-grey"
+                >
+                  {selectedFilter}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Orders">All Transactions</SelectItem>
+                <SelectItem value="Credit">Credit</SelectItem>
+                <SelectItem value="Debit">Debit</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px]">
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger
+                asChild
+                className="!ring-0 border-none text-dark-grey"
+              >
                 <Button
                   id="date"
                   variant={'outline'}
-                  className={cn(
-                    'w-[280px] justify-start text-left font-normal',
-                    !date?.from && 'text-muted-foreground'
-                  )}
+                  className={cn(' justify-start text-left font-normal')}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className=" h-4 w-4" />
                   {date?.from ? (
                     date?.to ? (
                       <>
-                        From {format(date.from, 'PP')} - To{' '}
-                        {format(date.to, 'PP')}
+                        {format(date.from, 'PP')} - {format(date.to, 'PP')}
                       </>
                     ) : (
                       format(date.from, 'PPP')
@@ -176,7 +197,6 @@ export default function OrderTrackingDashboard() {
                   mode="range"
                   defaultMonth={date?.from}
                   selected={date}
-                  // @ts-ignore
                   onSelect={setDate}
                   numberOfMonths={2}
                 />
@@ -184,7 +204,11 @@ export default function OrderTrackingDashboard() {
             </Popover>
             <Button
               variant="ghost"
-              className="text-primary"
+              className={cn(
+                date?.to
+                  ? 'text-primary-blue cursor-pointer'
+                  : 'pointer-events-none'
+              )}
               onClick={() => console.log('Apply with:', date)}
             >
               Apply
@@ -206,18 +230,84 @@ export default function OrderTrackingDashboard() {
             <Download className="w-5 h-5" /> Export
           </Button>
         </div>
-      </div>
+      </DashboardHeader>
 
       {walletHistory?.length ? (
-        <TableComponent
-          data={walletHistory!}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={nextSetItemTotal}
-        />
+        <Table>
+          <TableLists>
+            {walletHistory.map((txn, idx) => {
+              const isCredit = Number(txn.txn_amount) > 0;
+
+              const operation_type = OperationType.find(
+                (x) => x.key === txn?.operation_type
+              );
+
+              return (
+                <TableSigleList key={idx}>
+                  <TableSigleListHeader className="">
+                    <TableSigleListHeaderRight>
+                      <span className="font-semibold text-primary-blue flex">
+                        {txn.txn_number}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-white text-xs font-medium ${operation_type?.color}`}
+                      >
+                        {operation_type?.value}
+                      </span>
+                      {txn.branch && (
+                        <span className="text-xs text-primary-teal flex items-center">
+                          <Dot />
+                          {txn.branch.name}
+                        </span>
+                      )}
+                    </TableSigleListHeaderRight>
+                    <TableSigleListHeaderLeft className="flex items-center gap-1">
+                      <Clock size={12} />
+                      {format(new Date(txn.txn_at), 'PPp')}
+                    </TableSigleListHeaderLeft>
+                  </TableSigleListHeader>
+                  <TableSigleListContents>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <User2 size={14} />
+                        {t('component.features.wallet.user')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {txn.branch?.vendor.name}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <DollarSign size={14} />
+                        {t(
+                          'component.features.orders.create.form.amount.default'
+                        )}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle
+                        className={`${operation_type?.color.replaceAll('bg', 'text')}`}
+                      >
+                        {isCredit ? '+' : ''}
+                        {txn.txn_amount} {appConstants?.currency}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <CreditCard size={14} />
+                        {t('component.features.wallet.balence')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {txn.balance.balance_amount} {appConstants?.currency}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                  </TableSigleListContents>
+                </TableSigleList>
+              );
+            })}
+          </TableLists>
+        </Table>
       ) : (
         <>no data</>
       )}
-    </div>
+    </Dashboard>
   );
 }

@@ -1,5 +1,6 @@
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { useDir } from '@/shared/lib/hooks';
 import { useSharedStore, useVenderStore } from '@/store';
 import {
   getVendorWalletBalanceInit,
@@ -33,6 +34,7 @@ export function WalletBalance({
   }, [vendorId, branchId, selectedBranch, selectedVendor]);
 
   const t = useTranslations('component.features.wallet');
+ 
 
   return (
     <Card className=" bg-gradient-to-r from-primary-blue to-purple-600 text-white w-full shrink flex ">
