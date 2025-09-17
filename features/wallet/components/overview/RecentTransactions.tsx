@@ -3,19 +3,19 @@
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
+  CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { TypeNotificationItem } from '@/shared/types/notification';
-import { cn } from '@/shared/lib/utils';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSharedStore, useVenderStore } from '@/store';
-import { vendorService } from '@/shared/services/vender';
-import { commonConstants } from '@/shared/constants/storageConstants';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { format } from 'date-fns';
 import { OperationType } from '@/shared/types/orders';
+import { Icon } from '@iconify/react';
+import { HistoryIcon } from '@/shared/components/icons/layout';
 
 export function RecentTransactions({ isOpen }: { isOpen: any }) {
   const [walletHistory, setWalletHistory] =
@@ -24,7 +24,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
   const sharedStore = useSharedStore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchVendorWalletBalance = async () => {
+  const fetchVendorWalletBalance = useCallback(async () => {
     setIsLoading(true);
     try {
       if (venderStore.vendorId) {
@@ -53,14 +53,14 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [venderStore.vendorId]);
 
   useEffect(() => {
     const loadInitialWalletBalance = async () => {
       await fetchVendorWalletBalance();
     };
     loadInitialWalletBalance();
-  }, [venderStore.vendorId, venderStore.branchId, isOpen]);
+  }, [fetchVendorWalletBalance, isOpen]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -68,12 +68,17 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
   };
 
   return (
-    <Card className="w-full h-auto">
-      <CardHeader>
-        <CardTitle>Recent Transactions</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          All your confirmed orders are listed here
-        </p>
+    <Card className="w-full h-full">
+      <CardHeader className="flex justify-start">
+        <CardIcon>
+          <HistoryIcon />
+        </CardIcon>
+        <div className="flex w-full flex-col">
+          <CardTitle>Recent Transactions</CardTitle>
+          <CardDescription>
+            All your confirmed orders are listed here
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {walletHistory?.map((txn, idx) => {

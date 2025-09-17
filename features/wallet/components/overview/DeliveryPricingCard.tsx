@@ -17,23 +17,27 @@ export default function DeliveryPricingCard() {
   return (
     <Card className="">
       <CardHeader className="flex justify-start ">
-        <CardIcon className='flex items-center justify-center bg-off-white rounded-[8px] h-full aspect-square shrink-0 [&_svg]:text-primary-blue [&_svg]:size-[70%] '>
+        <CardIcon>
           <Icon icon={'streamline-freehand:money-bag-dollar'} />
         </CardIcon>
-        <div className="flex w-full flex-col">
-          <CardTitle className="text-lg flex items-start justify-between">
-            Detailed Pricing 
-            <Badge variant="default" className="text-sm">
-              💰Flat Delivery Fee: 1 KD (0–8 km)
-            </Badge>
-          </CardTitle>
+        <div className="flex w-full flex-col relative z-0">
+          <CardTitle className="">Detailed Pricing</CardTitle>
           <CardDescription className="">
-            View Detailed Km-based Pricing here 
+            View Detailed Km-based Pricing here
           </CardDescription>
+          <Badge
+            variant="default"
+            className="text-xs top-0 right-0 absolute max-md:hidden"
+          >
+            💰Flat Delivery Fee: 1 KD (0–8 km)
+          </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
+      <Badge variant="default" className="text-xs  md:hidden">
+        💰Flat Delivery Fee: 1 KD (0–8 km)
+      </Badge>
         {/* Breakdown */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -52,7 +56,7 @@ export default function DeliveryPricingCard() {
 
         {/* Example */}
         <p className="text-sm text-dark-grey font-medium">
-          Eg: 12Km Delivery= 1.00 KD (base)+ 0.5 KD  (4 Extra Km)=3.00 KD
+          Eg: 12Km Delivery= 1.00 KD (base)+ 0.5 KD (4 Extra Km)=3.00 KD
         </p>
       </CardContent>
     </Card>

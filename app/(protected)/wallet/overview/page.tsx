@@ -53,18 +53,17 @@ export default function WalletPage() {
   }, [prepareMashkor, handlePrepareMashkor]);
 
   return (
-    <Dashboard className="h-full">
+    <Dashboard className="h-auto w-full">
       <DashboardHeader>
         <DashboardHeaderRight />
       </DashboardHeader>
-      <DashboardContent className=" w-full grid gap-6 grid-cols-1 md:grid-cols-2">
+      <DashboardContent className="w-full grid gap-6 md:grid-cols-2">
         <div className="grid gap-6 w-full h-max">
           <WalletBalance setIsOpen={setIsOpen} />
           <DeliveryPricingCard />
           <AlertSettings />
         </div>
         <RecentTransactions isOpen={isOpen} />
-
         <ModelBoxCredit isOpen={isOpen} setIsOpen={setIsOpen} />
       </DashboardContent>
     </Dashboard>

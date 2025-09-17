@@ -233,7 +233,7 @@ export const useOrderStore = create<OrderState>()(
               .then((res) => {
                 order.branch_name = res.data.main_branch
                   ? 'Main Branch ' + res.data.name
-                  : res.data.name;
+                  : 'Branch ' + res.data.name;
               });
           });
         }

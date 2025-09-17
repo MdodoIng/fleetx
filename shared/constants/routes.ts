@@ -361,7 +361,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
-    labelKey: 'layout.menuItems.others.title', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.others', // Parent item, no direct route title mapping
     roles: ['VENDOR_USER'],
     children: [
       {

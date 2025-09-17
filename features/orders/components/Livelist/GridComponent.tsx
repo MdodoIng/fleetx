@@ -131,7 +131,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                   </span>
                 </div>
               </div>
-              <div className="flex w-full justify-between gap-1 mt-4   items-start ">
+              <div className="flex w-full justify-between gap-1 mt-4   items-end ">
                 <p className="text-sm flex items-center max-w-[10ch] overflow-hidden ">
                   <MapPin size={16} />
                   {order.to.substring(0, 20) +

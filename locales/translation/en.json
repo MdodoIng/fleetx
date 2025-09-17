@@ -579,7 +579,14 @@
             "staus-history": {
               "in-progress": "In Progress",
               "pending": "pending"
-            }
+            },
+
+            "orderNo": "Order No",
+            "sender": "Sender",
+            "receiver": "Receiver",
+            "noDriverAssigned": "No Driver Assigned",
+            "driverQueued": "A driver is queued for pickup, will be assigned shortly",
+            "payment": "Payment"
           },
 
           "status-map": {
@@ -607,7 +614,6 @@
 
         "history": {
           "search": {
-      
             "order": "Search Order No ",
             "customer": "Search Customer",
             "driver": "Select an Driver"

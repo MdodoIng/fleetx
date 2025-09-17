@@ -24,6 +24,8 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
+import { useDir } from '@/shared/lib/hooks';
+import { cn } from '@/shared/lib/utils';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeOrderHistoryList,
@@ -97,12 +99,17 @@ const EditPayment = ({
   };
 
   const t = useTranslations();
-
+  const { dirState } = useDir();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
       <form>
         <DialogTrigger asChild>
-          <Button className="absolute !p-1 h-auto top-2 right-2">
+          <Button
+            className={cn(
+              'absolute !p-1 h-auto top-2 ',
+              dirState ? 'left-2' : 'right-2'
+            )}
+          >
             <Edit />
           </Button>
         </DialogTrigger>
@@ -126,7 +133,10 @@ const EditPayment = ({
                   )
                 }
                 defaultValue={String(form.getValues('payment_type'))}
-                className="flex flex-col space-y-2"
+                className={cn(
+                  'flex flex-col space-y-2',
+                  dirState && 'items-end'
+                )}
               >
                 <div className="flex items-center">
                   <RadioGroupItem value="1" id="1" />

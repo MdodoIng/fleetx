@@ -1,16 +1,12 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
-import {
-  Grid, List, Search
-} from 'lucide-react';
+import { Grid, List, Search } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
-import {
-  TypeOrderHistoryList
-} from '@/shared/types/orders';
+import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useAuthStore, useSharedStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
@@ -56,7 +52,7 @@ export default function OrderTrackingDashboard() {
         'FINANCE_MANAGER',
         'VENDOR_ACCOUNT_MANAGER',
         'SALES_HEAD',
-        'VENDOR_USER',
+        // 'VENDOR_USER',
       ].includes(role as any)
     ) ?? false;
 
@@ -126,14 +122,15 @@ export default function OrderTrackingDashboard() {
     if (document.startViewTransition) {
       document.startViewTransition(() => {
         setIsStyleTabel(style);
+        setSelectedOrder(null);
       });
     } else {
       setIsStyleTabel(style);
+      setSelectedOrder(null);
     }
   }
 
   const t = useTranslations('component.features.orders.live');
-
 
   return (
     <Dashboard className="h-auto">
@@ -228,7 +225,6 @@ export default function OrderTrackingDashboard() {
       <DashboardContent className="flex w-full">
         {isOrderLiveIsTable ? (
           <TableComponent
-          
             page={page}
             setPage={setPage}
             fetchOrderDetails={fetchOrderDetails}

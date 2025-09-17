@@ -22,6 +22,8 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { useDir } from '@/shared/lib/hooks';
+import { cn } from '@/shared/lib/utils';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeOrderHistoryList,
@@ -121,16 +123,22 @@ const EditResiver = ({
   };
 
   const t = useTranslations();
+  const { dirState } = useDir();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
       <form>
         <DialogTrigger asChild>
-          <Button className="absolute !p-1 h-auto top-2 right-2">
+          <Button
+            className={cn(
+              'absolute !p-1 h-auto top-2 ',
+              dirState ? 'left-2' : 'right-2'
+            )}
+          >
             <Edit />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-fit">
-          <DialogHeader>
+          <DialogHeader className='flex justify-start'>
             <DialogTitle>
               {t('component.features.orders.live.edit-drope-location')}
             </DialogTitle>

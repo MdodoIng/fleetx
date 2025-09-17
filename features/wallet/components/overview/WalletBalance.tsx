@@ -43,8 +43,8 @@ export function WalletBalance({
   }, [vendorId, branchId, selectedBranch, selectedVendor]);
 
   return (
-    <Card className=" bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-full flex ">
-      <CardHeader className="flex flex-row justify-between items-center">
+    <Card className=" bg-gradient-to-r from-primary-blue to-purple-600 text-white w-full shrink flex ">
+      <CardHeader className="flex md:flex-row flex-col gap-10  justify-between items-center">
         <div>
           <CardTitle className="text-lg">Wallet Balance</CardTitle>
           <p className="text-3xl font-bold mt-2">
@@ -56,11 +56,11 @@ export function WalletBalance({
             </p>
           )}
         </div>
-        <div className="flex flex-col items-cemter justify-center gap-2">
+        <div className="flex flex-col items-cemter justify-center gap-0 max-md:w-full">
           <Button
             disabled={!isDisableAddCredit}
             onClick={() => setIsOpen(2)}
-            className="bg-white text-indigo-600 hover:bg-gray-100"
+            className="bg-white text-indigo-600 hover:bg-gray-100 max-md:w-full"
           >
             + Add Credit
           </Button>

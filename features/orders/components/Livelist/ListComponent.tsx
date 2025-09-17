@@ -26,6 +26,7 @@ import {
 } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
 import GridComponent from './GridComponent';
+import { useDir } from '@/shared/lib/hooks';
 
 const ListComponent: React.FC<{
   statusHistory: TypeStatusHistoryForUi[];
@@ -74,7 +75,7 @@ const ListComponent: React.FC<{
     {}
   );
 
-  console.log(grouped);
+  const { dirState } = useDir();
 
   return (
     <>
@@ -145,14 +146,10 @@ const ListComponent: React.FC<{
 
       <Dialog
         open={!!selectedOrder}
-        onOpenChange={() => setSelectedOrder(null)} 
+        onOpenChange={() => setSelectedOrder(null)}
       >
         <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0 border-none">
-          <DialogHeader className="p-0 hidden">
-            <DialogTitle asChild className="p-0">
-            </DialogTitle>
-            <DialogClose  className="absolute top-4 right-4" />
-          </DialogHeader>
+          <DialogTitle asChild className="hidden"></DialogTitle>
 
           {selectedOrder && (
             <GridComponent

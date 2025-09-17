@@ -91,8 +91,10 @@ export default function TableComponent({
           <TableSigleList key={idx}>
             <TableSigleListHeader className="">
               <TableSigleListHeaderRight>
-                <span className="font-semibold text-primary-blue">
-                  FleetX #{item.fleetx_order_number}
+                <span className="font-semibold text-primary-blue flex">
+                  <p className="ltr:hidden">FleetX #</p>{' '}
+                  {item.fleetx_order_number}{' '}
+                  <p className="rtl:hidden"># FleetX</p>
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded-full text-xs ${
@@ -116,7 +118,8 @@ export default function TableComponent({
             <TableSigleListContents>
               <TableSigleListContent>
                 <TableSigleListContentTitle>
-                  <Receipt size={14} /> Order No.
+                  <Receipt size={14} />
+                  {t('component.features.orders.live.details.orderNo')}
                 </TableSigleListContentTitle>
                 <TableSigleListContentDetailsTitle>
                   {item.fleetx_order_number}
@@ -124,7 +127,8 @@ export default function TableComponent({
               </TableSigleListContent>
               <TableSigleListContent>
                 <TableSigleListContentTitle>
-                  <User size={14} /> Sender
+                  <User size={14} />{' '}
+                  {t('component.features.orders.live.details.sender')}
                 </TableSigleListContentTitle>
                 <TableSigleListContentDetailsTitle>
                   {item.customer_name_sender}
@@ -138,7 +142,8 @@ export default function TableComponent({
               </TableSigleListContent>
               <TableSigleListContent>
                 <TableSigleListContentTitle>
-                  <User size={14} /> Receiver
+                  <User size={14} />{' '}
+                  {t('component.features.orders.live.details.receiver')}
                 </TableSigleListContentTitle>
                 <TableSigleListContentDetailsTitle>
                   {item.customer_name}
@@ -160,7 +165,10 @@ export default function TableComponent({
                 {item.driver_name ? (
                   <>
                     <TableSigleListContentTitle>
-                      <Truck size={14} /> Driver
+                      <Truck size={14} />{' '}
+                      {t(
+                        'component.features.orders.live.tracking.driver.defult'
+                      )}
                     </TableSigleListContentTitle>
                     <TableSigleListContentDetailsTitle className="text-sm font-medium text-gray-800">
                       {item.driver_name}
@@ -175,18 +183,21 @@ export default function TableComponent({
                 ) : (
                   <>
                     <TableSigleListContentTitle className="text-[#915A0B]">
-                      <Clock size={14} className="!text-[#915A0B]" /> No Driver
-                      Assigned
+                      <Clock size={14} className="!text-[#915A0B]" />
+                      {t(
+                        'component.features.orders.live.details.noDriverAssigned'
+                      )}
                     </TableSigleListContentTitle>
                     <TableSigleListContentDetailsItem className="">
-                      A driver is queued for pickup, will be assigned shortly
+                      {t('component.features.orders.live.details.driverQueued')}
                     </TableSigleListContentDetailsItem>
                   </>
                 )}
               </TableSigleListContent>
               <TableSigleListContent>
                 <TableSigleListContentTitle>
-                  <Info size={14} /> Delivery Fee
+                  <Info size={14} />{' '}
+                  {t('component.features.orders.live.details.delivery-fee')}
                 </TableSigleListContentTitle>
                 <TableSigleListContentDetailsTitle>
                   {' '}
@@ -195,7 +206,8 @@ export default function TableComponent({
               </TableSigleListContent>
               <TableSigleListContent>
                 <TableSigleListContentTitle>
-                  <CreditCard size={14} /> Payment
+                  <CreditCard size={14} />{' '}
+                  {t('component.features.orders.live.details.payment')}
                 </TableSigleListContentTitle>
                 <TableSigleListContentDetailsTitle>
                   {paymentMap[item.payment_type] || 'Unknown'}
@@ -203,6 +215,7 @@ export default function TableComponent({
 
                 <EditPayment
                   data={item}
+                  
                   fetchOrderDetails={fetchOrderDetails}
                 />
               </TableSigleListContent>

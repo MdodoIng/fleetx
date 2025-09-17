@@ -33,7 +33,7 @@ function CardIcon({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-icon"
       className={cn(
-        'flex items-center justify-center bg-off-white rounded-[8px] h-full aspect-square shrink-0 [&_svg]:text-primary-blue [&_svg]:size-[70%]',
+        'flex items-center justify-center bg-off-white rounded-[8px] h-full aspect-square shrink-0 [&_svg]:text-primary-blue [&_svg]:size-[70%] min-h-10 min-w-10',
         className
       )}
       {...props}
