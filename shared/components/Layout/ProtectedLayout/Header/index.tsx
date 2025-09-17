@@ -1,16 +1,13 @@
 'use client';
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 
 import Notification from './Notification';
 import { Button } from '@/shared/components/ui/button';
-import UserAndBranchSelecter from './UserAndBranchSelecter';
 import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
-import { Profiler } from 'react';
 import Profile from './Profile';
 import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import hamburgerIon from '@/assets/icons/hamburger.svg';
