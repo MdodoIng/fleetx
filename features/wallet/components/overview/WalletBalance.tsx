@@ -1,23 +1,13 @@
 import { Button } from '@/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/card';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { TypeWallet } from '@/shared/types/vender';
+import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { useSharedStore, useVenderStore } from '@/store';
 import {
   getVendorWalletBalanceInit,
   useWalletStore,
 } from '@/store/useWalletStore';
-import { Lightbulb, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { Lightbulb, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import React, { useEffect } from 'react';
 
 export function WalletBalance({
   setIsOpen,
@@ -42,37 +32,41 @@ export function WalletBalance({
     fetchBalance();
   }, [vendorId, branchId, selectedBranch, selectedVendor]);
 
+  const t = useTranslations('component.features.wallet');
+
   return (
     <Card className=" bg-gradient-to-r from-primary-blue to-purple-600 text-white w-full shrink flex ">
       <CardHeader className="flex md:flex-row flex-col gap-10  justify-between items-center">
         <div>
-          <CardTitle className="text-lg">Wallet Balance</CardTitle>
+          <CardTitle className="text-lg">{t('walletBalance')}</CardTitle>
           <p className="text-3xl font-bold mt-2">
             {walletBalance} {sharedStore.appConstants?.currency}
           </p>
           {isLowBalence && (
             <p className="text-sm mt-1">
-              Low Balance Alert: <br /> Add credit to continue placing orders
+              {t.rich('lowBalanceAlert', {
+                br: () => <br />,
+              })}
             </p>
           )}
         </div>
-        <div className="flex flex-col items-cemter justify-center gap-0 max-md:w-full">
+        <div className="flex flex-col items-cemter justify-center gap-2 max-md:w-full">
           <Button
             disabled={!isDisableAddCredit}
             onClick={() => setIsOpen(2)}
             className="bg-white text-indigo-600 hover:bg-gray-100 max-md:w-full"
           >
-            + Add Credit
+            <Plus />
+            {t.rich('addCredit')}
           </Button>
 
-          <Button
-            variant={'ghost'}
+          <button
             onClick={() => setIsOpen(1)}
             className="text-xs flex items-center "
           >
             <Lightbulb size={10} />
-            Smart Recommendations?
-          </Button>
+            {t.rich('smartRecommendations')}
+          </button>
         </div>
       </CardHeader>
     </Card>

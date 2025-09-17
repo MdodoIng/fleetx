@@ -616,13 +616,77 @@
           "search": {
             "order": "Search Order No ",
             "customer": "Search Customer",
-            "driver": "Select an Driver"
+            "driver": "Select an Driver",
+
+            "allOrder": "All Order",
+            "active": "Active",
+            "confirmed": "Confirmed",
+            "urgent": "Urgent",
+            "dateRange": "From Date - To Date"
           }
+        },
+
+        "export": {
+          "title": "Export",
+          "subtitle": "Export your order data"
         },
 
         "save-changes": "Save changes",
         "alertMessage": "Service Hours:",
         "edit-payment": "Edit Payment"
+      },
+      "wallet": {
+        "walletBalance": "Wallet Balance",
+        "lowBalanceAlert": "Low Balance Alert: <br></br> Add credit to continue placing orders",
+        "addCredit": "Add Credit",
+        "smartRecommendations": "Smart Recommendations?",
+        "detailedPricing": "Detailed Pricing",
+        "viewDetailedKmBasedPricing": "View Detailed Km-based Pricing here",
+        "flatDeliveryFee": "💰Flat Delivery Fee: 1 {value} (0–8 km)",
+        "baseFare": "Base Fare (0–8 km)",
+        "additionalPerKm": "Additional per km (after 8 km)",
+        "example": "Eg: 12Km Delivery= 1.00 {value} (base)+ 0.5 {value} (4 Extra Km)=3.00 {value}",
+        "alertSettings": "Alert Settings",
+        "getNotified": "Get notified before your balance runs out",
+        "notificationMethod": "Notification Method",
+        "email": "Email",
+        "phone": "Phone",
+        "notificationAlert": "🔔 You’ll receive an {methods} notification when your balance falls below {alertValue} {value}",
+        "saveSettings": "Save Settings",
+        "recentTransactions": "Recent Transactions",
+        "allConfirmedOrders": "All your confirmed orders are listed here",
+        "recommendations": {
+          "15": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(30-50 Orders/Month)"
+          },
+          "30": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(50-80 Orders/Month)"
+          },
+          "50": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(80+Orders/Month)"
+          }
+        },
+        "smartRechargeRecommendation": "Smart Recharge Recommendation",
+        "chargeWallet": "Charge your Wallet based on your monthly order volume to reduce frequent recharging. Quick top-up for faster ordering,",
+        "balanceWillBe": "Balance will be",
+        "deliveryCharge": "Delivery Charge: <span>1.50 {value} per Order</span>",
+        "paymentType": "Payment Type",
+        "selectPaymentType": "Select Payment Type",
+        "creditCard": "Credit Card",
+        "debitCard": "Debit Card",
+        "note": "Note",
+        "addNotesHere": "You can add some notes here",
+        "branch": "Branch",
+        "currentAmount": "Current Amount",
+        "rechargeAmount": "Recharge Amount",
+        "totalAmount": "Total Amount",
+        "creditAmount": "Credit Amount"
       }
     }
   }

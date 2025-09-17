@@ -6,9 +6,7 @@ import {
   CreditCard,
   Dot,
   Download,
-  Grid,
   Info,
-  List,
   ListFilter,
   MapPin,
   Navigation,
@@ -18,19 +16,12 @@ import {
   Truck,
   User,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { addDays, format } from 'date-fns';
+import { useCallback, useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
-import GridComponent from '@/features/orders/components/Livelist/GridComponent';
-import ListComponent from '@/features/orders/components/Livelist/ListComponent';
-import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
-import {
-  TypeOrderHistoryList,
-  TypeOrderStatusHistoryHistory,
-} from '@/shared/types/orders';
+import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
-import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+import { useSharedStore, useVenderStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -40,7 +31,6 @@ import {
 } from '@/shared/components/ui/popover';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import LoadingPage from '../../loading';
 import {
   Dashboard,
   DashboardHeader,
@@ -71,7 +61,6 @@ import {
 import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
 import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
-import Rating from '@/features/orders/components/Livelist/TableComponent/Rating';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -99,21 +88,14 @@ export default function OrderTrackingDashboard() {
   );
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
 
-  const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
-    orderStore?.orderHistoryListData &&
-      orderStore?.orderHistoryListData.length > 0
-      ? orderStore?.orderHistoryListData[0]
-      : ({} as TypeOrderHistoryList)
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [date, setDate] = useState<{ from: Date; to: Date }>();
 
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
 
-    const searchAll = isEditDetails ? null : true;
+    const searchAll = true;
 
     const url = orderService.getOrderHistoryUrl(
       page,
@@ -144,7 +126,15 @@ export default function OrderTrackingDashboard() {
 
       console.log('Error in fetchOrderDetails:', errorMessage);
     }
-  };
+  }, [
+    date?.from,
+    date?.to,
+    orderStore,
+    ordernNumber,
+    page,
+    searchCustomer,
+    searchDriver,
+  ]);
 
   useEffect(() => {
     const loadInitialOrders = async () => {
@@ -152,7 +142,7 @@ export default function OrderTrackingDashboard() {
     };
 
     loadInitialOrders();
-  }, [venderStore.selectedBranch?.id, venderStore.selectedBranch?.id, page]);
+  }, [fetchOrderDetails]);
 
   const { exportOrdersToCSV } = useTableExport();
 
@@ -184,17 +174,27 @@ export default function OrderTrackingDashboard() {
               <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none relative pl-10">
                 <ListFilter className="absolute left-3" />
                 <SelectValue
-                  placeholder="All Orders"
+                  placeholder={t(
+                    'component.features.orders.history.search.allOrder'
+                  )}
                   className="text-dark-grey"
                 >
                   {selectedFilter}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="null">All Orders</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="confirmed">Confirmed</SelectItem>
-                <SelectItem value="Urgent">Urgent</SelectItem>
+                <SelectItem value="null">
+                  {t('component.features.orders.history.search.allOrder')}
+                </SelectItem>
+                <SelectItem value="active">
+                  {t('component.features.orders.history.search.active')}
+                </SelectItem>
+                <SelectItem value="confirmed">
+                  {t('component.features.orders.history.search.confirmed')}
+                </SelectItem>
+                <SelectItem value="urgent">
+                  {t('component.features.orders.history.search.urgent')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -220,7 +220,9 @@ export default function OrderTrackingDashboard() {
                       format(date.from, 'PPP')
                     )
                   ) : (
-                    <span>From Date - To Date</span>
+                    <span>
+                      {t('component.features.orders.history.search.dateRange')}
+                    </span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -367,7 +369,9 @@ export default function OrderTrackingDashboard() {
                           )}
                         </TableSigleListContentTitle>
                         <TableSigleListContentDetailsItem className="">
-                          {t('component.features.orders.live.details.driverQueued')}
+                          {t(
+                            'component.features.orders.live.details.driverQueued'
+                          )}
                         </TableSigleListContentDetailsItem>
                       </>
                     )}
@@ -390,10 +394,9 @@ export default function OrderTrackingDashboard() {
                     <TableSigleListContentDetailsTitle>
                       {paymentMap[item.payment_type] || 'Unknown'}
                     </TableSigleListContentDetailsTitle>
-    
+
                     <EditPayment
                       data={item}
-                      
                       fetchOrderDetails={fetchOrderDetails}
                     />
                   </TableSigleListContent>

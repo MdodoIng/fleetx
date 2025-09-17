@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { OperationType } from '@/shared/types/orders';
 import { Icon } from '@iconify/react';
 import { HistoryIcon } from '@/shared/components/icons/layout';
+import { useTranslations } from 'next-intl';
 
 export function RecentTransactions({ isOpen }: { isOpen: any }) {
   const [walletHistory, setWalletHistory] =
@@ -67,16 +68,18 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     return format(date, 'dd MMM yyyy, hh:mm a');
   };
 
+  const t = useTranslations('component.features.wallet');
+
   return (
     <Card className="w-full h-full">
       <CardHeader className="flex justify-start">
         <CardIcon>
-          <HistoryIcon />
+          <HistoryIcon className="!size-[50%]" />
         </CardIcon>
         <div className="flex w-full flex-col">
-          <CardTitle>Recent Transactions</CardTitle>
+          <CardTitle>{t('recentTransactions')}</CardTitle>
           <CardDescription>
-            All your confirmed orders are listed here
+            {t('allConfirmedOrders')}
           </CardDescription>
         </div>
       </CardHeader>

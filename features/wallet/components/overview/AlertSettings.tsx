@@ -17,6 +17,7 @@ import { TypeBalanceAlertReq } from '@/shared/types/payment';
 import { useSharedStore, useVenderStore } from '@/store';
 import { Icon } from '@iconify/react';
 import { Mail, Phone, Save } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -126,6 +127,10 @@ export function AlertSettings() {
       }
     });
   };
+
+  const t = useTranslations('component.features.wallet');
+  const tD = useTranslations();
+
   return (
     <Card className="">
       <CardHeader className="flex justify-start">
@@ -133,25 +138,29 @@ export function AlertSettings() {
           <Icon icon={'fluent:alert-20-regular'} />
         </CardIcon>
         <div className="flex w-full flex-col">
-          <CardTitle>Alert Settings</CardTitle>
-          <CardDescription>
-            Get notified before your balance runs out
-          </CardDescription>
+          <CardTitle>{t('alertSettings')}</CardTitle>
+          <CardDescription>{t('getNotified')}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2 w-full">
           <Input
-            placeholder="Enter amount"
+            placeholder={tD.rich(
+              'component.features.orders.create.form.amount.placeholder',
+              {
+                value: appConstants?.currency,
+              }
+            )}
             value={alertValue}
             onChange={(e) => setAlertValue(e.target.value)}
-            className="w-full"
+            className="w-full !ring-0"
           />
+
           <span>{appConstants?.currency}</span>
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="font-medium">Notification Method</p>
+          <p className="font-medium">{t('notificationMethod')}</p>
           <div className="flex gap-4">
             <Button
               variant={method?.includes('email') ? 'outline' : 'ghost'}
@@ -159,7 +168,7 @@ export function AlertSettings() {
               className="w-full shrink bg-off-white flex-col py-10 gap-1"
             >
               <Mail />
-              Email
+              {t('email')}
             </Button>
             <Button
               variant={method?.includes('phone') ? 'outline' : 'ghost'}
@@ -167,19 +176,26 @@ export function AlertSettings() {
               className="w-full shrink bg-off-white flex-col py-10 gap-1"
             >
               <Phone />
-              Phone
+              {t('phone')}
             </Button>
           </div>
         </div>
 
         <Badge className="text-xs bg-[#F7F6C0] whitespace-normal max-md:rounded-[8px]">
-          🔔 You’ll receive an {method.join(' and ')} notification when your
-          balance falls below {alertValue} KD
+          {t.rich('notificationAlert', {
+            methods: method.join(' & '),
+            alertValue: alertValue,
+            value: appConstants?.currency,
+          })}
         </Badge>
 
-        <Button onClick={() => configureNotification()} variant="outline" className="w-full bg-[#F5F4F5] border-dark-grey/20">
+        <Button
+          onClick={() => configureNotification()}
+          variant="outline"
+          className="w-full bg-[#F5F4F5] border-dark-grey/20"
+        >
           <Save />
-          Save Settings
+          {t('saveSettings')}
         </Button>
       </CardContent>
     </Card>

@@ -11,9 +11,13 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Separator } from '@/shared/components/ui/separator';
+import { useSharedStore } from '@/store';
 import { Icon } from '@iconify/react';
+import { useTranslations } from 'next-intl';
 
 export default function DeliveryPricingCard() {
+  const { appConstants } = useSharedStore();
+  const t = useTranslations('component.features.wallet');
   return (
     <Card className="">
       <CardHeader className="flex justify-start ">
@@ -21,34 +25,42 @@ export default function DeliveryPricingCard() {
           <Icon icon={'streamline-freehand:money-bag-dollar'} />
         </CardIcon>
         <div className="flex w-full flex-col relative z-0">
-          <CardTitle className="">Detailed Pricing</CardTitle>
+          <CardTitle className="">{t('detailedPricing')}</CardTitle>
           <CardDescription className="">
-            View Detailed Km-based Pricing here
+            {t('viewDetailedKmBasedPricing')}
           </CardDescription>
           <Badge
             variant="default"
             className="text-xs top-0 right-0 absolute max-md:hidden"
           >
-            💰Flat Delivery Fee: 1 KD (0–8 km)
+            {t.rich('flatDeliveryFee', {
+              value: appConstants?.currency,
+            })}
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-      <Badge variant="default" className="text-xs  md:hidden">
-        💰Flat Delivery Fee: 1 KD (0–8 km)
-      </Badge>
+        <Badge variant="default" className="text-xs  md:hidden">
+          {t.rich('flatDeliveryFee', {
+            value: appConstants?.currency,
+          })}
+        </Badge>
         {/* Breakdown */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Base Fare (0–8 km)</span>
-            <span className="text-sm font-medium text-gray-800">1.00 KD</span>
+            <span className="text-sm text-gray-700"> {t('baseFare')}</span>
+            <span className="text-sm font-medium text-gray-800">
+              1.00 {appConstants?.currency}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-700">
-              Additional per km (after 8 km)
+              {t('additionalPerKm')}
             </span>
-            <span className="text-sm font-medium text-gray-800">0.50 KD</span>
+            <span className="text-sm font-medium text-gray-800">
+              0.50 {appConstants?.currency}
+            </span>
           </div>
         </div>
 
@@ -56,7 +68,9 @@ export default function DeliveryPricingCard() {
 
         {/* Example */}
         <p className="text-sm text-dark-grey font-medium">
-          Eg: 12Km Delivery= 1.00 KD (base)+ 0.5 KD (4 Extra Km)=3.00 KD
+          {t.rich('example', {
+            value: appConstants?.currency,
+          })}
         </p>
       </CardContent>
     </Card>
