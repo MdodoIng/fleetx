@@ -3,13 +3,11 @@ import {
   TypepaymentSchema,
 } from '@/features/orders/validations/editPayment';
 
-import AddressLandmarkFields from '@/shared/components/InputSearch';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -26,20 +24,18 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/components/ui/radio-group';
-import { hasValue } from '@/shared/lib/helpers';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeOrderHistoryList,
-  TypeUpdateAddressReq,
   TypeUpdatePaymentReq,
 } from '@/shared/types/orders';
+import { useSharedStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Edit } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
-import z from 'zod';
 
 const EditPayment = ({
   data,
@@ -49,6 +45,7 @@ const EditPayment = ({
   fetchOrderDetails: () => Promise<void>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { appConstants } = useSharedStore();
 
   const form = useForm<TypepaymentSchema>({
     resolver: zodResolver(paymentSchema),
@@ -76,6 +73,7 @@ const EditPayment = ({
 
   const handleSumbitAction = async () => {
     const isValid = await validateFormsAsync();
+
     if (!isValid) {
       console.log('not valid');
       return;
@@ -98,6 +96,8 @@ const EditPayment = ({
     }
   };
 
+  const t = useTranslations();
+
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
       <form>
@@ -108,9 +108,11 @@ const EditPayment = ({
         </DialogTrigger>
         <DialogContent className="sm:max-w-fit">
           <DialogHeader>
-            <DialogTitle>Edit Payment</DialogTitle>
+            <DialogTitle>
+              {t('component.features.orders.edit-payment')}
+            </DialogTitle>
           </DialogHeader>
-          <hr />
+          <hr className="border-dark-grey/20 " />
           <Form {...form}>
             <form
               onSubmit={(e) => e.preventDefault()}
@@ -146,10 +148,22 @@ const EditPayment = ({
                 name="amount_to_collect"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel>
+                      {t.rich(
+                        'component.features.orders.create.form.amount.label',
+                        {
+                          value: appConstants?.currency || 'KD',
+                        }
+                      )}
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Amount"
+                        placeholder={t.rich(
+                          'component.features.orders.create.form.amount.placeholder',
+                          {
+                            value: appConstants?.currency || 'KD',
+                          }
+                        )}
                         {...field}
                         disabled={!isCOD}
                       />
@@ -160,10 +174,15 @@ const EditPayment = ({
               />
             </form>
           </Form>
-          <hr />
+
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button
+                variant="outline"
+                className="border-none bg-[#6750A414] text-[#1D1B20]"
+              >
+                Cancel
+              </Button>
             </DialogClose>
             <Button
               onClick={async () => await handleSumbitAction()}

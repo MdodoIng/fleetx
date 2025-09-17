@@ -35,7 +35,7 @@ function TableSigleList({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="table-sigle-list"
       className={cn(
-        'bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100',
+        'bg-white rounded-lg shadow p-4 flex flex-col border border-gray-100 overflow-hidden',
         className
       )}
       {...props}
@@ -50,7 +50,10 @@ function TableSigleListHeader({
   return (
     <div
       data-slot="table-sigle-list-header"
-      className={cn('flex justify-between items-start mb-3', className)}
+      className={cn(
+        'flex justify-between items-start mb-3 overflow-x-auto shrink-0 w-full gap-10',
+        className
+      )}
       {...props}
     />
   );
@@ -63,7 +66,7 @@ function TableSigleListHeaderRight({
   return (
     <div
       data-slot="table-sigle-list-header-right"
-      className={cn('flex items-center gap-1.5', className)}
+      className={cn('flex items-center shrink-0 gap-1.5', className)}
       {...props}
     />
   );
@@ -76,7 +79,7 @@ function TableSigleListHeaderLeft({
     <div
       data-slot="table-sigle-list-header-left"
       className={cn(
-        'flex justify-between items-center  text-xs text-dark-grey/75 gap-1.5',
+        'flex justify-between shrink-0 items-center  text-xs text-dark-grey/75 gap-1.5',
         className
       )}
       {...props}
@@ -92,7 +95,7 @@ function TableSigleListContents({
     <div
       data-slot="table-sigle-list-contents"
       className={cn(
-        'grid md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] w-full gap-4 text-sm',
+        'md:grid flex grid-cols-[repeat(auto-fit,minmax(120px,1fr))] w-full overflow-x-auto gap-4 text-sm',
         className
       )}
       {...props}
@@ -106,11 +109,52 @@ function TableSigleListContent({
 }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="table-sigle-list-contents"
+      data-slot="table-sigle-list-content"
       className={cn(
-        'flex flex-col p-3 rounded-lg border bg-gray-50',
+        'flex flex-col p-3 shrink-0 relative z-0 rounded-[8px] border border-dark-grey/50  max-md:max-w-[150px]',
         className
       )}
+      {...props}
+    />
+  );
+}
+
+function TableSigleListContentTitle({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="table-sigle-list-content-title"
+      className={cn(
+        'text-dark-grey/70 flex items-center gap-1 [&_svg]:text-primary-blue mb-2',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function TableSigleListContentDetailsTitle({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="table-sigle-list-content-details-title"
+      className={cn('text-sm font-medium text-dark-grey', className)}
+      {...props}
+    />
+  );
+}
+function TableSigleListContentDetailsItem({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="table-sigle-list-content-details-item"
+      className={cn('text-xs text-[#1D1B20] flex items-center gap-1', className)}
       {...props}
     />
   );
@@ -126,4 +170,7 @@ export {
   TableSigleListHeaderLeft,
   TableSigleListContents,
   TableSigleListContent,
+  TableSigleListContentTitle,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContentDetailsItem
 };

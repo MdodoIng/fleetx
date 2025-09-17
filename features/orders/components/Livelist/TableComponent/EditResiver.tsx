@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -23,8 +22,6 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
-import { hasValue } from '@/shared/lib/helpers';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeOrderHistoryList,
@@ -32,9 +29,9 @@ import {
 } from '@/shared/types/orders';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import z from 'zod';
 
 const EditResiver = ({
   data,
@@ -123,6 +120,7 @@ const EditResiver = ({
     }
   };
 
+  const t = useTranslations();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
       <form>
@@ -133,9 +131,11 @@ const EditResiver = ({
         </DialogTrigger>
         <DialogContent className="sm:max-w-fit">
           <DialogHeader>
-            <DialogTitle>Edit Drope Location</DialogTitle>
+            <DialogTitle>
+              {t('component.features.orders.live.edit-drope-location')}
+            </DialogTitle>
           </DialogHeader>
-          <hr />
+          <hr className="border-dark-grey/20 " />
           <Form {...form}>
             <form
               onSubmit={(e) => e.preventDefault()}
@@ -144,7 +144,9 @@ const EditResiver = ({
               {/* Address */}
               <AddressLandmarkFields
                 form={form}
-                landmarkFieldName="address"
+                landmarkFieldName={t(
+                  'component.features.orders.create.form.address.label'
+                )}
                 isMap
               />
 
@@ -154,10 +156,16 @@ const EditResiver = ({
                 name="address"
                 render={({ field }) => (
                   <FormItem className="col-span-2">
-                    <FormLabel>Additional Info</FormLabel>
+                    <FormLabel>
+                      {t(
+                        'component.features.orders.create.form.additionalAddress.label'
+                      )}
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Landmark, directions, etc."
+                        placeholder={t(
+                          'component.features.orders.create.form.additionalAddress.placeholder'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -172,24 +180,16 @@ const EditResiver = ({
                 name="floor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Floor</FormLabel>
+                    <FormLabel>
+                      {t('component.features.orders.create.form.floor.label')}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. 3rd Floor" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Room */}
-              <FormField
-                control={form.control}
-                name="floor"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Room No.</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 302" {...field} />
+                      <Input
+                        placeholder={t(
+                          'component.features.orders.create.form.floor.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,9 +202,18 @@ const EditResiver = ({
                 name="latitude"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Latitude</FormLabel>
+                    <FormLabel>
+                      {t(
+                        'component.features.orders.create.form.latitude.label'
+                      )}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="29.38530684" {...field} />
+                      <Input
+                        placeholder={t(
+                          'component.features.orders.create.form.latitude.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -217,9 +226,18 @@ const EditResiver = ({
                 name="longitude"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Longitude</FormLabel>
+                    <FormLabel>
+                      {t(
+                        'component.features.orders.create.form.longitude.label'
+                      )}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="47.99402565" {...field} />
+                      <Input
+                        placeholder={t(
+                          'component.features.orders.create.form.longitude.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -227,16 +245,21 @@ const EditResiver = ({
               />
             </form>
           </Form>
-          <hr />
+
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button
+                variant="outline"
+                className="border-none bg-[#6750A414] text-[#1D1B20]"
+              >
+                {t('component.features.orders.create.footer.button.cancel')}
+              </Button>
             </DialogClose>
             <Button
               onClick={async () => await handleSumbitAction()}
               type="submit"
             >
-              Save changes
+              {t('component.features.orders.save-changes')}
             </Button>
           </DialogFooter>
         </DialogContent>

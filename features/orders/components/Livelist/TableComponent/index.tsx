@@ -1,36 +1,41 @@
 'use client';
 
 import {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 import {
-    MapPin,
-    User,
-    Phone, CreditCard,
-    Clock, Truck,
-    Navigation,
-    Info,
-    Receipt, Dot
+  MapPin,
+  User,
+  Phone,
+  CreditCard,
+  Clock,
+  Truck,
+  Navigation,
+  Info,
+  Receipt,
+  Dot,
 } from 'lucide-react';
-import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { paymentMap } from '@/features/orders/constants';
 import { useOrderStore, useSharedStore } from '@/store';
 import EditResiver from './EditResiver';
 import EditPayment from './EditPayment';
 import {
-    Table,
-    TableLists,
-    TableSigleList,
-    TableSigleListContent,
-    TableSigleListContents,
-    TableSigleListHeader,
-    TableSigleListHeaderLeft,
-    TableSigleListHeaderRight,
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsItem,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+  TableSigleListHeader,
+  TableSigleListHeaderLeft,
+  TableSigleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { useTranslations } from 'next-intl';
 
@@ -78,7 +83,7 @@ export default function TableComponent({
     };
   }, [handleLoadMore]);
 
-    const t = useTranslations();
+  const t = useTranslations();
   return (
     <Table>
       <TableLists>
@@ -90,7 +95,7 @@ export default function TableComponent({
                   FleetX #{item.fleetx_order_number}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  className={`px-2 py-0.5 rounded-full text-xs ${
                     item.class_status
                   }`}
                 >
@@ -110,96 +115,92 @@ export default function TableComponent({
             </TableSigleListHeader>
             <TableSigleListContents>
               <TableSigleListContent>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <TableSigleListContentTitle>
                   <Receipt size={14} /> Order No.
-                </span>
-                <span className="text-sm font-medium text-gray-800">
+                </TableSigleListContentTitle>
+                <TableSigleListContentDetailsTitle>
                   {item.fleetx_order_number}
-                </span>
+                </TableSigleListContentDetailsTitle>
               </TableSigleListContent>
               <TableSigleListContent>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <TableSigleListContentTitle>
                   <User size={14} /> Sender
-                </span>
-                <span className="text-sm font-medium text-gray-800">
+                </TableSigleListContentTitle>
+                <TableSigleListContentDetailsTitle>
                   {item.customer_name_sender}
-                </span>
-                <span className="text-xs text-gray-500">
+                </TableSigleListContentDetailsTitle>
+                <TableSigleListContentDetailsItem>
                   <Phone size={12} /> {item.phone_number_sender}
-                </span>
-                <span className="text-xs text-gray-500 flex items-center gap-1">
+                </TableSigleListContentDetailsItem>
+                <TableSigleListContentDetailsItem>
                   <MapPin size={12} /> {item.from}
-                </span>
+                </TableSigleListContentDetailsItem>
               </TableSigleListContent>
               <TableSigleListContent>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <TableSigleListContentTitle>
                   <User size={14} /> Receiver
-                </span>
-                <span className="text-sm font-medium text-gray-800">
+                </TableSigleListContentTitle>
+                <TableSigleListContentDetailsTitle>
                   {item.customer_name}
-                </span>
-                <span className="text-xs text-gray-500">
+                </TableSigleListContentDetailsTitle>
+                <TableSigleListContentDetailsItem>
                   <Phone size={12} /> {item.phone_number}
-                </span>
-                <span className="text-xs text-gray-500 flex items-center gap-1">
+                </TableSigleListContentDetailsItem>
+                <TableSigleListContentDetailsItem>
                   <MapPin size={12} /> {item.to}
-                </span>
+                </TableSigleListContentDetailsItem>
                 <EditResiver
                   data={item}
                   fetchOrderDetails={fetchOrderDetails}
                 />
               </TableSigleListContent>
-              <TableSigleListContent>
+              <TableSigleListContent
+                className={!item.driver_name ? 'bg-[#F9F8714D]' : ''}
+              >
                 {item.driver_name ? (
                   <>
-                    <span className="text-xs text-blue-600 flex items-center gap-1">
+                    <TableSigleListContentTitle>
                       <Truck size={14} /> Driver
-                    </span>
-                    <span className="text-sm font-medium text-gray-800">
+                    </TableSigleListContentTitle>
+                    <TableSigleListContentDetailsTitle className="text-sm font-medium text-gray-800">
                       {item.driver_name}
-                    </span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    </TableSigleListContentDetailsTitle>
+                    <TableSigleListContentDetailsItem>
                       <Phone size={12} /> {item.driver_phone}
-                    </span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    </TableSigleListContentDetailsItem>
+                    <TableSigleListContentDetailsItem>
                       <Navigation size={12} /> {item.delivery_distance} km
-                    </span>
+                    </TableSigleListContentDetailsItem>
                   </>
                 ) : (
                   <>
-                    <span className="text-xs text-yellow-600 flex items-center gap-1">
-                      <Truck size={14} /> No Driver Assigned
-                    </span>
-                    <span className="text-xs text-gray-600">
+                    <TableSigleListContentTitle className="text-[#915A0B]">
+                      <Clock size={14} className="!text-[#915A0B]" /> No Driver
+                      Assigned
+                    </TableSigleListContentTitle>
+                    <TableSigleListContentDetailsItem className="">
                       A driver is queued for pickup, will be assigned shortly
-                    </span>
+                    </TableSigleListContentDetailsItem>
                   </>
                 )}
               </TableSigleListContent>
               <TableSigleListContent>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <TableSigleListContentTitle>
                   <Info size={14} /> Delivery Fee
-                </span>
-                <span className="text-sm font-medium text-gray-800">
+                </TableSigleListContentTitle>
+                <TableSigleListContentDetailsTitle>
                   {' '}
                   {item.amount_collected} {appConstants?.currency}
-                </span>
+                </TableSigleListContentDetailsTitle>
               </TableSigleListContent>
               <TableSigleListContent>
-                <h3 className="font-medium text-gray-600 mb-1 flex items-center gap-1">
+                <TableSigleListContentTitle>
                   <CreditCard size={14} /> Payment
-                </h3>
-                <p>
-                  {paymentMap[item.payment_type] || 'Unknown'} <br />
-                  <span className="text-gray-500">
-                    Fee: {item.delivery_fee} KD
-                  </span>
-                </p>
-                {parseFloat(item.amount_to_collect) > 0 && (
-                  <p className="text-gray-500">
-                    Collect: {item.amount_to_collect} KD
-                  </p>
-                )}
+                </TableSigleListContentTitle>
+                <TableSigleListContentDetailsTitle>
+                  {paymentMap[item.payment_type] || 'Unknown'}
+                </TableSigleListContentDetailsTitle>
+
                 <EditPayment
                   data={item}
                   fetchOrderDetails={fetchOrderDetails}

@@ -1,19 +1,7 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
 import {
-  Clock,
-  CreditCard,
-  Dot,
-  Grid,
-  Info,
-  List,
-  MapPin,
-  Navigation,
-  Phone,
-  Receipt,
-  Search,
-  Truck,
-  User,
+  Grid, List, Search
 } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -21,13 +9,11 @@ import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 import {
-  TypeOrderHistoryList,
-  TypeOrderStatusHistoryHistory,
+  TypeOrderHistoryList
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
-import LoadingPage from '../../loading';
 import { Input } from '@/shared/components/ui/input';
 import { fleetService } from '@/shared/services/fleet';
 import {
@@ -45,25 +31,10 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
-import {
-  Table,
-  TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContents,
-  TableSigleListHeader,
-  TableSigleListHeaderLeft,
-  TableSigleListHeaderRight,
-} from '@/shared/components/ui/tableList';
-import { paymentMap, statusColors } from '@/features/orders/constants';
-import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
-import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
   const [ordernNumber, setOrdernNumber] = useState('');
-  const [searchCustomer, setSearchCustomer] = useState('');
   const [page, setPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('list');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
@@ -71,7 +42,6 @@ export default function OrderTrackingDashboard() {
   const [driverList, setDriverList] = useState<any>();
 
   const orderStore = useOrderStore();
-  const { appConstants } = useSharedStore();
   const authStore = useAuthStore();
   const { driverId, setValue } = useOrderStore();
 
@@ -172,7 +142,7 @@ export default function OrderTrackingDashboard() {
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
           {isOrderLiveIsTable ? (
-            <div className="flex sm:gap-5 gap-2 max-sm:w-full flex-wrap">
+            <div className="flex  gap-2 max-sm:w-full flex-wrap">
               <div className="relative  max-sm:w-full">
                 <Input
                   type="text"
@@ -197,7 +167,7 @@ export default function OrderTrackingDashboard() {
                   value={String(driverId)}
                   onValueChange={(value) => setValue('driverId', Number(value))}
                 >
-                  <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white">
+                  <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none">
                     <SelectValue placeholder={t('search.driver')} />
                   </SelectTrigger>
                   <SelectContent>

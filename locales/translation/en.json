@@ -527,6 +527,15 @@
             "amount": {
               "label": "Amount ({value})",
               "placeholder": "{value} 0.00"
+            },
+
+            "latitude": {
+              "label": "Latitude",
+              "placeholder": "Enter Latitude"
+            },
+            "longitude": {
+              "label": "Longitude",
+              "placeholder": "Enter Longitude"
             }
           },
           "footer": {
@@ -592,10 +601,22 @@
             }
           },
 
-          "mins": "Mins"
+          "mins": "Mins",
+          "edit-drope-location": "Edit Drope Location"
         },
 
-        "alertMessage": "Service Hours:"
+        "history": {
+          "search": {
+      
+            "order": "Search Order No ",
+            "customer": "Search Customer",
+            "driver": "Select an Driver"
+          }
+        },
+
+        "save-changes": "Save changes",
+        "alertMessage": "Service Hours:",
+        "edit-payment": "Edit Payment"
       }
     }
   }

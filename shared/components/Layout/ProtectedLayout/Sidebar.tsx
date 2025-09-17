@@ -84,6 +84,7 @@ const SideBar = () => {
           return (
             <div key={index} className="flex flex-col group gap-2">
               <Link
+                hidden={isCollapsed && !item?.route}
                 href={item?.route || '#'}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
@@ -94,7 +95,7 @@ const SideBar = () => {
                 )}
               >
                 <IconComponentMain />
-                <span hidden={isCollapsed}>{t(item.labelKey)}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
               {item.children && (
                 <div className="flex flex-col gap-2 ">
