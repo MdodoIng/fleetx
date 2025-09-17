@@ -1,6 +1,20 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
-import { Grid, List, Search } from 'lucide-react';
+import {
+  Clock,
+  CreditCard,
+  Dot,
+  Grid,
+  Info,
+  List,
+  MapPin,
+  Navigation,
+  Phone,
+  Receipt,
+  Search,
+  Truck,
+  User,
+} from 'lucide-react';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
@@ -11,7 +25,7 @@ import {
   TypeOrderStatusHistoryHistory,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import LoadingPage from '../../loading';
 import { Input } from '@/shared/components/ui/input';
@@ -31,6 +45,19 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContents,
+  TableSigleListHeader,
+  TableSigleListHeaderLeft,
+  TableSigleListHeaderRight,
+} from '@/shared/components/ui/tableList';
+import { paymentMap, statusColors } from '@/features/orders/constants';
+import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
+import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,7 +71,7 @@ export default function OrderTrackingDashboard() {
   const [driverList, setDriverList] = useState<any>();
 
   const orderStore = useOrderStore();
-  const venderStore = useVenderStore();
+  const { appConstants } = useSharedStore();
   const authStore = useAuthStore();
   const { driverId, setValue } = useOrderStore();
 
@@ -59,7 +86,7 @@ export default function OrderTrackingDashboard() {
         'FINANCE_MANAGER',
         'VENDOR_ACCOUNT_MANAGER',
         'SALES_HEAD',
-        // "VENDOR_USER"
+        'VENDOR_USER',
       ].includes(role as any)
     ) ?? false;
 
@@ -136,6 +163,7 @@ export default function OrderTrackingDashboard() {
   }
 
   const t = useTranslations('component.features.orders.live');
+
 
   return (
     <Dashboard className="h-auto">
@@ -230,8 +258,7 @@ export default function OrderTrackingDashboard() {
       <DashboardContent className="flex w-full">
         {isOrderLiveIsTable ? (
           <TableComponent
-            data={orderStore?.orderStatusListData!}
-            isRating={false}
+          
             page={page}
             setPage={setPage}
             fetchOrderDetails={fetchOrderDetails}
@@ -250,7 +277,8 @@ export default function OrderTrackingDashboard() {
 
             {isStyleTabel === 'list' && (
               <ListComponent
-             
+                selectedOrder={selectedOrder}
+                setSelectedOrder={setSelectedOrder}
                 statusHistory={statusHistory}
               />
             )}

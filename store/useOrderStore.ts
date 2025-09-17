@@ -14,6 +14,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
+import { vendorService } from '@/shared/services/vender';
 
 interface DeliverySummary {
   totalOrders: number;
@@ -175,7 +176,7 @@ export const useOrderStore = create<OrderState>()(
                 element.drop_off.block +
                 ', ' +
                 element.drop_off.street;
-            order.creation_date = element.created_at;
+            order.creation_date = new Date(element.created_at).toLocaleString();
             order.amount_collected = element.amount_to_collect;
             if (element.delivery_distance) {
               const distance = parseFloat(element.delivery_distance).toFixed(2);
@@ -192,8 +193,8 @@ export const useOrderStore = create<OrderState>()(
               order.delivered_date = element.fulfill.completed_at!;
               order.canceled_at = element.fulfill.canceled_at!;
             } else {
-              order.driver_name = 'screens.orderList.noData';
-              order.driver_phone = 'screens.orderList.noData';
+              order.driver_name = '';
+              order.driver_phone = '';
             }
 
             if (order.primary_status === 120) {
@@ -224,6 +225,16 @@ export const useOrderStore = create<OrderState>()(
               ? isCreatedDateIsTooOlder(element.created_at)
               : true;
             orderList.push(order);
+            vendorService
+              .getBranchDetailByBranchId({
+                vendor_id: element.vendor_id!,
+                branch_id: element.branch_id!,
+              })
+              .then((res) => {
+                order.branch_name = res.data.main_branch
+                  ? 'Main Branch ' + res.data.name
+                  : res.data.name;
+              });
           });
         }
 

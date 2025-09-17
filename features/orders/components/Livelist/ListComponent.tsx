@@ -25,13 +25,14 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
+import GridComponent from './GridComponent';
 
 const ListComponent: React.FC<{
   statusHistory: TypeStatusHistoryForUi[];
-}> = ({ statusHistory }) => {
+  selectedOrder: TypeOrderHistoryList | null;
+  setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
+}> = ({ statusHistory, selectedOrder, setSelectedOrder }) => {
   const orderStore = useOrderStore();
-  const [selectedOrder, setSelectedOrder] =
-    useState<TypeOrderHistoryList | null>(null);
 
   const data = orderStore?.orderStatusListData;
 
@@ -126,7 +127,6 @@ const ListComponent: React.FC<{
                       <MapPin size={16} />
                       {order.to.substring(0, 20) +
                         (order.to.length > 30 ? '...' : '')}
-                      
                     </p>
                     <div className="flex items-center gap-1 shrink-0">
                       <Clock className="w-3 h-3" />
@@ -145,19 +145,19 @@ const ListComponent: React.FC<{
 
       <Dialog
         open={!!selectedOrder}
-        onOpenChange={() => setSelectedOrder(null)}
+        onOpenChange={() => setSelectedOrder(null)} 
       >
-        <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle className="text-xl font-semibold">
-              Order Tracking – {selectedOrder?.fleetx_order_number}
+        <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0 border-none">
+          <DialogHeader className="p-0 hidden">
+            <DialogTitle asChild className="p-0">
             </DialogTitle>
-            <DialogClose className="absolute top-4 right-4" />
+            <DialogClose  className="absolute top-4 right-4" />
           </DialogHeader>
 
           {selectedOrder && (
-            <OrderTrackingModel
+            <GridComponent
               selectedOrder={selectedOrder}
+              setSelectedOrder={setSelectedOrder}
               statusHistory={statusHistory}
             />
           )}

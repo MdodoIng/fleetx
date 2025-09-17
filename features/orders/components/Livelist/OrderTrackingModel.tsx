@@ -7,6 +7,16 @@ import {
 } from '@/shared/types/orders';
 import MyMap from '@/shared/components/MyMap/Map';
 import { paymentMap } from '../../constants';
+import StatusStep from './StatusStep';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { useTranslations } from 'next-intl';
+import { useSharedStore } from '@/store';
 
 export default function OrderTrackingModel({
   selectedOrder,
@@ -15,6 +25,10 @@ export default function OrderTrackingModel({
   selectedOrder: TypeOrderHistoryList;
   statusHistory: TypeStatusHistoryForUi[];
 }) {
+  
+  const t = useTranslations()
+  const { appConstants} = useSharedStore()
+  
   if (!selectedOrder) return null;
 
   return (
@@ -103,58 +117,47 @@ export default function OrderTrackingModel({
       </div>
 
       {/* Right Panel - Timeline */}
-      <div className="col-span-6 bg-white rounded-xl shadow-sm p-4">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <p className="text-sm text-gray-500">Order Details</p>
-            <p className="text-lg font-semibold">
-              {selectedOrder.customer_name}
-            </p>
-            <p className="text-xs text-gray-500">
-              {paymentMap[selectedOrder.payment_type]}
-            </p>
+      <Card className="col-span-6  w-full">
+        <CardHeader>
+          <CardTitle className="text-sm font-medium">
+            {t('component.features.orders.live.tracking.title')}
+          </CardTitle>
+          <CardDescription>{t('component.features.orders.live.tracking.subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex  flex-col gap-4">
+          <div className="flex justify-between items-start">
+            <div className="grid gap-1">
+              <p className="text-lg font-semibold">
+                {selectedOrder.customer_name}
+              </p>
+              <p className="text-sm text-[#1D1B20]/70">
+                {t('component.features.orders.live.details.payment-method')}
+              </p>
+              <p className="text-sm text-[#1D1B20]/70">
+                {t('component.features.orders.live.details.delivery-fee')}
+              </p>
+            </div>
+            <div className="text-right grid gap-1">
+              <p className="text-lg font-semibold">
+                {selectedOrder.fleetx_order_number}
+              </p>
+              <p className="text-sm text-[#1D1B20]/70">
+                {paymentMap[selectedOrder.payment_type]}
+              </p>
+              <p className="text-sm text-[#1D1B20]/70">
+                {selectedOrder.delivery_fee} {appConstants?.currency}
+              </p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="font-semibold">{selectedOrder.fleetx_order_number}</p>
-            <p className="text-sm text-gray-500">
-              {selectedOrder.delivery_fee} KD
-            </p>
-          </div>
-        </div>
 
-        <div className="mt-4 space-y-5">
-          {statusHistory
-            .filter((s) => s.display)
-            .map((status) => (
-              <div key={status.id} className="flex gap-3 items-start">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-5 h-5 rounded-full ${
-                      status.completed
-                        ? 'bg-purple-600'
-                        : 'border border-gray-300'
-                    }`}
-                  />
-                  <div className="h-6 w-px bg-gray-200" />
-                </div>
-                <div>
-                  <p
-                    className={`text-sm font-medium ${
-                      status.completed ? 'text-purple-600' : 'text-gray-500'
-                    }`}
-                  >
-                    {status.text}
-                  </p>
-                  {status.time && (
-                    <p className="text-xs text-gray-400">
-                      {new Date(status.time).toLocaleString()}
-                    </p>
-                  )}
-                </div>
-              </div>
+          {/* Timeline */}
+          <div className="mt-4 space-y-5">
+            {statusHistory.map((status, idx) => (
+              <StatusStep key={idx} status={status} />
             ))}
-        </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

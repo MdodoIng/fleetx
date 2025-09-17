@@ -2,6 +2,7 @@ import { useVenderStore } from '@/store';
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
+  RootTypeBranchByBranchId,
   TypeAddVenderReq,
   TypeBranch,
   TypeCreateVendorUserReq,
@@ -65,17 +66,13 @@ export const vendorService = {
   getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details?id=${id}`),
 
-  getBranchDetailByBranchId: (
-    branch: {
-      vendor_id: string;
-      branch_id: string;
-    },
-    options?: any
-  ): Promise<any> =>
+  getBranchDetailByBranchId: (branch: {
+    vendor_id: string;
+    branch_id: string;
+  }): Promise<RootTypeBranchByBranchId> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details-branchid`, {
       method: 'POST',
       body: JSON.stringify(branch),
-      ...options,
     }),
 
   getAddressByMobile: (vendorId: string, branchId: string, mobile: string) =>
@@ -89,16 +86,13 @@ export const vendorService = {
   ): Promise<TypeWalletResponce> => {
     let url = `/${vendorId}`;
     if (branchId) url += `/branch/${branchId}`;
-    return apiFetch(
-      `${appConfig.vendorServiceApiUrl()}${url}/wallet/balance`
-    );
+    return apiFetch(`${appConfig.vendorServiceApiUrl()}${url}/wallet/balance`);
   },
 
   getAllVendorBranches: () =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/vendor-branches`),
 
-  getAllVendors: () =>
-    apiFetch(`${appConfig.vendorServiceApiUrl()}/vendors`),
+  getAllVendors: () => apiFetch(`${appConfig.vendorServiceApiUrl()}/vendors`),
 
   updateVendorBulkUploadMapping: (request: any) =>
     apiFetch(
@@ -177,21 +171,16 @@ export const vendorService = {
   },
 
   updateVendorUser: (userId: string, request: TypeUpdateVendorUserReq) =>
-    apiFetch(
-      `${appConfig.userServiceApiUrl()}/vendor/user/update/${userId}`,
-      {
-        method: 'PUT',
-        body: JSON.stringify(request),
-      }
-    ),
+    apiFetch(`${appConfig.userServiceApiUrl()}/vendor/user/update/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(request),
+    }),
 
   createVendorUser: (user: TypeCreateVendorUserReq): Promise<any> =>
     apiFetch(`${appConfig.userServiceApiUrl()}/vendor-user-register`, {
       method: 'POST',
       body: JSON.stringify(user),
     }),
-
-
 
   getAffiliation: () =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/get-all`, {

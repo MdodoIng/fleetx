@@ -90,7 +90,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
   ];
 
   return (
-    <div className="grid gap-4 grid-cols-12 w-full">
+    <div className="grid gap-4 grid-cols-12 w-full ">
       <Card className="lg:col-span-3 md:col-span-6 col-span-12 flex flex-col w-full overflow-hidden">
         <CardHeader>
           <CardTitle className="text-sm font-medium">

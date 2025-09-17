@@ -1,8 +1,6 @@
-type RootTypeBranch = {
-  data: TypeBranch[];
-};
 
-type RootTypeBranchByBranchId = {
+
+export type RootTypeBranchByBranchId = {
   data: TypeBranch;
 };
 
