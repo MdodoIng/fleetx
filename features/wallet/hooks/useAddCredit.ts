@@ -223,7 +223,7 @@ export function useAddCredit() {
   const submitCreditDebitConformed = async ({
     setIsOpen,
   }: {
-    setIsOpen: Dispatch<SetStateAction<Number | undefined>>;
+    setIsOpen: Dispatch<SetStateAction<number | undefined>>;
   }) => {
     if (!prepareMashkor) {
       toast.error('Please prepare the transaction first');

@@ -4,10 +4,7 @@ import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
 import { vendorService } from './vender';
 import { StoreApi, UseBoundStore } from 'zustand';
-import {
-  SharedActions,
-  SharedState,
-} from '@/store/useSharedStore';
+import { SharedActions, SharedState } from '@/store/useSharedStore';
 import { VenderActions, VenderState } from '@/store/useVenderStore';
 import { ca } from 'zod/v4/locales';
 import { useJsApiLoader } from '@react-google-maps/api';
@@ -106,6 +103,7 @@ export async function setHeadingForVendorBranch() {
   const {
     getFleetZonePickUpTrend,
     getAllFreeBuddiesOnLoad,
+    readAppConstants,
     setValue: setSharedValue,
   } = useSharedStore.getState();
 
@@ -116,6 +114,7 @@ export async function setHeadingForVendorBranch() {
   // Trigger operational setup
   getOperationalHours();
   activateBusyMode();
+  readAppConstants();
 
   if (environment.LOCAL_ADDRESS_ENABLED) {
     getFleetZonePickUpTrend();

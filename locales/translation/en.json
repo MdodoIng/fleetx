@@ -672,15 +672,21 @@
             "label2": "(80+Orders/Month)"
           }
         },
-        "smartRechargeRecommendation": "Smart Recharge Recommendation",
-        "chargeWallet": "Charge your Wallet based on your monthly order volume to reduce frequent recharging. Quick top-up for faster ordering,",
+        "smartRechargeRecommendation": "💡 Smart Recharge Recommendation",
+        "chargeWallet": "Charge your Wallet based on your monthly order volume to reduce",
+
+        "frequentRecharging": "Reduce frequent recharging. Quick top-up for faster ordering,",
+
         "balanceWillBe": "Balance will be",
-        "deliveryCharge": "Delivery Charge: <span>1.50 {value} per Order</span>",
+        "deliveryCharge": "💰 Delivery Charge: 1.50 {value} per Order",
         "paymentType": "Payment Type",
         "selectPaymentType": "Select Payment Type",
         "creditCard": "Credit Card",
         "debitCard": "Debit Card",
         "note": "Note",
+
+        "recharge-summary": "Recharge Summary",
+
         "addNotesHere": "You can add some notes here",
         "branch": "Branch",
         "currentAmount": "Current Amount",

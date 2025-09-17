@@ -78,9 +78,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
         </CardIcon>
         <div className="flex w-full flex-col">
           <CardTitle>{t('recentTransactions')}</CardTitle>
-          <CardDescription>
-            {t('allConfirmedOrders')}
-          </CardDescription>
+          <CardDescription>{t('allConfirmedOrders')}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -91,34 +89,31 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
           );
 
           return (
-            <div
-              key={idx}
-              className="border rounded-lg p-3 shadow-sm flex flex-col gap-1"
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-700">
-                  {txn.txn_number}
-                </span>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${operation_type?.color}`}
+            <Card key={idx}>
+              <CardContent className="text-dark-grey">
+                <div className="flex justify-between  items-center">
+                  <span className="font-semibold ">
+                    {txn.txn_number}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-white text-xs font-medium ${operation_type?.color}`}
+                  >
+                    {operation_type?.value}
+                  </span>
+                </div>
+
+                <div
+                  className={`text-lg font-bold ${operation_type?.color.replaceAll('bg', 'text')}`}
                 >
-                  {operation_type?.value}
-                </span>
-              </div>
+                  {isCredit ? '+' : ''}
+                  {txn.txn_amount} {sharedStore.appConstants?.currency}
+                </div>
 
-              <div
-                className={`text-lg font-bold ${
-                  isCredit ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
-                {isCredit ? '+' : ''}
-                {txn.txn_amount} {sharedStore.appConstants?.currency}
-              </div>
-
-              <div className="text-sm text-gray-500">
-                {formatDate(txn.txn_at)}
-              </div>
-            </div>
+                <div className="text-sm ">
+                  {formatDate(txn.txn_at)}
+                </div>
+              </CardContent>
+            </Card>
           );
         })}
       </CardContent>
