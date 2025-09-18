@@ -11,6 +11,12 @@ export interface NotificationState {
   full_day_operational: boolean;
   busyModeData: any;
   busyModeDisplayMessage: string;
+  warningMessage:
+    | {
+        message: string;
+        isEnableToggleButton: boolean;
+      }
+    | undefined;
 }
 
 export interface NotificationActions {
@@ -27,6 +33,7 @@ export interface NotificationActions {
   getBusyModeActivatedMessage: (mode: string, expiredTimeF24: string) => string;
   getDurationOfTimeInMinutes: (start: Date, end: Date) => number;
   getOperationalHoursTimer: () => void;
+  getWarningMessage: () => void;
 }
 
 const initialState: NotificationState = {
@@ -35,6 +42,7 @@ const initialState: NotificationState = {
   full_day_operational: true,
   busyModeData: undefined,
   busyModeDisplayMessage: '',
+  warningMessage: undefined,
 };
 
 export const useNotificationStore = create<
@@ -90,6 +98,29 @@ export const useNotificationStore = create<
         } catch (err: any) {
           console.error('Failed to fetch busy mode:', err?.error);
         }
+      },
+
+      getWarningMessage: () => {
+        notificationService.getWarningMessageApi().then(
+          (res) => {
+            console.log(res, 'getWarningMessage');
+            if (res.data && res.data.length > 0) {
+              set({
+                warningMessage: {
+                  message: res.data[0].message,
+                  isEnableToggleButton: res.data[0].enabled,
+                },
+              });
+            } else {
+              set({
+                warningMessage: undefined,
+              });
+            }
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
       },
 
       setBusyModeDisplayMessage: (data) => {

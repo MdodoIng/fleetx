@@ -22,6 +22,14 @@ export type TypeNotificationsResponse = {
   count: number;
 };
 
+export type TypeGetWarningMessageApiResponse = {
+  data: {
+    id: number;
+    message: string;
+    enabled: boolean;
+  }[];
+};
+
 export type { TypeNotificationsResponse as 'data' };
 
 export type TypeOperationTimeApi = {

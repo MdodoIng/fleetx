@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { orderService } from '@/shared/services/orders';
 import {
   OrderStatusValues,
@@ -9,18 +9,17 @@ import {
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useTranslations } from 'next-intl';
+import { useVenderStore } from '@/store';
 
-export function useOrderStatusHistory(
-  order: TypeOrderHistoryList,
-  isOrderLiveIsTable: boolean
-) {
+export function useOrderStatusHistory(order: TypeOrderHistoryList) {
   const [orderHistorys, setOrderHistorys] =
     useState<TypeOrderStatusHistoryHistory>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isEditDetails } = useVenderStore.getState();
 
-  const fetchOrderHistory = async () => {
-    if (!order?.id || isOrderLiveIsTable) return;
+  const fetchOrderHistory = useCallback(async () => {
+    if (!order?.id || isEditDetails) return;
     try {
       setLoading(true);
       setError(null);
@@ -32,23 +31,17 @@ export function useOrderStatusHistory(
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (isOrderLiveIsTable) {
-      setOrderHistorys(undefined);
-    }
-  }, [isOrderLiveIsTable]);
+  }, [order?.id, isEditDetails]);
 
   useEffect(() => {
     fetchOrderHistory();
-  }, [order?.id]);
+  }, [fetchOrderHistory]);
   const t = useTranslations();
 
   const statusHistory: TypeStatusHistoryForUi[] = useMemo(() => {
     if (!orderHistorys) return [];
     return BuildStatusHistory(order, orderHistorys, t);
-  }, [order, orderHistorys]);
+  }, [order, orderHistorys, t]);
 
   return {
     statusHistory,

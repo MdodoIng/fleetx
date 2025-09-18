@@ -8,7 +8,7 @@ import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useSharedStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import { Input } from '@/shared/components/ui/input';
 import { fleetService } from '@/shared/services/fleet';
@@ -32,7 +32,7 @@ export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [ordernNumber, setOrdernNumber] = useState('');
   const [page, setPage] = useState(10);
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('list');
+  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [driverList, setDriverList] = useState<any>();
@@ -40,21 +40,11 @@ export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
   const { driverId, setValue } = useOrderStore();
+  const { isEditDetails, showDriversFilter } = useVenderStore();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
     orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList)
   );
-
-  const isOrderLiveIsTable =
-    authStore.user?.roles?.some((role) =>
-      [
-        'OPERATION_MANAGER',
-        'FINANCE_MANAGER',
-        'VENDOR_ACCOUNT_MANAGER',
-        'SALES_HEAD',
-        // 'VENDOR_USER',
-      ].includes(role as any)
-    ) ?? false;
 
   const url = useMemo(() => {
     return orderService.getOrderStatusUrl(
@@ -81,10 +71,10 @@ export default function OrderTrackingDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [url, page]);
+  }, [page, url]);
 
   const fetchDriverData = useCallback(async () => {
-    if (!isOrderLiveIsTable) return;
+    if (!showDriversFilter) return;
     try {
       const driverResult = await fleetService.getDriver();
       if (driverResult.data) {
@@ -94,7 +84,7 @@ export default function OrderTrackingDashboard() {
       console.error('Error fetching driver data:', error);
       setDriverList(undefined);
     }
-  }, [isOrderLiveIsTable]);
+  }, [showDriversFilter]);
 
   useEffect(() => {
     fetchOrderDetails();
@@ -104,10 +94,7 @@ export default function OrderTrackingDashboard() {
     fetchDriverData();
   }, [fetchDriverData]);
 
-  const { statusHistory } = useOrderStatusHistory(
-    selectedOrder,
-    isOrderLiveIsTable
-  );
+  const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
   useEffect(() => {
     if (
@@ -138,7 +125,7 @@ export default function OrderTrackingDashboard() {
         <DashboardHeaderRight />
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          {isOrderLiveIsTable ? (
+          {isEditDetails ? (
             <div className="flex  gap-2 max-sm:w-full flex-wrap">
               <div className="relative  max-sm:w-full">
                 <Input
@@ -192,7 +179,7 @@ export default function OrderTrackingDashboard() {
           )}
 
           <div
-            hidden={isOrderLiveIsTable}
+            hidden={isEditDetails}
             className="flex items-center justify-center border broder-[#2828281A] rounded-md"
             style={{
               border: '1px solid #2828281A',
@@ -223,7 +210,7 @@ export default function OrderTrackingDashboard() {
         </div>
       </DashboardHeader>
       <DashboardContent className="flex w-full">
-        {isOrderLiveIsTable ? (
+        {isEditDetails ? (
           <TableComponent
             page={page}
             setPage={setPage}

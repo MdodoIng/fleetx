@@ -627,7 +627,8 @@
         },
 
         "save-changes": "Save changes",
-        "alertMessage": "Service Hours:",
+        "service-hours": "Service Hours:",
+        "alertMessage": "Alert Message:",
         "edit-payment": "Edit Payment"
       },
       "wallet": {

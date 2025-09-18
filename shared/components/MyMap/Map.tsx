@@ -59,7 +59,7 @@ export default function MyMap({
         }
       });
 
-  
+
       mapRef.current.fitBounds(bounds, {
         top: 50,
         right: 50,

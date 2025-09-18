@@ -1,18 +1,14 @@
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardIcon } from '@/shared/components/ui/card';
+import { CardIcon } from '@/shared/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Input } from '@/shared/components/ui/input';
-import { cn } from '@/shared/lib/utils';
-import { checkBlockActivation } from '@/shared/services';
 import { useSharedStore, useVenderStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
-import { Wallet, X } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { useAddCredit } from '../../hooks/useAddCredit';

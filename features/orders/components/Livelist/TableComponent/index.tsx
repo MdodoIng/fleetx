@@ -52,17 +52,13 @@ export default function TableComponent({
   nextSetItemTotal,
   fetchOrderDetails,
 }: OrdersPageProps) {
-  const [rating, setRating] = useState(0);
   const { appConstants } = useSharedStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const orderStore = useOrderStore();
-  const handleClick = (value: number) => {
-    setRating(value);
-  };
 
   const handleLoadMore = useCallback(() => {
     setPage((prev) => prev + 10); // load 10 more items
-  }, []);
+  }, [setPage]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -215,7 +211,6 @@ export default function TableComponent({
 
                 <EditPayment
                   data={item}
-                  
                   fetchOrderDetails={fetchOrderDetails}
                 />
               </TableSigleListContent>

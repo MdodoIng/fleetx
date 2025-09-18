@@ -25,6 +25,8 @@ export interface VenderState {
   isEditVenderId: string | undefined;
   isEditVenderBranchId: string | undefined;
   isEditUser: TypeVendorUserList | undefined;
+  isEditDetails: boolean;
+  showDriversFilter: boolean;
 }
 
 export interface VenderActions {
@@ -48,6 +50,8 @@ const initialState: VenderState = {
   isEditVenderId: undefined,
   isEditVenderBranchId: undefined,
   isEditUser: undefined,
+  isEditDetails: false,
+  showDriversFilter: false,
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(

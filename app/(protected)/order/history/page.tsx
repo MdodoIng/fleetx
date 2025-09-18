@@ -103,7 +103,6 @@ export default function OrderTrackingDashboard() {
       date?.to,
       ordernNumber,
       searchCustomer,
-      searchDriver,
       searchAll
     );
 

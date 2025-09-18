@@ -118,19 +118,14 @@ export function useAddCredit() {
         openDialog({ isMultiplePayment: false, isCentral: true });
       } else {
         if (isVendorAdmin) {
-          if (!selectedBranch?.id) {
-            toast.warning('Please select a branch');
+          if (!selectedBranch?.id || !branchId) {
+            setValue('isMultiplePayment', true);
             return false;
+          } else {
+            setValue('isMultiplePayment', false);
           }
-          setValue('isMultiplePayment', false);
-          openDialog({ isMultiplePayment: false, isCentral: false });
         } else {
-          if (!branchId) {
-            toast.warning('Please select a branch');
-            return false;
-          }
           setValue('isMultiplePayment', false);
-          openDialog({ isMultiplePayment: false, isCentral: false });
         }
       }
 

@@ -280,6 +280,21 @@ export type TypeRootLiveOrderList = {
   count: number;
 };
 
+export type TypeRootLiveBuilkOrderListInsights = {
+  data: {
+    orders_list: any[];
+    insights: {
+      created_count: number;
+      delivered_count: number;
+      canceled_count: number;
+      total_rescheduled_count: number;
+      active_rescheduled_count: number;
+      delivery_failed_count: number;
+    };
+  };
+};
+
+
 export type TypeOrderStatusHistoryHistory = {
   status_history: {
     primary_order_status: number;

@@ -97,8 +97,12 @@ export async function updateZoneAndSome() {
 
 export async function setHeadingForVendorBranch() {
   const { user } = useAuthStore.getState();
-  const { getOperationalHours, activateBusyMode, getOperationalHoursTimer } =
-    useNotificationStore.getState();
+  const {
+    getOperationalHours,
+    activateBusyMode,
+    getOperationalHoursTimer,
+    getWarningMessage,
+  } = useNotificationStore.getState();
 
   const {
     getFleetZonePickUpTrend,
@@ -115,6 +119,7 @@ export async function setHeadingForVendorBranch() {
   getOperationalHours();
   activateBusyMode();
   readAppConstants();
+  getWarningMessage();
 
   if (environment.LOCAL_ADDRESS_ENABLED) {
     getFleetZonePickUpTrend();
@@ -134,23 +139,28 @@ export async function setHeadingForVendorBranch() {
     picture: '',
   };
 
-  const role = user.roles[0];
-  const isVendorUser = role === 'VENDOR_USER';
-
   if (
-    role === 'OPERATION_MANAGER' ||
-    role === 'VENDOR_ACCOUNT_MANAGER' ||
-    role === 'SALES_HEAD' ||
-    role === 'FINANCE_MANAGER'
+    user.roles.includes('OPERATION_MANAGER') ||
+    user.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
+    user.roles.includes('SALES_HEAD') ||
+    user.roles.includes('FINANCE_MANAGER')
   ) {
     if (environment.LOCAL_ADDRESS_ENABLED) {
       getAllFreeBuddiesOnLoad();
     }
     setSharedValue('showLanguage', false);
+    setVendorValue('isEditDetails', true);
+    setVendorValue('showDriversFilter', true);
+    if (
+      user.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
+      user.roles.includes('SALES_HEAD')
+    ) {
+      setVendorValue('isEditDetails', false);
+    }
   }
 
-  if (isVendorUser) {
-    setSharedValue('showLanguage', false);
+  if (user.roles.includes('VENDOR_USER')) {
+    setSharedValue('showLanguage', true);
 
     try {
       const res = await vendorService.getVendorDetails(
@@ -196,6 +206,5 @@ export async function setHeadingForVendorBranch() {
     }
   }
 
-  // You can expose userMeta to your header UI if needed
   return userMeta;
 }

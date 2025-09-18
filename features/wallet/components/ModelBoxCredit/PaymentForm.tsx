@@ -147,6 +147,7 @@ const PaymentForm = ({
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                    PaymentForm
                   </FormItem>
                 )}
               />
@@ -221,8 +222,8 @@ const PaymentForm = ({
 
               <Table className="w-full text-sm">
                 <TableHeader>
-                  <TableRow className="text-dark-grey">
-                    <TableHead className="px-3 py-2 ">
+                  <TableRow className="text-dark-grey ">
+                    <TableHead className="px-3 pr-10 py-2 ">
                       {' '}
                       {t('component.features.wallet.branch')}
                     </TableHead>
@@ -254,7 +255,7 @@ const PaymentForm = ({
                           onChange={(e) =>
                             handleRechargeChange(idx, e.target.value)
                           }
-                          className="w-20 px-2 py-1 text-right"
+                          className="w-auto px-2 py-1 text-right "
                         />
                       </TableCell>
                     </TableRow>
@@ -267,7 +268,7 @@ const PaymentForm = ({
                       {t('component.features.wallet.totalAmount')}
                     </TableCell>
                     <TableCell className="px-3 py-2 font-semibold">
-                      {totalRecharge}
+                      {totalRecharge} {sheredStore.appConstants?.currency}
                     </TableCell>
                   </TableRow>
                 </TableFooter>
