@@ -6,18 +6,13 @@ import {
   ListFilter,
   CreditCard,
   Clock,
-  User,
-  Phone,
-  MapPin,
   DollarSign,
   Dot,
   User2,
-  Loader2,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
-import { useOrderStore } from '@/store/useOrderStore';
 import { useVenderStore, useSharedStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
@@ -34,7 +29,6 @@ import { vendorService } from '@/shared/services/vender';
 import { TypeBranch } from '@/shared/types/vender';
 import {
   Dashboard,
-  DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
@@ -52,7 +46,6 @@ import {
   TableLists,
   TableSigleList,
   TableSigleListContent,
-  TableSigleListContentDetailsItem,
   TableSigleListContentDetailsTitle,
   TableSigleListContents,
   TableSigleListContentTitle,
@@ -61,12 +54,11 @@ import {
   TableSigleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { OperationType } from '@/shared/types/orders';
-import { TypePayment } from '@/shared/types/payment';
 import LoadingPage from '../../loading';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
+
   const { appConstants } = useSharedStore();
 
   const [searchOrder, setSearchOrder] = useState('');
@@ -141,33 +133,11 @@ export default function OrderTrackingDashboard() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder="Search by Order No, Customer, Phone"
+              placeholder={t('component.features.orders.live.search.default')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 !border-none !outline-none !ring-0 "
             />
-          </div>
-
-          <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
-            <Select
-              value={selectedFilter}
-              onValueChange={(value) => setSelectedFilter(value)}
-            >
-              <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none relative pl-10">
-                <ListFilter className="absolute left-3" />
-                <SelectValue
-                  placeholder="All Transactions"
-                  className="text-dark-grey"
-                >
-                  {selectedFilter}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Orders">All Transactions</SelectItem>
-                <SelectItem value="Credit">Credit</SelectItem>
-                <SelectItem value="Debit">Debit</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
@@ -191,7 +161,9 @@ export default function OrderTrackingDashboard() {
                       format(date.from, 'PPP')
                     )
                   ) : (
-                    <span>From Date - To Date</span>
+                    <span>
+                      {t('component.features.orders.history.search.dateRange')}
+                    </span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -208,7 +180,7 @@ export default function OrderTrackingDashboard() {
             </Popover>
             <Button
               variant="ghost"
-              className={cn('',
+              className={cn(
                 date?.to
                   ? 'text-primary-blue cursor-pointer'
                   : 'pointer-events-none'
@@ -218,6 +190,7 @@ export default function OrderTrackingDashboard() {
               Apply
             </Button>
           </div>
+
 
           <Button
             onClick={() =>

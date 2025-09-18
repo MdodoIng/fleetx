@@ -154,7 +154,7 @@ export default function OrderTrackingDashboard() {
         <DashboardHeaderRight />
 
         {/* Search and Filter */}
-        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
           <div className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -199,11 +199,11 @@ export default function OrderTrackingDashboard() {
             </Select>
           </div>
 
-          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px]">
+          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
             <Popover>
               <PopoverTrigger
                 asChild
-                className="!ring-0 border-none text-dark-grey"
+                className="!ring-0 border-none text-dark-grey max-sm:w-full shrink"
               >
                 <Button
                   id="date"
@@ -249,7 +249,6 @@ export default function OrderTrackingDashboard() {
               Apply
             </Button>
           </div>
-
           <Button
             onClick={() =>
               exportOrdersToCSV(
@@ -257,7 +256,7 @@ export default function OrderTrackingDashboard() {
                 'order history'
               )
             }
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className=" max-sm:w-full"
           >
             <Download className="w-5 h-5" /> Export
           </Button>
