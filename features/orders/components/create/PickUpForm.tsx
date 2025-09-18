@@ -3,7 +3,9 @@
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
+  CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
 import {
@@ -44,20 +46,18 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
       <form onSubmit={(e) => e.preventDefault()} className="space-y-6 h-full ">
         <Card className="rounded-[8px] bg-white h-full border-[#2828281A] flex w-full">
           <CardHeader className="flex w-full justify-between items-center">
-            <CardTitle className="flex  gap-2  text-dark-grey">
-              <div className="size-12 aspect-square flex shrink-0 items-center justify-center  bg-off-white p-2 rounded-[8px] ">
+            <div className="flex gap-2  text-dark-grey">
+              <CardIcon>
                 <Icon
                   icon={'weui:location-outlined'}
-                  className="text-[#D97706] size-6"
+                  className="!text-[#D97706]"
                 />
+              </CardIcon>
+              <div className="flex flex-col  items-start justify-center">
+                <CardTitle>{t('pickUpForm.title')}</CardTitle>
+                <CardDescription>{t('pickUpForm.subtitle')}</CardDescription>
               </div>
-              <div className="flex flex-col  items-start justify-start">
-                <h2 className="text-lg font-medium">{t('pickUpForm.title')}</h2>
-                <p className="text-sm font-medium opacity-50">
-                  {t('pickUpForm.subtitle')}
-                </p>
-              </div>
-            </CardTitle>
+            </div>
             <Button variant={'ghost'} onClick={() => setIsToggle(!isToggle)}>
               <Icon
                 icon={

@@ -3,7 +3,9 @@ import { Button } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
+  CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
 import {
@@ -67,25 +69,25 @@ const DropoffFormSection = ({
       className="rounded-[8px] bg-white h-full border-[#2828281A] flex "
     >
       <CardHeader className="flex w-full justify-between items-center flex-wrap gap-4">
-        <CardTitle className="flex  gap-2  text-dark-grey">
-          <div className="size-12 aspect-square flex shrink-0 items-center justify-center  bg-off-white p-2 rounded-[8px] ">
-            <LocateFixed className="text-[#48B64F] size-6" />
-          </div>
+        <div className="flex  gap-2  text-dark-grey">
+          <CardIcon>
+            <LocateFixed className="!text-[#48B64F] " />
+          </CardIcon>
           <div className="flex flex-col  items-start justify-center">
-            <h2 className="text-lg font-medium">
+            <CardTitle>
               {t.rich('dropOffForm.title', {
                 index: (chunks) => <>{chunks}</>,
                 value: index! + 1 || 1,
               })}
-            </h2>
-            <p
+            </CardTitle>
+            <CardDescription
               hidden={isDropIndex !== index && !isSingle}
               className="text-sm font-medium opacity-50"
             >
               {t('dropOffForm.subtitle')}
-            </p>
+            </CardDescription>
           </div>
-        </CardTitle>
+        </div>
         {isSingle || index === isDropIndex ? (
           <Button
             variant={'ghost'}

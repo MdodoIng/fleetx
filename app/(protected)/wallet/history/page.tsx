@@ -12,6 +12,7 @@ import {
   DollarSign,
   Dot,
   User2,
+  Loader2,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
@@ -33,6 +34,7 @@ import { vendorService } from '@/shared/services/vender';
 import { TypeBranch } from '@/shared/types/vender';
 import {
   Dashboard,
+  DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
@@ -60,6 +62,7 @@ import {
 } from '@/shared/components/ui/tableList';
 import { OperationType } from '@/shared/types/orders';
 import { TypePayment } from '@/shared/types/payment';
+import LoadingPage from '../../loading';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,7 +84,8 @@ export default function OrderTrackingDashboard() {
   >();
   const venderStore = useVenderStore();
 
-  const fetchVendorWalletBalance = useCallback(async () => {
+  const fetchVendorWalletReport = useCallback(async () => {
+    setIsLoading(true);
     try {
       const walletHistoryUrl = reportService.getWalletHistoryUrl(
         page,
@@ -116,18 +120,18 @@ export default function OrderTrackingDashboard() {
   }, [page, searchOrder, date?.from, date?.to]);
 
   useEffect(() => {
-    const loadInitialWalletBalance = async () => {
-      await fetchVendorWalletBalance();
+    const loadInitialWalletReport = async () => {
+      await fetchVendorWalletReport();
     };
-    loadInitialWalletBalance();
-  }, [fetchVendorWalletBalance]);
+    loadInitialWalletReport();
+  }, [fetchVendorWalletReport]);
 
   const { exportOrdersToCSV } = useTableExport();
 
   const t = useTranslations();
 
   return (
-    <Dashboard className="h-auto">
+    <Dashboard className="">
       <DashboardHeader>
         <DashboardHeaderRight />
 
@@ -305,8 +309,10 @@ export default function OrderTrackingDashboard() {
             })}
           </TableLists>
         </Table>
+      ) : isLoading ? (
+        <LoadingPage hideHead />
       ) : (
-        <>no data</>
+        <p>no data</p>
       )}
     </Dashboard>
   );

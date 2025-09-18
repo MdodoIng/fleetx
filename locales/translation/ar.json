@@ -1,7 +1,10 @@
 {
   "layout": {
     "menuItems": {
-      "dashboard": "لوحة القيادة",
+      "dashboard": {
+        "title": "لوحة القيادة",
+        "subtitle": "عرض أهم المقاييس والرؤى"
+      },
       "order": "طلب",
       "orderSubMenu": {
         "newOrder": {
@@ -71,10 +74,8 @@
           "subtitle": "إنشاء تقرير برصيد محفظتك"
         }
       },
-      "billing": {
-        "title": "الفوترة",
-        "subtitle": "إدارة معلومات الفوترة الخاصة بك والفواتير"
-      },
+      "billing": "الفوترة",
+
       "billingSubMenu": {
         "editProfile": {
           "title": "تعديل الملف الشخصي",
@@ -85,10 +86,7 @@
           "subtitle": "عرض وتنزيل فواتيرك"
         }
       },
-      "insights": {
-        "title": "رؤى",
-        "subtitle": "الوصول إلى بيانات الأداء والتحليلات"
-      },
+      "insights": "رؤى",
       "insightsSubMenu": {
         "overview": {
           "title": "نظرة عامة",
@@ -115,10 +113,7 @@
           "subtitle": "عرض اتجاهات النمو عبر المناطق المختلفة"
         }
       },
-      "others": {
-        "title": "أخرى",
-        "subtitle": "أدوات وإعدادات إضافية"
-      },
+      "others": "أخرى",
       "othersSubMenu": {
         "integrations": {
           "title": "التكاملات",

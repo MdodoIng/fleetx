@@ -1,7 +1,10 @@
 {
   "layout": {
     "menuItems": {
-      "dashboard": "Dashboard",
+      "dashboard": {
+        "title": "Dashboard",
+        "subtitle": "View key metrics and insights"
+      },
       "order": "Order",
       "orderSubMenu": {
         "newOrder": {
@@ -72,24 +75,18 @@
           "subtitle": "Generate a report of your wallet balance"
         }
       },
-      "billing": {
-        "title": "Billing",
-        "subtitle": "Manage your billing information and invoices"
-      },
+      "billing": "Billing",
       "billingSubMenu": {
         "editProfile": {
           "title": "Edit Profile",
-          "subtitle": "Update your billing profile details"
+          "subtitle": "Update your company billing information for invoices"
         },
         "invoice": {
           "title": "Invoice",
           "subtitle": "View and download your invoices"
         }
       },
-      "insights": {
-        "title": "Insights",
-        "subtitle": "Access performance data and analytics"
-      },
+      "insights": "Insights",
       "insightsSubMenu": {
         "overview": {
           "title": "Overview",
@@ -116,10 +113,7 @@
           "subtitle": "View growth trends across different zones"
         }
       },
-      "others": {
-        "title": "Others",
-        "subtitle": "Additional tools and settings"
-      },
+      "others": "Others",
       "othersSubMenu": {
         "integrations": {
           "title": "Integrations",
@@ -697,6 +691,46 @@
         "creditAmount": "Credit Amount",
         "balence": "Balence",
         "user": "User"
+      },
+
+      "billing": {
+        "edit-profile": {
+          "title": "Here you can edit billing profile !",
+          "subtitle": "Please add/update your company billing Information below. The below details will be reflected in the generated invoice.",
+          "form": {
+            "company-legal-name": {
+              "label": "Company Legal Name",
+              "placeholder": "Company Legal Name"
+            },
+            "company-address": {
+              "label": "Company Address",
+              "placeholder": "Company Address"
+            },
+            "tax-identification-number": {
+              "label": "Tax Identification Number",
+              "placeholder": "TIN"
+            },
+
+            "save-changes": "Save Changes"
+          }
+        }
+      },
+      "config": {
+        "change-password": {
+          "oldPassword": {
+            "label": "Old Password",
+            "placeholder": "password"
+          },
+          "newPassword": {
+            "label": "New Password",
+            "placeholder": "password"
+          },
+          "confirmPassword": {
+            "label": "Confirm Password",
+            "placeholder": "password"
+          },
+          "changePassword": "Change Password"
+        }
       }
     }
   }

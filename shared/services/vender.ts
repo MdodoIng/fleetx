@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranchByBranchId,
   TypeAddVenderReq,
+  TypeAffiliationLisRespoese,
   TypeBranch,
   TypeCreateVendorUserReq,
   TypeEditVenderReq,
@@ -128,7 +129,7 @@ export const vendorService = {
       }
     ),
 
-  getAffiliationList: () =>
+  getAffiliationList: (): Promise<TypeAffiliationLisRespoese> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/list/`),
 
   activateAffiliation: (request: any) =>

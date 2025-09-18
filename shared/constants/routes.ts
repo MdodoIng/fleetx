@@ -33,8 +33,8 @@ export const routes: Routes = {
   },
   DASHBOARD: {
     path: '/dashboard',
-    title: 'layout.menuItems.dashboard',
-    subtitle: '', // Dashboard in JSON is a string, not an object with title/subtitle
+    title: 'layout.menuItems.dashboard.title',
+    subtitle: 'layout.menuItems.dashboard.subtitle',
     icon: 'activeOrders',
   },
   VENDOR_LIST: {
@@ -95,7 +95,7 @@ export const routes: Routes = {
     path: '/billing/edit-profile',
     title: 'layout.profile.editBilling.title',
     subtitle: 'layout.profile.editBilling.subtitle',
-    icon: 'history',
+    icon: 'bill',
   },
   BILLING_INVOICE: {
     path: '/billing/invoice',
@@ -140,7 +140,7 @@ export const routes: Routes = {
     icon: 'history',
   },
   OTHERS_INTEGRATIONS: {
-    path: '/integrations',
+    path: '/config/integrations',
     title: 'layout.menuItems.othersSubMenu.integrations.title',
     subtitle: 'layout.menuItems.othersSubMenu.integrations.subtitle',
     icon: 'integrations',
@@ -173,7 +173,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   {
-    labelKey: 'layout.menuItems.order', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.order',
     children: [
       {
         labelKey: routes.ORDER_CREATE.title,
@@ -203,7 +203,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
-    labelKey: 'layout.menuItems.vendor', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.vendor',
     roles: [
       'OPERATION_MANAGER',
       'VENDOR_ACCOUNT_MANAGER',
@@ -235,7 +235,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
-    labelKey: 'layout.menuItems.wallet', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.wallet',
     children: [
       {
         labelKey: routes.WALLET_OVERVIEW.title,
@@ -268,23 +268,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
-    labelKey: 'layout.menuItems.billing.title',
-    roles: ['VENDOR_USER'],
-    children: [
-      {
-        labelKey: routes.BILLING_EDIT_PROFILE.title,
-        route: routes.BILLING_EDIT_PROFILE.path,
-        icon: routes.BILLING_EDIT_PROFILE.icon,
-      },
-      {
-        labelKey: routes.BILLING_INVOICE.title,
-        route: routes.BILLING_INVOICE.path,
-        icon: routes.BILLING_INVOICE.icon,
-      },
-    ],
-  },
-  {
-    labelKey: 'layout.menuItems.insights.title', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.insights',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -361,7 +345,7 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
     ],
   },
   {
-    labelKey: 'layout.menuItems.others.title', // Parent item, no direct route title mapping
+    labelKey: 'layout.menuItems.others',
     roles: ['VENDOR_USER'],
     children: [
       {

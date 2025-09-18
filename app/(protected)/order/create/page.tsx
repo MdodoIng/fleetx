@@ -194,7 +194,7 @@ export default function ShippingForm() {
   return (
     <>
       <AlertMessage type="mobile" />
-      <Dashboard>
+      <Dashboard className='h-auto'>
         <DashboardHeader>
           <DashboardHeaderRight>
             <AlertMessage type="laptop" />

@@ -8,7 +8,6 @@ export { IntegrationsIcon } from './IntegrationsIcon';
 export { PasswordIcon } from './PasswordIcon';
 export { BillIcon } from './BillIcon';
 
-
 // Utilities
 export {
   iconMap,
@@ -29,7 +28,8 @@ export type SidebarIconType =
   | 'history'
   | 'bulkInsights'
   | 'integrations'
-  | 'password' | "bill";
+  | 'password'
+  | 'bill';
 
 export interface SidebarIconProps {
   width?: number;

@@ -9,9 +9,16 @@ import {
   changePasswordSchema,
   TypeChangePasswordForm,
 } from '@/features/config/validations/changePpassword';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +30,13 @@ import { useAuthStore } from '@/store';
 import userService from '@/shared/services/user';
 import { TypeChangePasswordRequest } from '@/shared/types/user';
 import { toast, Toaster } from 'sonner';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { useTranslations } from 'next-intl';
 
 export default function ChangePasswordPage() {
   const { user, logout } = useAuthStore();
@@ -65,57 +79,90 @@ export default function ChangePasswordPage() {
     }
   };
 
+  const t = useTranslations('component.features.config.change-password');
+
   return (
-    <Card className="w-[400px] max-w-full mx-auto mt-10">
-      <CardContent className="space-y-6 py-6">
+    <Dashboard>
+      <DashboardHeader>
+        <DashboardHeaderRight />
+      </DashboardHeader>
+
+      <DashboardContent className="grid md:grid-cols-2 grid-cols-1  w-full ">
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="oldPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Old Password</FormLabel>
-                  <Input type="password" {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="h-full w-full flex flex-col gap-6"
+          >
+            <Card className="rounded-[8px] bg-white h-full flex flex-col w-full">
+              <CardContent className="mt-2 grid gap-x-8 gap-y-6">
+                <FormField
+                  control={form.control}
+                  name="oldPassword"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>{t('oldPassword.label')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder={t('oldPassword.placeholder')}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Password</FormLabel>
-                  <Input type="password" {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel> {t('newPassword.label')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder={t('newPassword.placeholder')}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <Input eyeBtnHide type="password" {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button
-              type="submit"
-              disabled={submitted || !form.formState.isValid}
-              className="w-full"
-            >
-              Change Password
-            </Button>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel> {t('changePassword')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          eyeBtnHide
+                          type="password"
+                          placeholder={t('confirmPassword.placeholder')}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+              <CardFooter className="flex justify-end w-full ">
+                <Button
+                  type="submit"
+                  disabled={submitted || !form.formState.isValid}
+                  className="w-full"
+                >
+                  {t('changePassword')}
+                </Button>
+              </CardFooter>
+            </Card>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DashboardContent>
+    </Dashboard>
   );
 }
