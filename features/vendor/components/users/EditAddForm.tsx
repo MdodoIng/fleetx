@@ -1,43 +1,16 @@
 'use client';
-import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { Edit, LocateIcon, Phone, Pin, Type, User2, X } from 'lucide-react';
 import {
   TypeBranch,
-  TypeEditVenderReq,
-  TypeVender,
   TypeVenderListItem,
 } from '@/shared/types/vender';
 import {
   Dispatch,
   FormEvent,
   SetStateAction,
-  useEffect,
-  useState,
 } from 'react';
 import { useVenderStore } from '@/store';
-import { vendorService } from '@/shared/services/vender';
-import { Label } from '@/shared/components/ui/label';
-import { Checkbox } from '@/shared/components/ui/checkbox';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  editVendorBranchSchema,
-  editVendorNameSchema,
-  TypeEditVendorBranchSchema,
-  TypeEditVendorNameSchema,
-} from '../../validations/editVender';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog';
-import BranchEditForm from '../BranchEditForm';
-import { getAccountManagerList } from '@/shared/services/user';
-import { useAddUpdateVender } from '../../hooks/useAddUpdateVender';
+import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -64,15 +37,9 @@ type Props = {
     branch: TypeBranch;
     vendor: TypeVenderListItem;
   };
-  branchList: TypeBranch[] | undefined;
 };
 
-const EditAddForm = ({
-  form,
-  isBranch,
-  setIsBranchAction,
-  branchList,
-}: Props) => {
+const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
   const venderStore = useVenderStore();
 
   const handleSumbit = (e: FormEvent<HTMLFormElement>) => {
@@ -80,7 +47,7 @@ const EditAddForm = ({
   };
 
   const handleChangeBranch = (e: string) => {
-    const branch = branchList?.find((r) => r.id === e);
+    const branch = venderStore.branchDetails?.find((r) => r.id === e);
     setIsBranchAction({
       branch: branch!,
       vendor: isBranch.vendor,
@@ -100,7 +67,6 @@ const EditAddForm = ({
         <UserAndBranchSelecter
           handleChangeBranch={handleChangeBranch}
           handleChangeVender={handleChangeVender}
-          branchs={branchList}
           selectedVendorValue={isBranch?.vendor}
           selectedBranchValue={isBranch?.branch}
         />

@@ -150,9 +150,4 @@ function Overview() {
   );
 }
 
-export default withAuth(Overview, [
-  'FINANCE_MANAGER',
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default Overview;

@@ -1,4 +1,5 @@
 import { SidebarIconType } from '@/shared/components/icons/layout';
+import { UserRole } from '../user';
 
 export interface MenuItem {
   labelKey: string;
@@ -13,6 +14,7 @@ interface RouteConfig {
   title: string;
   subtitle: string;
   icon: SidebarIconType;
+  roles?: UserRole[];
 }
 
 export type Routes = {

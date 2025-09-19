@@ -407,8 +407,4 @@ function Dashboard() {
   );
 }
 
-export default withAuth(Dashboard, [
-  'OPERATION_MANAGER',
-  'SALES_HEAD',
-  'FINANCE_MANAGER',
-]);
+export default Dashboard;

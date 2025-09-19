@@ -37,7 +37,6 @@ type Props = {
       | undefined
     >
   >;
-  branchList: TypeBranch[] | undefined;
   isAdd: boolean;
   setIsAddAction: Dispatch<SetStateAction<boolean>>;
 };
@@ -47,7 +46,6 @@ export const useEditAddUser = ({
   data,
   isBranch,
   setIsBranchAction,
-  branchList,
   isAdd,
   setIsAddAction,
 }: Props) => {

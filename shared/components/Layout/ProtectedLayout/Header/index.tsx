@@ -13,6 +13,8 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import hamburgerIon from '@/assets/icons/hamburger.svg';
 
 import Image from 'next/image';
+import UserAndBranchSelecter from './UserAndBranchSelecter';
+import { useState } from 'react';
 
 const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
   const pathname = usePathname();
@@ -20,6 +22,7 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
     useAuthStore();
   const venderStore = useVenderStore();
   const { isCollapsed, setValue } = useSharedStore();
+  // const [] = useState()
 
   const isActivePath = (path: string) => {
     return pathname === path;
@@ -68,6 +71,12 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
       )}
     >
       <p className="font-medium max-lg:hidden">{t('title')}</p>
+      <UserAndBranchSelecter
+        handleChangeBranch={handleChangeBranch}
+        handleChangeVender={handleChangeVender}
+    
+        handleClear={handleClear}
+      />
       <div className="lg:hidden flex items-center gap-4">
         <Button
           variant={'ghost'}

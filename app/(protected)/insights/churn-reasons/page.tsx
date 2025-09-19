@@ -136,9 +136,4 @@ function ChurnReasons() {
   );
 }
 
-export default withAuth(ChurnReasons, [
-  'FINANCE_MANAGER',
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default ChurnReasons;

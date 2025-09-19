@@ -38,7 +38,7 @@ export default function ShippingForm() {
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
-  const { branchId, vendorId } = useVenderStore();
+  const { branchId, vendorId, selectedBranch } = useVenderStore();
 
   const [isCOD, setIsCOD] = useState<1 | 2>(2);
 
@@ -102,26 +102,15 @@ export default function ShippingForm() {
   );
 
   const updatePickUpDetailsForBranchUser = useCallback(async () => {
-    if (branchId) {
-      try {
-        const res = await vendorService.getBranchDetailByBranchId({
-          vendor_id: vendorId!,
-          branch_id: branchId!,
-        });
-        
- 
+    if (branchId && selectedBranch) {
+      Object.entries(selectedBranch?.address).forEach(([key, value]) => {
+        pickUpForm.setValue(key as keyof TypePickUpSchema, value);
+      });
 
-        Object.entries(res.data.address).forEach(([key, value]) => {
-          pickUpForm.setValue(key as keyof TypePickUpSchema, value);
-        });
-
-        pickUpForm.setValue('customer_name', res.data.name);
-        pickUpForm.setValue('mobile_number', res.data.mobile_number);
-      } catch (error) {
-        console.error('Error fetching branch ddetails:', error);
-      }
+      pickUpForm.setValue('customer_name', selectedBranch.name);
+      pickUpForm.setValue('mobile_number', selectedBranch?.mobile_number);
     }
-  }, [branchId, vendorId, pickUpForm]);
+  }, [branchId, pickUpForm, selectedBranch]);
 
   const updateDropOutDetailsForStore = useCallback(() => {
     if (
@@ -194,7 +183,7 @@ export default function ShippingForm() {
   return (
     <>
       <AlertMessage type="mobile" />
-      <Dashboard className='h-auto'>
+      <Dashboard className="h-auto">
         <DashboardHeader>
           <DashboardHeaderRight>
             <AlertMessage type="laptop" />

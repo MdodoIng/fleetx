@@ -6,4 +6,4 @@ function Layout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default withAuth(Layout, ['SALES_HEAD']);
+export default Layout;

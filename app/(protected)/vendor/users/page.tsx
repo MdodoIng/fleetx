@@ -63,7 +63,7 @@ function VenderUser() {
     venderList,
     branchDetails,
   } = useVenderStore();
-  const [isCentralWallet, setIsCentralWallet] = useState(false);
+
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
   const [isBranch, setIsBranchAction] = useState<
@@ -77,7 +77,6 @@ function VenderUser() {
     vendor: selectedVendor!,
   });
   const [isAdd, setIsAddAction] = useState(false);
-  const [branchList, setBranchList] = useState<TypeBranch[]>();
   const [tableData, setTableData] = useState<any[]>([]);
 
   const fetchVendorUserList = async (): Promise<void> => {
@@ -105,23 +104,6 @@ function VenderUser() {
     loadFetchVendorUserList();
   }, [selectedBranch?.id, page]);
 
-  const fetchBranchDetails = async () => {
-    try {
-      const res = await vendorService.getBranchDetails(isBranch?.vendor.id!);
-
-      setBranchList(res.data);
-      return res;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (isBranch?.vendor?.id || selectedVendor?.id) {
-      fetchBranchDetails();
-    }
-  }, [isBranch?.vendor?.id]);
-
   const handleEditClick = async (
     item: TypeVendorUserList,
     branch: TypeBranch | undefined
@@ -133,8 +115,7 @@ function VenderUser() {
       branch: branch!,
     });
     if (!branch) {
-      const branchs = await fetchBranchDetails();
-      const branch = branchs?.data?.find((r) => r.id === item.vendor.branch_id);
+      const branch = branchDetails?.find((r) => r.id === item.vendor.branch_id);
       setIsBranchAction({
         branch: branch!,
         vendor: vender!,
@@ -206,7 +187,6 @@ function VenderUser() {
       data: data!,
       isBranch,
       setIsBranchAction,
-      branchList,
       isAdd,
       setIsAddAction,
     });
@@ -291,7 +271,6 @@ function VenderUser() {
               form={editUserForm}
               isBranch={isBranch!}
               setIsBranchAction={setIsBranchAction}
-              branchList={branchList}
             />
 
             <DialogFooter>
@@ -309,8 +288,4 @@ function VenderUser() {
   );
 }
 
-export default withAuth(VenderUser, [
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default VenderUser;

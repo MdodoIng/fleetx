@@ -328,4 +328,4 @@ function PaymentHistory(): JSX.Element {
     </div>
   );
 }
-export default withAuth(PaymentHistory, ['FINANCE_MANAGER']);
+export default PaymentHistory;

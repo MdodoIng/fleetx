@@ -63,12 +63,7 @@ function FirstOrderInsights() {
   const fetchTableData = async () => {
     setIsLoading(true);
     try {
-      const res = await getFirstOrderList(
-        1,
-        page,
-        date?.from!,
-        date?.to!
-      );
+      const res = await getFirstOrderList(1, page, date?.from!, date?.to!);
       const transformed =
         res?.data?.map((item: any) => ({
           orderId: item.order_id,
@@ -136,7 +131,10 @@ function FirstOrderInsights() {
       {/* Rating Card + Insight Tiles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#30d9c4] rounded-xl p-6 shadow-lg text-white relative">
-          <img src="/images/star.svg" className="absolute top-4 left-4 w-12 h-12" />
+          <img
+            src="/images/star.svg"
+            className="absolute top-4 left-4 w-12 h-12"
+          />
           <h3 className="text-2xl font-bold tracking-widest">
             PICKUP <span className="font-light">RATING</span>
           </h3>
@@ -180,9 +178,4 @@ function FirstOrderInsights() {
   );
 }
 
-export default withAuth(FirstOrderInsights, [
-  'FINANCE_MANAGER',
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default FirstOrderInsights;

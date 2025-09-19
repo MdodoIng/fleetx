@@ -181,9 +181,4 @@ function BalanceReport(): JSX.Element {
   );
 }
 
-export default withAuth(BalanceReport, [
-  'OPERATION_MANAGER',
-  'FINANCE_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default BalanceReport;

@@ -274,4 +274,4 @@ function ManualReport(): JSX.Element {
     </div>
   );
 }
-export default withAuth(ManualReport, ['FINANCE_MANAGER']);
+export default ManualReport;

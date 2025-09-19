@@ -83,8 +83,4 @@ function VenderList(): JSX.Element {
   );
 }
 
-export default withAuth(VenderList, [
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default VenderList;

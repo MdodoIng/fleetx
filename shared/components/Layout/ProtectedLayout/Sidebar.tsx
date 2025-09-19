@@ -35,6 +35,8 @@ const SideBar = () => {
     [isCollapsed, setValue]
   );
 
+
+
   useEffect(() => {
     if (window.innerWidth > 1024 && !isCollapsed) return;
 
@@ -89,7 +91,7 @@ const SideBar = () => {
                 href={item?.route || '#'}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
-                  title === item.labelKey &&
+                  item.labelKey === title &&
                     'bg-white text-primary-blue hover:bg-off-white',
                   item.route &&
                     'hover:bg-dark-grey/40 px-3 py-2 pointer-events-auto'

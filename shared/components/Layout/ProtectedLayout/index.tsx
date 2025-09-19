@@ -16,7 +16,7 @@ interface BaseLayoutProps {
 }
 
 const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
-  const sharedStore = useSharedStore();
+
   const venderStore = useVenderStore();
 
   useEffect(() => {

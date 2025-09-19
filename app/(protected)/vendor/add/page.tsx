@@ -244,8 +244,4 @@ function VenderAdd(): JSX.Element {
   );
 }
 
-export default withAuth(VenderAdd, [
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default VenderAdd;

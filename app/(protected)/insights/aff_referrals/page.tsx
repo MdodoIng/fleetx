@@ -201,4 +201,4 @@ const AffiliateReferrals = () => {
   );
 };
 
-export default withAuth(AffiliateReferrals, ['FINANCE_MANAGER']);
+export default AffiliateReferrals;

@@ -1,7 +1,13 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardIcon,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
@@ -43,6 +49,7 @@ import { format } from 'date-fns';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { orderService } from '@/shared/services/orders';
 import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
+import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 
 export default function BulkInsightsDashboard() {
   const [loading, setLoading] = useState(false);
@@ -57,12 +64,12 @@ export default function BulkInsightsDashboard() {
   });
   // Mock data - replace with actual API calls
   const [bulkInsightsData, setBulkInsightsData] = useState({
-    created_count: 156,
-    active_rescheduled_count: 23,
-    total_rescheduled_count: 45,
-    delivered_count: 128,
-    canceled_count: 8,
-    delivery_failed_count: 5,
+    created_count: 0,
+    active_rescheduled_count: 0,
+    total_rescheduled_count: 0,
+    delivered_count: 0,
+    canceled_count: 0,
+    delivery_failed_count: 0,
   });
 
   const [ordersList, setOrdersList] = useState([
@@ -170,7 +177,7 @@ export default function BulkInsightsDashboard() {
       const res: TypeRootLiveBuilkOrderListInsights =
         await orderService.getOrderList(url);
       if (!res.data) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        throw new Error(`HTTP error! status: ${res}`);
       }
 
       console.log(res, 'res');
@@ -189,6 +196,42 @@ export default function BulkInsightsDashboard() {
   useEffect(() => {
     fetchDriverData();
   }, [fetchDriverData]);
+
+  const insightArray = [
+    {
+      label: 'Created',
+      value: bulkInsightsData.created_count,
+      icon: ActiveOrdersIcon,
+    },
+    {
+      label: 'Active Rescheduled',
+      value: bulkInsightsData.active_rescheduled_count,
+      icon: ActiveOrdersIcon,
+    },
+    {
+      label: 'Total Rescheduled',
+      value: bulkInsightsData.total_rescheduled_count,
+
+      icon: ActiveOrdersIcon,
+    },
+    {
+      label: 'Delivered',
+      value: bulkInsightsData.delivered_count,
+
+      icon: ActiveOrdersIcon,
+    },
+    {
+      label: 'Canceled',
+      value: bulkInsightsData.canceled_count,
+      icon: ActiveOrdersIcon,
+    },
+    {
+      label: 'Delivery Failed',
+      value: bulkInsightsData.delivery_failed_count,
+
+      icon: ActiveOrdersIcon,
+    },
+  ];
 
   const t = useTranslations();
 
@@ -274,335 +317,287 @@ export default function BulkInsightsDashboard() {
           </div>
         </div>
       </DashboardHeader>
-      <DashboardContent className="flex w-full">
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <h3 className="text-teal-500 font-bold text-sm mb-2">
-                  Created
-                </h3>
-                <p className="text-2xl font-bold text-teal-500">
-                  {bulkInsightsData.created_count}
-                </p>
+      <DashboardContent className="flex w-full flex-col items-center justify-start">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 w-full">
+          {insightArray.map((insight) => (
+            <Card key={insight.label} className="py-4">
+              <CardContent className="gap-6 flex flex-col px-4">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className={cn('text-sm opacity-70')}>
+                    {insight.label}
+                  </CardTitle>
+                  <CardIcon>
+                    <insight.icon className="!text-dark-grey" />
+                  </CardIcon>
+                </div>
+                <CardContent className="px-0">
+                  <CardDescription className={cn('text-2xl font-bold')}>
+                    {insight.value}
+                  </CardDescription>
+                </CardContent>
               </CardContent>
             </Card>
+          ))}
+        </div>
 
-            <Card className="text-center bg-orange-400 text-white">
-              <CardContent className="p-4">
-                <h3 className="font-bold text-sm mb-2">Active Rescheduled</h3>
-                <p className="text-2xl font-bold">
-                  {bulkInsightsData.active_rescheduled_count}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <h3 className="text-teal-500 font-bold text-sm mb-2">
-                  Total Rescheduled
-                </h3>
-                <p className="text-2xl font-bold text-teal-500">
-                  {bulkInsightsData.total_rescheduled_count}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <h3 className="text-teal-500 font-bold text-sm mb-2">
-                  Delivered
-                </h3>
-                <p className="text-2xl font-bold text-teal-500">
-                  {bulkInsightsData.delivered_count}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <h3 className="text-teal-500 font-bold text-sm mb-2">
-                  Canceled
-                </h3>
-                <p className="text-2xl font-bold text-teal-500">
-                  {bulkInsightsData.canceled_count}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <h3 className="text-teal-500 font-bold text-sm mb-2">
-                  Delivery Failed
-                </h3>
-                <p className="text-2xl font-bold text-teal-500">
-                  {bulkInsightsData.delivery_failed_count}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Orders List */}
-          <div className="space-y-4 max-h-[1000px] overflow-y-auto">
-            {ordersList.length > 0 ? (
-              ordersList.map((order) => (
-                <Card key={order.id} className="bg-blue-50/30">
-                  <CardContent className="p-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
-                      {/* Order Info */}
-                      <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-3 h-full">
-                          <div className="space-y-2">
-                            <div>
-                              <Label className="text-xs text-gray-500">
-                                Mashkor Order No
-                              </Label>
-                              <Badge
-                                variant="outline"
-                                className="bg-teal-50 text-teal-700 border-teal-200 block mt-1 text-xs"
-                              >
-                                {order.mashkor_order_number}
-                              </Badge>
-                            </div>
-                            <div>
-                              <Label className="text-xs text-gray-500">
-                                Order No
-                              </Label>
-                              <p className="text-sm font-medium">
-                                {order.order_number}
-                              </p>
-                            </div>
-                            {order.status_change_reason &&
-                              order.primary_status === 120 && (
-                                <div className="text-center">
-                                  <p className="text-xs text-red-500 font-semibold">
-                                    {order.status_change_reason}
-                                  </p>
-                                </div>
-                              )}
-                            <div className="text-center mt-3">
-                              <Badge
-                                variant={getStatusBadgeVariant(
-                                  order.class_status
-                                )}
-                                className="text-xs"
-                              >
-                                {order.status}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Customer Info */}
-                      <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-3 h-full space-y-2">
+        {/* Orders List */}
+        <div className="space-y-4 max-h-[1000px] overflow-y-auto">
+          {ordersList.length > 0 ? (
+            ordersList.map((order) => (
+              <Card key={order.id} className="bg-blue-50/30">
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
+                    {/* Order Info */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-lg p-3 h-full">
+                        <div className="space-y-2">
                           <div>
-                            <p className="text-xs text-teal-600 font-semibold mb-1">
-                              Receiver
-                            </p>
-                            <div className="space-y-1">
-                              <div className="flex items-center text-xs">
-                                <User className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.customer_name}</span>
-                              </div>
-                              <div className="flex items-center text-xs">
-                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.phone_number}</span>
-                              </div>
-                            </div>
+                            <Label className="text-xs text-gray-500">
+                              Mashkor Order No
+                            </Label>
+                            <Badge
+                              variant="outline"
+                              className="bg-teal-50 text-teal-700 border-teal-200 block mt-1 text-xs"
+                            >
+                              {order.mashkor_order_number}
+                            </Badge>
                           </div>
                           <div>
-                            <p className="text-xs text-teal-600 font-semibold mb-1">
-                              Sender
-                            </p>
-                            <div className="space-y-1">
-                              <div className="flex items-center text-xs">
-                                <User className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.customer_name_sender}</span>
-                              </div>
-                              <div className="flex items-center text-xs">
-                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.phone_number_sender}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Addresses */}
-                      <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-3 h-full space-y-2">
-                          <div>
-                            <p className="text-xs text-teal-600 font-semibold mb-1">
-                              From
-                            </p>
-                            <p className="text-xs text-gray-600">
-                              {order.from.slice(0, 50)}
+                            <Label className="text-xs text-gray-500">
+                              Order No
+                            </Label>
+                            <p className="text-sm font-medium">
+                              {order.order_number}
                             </p>
                           </div>
-                          <div className="relative">
-                            {order.is_delivery_address_edit_enabled && (
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="absolute -top-1 right-0 h-5 w-5 bg-teal-500 hover:bg-teal-600 border-teal-500"
-                                onClick={() => editAddress(order)}
-                              >
-                                <Edit2 className="h-2 w-2 text-white" />
-                              </Button>
-                            )}
-                            <div className="flex items-start gap-1">
-                              <p className="text-xs text-teal-600 font-semibold">
-                                To
-                              </p>
-                              {order.is_addr_last_updated_by_customer && (
-                                <CheckCircle className="h-3 w-3 text-teal-500" />
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-600 pr-6">
-                              {order.to.slice(0, 50)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Driver Info / Actions */}
-                      <div className="lg:col-span-1">
-                        {isEditDetails ? (
-                          <div className="bg-white rounded-lg p-3 h-full">
-                            {order.primary_status === BUDDY_QUEUED ? (
-                              <div className="space-y-2">
-                                <p className="text-xs text-teal-600">
-                                  Buddy will pick up your order
+                          {order.status_change_reason &&
+                            order.primary_status === 120 && (
+                              <div className="text-center">
+                                <p className="text-xs text-red-500 font-semibold">
+                                  {order.status_change_reason}
                                 </p>
                               </div>
-                            ) : (
-                              <div className="space-y-2">
-                                <div>
-                                  <p className="text-xs text-teal-600 font-semibold">
-                                    Driver
-                                  </p>
-                                  <p className="text-xs">{order.driver_name}</p>
-                                </div>
-                                <div className="flex items-center text-xs">
-                                  <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                  <span>{order.driver_phone}</span>
-                                </div>
-                              </div>
                             )}
-                            <div className="flex gap-1 mt-3">
-                              <Button
-                                size="sm"
-                                className="flex-1 text-xs h-8 bg-teal-500 hover:bg-teal-600"
-                                onClick={() =>
-                                  updateBulkOrder(order, 'dispatch')
-                                }
-                                disabled={submitted}
-                              >
-                                Dispatch
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="flex-1 text-xs h-8"
-                                onClick={() => updateBulkOrder(order, 'cancel')}
-                                disabled={submitted}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="bg-white rounded-lg p-3 h-full bg-truck-pattern bg-no-repeat bg-right-top bg-contain">
-                            {order.primary_status === BUDDY_QUEUED ? (
-                              <div>
-                                <p className="text-xs text-teal-600 font-semibold">
-                                  Buddy will pick up your order
-                                </p>
-                              </div>
-                            ) : (
-                              <div className="space-y-1">
-                                <div>
-                                  <p className="text-xs text-teal-600 font-semibold">
-                                    Driver
-                                  </p>
-                                  <p className="text-xs">{order.driver_name}</p>
-                                </div>
-                                <div className="flex items-center text-xs">
-                                  <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                  <span>{order.driver_phone}</span>
-                                </div>
-                              </div>
-                            )}
-                            <div className="flex items-center text-xs mt-2">
-                              <Calendar className="h-3 w-3 text-gray-400 mr-1" />
-                              <span>
-                                {order.delivered_date || order.canceled_at}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Payment Info */}
-                      <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-3 h-full space-y-2">
-                          <div>
-                            <p className="text-xs text-teal-600 font-semibold">
-                              Cash on Delivery
-                            </p>
-                            <p className="text-xs font-medium">
-                              {order.amount_collected.toFixed(3)} {currencyCode}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-teal-600 font-semibold">
-                              Delivery Fees
-                            </p>
-                            <p className="text-xs font-medium">
-                              {order.delivery_fee.toFixed(3)} {currencyCode}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-teal-600 font-semibold">
-                              Payment Method
-                            </p>
-                            <p className="text-xs">
-                              {order.payment_type === 1 ? 'COD' : 'ONLINE'}
-                            </p>
+                          <div className="text-center mt-3">
+                            <Badge
+                              variant={getStatusBadgeVariant(
+                                order.class_status
+                              )}
+                              className="text-xs"
+                            >
+                              {order.status}
+                            </Badge>
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Distance */}
-                      <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-3 h-full text-center">
+                    {/* Customer Info */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
+                        <div>
                           <p className="text-xs text-teal-600 font-semibold mb-1">
-                            Distance Travelled
+                            Receiver
                           </p>
-                          <p className="text-xs font-medium">
-                            {order.delivery_distance.toFixed(1)} KM
+                          <div className="space-y-1">
+                            <div className="flex items-center text-xs">
+                              <User className="h-3 w-3 text-teal-500 mr-1" />
+                              <span>{order.customer_name}</span>
+                            </div>
+                            <div className="flex items-center text-xs">
+                              <Phone className="h-3 w-3 text-teal-500 mr-1" />
+                              <span>{order.phone_number}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-teal-600 font-semibold mb-1">
+                            Sender
+                          </p>
+                          <div className="space-y-1">
+                            <div className="flex items-center text-xs">
+                              <User className="h-3 w-3 text-teal-500 mr-1" />
+                              <span>{order.customer_name_sender}</span>
+                            </div>
+                            <div className="flex items-center text-xs">
+                              <Phone className="h-3 w-3 text-teal-500 mr-1" />
+                              <span>{order.phone_number_sender}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Addresses */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
+                        <div>
+                          <p className="text-xs text-teal-600 font-semibold mb-1">
+                            From
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {order.from.slice(0, 50)}
+                          </p>
+                        </div>
+                        <div className="relative">
+                          {order.is_delivery_address_edit_enabled && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="absolute -top-1 right-0 h-5 w-5 bg-teal-500 hover:bg-teal-600 border-teal-500"
+                              onClick={() => editAddress(order)}
+                            >
+                              <Edit2 className="h-2 w-2 text-white" />
+                            </Button>
+                          )}
+                          <div className="flex items-start gap-1">
+                            <p className="text-xs text-teal-600 font-semibold">
+                              To
+                            </p>
+                            {order.is_addr_last_updated_by_customer && (
+                              <CheckCircle className="h-3 w-3 text-teal-500" />
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-600 pr-6">
+                            {order.to.slice(0, 50)}
                           </p>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-12">
-                <div className="w-32 h-32 mx-auto mb-4 opacity-50">
-                  <img
-                    src="/assets/images/nodata.png"
-                    alt="No data"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <p className="text-gray-500">Whoops! No data found</p>
+
+                    {/* Driver Info / Actions */}
+                    <div className="lg:col-span-1">
+                      {isEditDetails ? (
+                        <div className="bg-white rounded-lg p-3 h-full">
+                          {order.primary_status === BUDDY_QUEUED ? (
+                            <div className="space-y-2">
+                              <p className="text-xs text-teal-600">
+                                Buddy will pick up your order
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div>
+                                <p className="text-xs text-teal-600 font-semibold">
+                                  Driver
+                                </p>
+                                <p className="text-xs">{order.driver_name}</p>
+                              </div>
+                              <div className="flex items-center text-xs">
+                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
+                                <span>{order.driver_phone}</span>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-1 mt-3">
+                            <Button
+                              size="sm"
+                              className="flex-1 text-xs h-8 bg-teal-500 hover:bg-teal-600"
+                              onClick={() => updateBulkOrder(order, 'dispatch')}
+                              disabled={submitted}
+                            >
+                              Dispatch
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="flex-1 text-xs h-8"
+                              onClick={() => updateBulkOrder(order, 'cancel')}
+                              disabled={submitted}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-lg p-3 h-full bg-truck-pattern bg-no-repeat bg-right-top bg-contain">
+                          {order.primary_status === BUDDY_QUEUED ? (
+                            <div>
+                              <p className="text-xs text-teal-600 font-semibold">
+                                Buddy will pick up your order
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              <div>
+                                <p className="text-xs text-teal-600 font-semibold">
+                                  Driver
+                                </p>
+                                <p className="text-xs">{order.driver_name}</p>
+                              </div>
+                              <div className="flex items-center text-xs">
+                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
+                                <span>{order.driver_phone}</span>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex items-center text-xs mt-2">
+                            <Calendar className="h-3 w-3 text-gray-400 mr-1" />
+                            <span>
+                              {order.delivered_date || order.canceled_at}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Payment Info */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
+                        <div>
+                          <p className="text-xs text-teal-600 font-semibold">
+                            Cash on Delivery
+                          </p>
+                          <p className="text-xs font-medium">
+                            {order.amount_collected.toFixed(3)} {currencyCode}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-teal-600 font-semibold">
+                            Delivery Fees
+                          </p>
+                          <p className="text-xs font-medium">
+                            {order.delivery_fee.toFixed(3)} {currencyCode}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-teal-600 font-semibold">
+                            Payment Method
+                          </p>
+                          <p className="text-xs">
+                            {order.payment_type === 1 ? 'COD' : 'ONLINE'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Distance */}
+                    <div className="lg:col-span-1">
+                      <div className="bg-white rounded-lg p-3 h-full text-center">
+                        <p className="text-xs text-teal-600 font-semibold mb-1">
+                          Distance Travelled
+                        </p>
+                        <p className="text-xs font-medium">
+                          {order.delivery_distance.toFixed(1)} KM
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-32 h-32 mx-auto mb-4 opacity-50">
+                <img
+                  src="/assets/images/nodata.png"
+                  alt="No data"
+                  className="w-full h-full object-contain"
+                />
               </div>
-            )}
-          </div>
+              <p className="text-gray-500">Whoops! No data found</p>
+            </div>
+          )}
         </div>
       </DashboardContent>
     </Dashboard>

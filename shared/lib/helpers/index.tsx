@@ -44,12 +44,13 @@ export const useGetSidebarMeta = (): RouteConfig => {
     path: '',
     subtitle: '',
     title: '',
+    roles: [],
   };
 
   const matchedRoute = useMemo(() => {
     for (const key in routes) {
       const route = routes[key];
-      if (pathname.startsWith(route.path)) {
+      if (pathname.endsWith(route.path) && pathname.startsWith(route.path)) {
         return route;
       }
     }
@@ -75,5 +76,8 @@ export function filterMenuByRole(menu: MenuItem[]) {
               child.roles.some((role) => user?.roles.includes(role))
           )
         : undefined,
-    }));
+    }))
+    .filter(
+      (item) => item.route || (item.children && item.children?.length > 0)
+    );
 }
