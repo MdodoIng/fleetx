@@ -24,6 +24,7 @@ import { useAuthStore } from '@/store';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { Download, X } from 'lucide-react';
 import { vendorService } from '@/shared/services/vender';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -147,35 +148,7 @@ const AffiliateReferrals = () => {
               <X />
             </span>
           )}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant="outline"
-                className={cn(
-                  'w-[280px] justify-start text-left font-normal',
-                  !date?.from && 'text-muted-foreground'
-                )}
-              >
-                {date?.from && date?.to ? (
-                  <>
-                    From {format(date.from, 'PP')} - To {format(date.to, 'PP')}
-                  </>
-                ) : (
-                  <span>From Date - To Date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={setDate}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
+          <DateSelect value={date} onChangeAction={setDate}  />
         </div>
         <Button
           // onClick={() =>

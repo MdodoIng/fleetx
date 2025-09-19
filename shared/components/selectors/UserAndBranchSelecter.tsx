@@ -1,22 +1,14 @@
 import { Button } from '@/shared/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
-import { cn } from '@/shared/lib/utils';
+
 import { TypeBranch, TypeVenderListItem } from '@/shared/types/vender';
 
 import { useAuthStore, useVenderStore } from '@/store';
 import React from 'react';
+import SearchableSelect from '.';
 
 type Props = {
-  handleChangeBranch: (e: string) => void;
-  handleChangeVender: (e: string) => void;
+  handleChangeBranch: (e: string | undefined) => void;
+  handleChangeVender: (e: string | undefined) => void;
 
   handleClear?: () => void;
   selectedVendorValue?: TypeVenderListItem;
@@ -67,68 +59,41 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   const isSelectedBranch = selectedBranchValue || selectedBranch;
   const isSelectedVendor = selectedVendorValue || selectedVendor;
 
+  const optionsVender: {
+    id: string;
+    name: string;
+  }[] =
+    venderList?.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })) || [];
+
+  const optionsBranch: {
+    id: string;
+    name: string;
+  }[] =
+    branchDetails?.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })) || [];
+
   return (
     <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
       {isVendorAccess && (
-        <Select
-          onValueChange={handleChangeVender}
-          defaultValue={isSelectedVendor?.id}
-        >
-          <SelectTrigger
-            className={cn(
-              'w-[180px] ',
-              !isSelectedVendor && '!text-dark-grey/70'
-            )}
-          >
-            <SelectValue placeholder="Select a Vender">
-              {isSelectedVendor ? isSelectedVendor?.name : 'Select a Vender'}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
-            <SelectGroup>
-              <SelectLabel>Vender</SelectLabel>
-              {venderList?.map((item, key) => (
-                <SelectItem key={key} value={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <SearchableSelect
+          options={optionsVender}
+          value={isSelectedVendor?.id}
+          onChangeAction={handleChangeVender}
+          placeholder="Select a Vender"
+        />
       )}
       {isBranchAccess && (
-        <Select
-          onValueChange={handleChangeBranch}
-          defaultValue={isSelectedBranch?.id}
-        >
-          <SelectTrigger
-            className={cn(
-              'w-[180px] ',
-              !isSelectedBranch && '!text-dark-grey/70'
-            )}
-          >
-            <SelectValue className="" placeholder="Select a Branch">
-              {isSelectedBranch ? isSelectedBranch.name : 'Select a Branch'}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
-            {branchDetails && (
-              <SelectGroup>
-                <SelectLabel>Branch</SelectLabel>
-                {branchDetails.map((item, key) => (
-                  <SelectItem key={key} value={item.id}>
-                    {item.name}
-                    {item.main_branch && (
-                      <span className="rounded-full bg-gray-300 text-xs px-2.5 leading-0 py-2 pb-3 mr-auto">
-                        main Branch
-                      </span>
-                    )}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            )}
-          </SelectContent>
-        </Select>
+        <SearchableSelect
+          options={optionsBranch}
+          value={isSelectedBranch?.id}
+          onChangeAction={handleChangeBranch}
+          placeholder="Select a Branch"
+        />
       )}
       {handleClear && <Button onClick={() => handleClear()}>Clear</Button>}
     </div>

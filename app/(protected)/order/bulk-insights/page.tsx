@@ -51,6 +51,7 @@ import { orderService } from '@/shared/services/orders';
 import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 export default function BulkInsightsDashboard() {
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,7 @@ export default function BulkInsightsDashboard() {
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(),
   });
+    const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const [bulkInsightsData, setBulkInsightsData] = useState({
     created_count: 0,
@@ -124,7 +126,7 @@ export default function BulkInsightsDashboard() {
   ]);
 
   const { isEditDetails, showDriversFilter } = useVenderStore();
-  const { driverId } = useOrderStore();
+
 
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';
@@ -159,7 +161,7 @@ export default function BulkInsightsDashboard() {
 
   const fetchBulkInsightsData = useCallback(async () => {
     try {
-      const url = orderService.getBulkInsightsUrl(date?.from, date?.to);
+      const url = orderService.getBulkInsightsUrl(date?.from, date?.to, selectedDriver);
       const res: TypeRootLiveBuilkOrderListInsights =
         await orderService.getOrderList(url);
       if (!res.data) {
@@ -172,11 +174,11 @@ export default function BulkInsightsDashboard() {
       console.error('Error fetching bulk insights data:', error);
       // Handle error appropriately, e.g., display an error message to the user.
     }
-  }, [date?.from, date?.to]);
+  }, [date?.from, date?.to, selectedDriver]);
 
   useEffect(() => {
     fetchBulkInsightsData();
-  }, [fetchBulkInsightsData, driverId]);
+  }, [fetchBulkInsightsData]);
 
   const insightArray = [
     {
@@ -222,57 +224,13 @@ export default function BulkInsightsDashboard() {
         <DashboardHeaderRight />
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          {showDriversFilter && <DriverSelect />}
-          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
-            <Popover>
-              <PopoverTrigger
-                asChild
-                className="!ring-0 border-none text-dark-grey max-sm:w-full shrink"
-              >
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(' justify-start text-left font-normal')}
-                >
-                  <CalendarIcon className=" h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        {format(date.from, 'PP')} - {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>
-                      {t('component.features.orders.history.search.dateRange')}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className={cn(
-                date?.to
-                  ? 'text-primary-blue cursor-pointer'
-                  : 'pointer-events-none'
-              )}
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
+          {showDriversFilter && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
+            />
+          )}
+          <DateSelect value={date} onChangeAction={setDate}  />
         </div>
       </DashboardHeader>
       <DashboardContent className="flex w-full flex-col items-center justify-start">

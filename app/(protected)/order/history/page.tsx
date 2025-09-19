@@ -16,7 +16,7 @@ import {
   Truck,
   User,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
 
 import { TypeOrderHistoryList } from '@/shared/types/orders';
@@ -61,24 +61,19 @@ import {
 import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
 import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import SortSelect from '@/shared/components/selectors';
+import SearchableSelect from '@/shared/components/selectors';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 export default function OrderTrackingDashboard() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [ordernNumber, setOrdernNumber] = useState('');
   const orderStore = useOrderStore();
   const { appConstants } = useSharedStore();
-  const { isEditDetails } = useVenderStore();
+  const { isEditDetails, showDriversFilter } = useVenderStore();
 
-  const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
-    undefined
-  );
-  const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
-    undefined
-  );
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
   const [selectedAccountManager, setSelectedAccountManager] = useState<
     string | undefined
   >(undefined);
@@ -90,20 +85,36 @@ export default function OrderTrackingDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [date, setDate] = useState<{ from: Date; to: Date }>();
+  const [selectedDriver, setSelectedDriver] = useState<string>();
 
-  const fetchOrderDetails = useCallback(async () => {
-    setIsLoading(true);
-
+  const url = useMemo(() => {
     const searchAll = true;
-
-    const url = orderService.getOrderHistoryUrl(
+    return orderService.getOrderHistoryUrl(
       page,
       date?.from,
       date?.to,
-      ordernNumber,
+      searchOrder,
       searchCustomer,
-      searchAll
+      searchAll,
+      nextSetItemsToken,
+      selectedAccountManager,
+      selectedDriver,
+      selectedSorting
     );
+  }, [
+    date?.from,
+    date?.to,
+    nextSetItemsToken,
+    page,
+    searchCustomer,
+    searchOrder,
+    selectedAccountManager,
+    selectedDriver,
+    selectedSorting,
+  ]);
+
+  const fetchOrderDetails = useCallback(async () => {
+    setIsLoading(true);
 
     try {
       const res = await orderService.getOrderList(url);
@@ -124,28 +135,21 @@ export default function OrderTrackingDashboard() {
 
       console.log('Error in fetchOrderDetails:', errorMessage);
     }
-  }, [
-    date?.from,
-    date?.to,
-    orderStore,
-    ordernNumber,
-    page,
-    searchCustomer,
-    searchDriver,
-  ]);
+  }, [page, url]);
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
-      await fetchOrderDetails();
-    };
-
-    loadInitialOrders();
-  }, [fetchOrderDetails]);
+    fetchOrderDetails();
+    console.log(url);
+  }, [fetchOrderDetails, url]);
 
   const { exportOrdersToCSV } = useTableExport();
 
   const t = useTranslations();
 
+  const sortOptions = [
+    { id: 'delivery_distance', name: 'Delivery distance ( Z - A )' },
+    { id: 'delivery_fee', name: 'Delivery fee ( Z - A )' },
+  ];
   return (
     <Dashboard className="h-auto">
       <DashboardHeader>
@@ -158,95 +162,29 @@ export default function OrderTrackingDashboard() {
             <Input
               type="text"
               placeholder={t('component.features.orders.live.search.default')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchOrder}
+              onChange={(e) => setSearchOrder(e.target.value)}
               className="pl-10 !border-none !outline-none !ring-0 "
             />
           </div>
 
-          <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
-            <Select
-              value={selectedFilter}
-              onValueChange={(value) => setSelectedFilter(value)}
-            >
-              <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none relative pl-10">
-                <ListFilter className="absolute left-3" />
-                <SelectValue
-                  placeholder={t(
-                    'component.features.orders.history.search.allOrder'
-                  )}
-                  className="text-dark-grey"
-                >
-                  {selectedFilter}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="null">
-                  {t('component.features.orders.history.search.allOrder')}
-                </SelectItem>
-                <SelectItem value="active">
-                  {t('component.features.orders.history.search.active')}
-                </SelectItem>
-                <SelectItem value="confirmed">
-                  {t('component.features.orders.history.search.confirmed')}
-                </SelectItem>
-                <SelectItem value="urgent">
-                  {t('component.features.orders.history.search.urgent')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {showDriversFilter && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
+            />
+          )}
+          {isEditDetails && (
+            <SearchableSelect
+              options={sortOptions}
+              value={selectedSorting}
+              onChangeAction={setSelectedSorting}
+              placeholder="Sort by..."
+              classNameFroInput='border-none'
+            />
+          )}
 
-          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
-            <Popover>
-              <PopoverTrigger
-                asChild
-                className="!ring-0 border-none text-dark-grey max-sm:w-full shrink"
-              >
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(' justify-start text-left font-normal')}
-                >
-                  <CalendarIcon className=" h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        {format(date.from, 'PP')} - {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>
-                      {t('component.features.orders.history.search.dateRange')}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className={cn(
-                date?.to
-                  ? 'text-primary-blue cursor-pointer'
-                  : 'pointer-events-none'
-              )}
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
+          <DateSelect value={date} onChangeAction={setDate}  />
           <Button
             onClick={() =>
               exportOrdersToCSV(

@@ -25,7 +25,6 @@ interface DeliverySummary {
 }
 
 interface OrderState {
-  driverId: number | null;
   dropOffs: TypeDropOffs[];
   pickUp: TypePickUp | undefined;
   estimatedDelivery: TypeEstimatedDelivery | undefined;
@@ -60,7 +59,6 @@ interface OrderState {
 }
 
 const initialState: OrderState | any = {
-  driverId: null,
   dropOffs: [],
   selectedDropOffs: [],
   selectedPage: 1,

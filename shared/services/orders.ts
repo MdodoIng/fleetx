@@ -57,7 +57,9 @@ export const orderService = {
       body: JSON.stringify(address),
     }),
 
-    getOrderList: (url: string): Promise<TypeRootLiveOrderList | TypeRootLiveBuilkOrderListInsights> =>
+  getOrderList: (
+    url: string
+  ): Promise<TypeRootLiveOrderList | TypeRootLiveBuilkOrderListInsights> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}${url}`),
 
   getOrderStatusUrl(
@@ -123,6 +125,7 @@ export const orderService = {
     searchAll: boolean | null = true,
     nextSetItemTotal?: string[],
     selectedAccountManager?: string,
+    searchDriver?: string,
     sortField?: string
   ) {
     let url: string = '/list?page_size=' + perPage;
@@ -140,26 +143,32 @@ export const orderService = {
     if (sortField) {
       url = url + '&sort_field=' + sortField;
     }
-    nextSetItemTotal?.forEach((element) => {
-      url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
-    });
+
+    if (Array.isArray(nextSetItemTotal)) {
+      nextSetItemTotal?.forEach((element) => {
+        url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
+      });
+    }
+
     return this.getOrderStatusCommonUrl(
       url,
       searchOrder,
       searchCustomer,
+      searchDriver,
       searchAll
     );
   },
 
   getOrderStatusCommonUrl(
     url: string,
-    searchOrder?: string,
-    searchCustomer?: string,
+    searchOrder?: string | null,
+    searchCustomer?: string | null,
+    searchDriver?: string | null,
     searchAll: boolean | null = true
   ) {
     const currentUser = getDecodedAccessToken();
     const { vendorId, branchId } = useVenderStore.getState();
-    const { driverId } = useOrderStore.getState();
+
     switch (currentUser?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
@@ -193,8 +202,8 @@ export const orderService = {
     if (searchCustomer) {
       url = url + '&search=' + searchCustomer;
     }
-    if (driverId) {
-      url = url + '&driver_id=' + driverId;
+    if (searchDriver) {
+      url = url + '&driver_id=' + searchDriver;
     }
     if (searchAll != null) {
       url = url + '&search_all=' + searchAll;
@@ -257,7 +266,11 @@ export const orderService = {
     });
   },
 
-  getBulkInsightsUrl(fromDate: Date | undefined, toDate: Date | undefined) {
+  getBulkInsightsUrl(
+    fromDate: Date | undefined,
+    toDate: Date | undefined,
+    searchDriver?: string
+  ) {
     const { getFormattedDate } = useSharedStore.getState();
     let url: string = '/rescheduled-bulk-order/list?';
     if (fromDate) {
@@ -269,6 +282,7 @@ export const orderService = {
       url = url + '&to_date=' + to;
     }
 
-    return this.getOrderStatusCommonUrl(url, null, null, null);
+    return this.getOrderStatusCommonUrl(url, null, null,
+      searchDriver, null);
   },
 };

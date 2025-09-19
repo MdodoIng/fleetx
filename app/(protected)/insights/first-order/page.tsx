@@ -24,6 +24,7 @@ import useTableExport from '@/shared/lib/hooks/useTableExport';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
 import { getFirstOrderInsight, getFirstOrderList } from '@/shared/services';
 import { RATE_REASONS_EN } from '@/shared/constants/storageConstants';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 function FirstOrderInsights() {
   const [date, setDate] = useState<{
@@ -92,41 +93,7 @@ function FirstOrderInsights() {
   return (
     <div className="flex flex-col gap-6 bg-gray-50 p-4">
       {/* Filters */}
-      <div className="flex items-center justify-between bg-gray-200 px-4 py-3 rounded">
-        <div className="flex items-center gap-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[280px] justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from && date?.to ? (
-                  <>
-                    From {format(date.from, 'PP')} - To {format(date.to, 'PP')}
-                  </>
-                ) : (
-                  <span>Select Date Range</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={(range) => {
-                  if (range?.from && range?.to && range.from <= range.to) {
-                    setDate({ from: range.from, to: range.to });
-                    setPage(1);
-                  }
-                }}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
+      <DateSelect value={date} onChangeAction={setDate}  />
 
       {/* Rating Card + Insight Tiles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

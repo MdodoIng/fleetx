@@ -47,6 +47,7 @@ import { useTranslations } from 'next-intl';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 // Type definitions
 interface DashboardData {
@@ -97,6 +98,7 @@ function DashboardCompoent() {
     from: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     to: new Date(),
   });
+  const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const {
     total_delivery_fees: totalDeliveryFees = 0,
@@ -114,6 +116,7 @@ function DashboardCompoent() {
       const dashboardUrl = reportService.getDashboardUrl({
         selectedFromDate: date.from,
         selectedToDate: date.to,
+        selectedDriver,
       });
 
       const dashboardResult =
@@ -127,7 +130,7 @@ function DashboardCompoent() {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }
-  }, [date.from, date.to]);
+  }, [date.from, date.to, selectedDriver]);
 
   const fetchDriverData = useCallback(async () => {
     if (!showDriversFilter) return;
@@ -239,57 +242,13 @@ function DashboardCompoent() {
         <DashboardHeaderRight />
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          {showDriversFilter && <DriverSelect />}
-          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
-            <Popover>
-              <PopoverTrigger
-                asChild
-                className="!ring-0 border-none text-dark-grey max-sm:w-full shrink"
-              >
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(' justify-start text-left font-normal')}
-                >
-                  <CalendarIcon className=" h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        {format(date.from, 'PP')} - {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>
-                      {t('component.features.orders.history.search.dateRange')}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className={cn(
-                date?.to
-                  ? 'text-primary-blue cursor-pointer'
-                  : 'pointer-events-none'
-              )}
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
+          {showDriversFilter && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
+            />
+          )}
+          <DateSelect value={date} onChangeAction={setDate}  />
         </div>
       </DashboardHeader>
 

@@ -21,12 +21,12 @@ const Header: React.FC = () => {
 
   const t = useTranslations('component.common.header');
 
-  const handleChangeBranch = (e: string) => {
+  const handleChangeBranch = (e: string | undefined) => {
     const branch = venderStore.branchDetails?.find((r) => r.id === e);
     venderStore.setValue('selectedBranch', branch);
     venderStore.setValue('branchId', e);
   };
-  const handleChangeVender = (e: string) => {
+  const handleChangeVender = (e: string | undefined) => {
     const vender = venderStore.venderList?.find((r) => r.id === e);
     venderStore.setValue('selectedVendor', vender);
     venderStore.setValue('vendorId', e);

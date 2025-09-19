@@ -55,6 +55,7 @@ import {
 } from '@/shared/components/ui/tableList';
 import { OperationType } from '@/shared/types/orders';
 import LoadingPage from '../../loading';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -140,58 +141,7 @@ export default function OrderTrackingDashboard() {
             />
           </div>
 
-          <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
-            <Popover>
-              <PopoverTrigger
-                asChild
-                className="!ring-0 border-none text-dark-grey max-sm:w-full shrink"
-              >
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(' justify-start text-left font-normal')}
-                >
-                  <CalendarIcon className=" h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        {format(date.from, 'PP')} - {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>
-                      {t('component.features.orders.history.search.dateRange')}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className={cn(
-                date?.to
-                  ? 'text-primary-blue cursor-pointer'
-                  : 'pointer-events-none'
-              )}
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
-```
-
+          <DateSelect value={date} onChangeAction={setDate}  />
           <Button
             onClick={() =>
               exportOrdersToCSV(

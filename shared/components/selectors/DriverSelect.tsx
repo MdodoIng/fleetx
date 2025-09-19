@@ -1,26 +1,22 @@
-import { useOrderStore, useVenderStore } from '@/store';
-import { useCallback, useEffect, useState } from 'react';
+import { useVenderStore } from '@/store';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
 import { useTranslations } from 'next-intl';
 import { fleetService } from '@/shared/services/fleet';
+import SearchableSelect from '.';
 
-interface TypeFleetDriverResponse {
-  data: {
-    agents: {
-      fleet_id: number;
-      name: string;
-    }[];
-  };
-}
+type Props = {
+  value?: string;
+  onChangeAction: Dispatch<SetStateAction<string | undefined>>;
+};
 
-function DriverSelect() {
-  const { driverId, setValue } = useOrderStore();
+function DriverSelect({ value, onChangeAction }: Props) {
   const { showDriversFilter } = useVenderStore();
   const t = useTranslations();
 
@@ -46,38 +42,23 @@ function DriverSelect() {
 
   if (!showDriversFilter) return;
 
+  const options: {
+    id: string;
+    name: string;
+  }[] =
+    driverLists?.agents.map((item) => ({
+      id: item.fleet_id.toString(),
+      name: item.name,
+    })) || [];
+
   return (
-    <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
-      <Select
-        value={String(driverId)}
-        onValueChange={(value) => {
-          if (value === 'null') {
-            setValue('driverId', null);
-          } else {
-            setValue('driverId', Number(value));
-          }
-        }}
-      >
-        <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none">
-          <SelectValue
-            placeholder={t('component.features.orders.live.search.driver')}
-          >
-            {driverId !== null && driverId !== undefined
-              ? (driverLists?.agents.find((item) => item.fleet_id === driverId)
-                  ?.name ?? t('component.features.orders.live.search.driver'))
-              : t('component.features.orders.live.search.driver')}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="null">All Driver</SelectItem>
-          {driverLists?.agents.map((item, idx) => (
-            <SelectItem key={idx} value={String(item.fleet_id)}>
-              {item.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <SearchableSelect
+      options={options}
+      value={value}
+         classNameFroInput='border-none'
+      onChangeAction={onChangeAction}
+      placeholder={t('component.features.orders.live.search.driver')}
+    />
   );
 }
 

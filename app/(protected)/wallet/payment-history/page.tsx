@@ -1,6 +1,7 @@
 'use client';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
 import {
@@ -248,52 +249,7 @@ function PaymentHistory(): JSX.Element {
               </span>
             )}
           </Select>
-          <div className="flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(
-                    'w-[280px] justify-start text-left font-normal',
-                    !date?.from && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        From {format(date.from, 'PP')} - To{' '}
-                        {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>From Date - To Date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  // @ts-ignore
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className="text-primary"
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
+          <DateSelect value={date} onChangeAction={setDate}  />
         </div>
 
         {/* Search and Filter */}

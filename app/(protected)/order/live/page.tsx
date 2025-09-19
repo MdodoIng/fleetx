@@ -28,6 +28,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
 import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,12 +37,13 @@ export default function OrderTrackingDashboard() {
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
-  const [driverList, setDriverList] = useState<any>();
+
+  const [selectedDriver, setSelectedDriver] = useState<string>();
   const isMobile = useMediaQuery('lg');
 
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
-  const { driverId, setValue } = useOrderStore();
+
   const { isEditDetails, showDriversFilter } = useVenderStore();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
@@ -54,10 +56,10 @@ export default function OrderTrackingDashboard() {
       page,
       ordernNumber,
       searchTerm,
-      driverId!,
+      selectedDriver!,
       authStore.user?.roles?.includes('VENDOR_USER') ? null : true
     );
-  }, [page, authStore.user, ordernNumber, searchTerm, driverId]);
+  }, [page, ordernNumber, searchTerm, selectedDriver, authStore.user?.roles]);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -75,26 +77,9 @@ export default function OrderTrackingDashboard() {
     }
   }, [page, url]);
 
-  const fetchDriverData = useCallback(async () => {
-    if (!showDriversFilter) return;
-    try {
-      const driverResult = await fleetService.getDriver();
-      if (driverResult.data) {
-        setDriverList(driverResult.data);
-      }
-    } catch (error: any) {
-      console.error('Error fetching driver data:', error);
-      setDriverList(undefined);
-    }
-  }, [showDriversFilter]);
-
   useEffect(() => {
     fetchOrderDetails();
   }, [fetchOrderDetails]);
-
-  useEffect(() => {
-    fetchDriverData();
-  }, [fetchDriverData]);
 
   const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
@@ -127,57 +112,31 @@ export default function OrderTrackingDashboard() {
         <DashboardHeaderRight />
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          {isEditDetails ? (
-            <div className="flex  gap-2 max-sm:w-full flex-wrap">
-              <div className="relative  max-sm:w-full">
-                <Input
-                  type="text"
-                  placeholder={t('search.order')}
-                  value={ordernNumber}
-                  onChange={(e) => setOrdernNumber(e.target.value)}
-                  className="!border-none !outline-none !ring-0 pr-10"
-                />
-              </div>
-              <div className="relative max-sm:w-full">
-                <Input
-                  type="text"
-                  placeholder={t('search.customer')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="!border-none !outline-none !ring-0 pr-10"
-                />
-              </div>
+          <div className="relative  max-sm:w-full">
+            <Input
+              type="text"
+              placeholder={t('search.order')}
+              value={ordernNumber}
+              onChange={(e) => setOrdernNumber(e.target.value)}
+              className="!border-none !outline-none !ring-0 pr-10"
+            />
+          </div>
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder={t('search.default')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0 pr-10"
+            />
+          </div>
 
-              <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
-                <Select
-                  value={String(driverId)}
-                  onValueChange={(value) => setValue('driverId', Number(value))}
-                >
-                  <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none">
-                    <SelectValue placeholder={t('search.driver')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="null">All Driver</SelectItem>
-                    {driverList?.agents.map((item, idx) => (
-                      <SelectItem key={idx} value={String(item.fleet_id)}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ) : (
-            <div className="relative max-sm:w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder={t('search.default')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 !border-none !outline-none !ring-0 pr-10"
-              />
-            </div>
+          {isEditDetails && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
+            />
           )}
 
           <div
