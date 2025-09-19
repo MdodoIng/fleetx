@@ -18,7 +18,7 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
   ssr: false,
   loading: () => <p>Loading map...</p>,
 });
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { FormEvent } from 'react';
 
 const BranchEditForm = ({

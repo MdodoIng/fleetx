@@ -35,8 +35,6 @@ const SideBar = () => {
     [isCollapsed, setValue]
   );
 
-
-
   useEffect(() => {
     if (window.innerWidth > 1024 && !isCollapsed) return;
 
@@ -98,7 +96,7 @@ const SideBar = () => {
                 )}
               >
                 <IconComponentMain />
-                <span>{t(item.labelKey)}</span>
+                <span hidden={isCollapsed}>{t(item.labelKey)}</span>
               </Link>
               {item.children && (
                 <div className="flex flex-col gap-2 ">

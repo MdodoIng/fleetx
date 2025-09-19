@@ -2,7 +2,7 @@ import {
   addressSchema,
   TypeAddressSchema,
 } from '@/features/orders/validations/editResiver';
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -29,6 +29,7 @@ import {
   TypeOrderHistoryList,
   TypeUpdateAddressReq,
 } from '@/shared/types/orders';
+import { useVenderStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -43,6 +44,7 @@ const EditResiver = ({
   fetchOrderDetails: () => Promise<void>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
 
   const form = useForm<TypeAddressSchema>({
     resolver: zodResolver(addressSchema),
@@ -138,7 +140,7 @@ const EditResiver = ({
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-fit">
-          <DialogHeader className='flex justify-start'>
+          <DialogHeader className="flex justify-start">
             <DialogTitle>
               {t('component.features.orders.live.edit-drope-location')}
             </DialogTitle>

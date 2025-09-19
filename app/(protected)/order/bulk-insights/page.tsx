@@ -50,19 +50,17 @@ import { Calendar } from '@/shared/components/ui/calendar';
 import { orderService } from '@/shared/services/orders';
 import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 
 export default function BulkInsightsDashboard() {
   const [loading, setLoading] = useState(false);
-  const [driverLists, setDriverLists] = useState<
-    TypeFleetDriverResponse['data']
-  >([]);
 
   const [submitted, setSubmitted] = useState(false);
   const [date, setDate] = useState<{ from: Date; to: Date }>({
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(),
   });
-  // Mock data - replace with actual API calls
+
   const [bulkInsightsData, setBulkInsightsData] = useState({
     created_count: 0,
     active_rescheduled_count: 0,
@@ -126,7 +124,7 @@ export default function BulkInsightsDashboard() {
   ]);
 
   const { isEditDetails, showDriversFilter } = useVenderStore();
-  const { driverId, setValue } = useOrderStore();
+  const { driverId } = useOrderStore();
 
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';
@@ -159,18 +157,6 @@ export default function BulkInsightsDashboard() {
     return variants[status] || 'secondary';
   };
 
-  const fetchDriverData = useCallback(async () => {
-    if (!showDriversFilter) return;
-    try {
-      const driverResult = await fleetService.getDriver();
-      if (driverResult.data) {
-        setDriverLists(driverResult.data);
-      }
-    } catch (error) {
-      console.error('Error fetching driver data:', error);
-    }
-  }, [showDriversFilter]);
-
   const fetchBulkInsightsData = useCallback(async () => {
     try {
       const url = orderService.getBulkInsightsUrl(date?.from, date?.to);
@@ -180,7 +166,6 @@ export default function BulkInsightsDashboard() {
         throw new Error(`HTTP error! status: ${res}`);
       }
 
-      console.log(res, 'res');
       setBulkInsightsData(res.data.insights);
       setOrdersList(res.data.orders_list);
     } catch (error) {
@@ -191,11 +176,7 @@ export default function BulkInsightsDashboard() {
 
   useEffect(() => {
     fetchBulkInsightsData();
-  }, [fetchBulkInsightsData]);
-
-  useEffect(() => {
-    fetchDriverData();
-  }, [fetchDriverData]);
+  }, [fetchBulkInsightsData, driverId]);
 
   const insightArray = [
     {
@@ -241,30 +222,7 @@ export default function BulkInsightsDashboard() {
         <DashboardHeaderRight />
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          {showDriversFilter && (
-            <div className="flex items-center justify-center gap-1.5  max-sm:w-full">
-              <Select
-                value={String(driverId)}
-                onValueChange={(value) => setValue('driverId', Number(value))}
-              >
-                <SelectTrigger className="sm:w-[180px]  max-sm:w-full bg-white border-none">
-                  <SelectValue
-                    placeholder={t(
-                      'component.features.orders.live.search.driver'
-                    )}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="null">All Driver</SelectItem>
-                  {driverLists?.agents.map((item, idx) => (
-                    <SelectItem key={idx} value={String(item.fleet_id)}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          {showDriversFilter && <DriverSelect />}
           <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
             <Popover>
               <PopoverTrigger
@@ -331,7 +289,7 @@ export default function BulkInsightsDashboard() {
                   </CardIcon>
                 </div>
                 <CardContent className="px-0">
-                  <CardDescription className={cn('text-2xl font-bold')}>
+                  <CardDescription className={cn('text-2xl font-medium')}>
                     {insight.value}
                   </CardDescription>
                 </CardContent>

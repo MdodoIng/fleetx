@@ -6,7 +6,6 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -26,8 +25,6 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { BillIcon } from '@/shared/components/icons/layout';
-import { Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 const EditProfilePage = () => {

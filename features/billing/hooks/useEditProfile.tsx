@@ -50,13 +50,13 @@ export default function useEditProfile() {
             taxIdentificationNumber: res.data.tin || '',
           });
         }
-      } catch (err: any) {
+      } catch (err) {
         toast.error(err.message || 'Failed to fetch billing information.');
       }
     };
 
     fetchBillingInfo();
-  }, [form.reset, vendorId, selectedVendor]);
+  }, [vendorId, selectedVendor]);
 
   // 🔹 Handle submit
   const onSubmit = async (data: BillingProfileFormData) => {

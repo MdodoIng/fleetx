@@ -79,7 +79,7 @@ const ListComponent: React.FC<{
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4 min-h-screen w-full">
+      <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4 min-h-screen w-full">
         {Object.entries(statusMap).map(([key, label]) => (
           <Card key={key} className="bg-white">
             <CardHeader>
@@ -156,6 +156,7 @@ const ListComponent: React.FC<{
               selectedOrder={selectedOrder}
               setSelectedOrder={setSelectedOrder}
               statusHistory={statusHistory}
+              isModel
             />
           )}
         </DialogContent>

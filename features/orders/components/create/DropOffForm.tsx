@@ -22,7 +22,7 @@ import { cn } from '@/shared/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
 import { M_PLUS_1p } from 'next/font/google';
 import { TypeDropOffSchema } from '../../validations/order';
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { useTranslations } from 'next-intl';
 import { DollarSign, Info } from 'lucide-react';
 import { useSharedStore } from '@/store';

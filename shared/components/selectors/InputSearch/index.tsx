@@ -10,13 +10,15 @@ import React, {
 } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-const MyMap = dynamic(() => import('@/shared/components/InputSearch/Map'), {
-  ssr: false,
-  loading: () => <p>Loading map...</p>,
-});
+const MyMap = dynamic(
+  () => import('@/shared/components/MyMap/Map'),
+  {
+    ssr: false,
+    loading: () => <p>Loading map...</p>,
+  }
+);
 
 import dynamic from 'next/dynamic';
-
 
 import LandmarkInput from './LandmarkInput';
 import SearchResults from './searchList';

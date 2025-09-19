@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { MapPin, Clock, Phone, ShipWheel, LucideProps } from 'lucide-react';
 import {
   TypeOrderHistoryList,
@@ -19,22 +19,32 @@ import { useTranslations } from 'next-intl';
 import { useOrderStore, useSharedStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
 import StatusStep from './StatusStep';
+import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 
 interface GridComponentProps {
   selectedOrder: TypeOrderHistoryList | null;
   setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
   statusHistory: TypeStatusHistoryForUi[];
+  isModel?: boolean;
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
   selectedOrder,
   setSelectedOrder,
   statusHistory,
+  isModel: toggleModel = false,
 }) => {
   const { orderStatusListData } = useOrderStore();
   const t = useTranslations('component.features.orders.live');
   const tD = useTranslations();
   const { appConstants } = useSharedStore();
+  const isMobile = useMediaQuery('lg');
+  const [isModel, setIsModel] = useState(toggleModel);
 
   const trackingData: {
     name: string;
@@ -89,16 +99,19 @@ const GridComponent: React.FC<GridComponentProps> = ({
     },
   ];
 
-  return (
+  const Componet = () => (
     <div className="grid gap-4 grid-cols-12 w-full ">
-      <Card className="lg:col-span-3 md:col-span-6 col-span-12 flex flex-col w-full overflow-hidden">
+      <Card
+        hidden={isModel}
+        className="lg:col-span-3 col-span-12 flex flex-col w-full overflow-hidden "
+      >
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('order.title')}
           </CardTitle>
           <CardDescription>{t('order.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex h-[calc(100vh-40px)] w-full overflow-y-auto flex-col gap-4">
+        <CardContent className="flex lg:h-[calc(100vh-40px)] w-full overflow-y-auto flex-col gap-4">
           {orderStatusListData?.map((order) => (
             <div
               key={order.id}
@@ -106,7 +119,12 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 viewTransitionName: order.fleetx_order_number,
                 border: `1px solid ${selectedOrder?.id === order.id ? '#004CF7' : '#2828281A'}`,
               }}
-              onClick={() => setSelectedOrder(order)}
+              onClick={() => {
+                setSelectedOrder(order);
+                if (isMobile) {
+                  setIsModel(true);
+                }
+              }}
               className={`p-4 cursor-pointer hover:bg-gray-50 flex justify-between transition-colors rounded-[8px] flex-col ${
                 selectedOrder?.id === order.id
                   ? 'bg-[#004CF70D] text-primary-blue'
@@ -151,7 +169,10 @@ const GridComponent: React.FC<GridComponentProps> = ({
       </Card>
 
       {/* Center Panel - Live Tracking Map */}
-      <Card className="md:col-span-6 col-span-12 flex flex-col h-full overflow-y-auto">
+      <Card
+        hidden={isMobile && !isModel}
+        className="lg:col-span-6 col-span-12 flex flex-col h-full overflow-y-auto"
+      >
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('details.title')}
@@ -169,7 +190,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
                 {trackingData.map((item, idx) => (
                   <Fragment key={idx}>
-                    <div className="flex items-start gap-3 bg-white z-0">
+                    <div className="flex items-start gap-3 bg-white z-0 flex-wrap">
                       <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center">
                         <span
                           style={{
@@ -183,28 +204,28 @@ const GridComponent: React.FC<GridComponentProps> = ({
                           />
                           <span
                             hidden={idx !== 0}
-                            className="h-full w-px border border-dashed border-dark-grey/50 absolute -bottom-full left-1/2 -translate-x-1/2 -z-10"
+                            className="h-full max-[400px]:hidden w-px border border-dashed border-dark-grey/50 absolute -bottom-full left-1/2 -translate-x-1/2 -z-10"
                           />
                         </span>
                       </div>
-                      <div className="flex-1">
-                        <div
+                      <div className="flex-1 shrink-0 flex flex-col">
+                        <p
                           hidden={item.type !== 'driver'}
-                          className="text-sm text-gray-500"
+                          className="text-sm text-dark-grey/70"
                         >
                           {t('tracking.driver.defult')}
-                        </div>
-                        <div className="font-medium text-gray-900">
+                        </p>
+                        <p className="font-medium text-dark-grey shrink-0 ">
                           {item.name}
-                        </div>
-                        <div className="text-sm text-gray-500">
+                        </p>
+                        <p className="text-sm text-dark-grey/70">
                           {item.location}
-                        </div>
+                        </p>
                       </div>
                       <a
                         href={item.cta.link}
                         className={cn(
-                          'flex items-center gap-2 px-3 py-3 bg-off-white rounded-[6px] ',
+                          'flex items-center gap-2 px-3 py-3 bg-off-white rounded-[6px] max-[400px]:w-full ',
                           item.type === 'driver' &&
                             'bg-[#059669] text-off-white'
                         )}
@@ -242,7 +263,13 @@ const GridComponent: React.FC<GridComponentProps> = ({
       </Card>
 
       {/* Right Panel - Order Details */}
-      <Card className="lg:col-span-3 col-span-12 w-full">
+      <Card
+        hidden={isMobile && !isModel}
+        className={cn(
+          ' w-full lg:col-span-3 col-span-12',
+          isModel && 'lg:col-span-6 !col-span-12'
+        )}
+      >
         <CardHeader>
           <CardTitle className="text-sm font-medium">
             {t('tracking.title')}
@@ -288,6 +315,28 @@ const GridComponent: React.FC<GridComponentProps> = ({
         </CardContent>
       </Card>
     </div>
+  );
+
+  return (
+    <>
+      <Componet />
+
+      {isMobile && isModel && (
+        <Dialog
+          open={!!selectedOrder}
+          onOpenChange={() => {
+            setSelectedOrder(null);
+            setIsModel(false);
+          }}
+        >
+          <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0 border-none">
+            <DialogTitle asChild className="hidden"></DialogTitle>
+
+            {selectedOrder && <Componet />}
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

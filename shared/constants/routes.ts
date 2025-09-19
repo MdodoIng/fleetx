@@ -42,7 +42,7 @@ export const routes: Routes = {
     path: '/vendor/list',
     title: 'layout.menuItems.vendorSubMenu.vendorList.title',
     subtitle: 'layout.menuItems.vendorSubMenu.vendorList.subtitle',
-    icon: 'history',
+    icon: 'peopleList',
     roles: [
       'OPERATION_MANAGER',
       'VENDOR_ACCOUNT_MANAGER',
@@ -54,7 +54,7 @@ export const routes: Routes = {
     path: '/vendor/add',
     title: 'layout.menuItems.vendorSubMenu.addNewVendor.title',
     subtitle: 'layout.menuItems.vendorSubMenu.addNewVendor.subtitle',
-    icon: 'history',
+    icon: 'userPlus',
     roles: [
       'OPERATION_MANAGER',
       'VENDOR_ACCOUNT_MANAGER',
@@ -66,7 +66,7 @@ export const routes: Routes = {
     path: '/vendor/users',
     title: 'layout.menuItems.vendorSubMenu.users.title',
     subtitle: 'layout.menuItems.vendorSubMenu.users.subtitle',
-    icon: 'history',
+    icon: 'users',
     roles: [
       'OPERATION_MANAGER',
       'VENDOR_ACCOUNT_MANAGER',
@@ -79,12 +79,7 @@ export const routes: Routes = {
     title: 'layout.menuItems.vendorSubMenu.accountManager.title',
     subtitle: 'layout.menuItems.vendorSubMenu.accountManager.subtitle',
     icon: 'history',
-    roles: [
-      'OPERATION_MANAGER',
-      'VENDOR_ACCOUNT_MANAGER',
-      'SALES_HEAD',
-      'FINANCE_MANAGER',
-    ],
+    roles: ['VENDOR_ACCOUNT_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   WALLET_OVERVIEW: {
     path: '/wallet/overview',

@@ -1,16 +1,8 @@
 'use client';
 import { environment } from '@/environments/environment';
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
-import { useOrderStore } from '@/store/useOrderStore';
 import { vendorService } from './vender';
-import { StoreApi, UseBoundStore } from 'zustand';
-import { SharedActions, SharedState } from '@/store/useSharedStore';
-import { VenderActions, VenderState } from '@/store/useVenderStore';
-import { ca } from 'zod/v4/locales';
-import { useJsApiLoader } from '@react-google-maps/api';
-import { notificationService } from './notification';
 import { useNotificationStore } from '@/store/useNotificationStore';
-import { interval } from 'date-fns';
 
 export const setBranchDetails = async () => {
   const venderStore = useVenderStore.getState();
@@ -53,8 +45,6 @@ export const setVenderDetails = async () => {
   if (venderStore.vendorId) {
     try {
       const res = await vendorService.getVendorDetails(venderStore.vendorId!);
-
-      console.log(res, 'afd2222');
 
       venderStore.setValue('selectedVendor', res.data);
     } catch (error) {
@@ -111,7 +101,7 @@ export async function setHeadingForVendorBranch() {
     setValue: setSharedValue,
   } = useSharedStore.getState();
 
-  const { setValue: setVendorValue, branchName } = useVenderStore.getState();
+  const { setValue: setVendorValue, branchDetails } = useVenderStore.getState();
 
   if (!user) return;
 
@@ -163,14 +153,9 @@ export async function setHeadingForVendorBranch() {
     setSharedValue('showLanguage', true);
 
     try {
-      const res = await vendorService.getVendorDetails(
-        user.user.vendor?.vendor_id
-      );
-      const branches = res?.data?.branches ?? [];
+      const branches = branchDetails ?? [];
 
-      const branch = branches.find(
-        (b: any) => b.id === user.user.vendor?.branch_id
-      );
+      const branch = branches.find((b) => b.id === user.user.vendor?.branch_id);
 
       if (branch) {
         setSharedValue(
@@ -191,6 +176,7 @@ export async function setHeadingForVendorBranch() {
         }
 
         setVendorValue('branchName', branch.name);
+        setVendorValue('selectedBranch', branch);
       } else {
         setVendorValue('branchName', undefined);
         setSharedValue('currentZoneId', undefined);

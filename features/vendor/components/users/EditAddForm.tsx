@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
-import UserAndBranchSelecter from '@/shared/components/Layout/ProtectedLayout/Header/UserAndBranchSelecter';
+import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
 
 type Props = {
   form: UseFormReturn<TypeEditUserSchema>;

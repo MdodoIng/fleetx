@@ -1,14 +1,13 @@
 'use client';
 
-import { withAuth } from './withAuth';
 import Header from './Header';
 import SideBar from './Sidebar';
 import { useEffect } from 'react';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useVenderStore } from '@/store';
 import {
-  setBranchDetails,
-  updateZoneAndSome,
-  setHeadingForVendorBranch,
+    setBranchDetails,
+    updateZoneAndSome,
+    setHeadingForVendorBranch,
 } from '@/shared/services/header';
 
 interface BaseLayoutProps {

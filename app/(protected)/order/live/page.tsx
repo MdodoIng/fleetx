@@ -27,6 +27,7 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
+import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +37,7 @@ export default function OrderTrackingDashboard() {
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [driverList, setDriverList] = useState<any>();
+  const isMobile = useMediaQuery('lg');
 
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
@@ -179,7 +181,7 @@ export default function OrderTrackingDashboard() {
           )}
 
           <div
-            hidden={isEditDetails}
+            hidden={isEditDetails || isMobile}
             className="flex items-center justify-center border broder-[#2828281A] rounded-md"
             style={{
               border: '1px solid #2828281A',

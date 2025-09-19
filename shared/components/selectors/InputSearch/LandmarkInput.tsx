@@ -1,19 +1,14 @@
 'use client';
-import { Button } from '../ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { classForInput } from '../ui/input';
+
 import { cn } from '@/shared/lib/utils';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { Control } from 'react-hook-form';
+import { FormControl, FormItem, FormLabel, FormMessage } from '../../ui/form';
+import { classForInput } from '../../ui/input';
+import { Button } from '../../ui/button';
 
 const LandmarkInput = ({
   control,
@@ -153,7 +148,10 @@ const LandmarkInput = ({
             <Button
               onClick={() => setIsMapOpen(!isMapOpen)}
               variant={isMapOpen ? 'default' : 'ghost'}
-              className={cn('absolute right-0 top-0 h-full ', !isMapOpen && 'bg-white')}
+              className={cn(
+                'absolute right-0 top-0 h-full ',
+                !isMapOpen && 'bg-white'
+              )}
             >
               {isMapOpen ? 'submit' : <MapPin />}
             </Button>

@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-
-const breakpointMap: Record<Breakpoint, string> = {
+const breakpointMap = {
   sm: '(max-width: 640px)',
   md: '(max-width: 768px)',
   lg: '(max-width: 1024px)',
@@ -12,9 +10,12 @@ const breakpointMap: Record<Breakpoint, string> = {
   '2xl': '(max-width: 1536px)',
 };
 
-export default function useMediaQuery(queryOrBreakpoint: Breakpoint | string ): boolean {
+export default function useMediaQuery(
+  queryOrBreakpoint: keyof typeof breakpointMap | string
+): boolean {
   const query =
-    breakpointMap[queryOrBreakpoint as Breakpoint] ?? queryOrBreakpoint;
+    breakpointMap[queryOrBreakpoint as keyof typeof breakpointMap] ??
+    queryOrBreakpoint;
 
   const [matches, setMatches] = useState(false);
 

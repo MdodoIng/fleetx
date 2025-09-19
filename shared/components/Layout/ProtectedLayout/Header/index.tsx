@@ -1,6 +1,5 @@
 'use client';
 import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
-import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 
@@ -13,30 +12,12 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import hamburgerIon from '@/assets/icons/hamburger.svg';
 
 import Image from 'next/image';
-import UserAndBranchSelecter from './UserAndBranchSelecter';
-import { useState } from 'react';
+import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
 
-const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
-  const pathname = usePathname();
-  const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole, user } =
-    useAuthStore();
+const Header: React.FC = () => {
+  const { user } = useAuthStore();
   const venderStore = useVenderStore();
-  const { isCollapsed, setValue } = useSharedStore();
-  // const [] = useState()
-
-  const isActivePath = (path: string) => {
-    return pathname === path;
-  };
-
-  const navLinkClass = (path: string) => {
-    const baseClass =
-      'px-3 py-2 rounded-md text-sm font-medium transition duration-300';
-    const activeClass = 'bg-blue-600 text-white';
-    const inactiveClass =
-      'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
-
-    return `${baseClass} ${isActivePath(path) ? activeClass : inactiveClass}`;
-  };
+  const { setValue } = useSharedStore();
 
   const t = useTranslations('component.common.header');
 
@@ -74,7 +55,6 @@ const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
       <UserAndBranchSelecter
         handleChangeBranch={handleChangeBranch}
         handleChangeVender={handleChangeVender}
-    
         handleClear={handleClear}
       />
       <div className="lg:hidden flex items-center gap-4">

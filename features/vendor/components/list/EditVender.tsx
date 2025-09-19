@@ -30,8 +30,9 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import BranchEditForm from '../BranchEditForm';
-import { getAccountManagerList } from '@/shared/services/user';
+
 import { useAddUpdateVender } from '../../hooks/useAddUpdateVender';
+import userService from '@/shared/services/user';
 
 type Props = {
   page: number;
@@ -72,7 +73,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
 
   async function fetchAccountManagerList() {
     try {
-      const res = await getAccountManagerList(1, 1000, null);
+      const res = await userService.getAccountManagerList(1, 1000, null);
 
       // @ts-ignore
       if (res?.data) {

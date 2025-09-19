@@ -21,7 +21,7 @@ import {
   Dot,
 } from 'lucide-react';
 import { paymentMap } from '@/features/orders/constants';
-import { useOrderStore, useSharedStore } from '@/store';
+import { useOrderStore, useSharedStore, useVenderStore } from '@/store';
 import EditResiver from './EditResiver';
 import EditPayment from './EditPayment';
 import {
@@ -55,6 +55,7 @@ export default function TableComponent({
   const { appConstants } = useSharedStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const orderStore = useOrderStore();
+  const { isEditDetails } = useVenderStore();
 
   const handleLoadMore = useCallback(() => {
     setPage((prev) => prev + 10); // load 10 more items
@@ -83,7 +84,7 @@ export default function TableComponent({
   return (
     <Table>
       <TableLists>
-        {orderStore?.orderStatusListData!.map((item, idx) => (
+        {orderStore?.orderStatusListData?.map((item, idx) => (
           <TableSigleList key={idx}>
             <TableSigleListHeader className="">
               <TableSigleListHeaderRight>
@@ -150,10 +151,13 @@ export default function TableComponent({
                 <TableSigleListContentDetailsItem>
                   <MapPin size={12} /> {item.to}
                 </TableSigleListContentDetailsItem>
-                <EditResiver
-                  data={item}
-                  fetchOrderDetails={fetchOrderDetails}
-                />
+
+                {isEditDetails && (
+                  <EditResiver
+                    data={item}
+                    fetchOrderDetails={fetchOrderDetails}
+                  />
+                )}
               </TableSigleListContent>
               <TableSigleListContent
                 className={!item.driver_name ? 'bg-[#F9F8714D]' : ''}
@@ -209,10 +213,12 @@ export default function TableComponent({
                   {paymentMap[item.payment_type] || 'Unknown'}
                 </TableSigleListContentDetailsTitle>
 
-                <EditPayment
-                  data={item}
-                  fetchOrderDetails={fetchOrderDetails}
-                />
+                {isEditDetails && (
+                  <EditPayment
+                    data={item}
+                    fetchOrderDetails={fetchOrderDetails}
+                  />
+                )}
               </TableSigleListContent>
             </TableSigleListContents>
           </TableSigleList>

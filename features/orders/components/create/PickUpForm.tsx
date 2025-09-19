@@ -20,7 +20,7 @@ import { Input } from '@/shared/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 
 import { TypePickUpSchema } from '../../validations/order';
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

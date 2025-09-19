@@ -68,9 +68,8 @@ export default function OrderTrackingDashboard() {
   const [ordernNumber, setOrdernNumber] = useState('');
   const orderStore = useOrderStore();
   const { appConstants } = useSharedStore();
-  const venderStore = useVenderStore();
+  const { isEditDetails } = useVenderStore();
 
-  const [isEditDetails, setIsEditDetails] = useState(false);
   const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
     undefined
   );
@@ -332,10 +331,12 @@ export default function OrderTrackingDashboard() {
                     <TableSigleListContentDetailsItem>
                       <MapPin size={12} /> {item.to}
                     </TableSigleListContentDetailsItem>
-                    <EditResiver
-                      data={item}
-                      fetchOrderDetails={fetchOrderDetails}
-                    />
+                    {isEditDetails && (
+                      <EditResiver
+                        data={item}
+                        fetchOrderDetails={fetchOrderDetails}
+                      />
+                    )}
                   </TableSigleListContent>
                   <TableSigleListContent
                     className={!item.driver_name ? 'bg-[#F9F8714D]' : ''}
@@ -392,11 +393,12 @@ export default function OrderTrackingDashboard() {
                     <TableSigleListContentDetailsTitle>
                       {paymentMap[item.payment_type] || 'Unknown'}
                     </TableSigleListContentDetailsTitle>
-
-                    <EditPayment
-                      data={item}
-                      fetchOrderDetails={fetchOrderDetails}
-                    />
+                    {isEditDetails && (
+                      <EditPayment
+                        data={item}
+                        fetchOrderDetails={fetchOrderDetails}
+                      />
+                    )}
                   </TableSigleListContent>
                 </TableSigleListContents>
               </TableSigleList>

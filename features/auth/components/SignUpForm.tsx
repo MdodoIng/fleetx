@@ -30,7 +30,7 @@ import {
 import Link from 'next/link';
 import ProgressBar from './ProgressBar';
 import { Eye, EyeOff } from 'lucide-react';
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { businessTypes } from '@/shared/constants/storageConstants';
 import { TypeSingUpRequest } from '@/shared/types/user';
 

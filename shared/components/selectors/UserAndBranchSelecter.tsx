@@ -32,10 +32,8 @@ const UserAndBranchSelecter: React.FC<Props> = ({
 }) => {
   const { user } = useAuthStore();
   const {
-    vendorId,
     selectedBranch,
-    setValue,
-    branchId,
+
     selectedVendor,
     branchDetails,
     venderList,
