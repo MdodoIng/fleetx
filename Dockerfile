@@ -26,6 +26,6 @@ COPY --from=builder /app/public ./public
 
 USER nextjs
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["node", "server.js"]
