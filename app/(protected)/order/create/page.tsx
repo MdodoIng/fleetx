@@ -139,7 +139,9 @@ export default function ShippingForm() {
 
         console.log(res, 'afds');
         if (res.data.address) {
-          dropOffForm.setValue('address', res.data.address);
+          Object.entries(res.data.address).forEach(([key, value]) => {
+            dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
+          });
         }
       } catch (error) {
         console.error(error);
@@ -164,15 +166,10 @@ export default function ShippingForm() {
   }, [mobileNumber, searchAddressByMobileNumber, dropOffForm]);
 
   useEffect(() => {
-    readAppConstants();
     updatePickUpDetailsForBranchUser();
     updateDropOutDetailsForStore();
     return () => {};
-  }, [
-    readAppConstants,
-    updateDropOutDetailsForStore,
-    updatePickUpDetailsForBranchUser,
-  ]);
+  }, [updateDropOutDetailsForStore, updatePickUpDetailsForBranchUser]);
 
   const isDropoffOne = orderStore.dropOffs
     ? orderStore.dropOffs.length

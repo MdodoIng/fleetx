@@ -25,6 +25,15 @@ import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
+import { Calendar } from '@/shared/components/ui/calendar';
+import { Button } from '@/shared/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   total_delivery_fees: 0,
@@ -41,7 +50,7 @@ function DashboardCompoent() {
   const [dashboardData, setDashboardData] =
     useState<TypeDashboardDetailsResponse['data']>(defaultDashboardData);
 
-  const [date, setDate] = useState({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     to: new Date(),
   });
@@ -55,7 +64,7 @@ function DashboardCompoent() {
     payment_methods: { cod = 0, online = 0 } = {},
   } = dashboardData;
 
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = async () => {
     if (!date.from || !date.to) {
       return;
     }
@@ -63,7 +72,7 @@ function DashboardCompoent() {
       const dashboardUrl = reportService.getDashboardUrl({
         selectedFromDate: date.from,
         selectedToDate: date.to,
-        selectedDriver,
+        searchDriver: selectedDriver!,
       });
 
       const dashboardResult =
@@ -77,11 +86,14 @@ function DashboardCompoent() {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }
-  }, [date.from, date.to, selectedDriver]);
+  };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    const fetc = async () => {
+      await fetchDashboardData();
+    };
+    fetc();
+  }, [date.from, date.to, selectedDriver]);
 
   const totalToPay = parseFloat(
     (totalCashCollected - totalDeliveryFees).toFixed(2)
@@ -163,7 +175,7 @@ function DashboardCompoent() {
               onChangeAction={setSelectedDriver}
             />
           )}
-          <DateSelect value={date} onChangeAction={setDate} />
+          <DateSelect value={date} setDate={setDate} />
         </div>
       </DashboardHeader>
 

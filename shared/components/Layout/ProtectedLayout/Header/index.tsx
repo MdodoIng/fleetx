@@ -34,7 +34,6 @@ const Header: React.FC = () => {
     setValueVenderStore('branchId', e);
   };
 
-
   const handleChangeVender = (e: string | undefined) => {
     const vender = venderList?.find((r) => r.id === e);
     setValueVenderStore('selectedVendor', vender);
@@ -66,6 +65,7 @@ const Header: React.FC = () => {
           handleChangeVender={handleChangeVender}
           handleClear={handleClear}
         />
+        
       ) : (
         <p className="font-medium max-lg:hidden">{t('title')}</p>
       )}

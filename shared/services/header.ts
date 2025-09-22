@@ -127,7 +127,7 @@ export async function setHeadingForVendorBranch() {
   getWarningMessage();
 
   if (environment.LOCAL_ADDRESS_ENABLED) {
-    getFleetZonePickUpTrend();
+    // getFleetZonePickUpTrend();
 
     // Run every 12 hours
     setInterval(
