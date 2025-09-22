@@ -1,6 +1,5 @@
 import {
   OrderStatus,
-  OrderStatusCSS,
   TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
@@ -13,8 +12,9 @@ import {
 } from '@/shared/types/orders';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useSharedStore } from './sharedStore';
+import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
+import { vendorService } from '@/shared/services/vender';
 
 interface DeliverySummary {
   totalOrders: number;
@@ -25,7 +25,6 @@ interface DeliverySummary {
 }
 
 interface OrderState {
-  driverId: number | null;
   dropOffs: TypeDropOffs[];
   pickUp: TypePickUp | undefined;
   estimatedDelivery: TypeEstimatedDelivery | undefined;
@@ -60,7 +59,6 @@ interface OrderState {
 }
 
 const initialState: OrderState | any = {
-  driverId: null,
   dropOffs: [],
   selectedDropOffs: [],
   selectedPage: 1,
@@ -138,8 +136,7 @@ export const useOrderStore = create<OrderState>()(
           data.forEach((element) => {
             const order: TypeOrderHistoryList = {} as TypeOrderHistoryList;
             Object.entries(element).forEach(([key, item]) => {
-              // @ts-ignore
-              order[key] = item as any;
+              order[key] = item;
             });
             order.id = element.id;
 
@@ -161,13 +158,10 @@ export const useOrderStore = create<OrderState>()(
             const statusObj = OrderStatus.find(
               (x) => x.key === element.primary_status
             );
-            // @ts-ignore
+
             order.status = statusObj ? statusObj.value : '';
 
-            const orders = OrderStatusCSS.find(
-              (x) => x.key === element.primary_status
-            );
-            const status = orders ? orders.value : '';
+            const status = statusObj ? statusObj.color : '';
             order.class_status = status.replace(' ', '_');
 
             order.from = element.pick_up.address
@@ -180,7 +174,7 @@ export const useOrderStore = create<OrderState>()(
                 element.drop_off.block +
                 ', ' +
                 element.drop_off.street;
-            order.creation_date = element.created_at;
+            order.creation_date = new Date(element.created_at).toLocaleString();
             order.amount_collected = element.amount_to_collect;
             if (element.delivery_distance) {
               const distance = parseFloat(element.delivery_distance).toFixed(2);
@@ -197,8 +191,8 @@ export const useOrderStore = create<OrderState>()(
               order.delivered_date = element.fulfill.completed_at!;
               order.canceled_at = element.fulfill.canceled_at!;
             } else {
-              order.driver_name = 'screens.orderList.noData';
-              order.driver_phone = 'screens.orderList.noData';
+              order.driver_name = '';
+              order.driver_phone = '';
             }
 
             if (order.primary_status === 120) {
@@ -216,7 +210,7 @@ export const useOrderStore = create<OrderState>()(
               checkDeliveryAddressEditIsEnabled(element);
             order.payment_type = element.payment_type;
             order.drop_off = element.drop_off;
-            // @ts-ignore
+
             order.status_change_reason = element.status_change_reason
               ? element.status_change_reason.reason
               : undefined;
@@ -229,6 +223,16 @@ export const useOrderStore = create<OrderState>()(
               ? isCreatedDateIsTooOlder(element.created_at)
               : true;
             orderList.push(order);
+            vendorService
+              .getBranchDetailByBranchId({
+                vendor_id: element.vendor_id!,
+                branch_id: element.branch_id!,
+              })
+              .then((res) => {
+                order.branch_name = res.data.main_branch
+                  ? 'Main Branch ' + res.data.name
+                  : 'Branch ' + res.data.name;
+              });
           });
         }
 
@@ -245,9 +249,7 @@ export const useOrderStore = create<OrderState>()(
 );
 
 function checkDeliveryAddressEditIsEnabled(event: TypeLiveOrderItem): boolean {
-  const orderStatus = OrderStatusCSS.find(
-    (x) => x.key === event.primary_status
-  );
+  const orderStatus = OrderStatus.find((x) => x.key === event.primary_status);
   const currentUser = getDecodedAccessToken();
   if (currentUser) {
     switch (currentUser.roles[0]) {

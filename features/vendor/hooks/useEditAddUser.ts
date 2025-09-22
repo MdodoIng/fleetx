@@ -37,7 +37,6 @@ type Props = {
       | undefined
     >
   >;
-  branchList: TypeBranch[] | undefined;
   isAdd: boolean;
   setIsAddAction: Dispatch<SetStateAction<boolean>>;
 };
@@ -47,7 +46,6 @@ export const useEditAddUser = ({
   data,
   isBranch,
   setIsBranchAction,
-  branchList,
   isAdd,
   setIsAddAction,
 }: Props) => {
@@ -107,11 +105,7 @@ export const useEditAddUser = ({
 
     setIsLoadingForm(true);
     Object.entries(isEditUser!).forEach(([key, value]) => {
-      editUserForm.setValue(key as keyof TypeEditUserSchema, value as any);
-    });
-    setIsBranchAction({
-      vendor: selectedVendor!,
-      branch: selectedBranch!,
+      editUserForm.setValue(key as keyof TypeEditUserSchema, value);
     });
 
     setIsLoadingForm(false);

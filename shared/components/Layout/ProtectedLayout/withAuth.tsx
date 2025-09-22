@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '../../ui/button';
+import { useGetSidebarMeta } from '@/shared/lib/helpers';
 
 // HOC for role-based access control
 export function withAuth<P extends object>(
@@ -22,7 +23,6 @@ export function withAuth<P extends object>(
       isLoading,
       hasAnyRole,
       isAuthenticatedCheck,
-      user,
     } = useAuthStore();
 
     const { setValue } = useSharedStore();
@@ -37,6 +37,8 @@ export function withAuth<P extends object>(
       setValue('lastPathname', pathname);
       push('/auth/login');
     };
+
+    const { roles } = useGetSidebarMeta();
 
     if (isLoading) {
       return <LoadingPage />;
@@ -63,7 +65,8 @@ export function withAuth<P extends object>(
       );
     }
 
-    if (requiredRoles && !hasAnyRole(requiredRoles)) {
+    const effectiveRequiredRoles = requiredRoles || roles;
+    if (effectiveRequiredRoles && !hasAnyRole(effectiveRequiredRoles)) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
           <div className="text-center">

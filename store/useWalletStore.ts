@@ -1,10 +1,10 @@
 import { vendorService } from '@/shared/services/vender';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useSharedStore } from './sharedStore';
+import { useSharedStore } from './useSharedStore';
 import { useVenderStore } from './useVenderStore';
 import { useAuthStore } from './useAuthStore';
-import { getSuperSaverPromation } from '@/shared/services';
+import { getSuperSaverPromotion } from '@/shared/services';
 import { TypeAddCreditDebitformSchema } from '@/features/wallet/validations/paymentForm';
 import { TypeBranch, TypeVender } from '@/shared/types/vender';
 
@@ -74,7 +74,7 @@ export function toShowAddCreditButton() {
   }
 }
 
-async function getSuperSaverPromotion() {
+async function getFunSuperSaverPromotion() {
   const { vendorId, branchId, selectedBranch, selectedVendor } =
     useVenderStore.getState();
   const {
@@ -85,7 +85,7 @@ async function getSuperSaverPromotion() {
   } = useWalletStore.getState();
 
   try {
-    const res = await getSuperSaverPromation(
+    const res = await getSuperSaverPromotion(
       vendorId! || selectedVendor?.id!,
       branchId! || selectedBranch?.id!
     );
@@ -483,7 +483,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
                 isVendorAdmin: false,
               });
               getVendorWalletBalanceInit();
-              getSuperSaverPromotion();
+              getFunSuperSaverPromotion();
             } else {
               useVenderStore.setState({
                 isVendorAdmin: true,

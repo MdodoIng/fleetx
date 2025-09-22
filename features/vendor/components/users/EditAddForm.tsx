@@ -1,43 +1,15 @@
 'use client';
-import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { Edit, LocateIcon, Phone, Pin, Type, User2, X } from 'lucide-react';
-import {
-  TypeBranch,
-  TypeEditVenderReq,
-  TypeVender,
-  TypeVenderListItem,
-} from '@/shared/types/vender';
+import { TypeBranch, TypeVenderListItem } from '@/shared/types/vender';
 import {
   Dispatch,
   FormEvent,
   SetStateAction,
+  useCallback,
   useEffect,
-  useState,
 } from 'react';
 import { useVenderStore } from '@/store';
-import { vendorService } from '@/shared/services/vender';
-import { Label } from '@/shared/components/ui/label';
-import { Checkbox } from '@/shared/components/ui/checkbox';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  editVendorBranchSchema,
-  editVendorNameSchema,
-  TypeEditVendorBranchSchema,
-  TypeEditVendorNameSchema,
-} from '../../validations/editVender';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog';
-import BranchEditForm from '../BranchEditForm';
-import { getAccountManagerList } from '@/shared/services/user';
-import { useAddUpdateVender } from '../../hooks/useAddUpdateVender';
+import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -47,7 +19,8 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
-import UserAndBranchSelecter from '@/shared/components/Layout/ProtectedLayout/Header/UserAndBranchSelecter';
+import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
+import { vendorService } from '@/shared/services/vender';
 
 type Props = {
   form: UseFormReturn<TypeEditUserSchema>;
@@ -64,15 +37,9 @@ type Props = {
     branch: TypeBranch;
     vendor: TypeVenderListItem;
   };
-  branchList: TypeBranch[] | undefined;
 };
 
-const EditAddForm = ({
-  form,
-  isBranch,
-  setIsBranchAction,
-  branchList,
-}: Props) => {
+const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
   const venderStore = useVenderStore();
 
   const handleSumbit = (e: FormEvent<HTMLFormElement>) => {
@@ -80,7 +47,7 @@ const EditAddForm = ({
   };
 
   const handleChangeBranch = (e: string) => {
-    const branch = branchList?.find((r) => r.id === e);
+    const branch = venderStore.branchDetails?.find((r) => r.id === e);
     setIsBranchAction({
       branch: branch!,
       vendor: isBranch.vendor,
@@ -94,21 +61,36 @@ const EditAddForm = ({
     });
   };
 
+  const setBranchDetails = useCallback(async () => {
+    try {
+      const res = await vendorService.getBranchDetails(isBranch?.vendor?.id);
+
+      venderStore.setValue('branchDetails', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [isBranch?.vendor?.id]);
+
+  useEffect(() => {
+    setBranchDetails();
+  }, [setBranchDetails]);
+
   return (
     <Form {...form}>
-      <form onSubmit={handleSumbit} className=" flex flex-wrap gap-5">
-        <UserAndBranchSelecter
-          handleChangeBranch={handleChangeBranch}
-          handleChangeVender={handleChangeVender}
-          branchs={branchList}
-          selectedVendorValue={isBranch?.vendor}
-          selectedBranchValue={isBranch?.branch}
-        />
+      <form onSubmit={handleSumbit} className="grid grid-cols-2 gap-5 w-full">
+        <div className="col-span-2 flex justify-start ">
+          <UserAndBranchSelecter
+            handleChangeBranch={handleChangeBranch}
+            handleChangeVender={handleChangeVender}
+            selectedVendorValue={isBranch?.vendor}
+            selectedBranchValue={isBranch?.branch}
+          />
+        </div>
         <FormField
           control={form.control}
           name="first_name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>First name</FormLabel>
               <FormControl>
                 <Input placeholder="First name" {...field} />

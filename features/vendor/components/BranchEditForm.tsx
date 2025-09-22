@@ -18,7 +18,7 @@ const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
   ssr: false,
   loading: () => <p>Loading map...</p>,
 });
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { FormEvent } from 'react';
 
 const BranchEditForm = ({
@@ -100,11 +100,16 @@ const BranchEditForm = ({
 
         {/* Row 3: Address */}
 
-        <AddressLandmarkFields
-          form={form}
-          landmarkFieldName="address"
-          isMap={true}
-          location="address"
+        <FormField
+          control={form.control}
+          name="address.block_id"
+          render={({ field }) => (
+            <AddressLandmarkFields
+              form={form}
+              isMap={true}
+              location="address"
+            />
+          )}
         />
 
         <FormField

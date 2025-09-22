@@ -26,7 +26,6 @@ import { loginSchema, TypeLoginSchema } from '../validations/auth';
 import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const { isAuthenticated, isLoading, login, isAuthenticatedCheck } =
     useAuthStore();
   const redirectToHome = useRedirectToHome();
@@ -109,26 +108,15 @@ const LoginForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('login.passwordLabel')}</FormLabel>
-                    <div className="relative">
-                      <FormControl>
-                        <Input
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder={t('login.passwordPlaceholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                      >
-                        {showPassword ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
-                    </div>
+
+                    <FormControl>
+                      <Input
+                        type={'password'}
+                        placeholder={t('login.passwordPlaceholder')}
+                        {...field}
+                      />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}

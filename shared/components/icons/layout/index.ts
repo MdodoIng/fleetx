@@ -7,7 +7,7 @@ export { BulkInsightsIcon } from './BulkInsightsIcon';
 export { IntegrationsIcon } from './IntegrationsIcon';
 export { PasswordIcon } from './PasswordIcon';
 export { BillIcon } from './BillIcon';
-
+export { PeopleListIcon } from './PeopleListIcon';
 
 // Utilities
 export {
@@ -29,7 +29,11 @@ export type SidebarIconType =
   | 'history'
   | 'bulkInsights'
   | 'integrations'
-  | 'password' | "bill";
+  | 'password'
+  | 'bill'
+  | 'peopleList'
+  | 'userPlus'
+  | 'users';
 
 export interface SidebarIconProps {
   width?: number;

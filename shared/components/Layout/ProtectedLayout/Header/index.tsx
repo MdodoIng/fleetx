@@ -1,72 +1,92 @@
 'use client';
-import { useAuthStore, useVenderStore } from '@/store';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 
 import Notification from './Notification';
 import { Button } from '@/shared/components/ui/button';
-import UserAndBranchSelecter from './UserAndBranchSelecter';
 import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
-import { Profiler } from 'react';
 import Profile from './Profile';
+import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
+import hamburgerIon from '@/assets/icons/hamburger.svg';
 
-const Header: React.FC<{ title?: string }> = ({ title = 'Order' }) => {
-  const pathname = usePathname();
-  const { isAuthenticated, isLoading, hasAnyRole, logout, hasRole, user } =
-    useAuthStore();
-  const venderStore = useVenderStore();
+import Image from 'next/image';
+import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
 
-  const isActivePath = (path: string) => {
-    return pathname === path;
-  };
+const Header: React.FC = () => {
+  const { user } = useAuthStore();
+  const {
+    isVendorAccess,
+    isBranchAccess,
+    branchDetails,
+    setValue: setValueVenderStore,
+    venderList,
+  } = useVenderStore();
 
-  const navLinkClass = (path: string) => {
-    const baseClass =
-      'px-3 py-2 rounded-md text-sm font-medium transition duration-300';
-    const activeClass = 'bg-blue-600 text-white';
-    const inactiveClass =
-      'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
-
-    return `${baseClass} ${isActivePath(path) ? activeClass : inactiveClass}`;
-  };
+  const { setValue: setSharedStore } = useSharedStore();
 
   const t = useTranslations('component.common.header');
-
-  const handleChangeBranch = (e: string) => {
-    const branch = venderStore.branchDetails?.find((r) => r.id === e);
-    venderStore.setValue('selectedBranch', branch);
-    venderStore.setValue('branchId', e);
+  const isAccess = isVendorAccess || isBranchAccess;
+  const handleClickBranch = (e: string | undefined) => {
+    const branch = branchDetails?.find((r) => r.id === e);
+    setValueVenderStore('selectedBranch', branch);
+    setValueVenderStore('branchId', e);
   };
-  const handleChangeVender = (e: string) => {
-    const vender = venderStore.venderList?.find((r) => r.id === e);
-    venderStore.setValue('selectedVendor', vender);
-    venderStore.setValue('vendorId', e);
-    venderStore.setValue('selectedBranch', undefined);
-    venderStore.setValue('branchId', undefined);
+
+
+  const handleChangeVender = (e: string | undefined) => {
+    const vender = venderList?.find((r) => r.id === e);
+    setValueVenderStore('selectedVendor', vender);
+    setValueVenderStore('vendorId', e);
+    setValueVenderStore('selectedBranch', undefined);
+    setValueVenderStore('branchId', undefined);
   };
 
   const handleClear = () => {
-    venderStore.setValue('selectedBranch', undefined);
-    venderStore.setValue('branchId', undefined);
+    setValueVenderStore('selectedBranch', undefined);
+    setValueVenderStore('branchId', undefined);
     if (!user?.roles.includes('VENDOR_USER')) {
-      venderStore.setValue('vendorId', undefined);
-      venderStore.setValue('selectedVendor', undefined);
+      setValueVenderStore('vendorId', undefined);
+      setValueVenderStore('selectedVendor', undefined);
     }
   };
 
   return (
     <nav
       className={cn(
-        'bg-white flex items-center justify-between h-full sticky top-0 z-50',
+        'lg:bg-white bg-primary-blue flex items-center justify-between h-auto sticky top-0 z-50',
         main_padding.dashboard.x,
         main_padding.dashboard.y
       )}
     >
-      <p className="font-medium">{t('title')}</p>
-      <div className="flex items-center gap-4 h-full ">
+      {isAccess ? (
+        <UserAndBranchSelecter
+          handleChangeBranch={handleClickBranch}
+          handleChangeVender={handleChangeVender}
+          handleClear={handleClear}
+        />
+      ) : (
+        <p className="font-medium max-lg:hidden">{t('title')}</p>
+      )}
+      <div className="lg:hidden flex items-center gap-4">
+        <Button
+          variant={'ghost'}
+          onClick={() => setSharedStore('isCollapsed', false)}
+        >
+          <Image
+            src={hamburgerIon}
+            alt=""
+            className="h-5 w-auto object-contain"
+          />
+        </Button>
+        <Image
+          src={logoCollapsed}
+          alt=""
+          className="h-10 w-auto object-contain"
+        />
+      </div>
+      <div className="flex items-center lg:gap-4 gap-0 h-full ">
         <Notification />
         <Profile />
         <LocaleSwitcher variant="dashboard" />

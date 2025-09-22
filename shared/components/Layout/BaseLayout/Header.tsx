@@ -1,6 +1,5 @@
 'use client';
 
-
 import { cn } from '@/shared/lib/utils';
 import LocaleSwitcher from '../LocaleSwitcher';
 import main_padding from '@/styles/padding';

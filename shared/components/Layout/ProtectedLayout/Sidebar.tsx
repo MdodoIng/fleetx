@@ -1,5 +1,4 @@
 'use client';
-import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
 import { cn } from '@/shared/lib/utils';
 import { UserRole } from '@/shared/types/user';
 import { useAuthStore, useSharedStore } from '@/store';
@@ -11,25 +10,50 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import collapseIcon from '@/assets/icons/window collapse.svg';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { iconMap } from '../../icons/layout';
-import { filterMenuByRole } from '@/shared/lib/helpers';
+import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
+import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
 
-const SideBar = ({
-  header,
-}: {
-  header?: {
-    title: string;
-  };
-}) => {
+const SideBar = () => {
   const { isCollapsed, setValue } = useSharedStore();
   const { user } = useAuthStore();
   const t = useTranslations();
 
   const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU);
 
+  const handleOutsideClick = useCallback(
+    (event: MouseEvent) => {
+      if (
+        !isCollapsed &&
+        event.target &&
+        !document.getElementById('sidebar')?.contains(event.target as Node)
+      ) {
+        setValue('isCollapsed', true);
+      }
+    },
+    [isCollapsed, setValue]
+  );
+
+  useEffect(() => {
+    if (window.innerWidth > 1024 && !isCollapsed) return;
+
+    document.addEventListener('click', handleOutsideClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick, true);
+    };
+  }, [handleOutsideClick, isCollapsed]);
+
+  const { title } = useGetSidebarMeta();
+
   return (
-    <aside className="bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300">
+    <aside
+      className={cn(
+        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl',
+        isCollapsed && 'max-lg:-left-full '
+      )}
+    >
       <div
         onClick={() => setValue('isCollapsed', !isCollapsed)}
         className="flex justify-between items-center gap-6 w-full"
@@ -61,10 +85,11 @@ const SideBar = ({
           return (
             <div key={index} className="flex flex-col group gap-2">
               <Link
+                hidden={isCollapsed && !item?.route}
                 href={item?.route || '#'}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
-                  header?.title === item.labelKey &&
+                  item.labelKey === title &&
                     'bg-white text-primary-blue hover:bg-off-white',
                   item.route &&
                     'hover:bg-dark-grey/40 px-3 py-2 pointer-events-auto'
@@ -86,14 +111,14 @@ const SideBar = ({
                         prefetch={true}
                         className={cn(
                           'flex items-center gap-2 px-3 rounded-[6px] py-2 bg-transparent hover:bg-dark-grey/40',
-                          header?.title === child.labelKey &&
+                          title === child.labelKey &&
                             'bg-white text-primary-blue hover:bg-off-white',
                           isCollapsed && 'justify-center px-2'
                         )}
                       >
                         <IconComponentSub
                           className={
-                            header?.title === child.labelKey
+                            title === child.labelKey
                               ? 'text-primary-blue'
                               : 'text-white'
                           }

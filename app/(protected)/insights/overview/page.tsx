@@ -17,6 +17,7 @@ import useTableExport from '@/shared/lib/hooks/useTableExport';
 import InsightTiles from '@/features/insights/components/overview/InsightTiles';
 import FunnelChart from '@/features/insights/components/overview/FunnelChart';
 import useInsightBoard from '@/features/insights/hooks/useInsightBoard';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 interface DateRange {
   from?: Date;
@@ -45,54 +46,7 @@ function Overview() {
   return (
     <div className="flex flex-col items-center bg-gray-50 p-4">
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={'outline'}
-                className={cn(
-                  'w-[280px] justify-start text-left font-normal',
-                  !date?.from && 'text-muted-foreground'
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date?.to ? (
-                    <>
-                      From {format(date.from, 'PP')} - To{' '}
-                      {format(date.to, 'PP')}
-                    </>
-                  ) : (
-                    format(date.from, 'PPP')
-                  )
-                ) : (
-                  <span>From Date - To Date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 flex">
-              <Calendar
-                autoFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={handleDateSelect}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          <Button
-            variant="ghost"
-            className="text-primary"
-            onClick={() => {
-              setSelectedFromDate(date.from!);
-              setSelectedToDate(date.to!);
-            }}
-          >
-            Apply
-          </Button>
-        </div>
+        <DateSelect value={date} onChangeAction={setDate}  />
 
         <Button className="p-2 hover:bg-gray-100 rounded-lg">
           <Download className="w-5 h-5" /> Export
@@ -150,9 +104,4 @@ function Overview() {
   );
 }
 
-export default withAuth(Overview, [
-  'FINANCE_MANAGER',
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default Overview;

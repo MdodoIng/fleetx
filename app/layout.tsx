@@ -1,4 +1,3 @@
-
 import './globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -7,7 +6,6 @@ import { getDirection } from '@/shared/lib/helpers/getDirection';
 
 import { rHZak, montserrat } from '@/shared/lib/font';
 import { Toaster } from '@/shared/components/ui/sonner';
-
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -31,7 +29,7 @@ export default async function RootLayout({
       style={dirState ? rHZak.style : montserrat.style}
     >
       <body>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-right" />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

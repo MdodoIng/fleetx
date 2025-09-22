@@ -75,8 +75,7 @@ export interface DecodedToken {
   exp?: number;
 }
 
-
-export interface TypeSingUpRequest  {
+export interface TypeSingUpRequest {
   name: string;
   business_name: string;
   business_type: number;
@@ -105,4 +104,15 @@ export interface TypeSingUpRequest  {
     };
   };
   reference: null;
+}
+
+export interface TypeChangePasswordRequest {
+  new_password: any;
+  confirm_new_password: any;
+  current_password: any;
+  user_id: any;
+}
+
+export interface TypeChangePasswordResponse {
+  data: string;
 }

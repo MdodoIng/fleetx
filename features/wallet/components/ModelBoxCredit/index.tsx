@@ -1,30 +1,27 @@
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { CardIcon } from '@/shared/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Input } from '@/shared/components/ui/input';
-import { cn } from '@/shared/lib/utils';
-import { checkBlockActivation } from '@/shared/services';
 import { useSharedStore, useVenderStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
-import { Wallet, X } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { useAddCredit } from '../../hooks/useAddCredit';
 import Recommendation from './Recommendation';
 import PaymentForm from './PaymentForm';
+import { useTranslations } from 'next-intl';
 
 export default function ModelBoxCredit({
   isOpen,
   setIsOpen,
 }: {
-  isOpen: Number | undefined;
-  setIsOpen: Dispatch<SetStateAction<Number | undefined>>;
+  isOpen: number | undefined;
+  setIsOpen: Dispatch<SetStateAction<number | undefined>>;
 }) {
   const [amount, setAmount] = useState<number>(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -34,27 +31,28 @@ export default function ModelBoxCredit({
 
   const { submitAddCredit, submitCreditDebitConformed } = useAddCredit();
 
+  const t = useTranslations('component.features.wallet');
+
   const recommendations = [
     {
       value: 15,
-      label: 'Perfect for small Restaurants',
-      desc: 'Covers 30-50 Orders',
-      label2: '(30-50 Orders/Month)',
+      label: t('recommendations.15.label'),
+      desc: t('recommendations.15.desc'),
+      label2: t('recommendations.15.label2'),
     },
     {
       value: 30,
-      label: 'Perfect for small Restaurants',
-      desc: 'Covers 30-50 Orders',
-      lebal2: '(50-80 Orders/Month)',
+      label: t('recommendations.30.label'),
+      desc: t('recommendations.30.desc'),
+      label2: t('recommendations.30.label2'),
     },
     {
       value: 50,
-      label: 'Perfect for small Restaurants',
-      desc: 'Covers 30-50 Orders',
-      label2: '(80+Orders/Month',
+      label: t('recommendations.50.label'),
+      desc: t('recommendations.50.desc'),
+      label2: t('recommendations.50.label2'),
     },
   ];
-
 
   return (
     <>
@@ -66,27 +64,21 @@ export default function ModelBoxCredit({
           <DialogHeader>
             <DialogTitle className=" font-semibold inline-flex text-gray-700 items-center gap-2">
               {isOpen === 1 ? (
-                <>
-                  <span role="img" aria-label="bulb">
-                    💡
-                  </span>
-                  Smart Recharge Recommendation
-                </>
+                <>{t('smartRechargeRecommendation')}</>
               ) : (
                 <>
-                  <Wallet className="w-5 h-5 text-blue-500" />
-                  Add Credit
+                  <CardIcon>
+                    <Wallet className="" />
+                  </CardIcon>
+                  {t('addCredit')}
                 </>
               )}
             </DialogTitle>
             <p className="text-sm text-gray-500">
               {isOpen === 1 ? (
-                <>
-                  Charge your Wallet based on your monthly order volume to
-                  reduce
-                </>
+                <>{t('chargeWallet')}</>
               ) : (
-                <>frequent recharging. Quick top-up for faster ordering</>
+                <>{t('frequentRecharging')}</>
               )}
             </p>
           </DialogHeader>

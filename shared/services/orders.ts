@@ -6,6 +6,7 @@ import {
   TypeEstimatedDeliveryReturnFromApi,
   TypeOrders,
   TypeRootEstimatedDeliveryReturnFromApi,
+  TypeRootLiveBuilkOrderListInsights,
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
   TypeUpdateAddressReq,
@@ -13,8 +14,8 @@ import {
   TypeUpdatePaymentReq,
   TypeZoneResponce,
 } from '@/shared/types/orders';
-import { useAuthStore, useVenderStore } from '@/store';
-import { useSharedStore } from '@/store/sharedStore';
+import { useAuthStore, useOrderStore, useVenderStore } from '@/store';
+import { useSharedStore } from '@/store/useSharedStore';
 
 export const orderService = {
   createOnDemandOrders: (orders: TypeOrders) =>
@@ -42,21 +43,23 @@ export const orderService = {
     ),
 
   updatePayment: (payment: TypeUpdatePaymentReq, orderUuid: string) =>
-    apiFetch(
-      `${appConfig.orderServiceApiUrl()}/update/${orderUuid}/payment`,
-      { method: 'PUT', body: JSON.stringify(payment) }
-    ),
+    apiFetch(`${appConfig.orderServiceApiUrl()}/update/${orderUuid}/payment`, {
+      method: 'PUT',
+      body: JSON.stringify(payment),
+    }),
 
   updateAddress: (
     address: TypeUpdateAddressReq,
     orderUuid: string
   ): Promise<TypeUpdateAddressResponce> =>
-    apiFetch(
-      `${appConfig.orderServiceApiUrl()}/update/${orderUuid}/drop-off`,
-      { method: 'PUT', body: JSON.stringify(address) }
-    ),
+    apiFetch(`${appConfig.orderServiceApiUrl()}/update/${orderUuid}/drop-off`, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+    }),
 
-  getOrderList: (url: string): Promise<TypeRootLiveOrderList> =>
+  getOrderList: (
+    url: string
+  ): Promise<TypeRootLiveOrderList | TypeRootLiveBuilkOrderListInsights> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}${url}`),
 
   getOrderStatusUrl(
@@ -68,7 +71,6 @@ export const orderService = {
     searchAll: boolean | null = true
   ) {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
-    const currentUser = getDecodedAccessToken();
     const { branchId, vendorId } = useVenderStore.getState();
     const { user } = useAuthStore.getState();
 
@@ -120,10 +122,10 @@ export const orderService = {
     toDate?: Date,
     searchOrder?: string,
     searchCustomer?: string,
-    searchDriver?: string,
     searchAll: boolean | null = true,
     nextSetItemTotal?: string[],
     selectedAccountManager?: string,
+    searchDriver?: string,
     sortField?: string
   ) {
     let url: string = '/list?page_size=' + perPage;
@@ -141,9 +143,13 @@ export const orderService = {
     if (sortField) {
       url = url + '&sort_field=' + sortField;
     }
-    nextSetItemTotal?.forEach((element) => {
-      url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
-    });
+
+    if (Array.isArray(nextSetItemTotal)) {
+      nextSetItemTotal?.forEach((element) => {
+        url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
+      });
+    }
+
     return this.getOrderStatusCommonUrl(
       url,
       searchOrder,
@@ -155,13 +161,14 @@ export const orderService = {
 
   getOrderStatusCommonUrl(
     url: string,
-    searchOrder?: string,
-    searchCustomer?: string,
-    searchDriver?: string,
+    searchOrder?: string | null,
+    searchCustomer?: string | null,
+    searchDriver?: string | null,
     searchAll: boolean | null = true
   ) {
     const currentUser = getDecodedAccessToken();
     const { vendorId, branchId } = useVenderStore.getState();
+
     switch (currentUser?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
@@ -214,10 +221,10 @@ export const orderService = {
   calculateDeliveryEstimate: (
     req: TypeEstimatedDelivery
   ): Promise<TypeRootEstimatedDeliveryReturnFromApi> =>
-    apiFetch(
-      `${appConfig.orderServiceApiUrl()}/pre-order/delivery-calculate`,
-      { method: 'POST', body: JSON.stringify(req) }
-    ),
+    apiFetch(`${appConfig.orderServiceApiUrl()}/pre-order/delivery-calculate`, {
+      method: 'POST',
+      body: JSON.stringify(req),
+    }),
 
   codLock: () =>
     apiFetch(`${appConfig.orderServiceApiUrl()}/payment/lock`, {
@@ -241,9 +248,7 @@ export const orderService = {
     }),
 
   getOrderInfo: (orderNumber: string) =>
-    apiFetch(
-      `${appConfig.orderServiceApiUrl()}/get-order-info/${orderNumber}`
-    ),
+    apiFetch(`${appConfig.orderServiceApiUrl()}/get-order-info/${orderNumber}`),
 
   getFormattedDate(date: Date) {
     return (
@@ -259,5 +264,25 @@ export const orderService = {
     return apiFetch(`${appConfig.orderServiceApiUrl()}/zone/list`, {
       method: 'GET',
     });
+  },
+
+  getBulkInsightsUrl(
+    fromDate: Date | undefined,
+    toDate: Date | undefined,
+    searchDriver?: string
+  ) {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url: string = '/rescheduled-bulk-order/list?';
+    if (fromDate) {
+      const from = fromDate ? getFormattedDate(fromDate) : '';
+      url = url + '&from_date=' + from;
+    }
+    if (toDate) {
+      const to = toDate ? getFormattedDate(toDate) : '';
+      url = url + '&to_date=' + to;
+    }
+
+    return this.getOrderStatusCommonUrl(url, null, null,
+      searchDriver, null);
   },
 };

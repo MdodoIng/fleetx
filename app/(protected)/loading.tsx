@@ -1,10 +1,26 @@
+'use client';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Loader2 } from 'lucide-react';
 import React from 'react';
 
-const LoadingPage: React.FC = () => {
+const LoadingPage: React.FC<{ hideHead?: boolean }> = ({ hideHead }) => {
   return (
-    <div className="fixed bottom-4 starting:-bottom-40 duration-500 right-4 bg-white shadow-2xl rounded-2xl border p-3 aspect-square size-12">
-      <div className="animate-spin rounded-full size-4 aspect-square border-b-2 border-black inline-block"></div>
-    </div>
+    <Dashboard>
+      <DashboardHeader hidden={hideHead}>
+        <DashboardHeaderRight />
+      </DashboardHeader>
+      <DashboardContent className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </DashboardContent>
+    </Dashboard>
   );
 };
 

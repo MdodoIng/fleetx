@@ -3,9 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { funnelStage } from '@/shared/constants/storageConstants';
 import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
-import { getAccountManagerList } from '@/shared/services/user';
 import { FunnelRow, FunnelType, User, Zone } from '../types/useSalesFunnel';
 import { useFilterAndGroup } from './useFilterAndGroup';
+import userService from '@/shared/services/user';
 
 export function useSalesFunnel() {
   const [types] = useState<FunnelType[]>([
@@ -43,7 +43,7 @@ export function useSalesFunnel() {
 
   useEffect(() => {
     orderService.getZone().then((res) => setZones(res.data));
-    getAccountManagerList(1, 1000, null).then((res: any) =>
+    userService.getAccountManagerList(1, 1000, null).then((res: any) =>
       setManagers(res.data)
     );
   }, []);

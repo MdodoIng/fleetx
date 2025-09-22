@@ -1,11 +1,21 @@
 import { useAuthStore, useVenderStore } from '@/store';
 import { apiFetch } from '../lib/utils';
 import { appConfig } from './app-config';
-import { TypeNotificationsResponse } from '../types/notification';
+import {
+  TypeGetWarningMessageApiResponse,
+  TypeNotificationsResponse,
+  TypeOperationTimeApiResponse,
+} from '../types/notification';
 
 export const notificationService = {
   getNotification(url: string): Promise<TypeNotificationsResponse> {
     return apiFetch(appConfig.notificationServiceApiUrl() + url, {
+      method: 'GET',
+    });
+  },
+
+  getWarningMessageApi(): Promise<TypeGetWarningMessageApiResponse> {
+    return apiFetch(appConfig.orderServiceApiUrl() + '/order-screen-msg/get', {
       method: 'GET',
     });
   },
@@ -52,5 +62,23 @@ export const notificationService = {
         break;
     }
     return url;
+  },
+
+  getOperationTimeApi(): Promise<TypeOperationTimeApiResponse> {
+    return apiFetch(
+      appConfig.orderServiceApiUrl() + '/config/operation/timing/get',
+      {
+        method: 'GET',
+      }
+    );
+  },
+
+  getBusyModeApi(): Promise<any> {
+    return apiFetch(
+      appConfig.orderServiceApiUrl() + '/config/busy-mode/status',
+      {
+        method: 'GET',
+      }
+    );
   },
 };

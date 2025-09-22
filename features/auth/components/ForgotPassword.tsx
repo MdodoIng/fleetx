@@ -27,7 +27,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
-import { forgotPasswordSchema, ForgotPasswordValues } from '../validations/auth';
+import {
+  forgotPasswordSchema,
+  ForgotPasswordValues,
+} from '../validations/auth';
 
 const ForgotPassword = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -72,7 +75,10 @@ const ForgotPassword = () => {
       >
         <DialogHeader className="items-baseline">
           <DialogTitle>{t('passwordReset.heading')}</DialogTitle>
-          <DialogDescription className='max-sm:text-start'> {t('passwordReset.subheading')}</DialogDescription>
+          <DialogDescription className="max-sm:text-start">
+            {' '}
+            {t('passwordReset.subheading')}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4">

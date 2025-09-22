@@ -14,6 +14,7 @@ import { reportService } from '@/shared/services/report';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { CHURN_REASONS } from '@/shared/constants/storageConstants';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 interface DateRange {
   from?: Date;
@@ -61,58 +62,7 @@ function ChurnReasons() {
   return (
     <div className="lockcard-page flex flex-col items-center bg-gray-50 p-4">
       <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={'outline'}
-                className={cn(
-                  'w-[280px] justify-start text-left font-normal',
-                  !date?.from && 'text-muted-foreground'
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date?.to ? (
-                    <>
-                      From {format(date.from, 'PP')} - To{' '}
-                      {format(date.to, 'PP')}
-                    </>
-                  ) : (
-                    format(date.from, 'PPP')
-                  )
-                ) : (
-                  <span>From Date - To Date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 flex">
-              <Calendar
-                autoFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={(range) => {
-                  if (range?.from && range?.to && range.from > range.to) {
-                    alert('To date should be greater than from date');
-                    return;
-                  }
-                  setDate(range as DateRange);
-                }}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          <Button
-            variant="ghost"
-            className="text-primary"
-            onClick={fetchChurnReasonsData}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : 'Apply'}
-          </Button>
-        </div>
+        <DateSelect value={date} onChangeAction={setDate}  />
       </div>
 
       <div className="insight-tiles-main w-full max-w-5xl">
@@ -136,9 +86,4 @@ function ChurnReasons() {
   );
 }
 
-export default withAuth(ChurnReasons, [
-  'FINANCE_MANAGER',
-  'OPERATION_MANAGER',
-  'VENDOR_ACCOUNT_MANAGER',
-  'SALES_HEAD',
-]);
+export default ChurnReasons;

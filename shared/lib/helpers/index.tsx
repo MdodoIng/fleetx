@@ -1,11 +1,14 @@
+'use client';
 import { TypePickUpSchema } from '@/features/orders/validations/order';
 import { useOrderStore } from '@/store/useOrderStore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { APP_SIDEBAR_MENU } from '@/shared/constants/sidebar';
+import { APP_SIDEBAR_MENU, routes } from '@/shared/constants/routes';
 import { UserRole } from '@/shared/types/user';
-import { MenuItem } from '@/shared/types/constants';
+import { MenuItem, RouteConfig } from '@/shared/types/constants';
 import { useAuthStore } from '@/store';
+import { usePathname } from 'next/navigation';
+import { useMemo } from 'react';
 
 export function makeLoc(
   type: string,
@@ -33,27 +36,28 @@ export const hasErrors = (form: any) =>
   Object.entries(form.formState.errors).length > 0;
 export const hasValue = (value: any) => Boolean(value);
 
-export const useGetSidebarMeta = (pathname: string) => {
-  for (const item of APP_SIDEBAR_MENU) {
-    if (item.children) {
-      const child = item.children.find((c) => pathname.startsWith(c.route));
-      if (child) {
-        return {
-          title: child.labelKey,
-          roles: child.roles ?? item.roles ?? [],
-        };
+export const useGetSidebarMeta = (): RouteConfig => {
+  const pathname = usePathname();
+
+  const matchedRouteDummy: RouteConfig = {
+    icon: 'activeOrders',
+    path: '',
+    subtitle: '',
+    title: '',
+    roles: [],
+  };
+
+  const matchedRoute = useMemo(() => {
+    for (const key in routes) {
+      const route = routes[key];
+      if (pathname.endsWith(route.path) && pathname.startsWith(route.path)) {
+        return route;
       }
     }
+    return null;
+  }, [pathname]);
 
-    if (pathname.startsWith(item.route)) {
-      return {
-        title: item.labelKey,
-        roles: item.roles ?? [],
-      };
-    }
-  }
-
-  return { title: '', roles: [] };
+  return matchedRoute || matchedRouteDummy;
 };
 
 export function filterMenuByRole(menu: MenuItem[]) {
@@ -72,5 +76,8 @@ export function filterMenuByRole(menu: MenuItem[]) {
               child.roles.some((role) => user?.roles.includes(role))
           )
         : undefined,
-    }));
+    }))
+    .filter(
+      (item) => item.route || (item.children && item.children?.length > 0)
+    );
 }

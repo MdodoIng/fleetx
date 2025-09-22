@@ -101,9 +101,4 @@ function FunnelPage() {
   );
 }
 
-export default withAuth(FunnelPage, [
-  'SALES_HEAD',
-  'OPERATION_MANAGER',
-  'FINANCE_MANAGER',
-]);
-
+export default FunnelPage;
