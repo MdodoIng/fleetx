@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { cn } from '@/shared/lib/utils';
@@ -11,7 +11,7 @@ export type TypeSearchableSelectOption = {
   name: string;
 };
 
-type Props = {
+type Props = ComponentProps<'div'> & {
   options: TypeSearchableSelectOption[] | undefined;
   value?: string;
   onChangeAction: (e: string | undefined) => void;
@@ -25,6 +25,8 @@ export default function SearchableSelect({
   onChangeAction,
   placeholder = 'Select...',
   classNameFroInput,
+  className,
+  ...props
 }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -53,7 +55,11 @@ export default function SearchableSelect({
   return (
     <div
       ref={ref}
-      className="relative sm:w-[180px]  max-sm:w-full   rounded-[8px] text-dark-grey"
+      {...props}
+      className={cn(
+        'relative sm:w-[180px]  max-sm:w-full   rounded-[8px] text-dark-grey',
+        className
+      )}
     >
       <Input
         value={selected?.name ?? query}
@@ -91,7 +97,7 @@ export default function SearchableSelect({
       )}
 
       {open && filtered?.length > 0 && (
-        <div className="absolute z-10 mt-1 left-1/2 -translate-x-1/2 rounded-md border border-dark-grey/20 shadow bg-white p-2 w-max max-h-[500px] overflow-auto">
+        <div className="absolute z-10 mt-1 left-1/2 -translate-x-1/2 rounded-md border border-dark-grey/20 shadow bg-white p-2 w-max max-h-[300px] snap-x snap-mandatory min-w-full overflow-auto">
           {filtered?.map((opt) => (
             <div
               key={opt.id}

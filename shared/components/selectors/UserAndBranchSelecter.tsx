@@ -5,6 +5,8 @@ import { TypeBranch, TypeVenderListItem } from '@/shared/types/vender';
 import { useAuthStore, useVenderStore } from '@/store';
 import React from 'react';
 import SearchableSelect from '.';
+import { Store, X } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 type Props = {
   handleChangeBranch: (e: string | undefined) => void;
@@ -25,39 +27,16 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   const { user } = useAuthStore();
   const {
     selectedBranch,
-
+    isBranchAccess,
+    isVendorAccess,
     selectedVendor,
     branchDetails,
     venderList,
   } = useVenderStore();
 
-  let isAccess = false;
-  let isVendorAccess = false;
-  let isBranchAccess = false;
-
-  if (
-    user?.roles.includes('OPERATION_MANAGER') ||
-    user?.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
-    user?.roles.includes('SALES_HEAD') ||
-    user?.roles.includes('FINANCE_MANAGER')
-  ) {
-    isAccess = true;
-    isVendorAccess = true;
-    isBranchAccess = true;
-  } else if (user?.roles.includes('VENDOR_USER')) {
-    isVendorAccess = false;
-
-    if (user.user.vendor?.branch_id) {
-      isBranchAccess = false;
-      isAccess = false;
-    } else {
-      isBranchAccess = true;
-      isAccess = true;
-    }
-  }
-
   const isSelectedBranch = selectedBranchValue || selectedBranch;
   const isSelectedVendor = selectedVendorValue || selectedVendor;
+  const isAccess = isVendorAccess || isBranchAccess;
 
   const optionsVender: {
     id: string;
@@ -80,22 +59,56 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   return (
     <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
       {isVendorAccess && (
-        <SearchableSelect
-          options={optionsVender}
-          value={isSelectedVendor?.id}
-          onChangeAction={handleChangeVender}
-          placeholder="Select a Vender"
-        />
+        <div className="relative z-0  border border-dark-grey/20 rounded-[8px] ">
+          <SearchableSelect
+            options={optionsVender}
+            value={isSelectedVendor?.id}
+            onChangeAction={handleChangeVender}
+            placeholder={''}
+            className="sm:w-auto"
+            classNameFroInput="border-none"
+          />
+          <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
+            <Store className="size-5 opacity-50" />
+            <span className="flex flex-col">
+              <p className="">{isSelectedVendor?.name ?? 'Select Vendor'}</p>
+              <small className="text-xs opacity-50">Restaurant Name</small>
+            </span>
+          </div>
+        </div>
       )}
       {isBranchAccess && (
-        <SearchableSelect
-          options={optionsBranch}
-          value={isSelectedBranch?.id}
-          onChangeAction={handleChangeBranch}
-          placeholder="Select a Branch"
-        />
+        <div className="relative z-0  border border-dark-grey/20 rounded-[8px] ">
+          <SearchableSelect
+            options={optionsBranch}
+            value={isSelectedBranch?.id}
+            onChangeAction={handleChangeBranch}
+            placeholder={''}
+            className="sm:w-auto"
+            classNameFroInput="border-none"
+          />
+          <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
+            <Icon
+              icon="mdi:office-building-location"
+              className="size-5 opacity-50"
+            />
+
+            <span className="flex flex-col">
+              <p className="">{isSelectedBranch?.name ?? 'Select Branch'}</p>
+              <small className="text-xs opacity-50">Branch Name</small>
+            </span>
+          </div>
+        </div>
       )}
-      {handleClear && <Button onClick={() => handleClear()}>Clear</Button>}
+      {handleClear && (
+        <Button
+          variant={'link'}
+          className="underline"
+          onClick={() => handleClear()}
+        >
+          <X /> Clear Filters
+        </Button>
+      )}
     </div>
   );
 };

@@ -17,8 +17,7 @@ export const setBranchDetails = async () => {
 };
 
 export const getVendorList = async () => {
-  const { selectedAccountManager, getVendorAccountManagerId, setValue } =
-    useVenderStore.getState();
+  const { getVendorAccountManagerId, setValue } = useVenderStore.getState();
   const { user } = useAuthStore.getState();
   getVendorAccountManagerId();
   if (
@@ -141,6 +140,8 @@ export async function setHeadingForVendorBranch() {
     setSharedValue('showLanguage', false);
     setVendorValue('isEditDetails', true);
     setVendorValue('showDriversFilter', true);
+    setVendorValue('isBranchAccess', true);
+    setVendorValue('isVendorAccess', true);
     if (
       user.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
       user.roles.includes('SALES_HEAD')
@@ -181,6 +182,7 @@ export async function setHeadingForVendorBranch() {
         setVendorValue('branchName', undefined);
         setSharedValue('currentZoneId', undefined);
         setSharedValue('defaultZoneId', undefined);
+        setVendorValue('isBranchAccess', true);
 
         const mainBranch = branches.find((b: any) => b.main_branch === true);
         if (mainBranch) {

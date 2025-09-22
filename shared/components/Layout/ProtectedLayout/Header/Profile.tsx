@@ -1,27 +1,18 @@
 'use client';
 
-import {
-  iconMap,
-  NewOrderIcon,
-  PasswordIcon,
-} from '@/shared/components/icons/layout';
+import { iconMap, PasswordIcon } from '@/shared/components/icons/layout';
 import { Button } from '@/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { APP_PROFILE_MENU } from '@/shared/constants/routes';
 import { filterMenuByRole } from '@/shared/lib/helpers';
-import { useDir } from '@/shared/lib/hooks';
 import { cn } from '@/shared/lib/utils';
-import { getUserLocale } from '@/shared/services/locale';
-import { UserRole } from '@/shared/types/user';
 import { useAuthStore, useVenderStore } from '@/store';
-import { User, Lock, FileText, LogOut, ChevronDown } from 'lucide-react';
+import { User, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -66,6 +57,7 @@ export default function Profile() {
               {user?.user.first_name}
             </div>
             <div
+              hidden={!branchName}
               className={cn(
                 'text-xs text-[#8E8D8F] leading-1',
                 isOpen && 'text-off-white/40'

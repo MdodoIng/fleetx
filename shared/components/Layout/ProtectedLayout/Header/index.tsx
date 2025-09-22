@@ -16,30 +16,37 @@ import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSe
 
 const Header: React.FC = () => {
   const { user } = useAuthStore();
-  const venderStore = useVenderStore();
-  const { setValue } = useSharedStore();
+  const {
+    isVendorAccess,
+    isBranchAccess,
+    branchDetails,
+    setValue: setValueVenderStore,
+    venderList,
+  } = useVenderStore();
+
+  const { setValue: setSharedStore } = useSharedStore();
 
   const t = useTranslations('component.common.header');
-
+  const isAccess = isVendorAccess || isBranchAccess;
   const handleChangeBranch = (e: string | undefined) => {
-    const branch = venderStore.branchDetails?.find((r) => r.id === e);
-    venderStore.setValue('selectedBranch', branch);
-    venderStore.setValue('branchId', e);
+    const branch = branchDetails?.find((r) => r.id === e);
+    setValueVenderStore('selectedBranch', branch);
+    setValueVenderStore('branchId', e);
   };
   const handleChangeVender = (e: string | undefined) => {
-    const vender = venderStore.venderList?.find((r) => r.id === e);
-    venderStore.setValue('selectedVendor', vender);
-    venderStore.setValue('vendorId', e);
-    venderStore.setValue('selectedBranch', undefined);
-    venderStore.setValue('branchId', undefined);
+    const vender = venderList?.find((r) => r.id === e);
+    setValueVenderStore('selectedVendor', vender);
+    setValueVenderStore('vendorId', e);
+    setValueVenderStore('selectedBranch', undefined);
+    setValueVenderStore('branchId', undefined);
   };
 
   const handleClear = () => {
-    venderStore.setValue('selectedBranch', undefined);
-    venderStore.setValue('branchId', undefined);
+    setValueVenderStore('selectedBranch', undefined);
+    setValueVenderStore('branchId', undefined);
     if (!user?.roles.includes('VENDOR_USER')) {
-      venderStore.setValue('vendorId', undefined);
-      venderStore.setValue('selectedVendor', undefined);
+      setValueVenderStore('vendorId', undefined);
+      setValueVenderStore('selectedVendor', undefined);
     }
   };
 
@@ -51,16 +58,19 @@ const Header: React.FC = () => {
         main_padding.dashboard.y
       )}
     >
-      <p className="font-medium max-lg:hidden">{t('title')}</p>
-      <UserAndBranchSelecter
-        handleChangeBranch={handleChangeBranch}
-        handleChangeVender={handleChangeVender}
-        handleClear={handleClear}
-      />
+      {isAccess ? (
+        <UserAndBranchSelecter
+          handleChangeBranch={handleChangeBranch}
+          handleChangeVender={handleChangeVender}
+          handleClear={handleClear}
+        />
+      ) : (
+        <p className="font-medium max-lg:hidden">{t('title')}</p>
+      )}
       <div className="lg:hidden flex items-center gap-4">
         <Button
           variant={'ghost'}
-          onClick={() => setValue('isCollapsed', false)}
+          onClick={() => setSharedStore('isCollapsed', false)}
         >
           <Image
             src={hamburgerIon}

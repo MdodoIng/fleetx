@@ -27,6 +27,9 @@ export interface VenderState {
   isEditUser: TypeVendorUserList | undefined;
   isEditDetails: boolean;
   showDriversFilter: boolean;
+
+  isVendorAccess: boolean;
+  isBranchAccess: boolean;
 }
 
 export interface VenderActions {
@@ -52,6 +55,8 @@ const initialState: VenderState = {
   isEditUser: undefined,
   isEditDetails: false,
   showDriversFilter: false,
+  isVendorAccess: false,
+  isBranchAccess: false,
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(
