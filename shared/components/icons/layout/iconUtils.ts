@@ -11,6 +11,7 @@ import {
   PasswordIcon,
   BillIcon,
   PeopleListIcon,
+  BalanceReportIcon,
 } from './index';
 import { UserPlus, Users } from 'lucide-react';
 
@@ -30,6 +31,7 @@ export const iconMap: Record<
   peopleList: PeopleListIcon,
   userPlus: UserPlus,
   users: Users,
+  balanceReport: BalanceReportIcon,
 };
 
 // Get icon component by type

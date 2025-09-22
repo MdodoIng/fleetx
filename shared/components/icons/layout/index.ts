@@ -8,6 +8,8 @@ export { IntegrationsIcon } from './IntegrationsIcon';
 export { PasswordIcon } from './PasswordIcon';
 export { BillIcon } from './BillIcon';
 export { PeopleListIcon } from './PeopleListIcon';
+export { BalanceReportIcon } from './BalanceReportIcon';
+
 
 // Utilities
 export {
@@ -33,7 +35,7 @@ export type SidebarIconType =
   | 'bill'
   | 'peopleList'
   | 'userPlus'
-  | 'users';
+  | 'users' |"balanceReport";
 
 export interface SidebarIconProps {
   width?: number;

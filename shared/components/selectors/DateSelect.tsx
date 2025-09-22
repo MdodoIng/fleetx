@@ -1,11 +1,14 @@
+'use client';
 import { Dispatch, SetStateAction } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Button } from '../ui/button';
+
 import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '../ui/calendar';
+
 import { cn } from '@/shared/lib/utils';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
+import { Button } from '../ui/button';
+import { Calendar } from '@/shared/components/ui/calendar';
 
 type Props = {
   value?: {
@@ -21,7 +24,16 @@ type Props = {
 };
 
 function DateSelect({ value, onChangeAction }: Props) {
-  const t = useTranslations()
+  const t = useTranslations();
+
+  const handleDateSelect = (newDate: typeof value) => {
+    if (newDate) {
+      onChangeAction(newDate);
+    } else {
+      onChangeAction({ from: undefined, to: undefined });
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 relative z-0 bg-white rounded-[8px] max-sm:w-full">
       <Popover>
@@ -55,26 +67,13 @@ function DateSelect({ value, onChangeAction }: Props) {
             autoFocus
             mode="range"
             defaultMonth={value?.from}
+            // @ts-ignore
             selected={value}
-            onSelect={(value) =>
-              onChangeAction({
-                from: value?.from as Date,
-                to: value?.to as Date,
-              })
-            }
+            onSelect={handleDateSelect}
             numberOfMonths={2}
           />
         </PopoverContent>
       </Popover>
-      <Button
-        variant="ghost"
-        className={cn(
-          value?.to ? 'text-primary-blue cursor-pointer' : 'pointer-events-none'
-        )}
-        onClick={() => console.log('Apply with:', value)}
-      >
-        Apply
-      </Button>
     </div>
   );
 }
