@@ -2,20 +2,33 @@
 
 import { useRouter } from 'next/navigation';
 
-import { useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import { associateFoodics } from '@/shared/services';
+import { routes } from '@/shared/constants/routes';
 
 export function useRedirectToHome() {
   const router = useRouter();
   const { foodicsIsAlreadyConnected, foodicsReference, lastPathname } =
     useSharedStore();
+  const { user } = useAuthStore();
   const { vendorId, branchId } = useVenderStore();
 
   const redirectToHomeLogic = async () => {
     if (lastPathname) {
-      router.push(lastPathname);
+      const allowedRoute = Object.values(routes).find(
+        (route) => route.path === lastPathname
+      );
+      if (
+        allowedRoute &&
+        allowedRoute.roles?.some((role) => user?.roles?.includes(role))
+      ) {
+        router.push(lastPathname);
+      } else {
+        router.push('/order/create');
+      }
       return;
     }
+
     if (foodicsIsAlreadyConnected) {
       router.push('/order/create');
       return;

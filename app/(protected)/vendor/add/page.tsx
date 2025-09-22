@@ -27,6 +27,23 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
 import BranchEditForm from '@/features/vendor/components/BranchEditForm';
 import { Contact, MapPin, Trash, User2 } from 'lucide-react';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Card, CardContent } from '@/shared/components/ui/card';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
+import { Separator } from '@/shared/components/ui/separator';
 
 function VenderAdd(): JSX.Element {
   const venderStore = useVenderStore();
@@ -140,107 +157,125 @@ function VenderAdd(): JSX.Element {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Edit Vendor Details
-          </h2>
-        </div>
-      </div>
+    <Dashboard className="">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+      </DashboardHeader>
+      <Card className="relative z-0 flex-col">
+        <CardContent className="space-y-6 w-full">
+          <div className="space-y-4 w-full">
+            {/* Row with inputs + checkboxes */}
+            <div className="grid grid-cols-[300px_300px_auto] items-center gap-6">
+              {/* Vendor Name */}
+              <div className="space-y-1">
+                <Label htmlFor="vendorName">Vendor Name*</Label>
+                <Input
+                  id="vendorName"
+                  {...vendorNameRegister('name')}
+                  placeholder="TestBusiness2"
+                  defaultValue="TestBusiness2"
+                />
+              </div>
 
-      <div className="space-y-4 w-full py-10 px-10">
-        {/* Row with inputs + checkboxes */}
-        <div className="grid grid-cols-[300px_300px_auto] items-center gap-6">
-          {/* Vendor Name */}
-          <div className="space-y-1">
-            <Label htmlFor="vendorName">Vendor Name*</Label>
-            <Input
-              id="vendorName"
-              {...vendorNameRegister('name')}
-              placeholder="TestBusiness2"
-              defaultValue="TestBusiness2"
-            />
+              {/* Name-ar */}
+              <div className="space-y-1">
+                <Label htmlFor="nameAr">Name-ar*</Label>
+                <Input
+                  id="nameAr"
+                  {...vendorNameRegister('name_ar')}
+                  placeholder="Name-ar"
+                />
+              </div>
+              <div className="flex flex-col space-y-3 pointer-events-none opacity-70">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="b2b"
+                    checked={isVendorType.includes('B2B_Vendor')}
+                    onCheckedChange={() => toggleVendorType('B2B_Vendor')}
+                  />
+                  <Label htmlFor="b2b">B2B Vendor</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="b2c"
+                    checked={isVendorType.includes('B2C_Vendor')}
+                    onCheckedChange={() => toggleVendorType('B2C_Vendor')}
+                  />
+                  <Label htmlFor="b2c">B2C Vendor</Label>
+                </div>
+              </div>
+
+              {/* Cashless */}
+              <div className="flex flex-col gap-3.5">
+                {/* Cashless */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="cashless"
+                    checked={codType === 1}
+                    onCheckedChange={() => setCodType(1)}
+                  />
+                  <Label htmlFor="cashless">Cashless</Label>
+                </div>
+
+                {/* Pay at counter */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="payCounter"
+                    checked={codType === 2}
+                    onCheckedChange={() => setCodType(2)}
+                  />
+                  <Label htmlFor="payCounter">Pay at counter</Label>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Name-ar */}
-          <div className="space-y-1">
-            <Label htmlFor="nameAr">Name-ar*</Label>
-            <Input
-              id="nameAr"
-              {...vendorNameRegister('name_ar')}
-              placeholder="Name-ar"
-            />
-          </div>
-          <div className="flex flex-col space-y-3">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="b2b"
-                checked={isVendorType.includes('B2B_Vendor')}
-                onCheckedChange={() => toggleVendorType('B2B_Vendor')}
-              />
-              <Label htmlFor="b2b">B2B Vendor</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="b2c"
-                checked={isVendorType.includes('B2C_Vendor')}
-                onCheckedChange={() => toggleVendorType('B2C_Vendor')}
-              />
-              <Label htmlFor="b2c">B2C Vendor</Label>
-            </div>
-          </div>
-
-          {/* Cashless */}
-          <div className="flex flex-col gap-3.5">
-            {/* Cashless */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="cashless"
-                checked={codType === 1}
-                onCheckedChange={() => setCodType(1)}
-              />
-              <Label htmlFor="cashless">Cashless</Label>
-            </div>
-
-            {/* Pay at counter */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="payCounter"
-                checked={codType === 2}
-                onCheckedChange={() => setCodType(2)}
-              />
-              <Label htmlFor="payCounter">Pay at counter</Label>
-            </div>
-          </div>
-        </div>
-      </div>
-      {!isLoadingForm && (
-        <div className="py-10 px-10 border-y-2">
-          <BranchEditForm form={editVendorBranchForm} />
-          <Button onClick={() => handelAddBranch()} type="submit">
-            Add Brach
-          </Button>
-        </div>
-      )}
-
+          {!isLoadingForm && (
+            <>
+              <Separator />
+              <div className=" space-y-4">
+                <BranchEditForm form={editVendorBranchForm} />
+                <Button onClick={() => handelAddBranch()} type="submit">
+                  Add Brach
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
       {tableData.length ? (
         <>
-          <TableComponent
-            data={tableData as any}
-            page={10}
-            setPage={'' as any}
-            nextSetItemTotal={null}
-          />
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSigleListContents key={idx}>
+                  {item.map((i, listIdx) => (
+                    <TableSigleListContent key={listIdx}>
+                      <TableSigleListContentTitle>
+                        <i.icon size={14} />
+                        {i.title}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle
+                        className="line-clamp-2"
+                        onClick={i.onClick ? () => i.onClick() : undefined}
+                      >
+                        {i.value}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                  ))}
+                </TableSigleListContents>
+              ))}
+            </TableLists>
+          </Table>
           <Button onClick={() => handelSaveVender(isVendorType)} type="submit">
             Save All
           </Button>
         </>
       ) : (
-        <>no data</>
+        ''
       )}
-    </>
+    </Dashboard>
   );
 }
 

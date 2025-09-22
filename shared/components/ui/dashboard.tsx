@@ -11,7 +11,7 @@ function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="dashboard"
       className={cn(
-        'bg-off-white text-black flex flex-col gap-6 py-6 h-full',
+        'bg-off-white text-black flex flex-col gap-6 py-6',
         main_padding.dashboard.x,
         className
       )}
@@ -24,7 +24,10 @@ function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dashboard-header"
-      className={cn('flex items-start justify-between max-xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full ', className)}
+      className={cn(
+        'flex items-start justify-between max-xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full  ',
+        className
+      )}
       {...props}
     />
   );
@@ -32,8 +35,11 @@ function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function DashboardHeaderRight({
   className,
+  title: customTitle,
+  subtitle: customSubtitle,
+
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<'div'> & { subtitle?: string }) {
   const { title, icon, subtitle } = useGetSidebarMeta();
   const IconComponent = iconMap[icon] ?? 'slot';
   const t = useTranslations();
@@ -42,8 +48,12 @@ function DashboardHeaderRight({
       <div className={cn('flex gap-4 items-start')} {...props}>
         <IconComponent className="bg-white border border-[#2828281A] aspect-square h-10 w-auto p-2 text-primary-blue rounded-[8px] shrink-0" />
         <div className="flex flex-col">
-          <h3 className="text-xl font-medium text-dark-grey">{t(title)}</h3>
-          <p className="text-dark-grey/50 text-sm">{t(subtitle)}</p>
+          <h3 className="text-xl font-medium text-dark-grey">
+            {customTitle ?? t(title)}
+          </h3>
+          <p className="text-dark-grey/50 text-sm">
+            {customSubtitle ?? t(subtitle)}
+          </p>
         </div>
       </div>
       {props.children}

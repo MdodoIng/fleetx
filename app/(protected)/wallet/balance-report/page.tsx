@@ -7,9 +7,32 @@ import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { reportService } from '@/shared/services/report';
 import { vendorService } from '@/shared/services/vender';
 import { TypeBranch } from '@/shared/types/vender';
-import { useVenderStore } from '@/store';
-import { Download, Wallet } from 'lucide-react';
+import { useSharedStore, useVenderStore } from '@/store';
+import {
+  BetweenVerticalEndIcon,
+  Download,
+  GitBranch,
+  PlusSquare,
+  ServerCrash,
+  User2,
+  Wallet,
+} from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
 
 function BalanceReport(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +41,7 @@ function BalanceReport(): JSX.Element {
   const venderStore = useVenderStore();
   const [data, setData] = useState<BalanceReportItem[]>();
   const [isCentralWallet, setIsCentralWallet] = useState(false);
+  const { appConstants } = useSharedStore();
 
   const fetchCentralWalletBalance = async (): Promise<
     BalanceReportItem[] | undefined
@@ -134,17 +158,39 @@ function BalanceReport(): JSX.Element {
 
   console.log(data, 'aeefeafsafaaf');
 
+  const tableData = data?.map((item) => {
+    return [
+      {
+        icon: User2,
+        title: 'Vendor',
+        value: item.vendor,
+      },
+      {
+        icon: GitBranch,
+        title: 'Branch',
+        value: item.branch,
+      },
+      {
+        icon: ServerCrash,
+        title: 'Min Wallet Balance',
+        value: `${item.minWalletBalance} ${appConstants?.currency}`,
+      },
+      {
+        icon: BetweenVerticalEndIcon,
+        title: 'Balance',
+
+        value: `${item.walletBalance >= 0 ? '+' : '-'}${Math.abs(item.walletBalance)} ${appConstants?.currency}`,
+      },
+    ];
+  });
+
   const { exportOrdersToCSV } = useTableExport();
 
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
-
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Balance Report
-          </h2>
+    <Dashboard className="">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className='flex gap-1.5'>
           <div className="flex items-center justify-center gap-1.5">
             <Button
               onClick={() => setIsCentralWallet(!isCentralWallet)}
@@ -154,30 +200,44 @@ function BalanceReport(): JSX.Element {
               {isCentralWallet ? 'Central Wallet' : 'Branch Wallet'}
             </Button>
           </div>
+          <div className="flex items-center justify-center gap-1.5">
+            <Button
+              onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
+              className="p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <Download className="w-5 h-5" /> Export
+            </Button>
+          </div>
         </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          <Button
-            onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
-        </div>
-      </div>
-
-      {data?.length ? (
-        <TableComponent
-          data={data!}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={nextSetItemTotal}
-        />
-      ) : (
-        <>no data</>
-      )}
-    </div>
+      </DashboardHeader>
+      <DashboardContent className="relative z-0 flex-col">
+        {tableData?.length ? (
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSigleList key={idx}>
+                  <TableSigleListContents>
+                    {item.map((i, listIdx) => (
+                      <TableSigleListContent key={listIdx}>
+                        <TableSigleListContentTitle>
+                          <i.icon size={14} />
+                          {i.title}
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle className="line-clamp-2">
+                          {i.value}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                    ))}
+                  </TableSigleListContents>
+                </TableSigleList>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          ''
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }
 

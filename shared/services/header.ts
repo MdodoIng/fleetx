@@ -17,8 +17,14 @@ export const setBranchDetails = async () => {
 };
 
 export const getVendorList = async () => {
-  const { getVendorAccountManagerId, setValue } = useVenderStore.getState();
+  const {
+    getVendorAccountManagerId,
+    setValue,
+    isSearchVenderParams,
+    venderList,
+  } = useVenderStore.getState();
   const { user } = useAuthStore.getState();
+
   getVendorAccountManagerId();
   if (
     user?.roles.includes('OPERATION_MANAGER') ||
@@ -26,12 +32,22 @@ export const getVendorList = async () => {
     user?.roles.includes('SALES_HEAD') ||
     user?.roles.includes('FINANCE_MANAGER')
   ) {
-    const url = vendorService.setVendorListurl(null, null, null);
+    const url = vendorService.setVendorListurl(
+      null,
+      isSearchVenderParams,
+      null
+    );
 
     try {
       const res = await vendorService.getVendorList(url);
 
-      setValue('venderList', res.data);
+      const existingIds = new Set(venderList?.map((item) => item.id) || []);
+      const newVendors = res.data.filter(
+        (vendor) => !existingIds.has(vendor.id)
+      );
+      const updatedVenderList = [...(venderList || []), ...newVendors];
+
+      setValue('venderList', updatedVenderList);
       console.log(res);
     } catch (error) {
       console.log(error);

@@ -105,11 +105,7 @@ export const useEditAddUser = ({
 
     setIsLoadingForm(true);
     Object.entries(isEditUser!).forEach(([key, value]) => {
-      editUserForm.setValue(key as keyof TypeEditUserSchema, value as any);
-    });
-    setIsBranchAction({
-      vendor: selectedVendor!,
-      branch: selectedBranch!,
+      editUserForm.setValue(key as keyof TypeEditUserSchema, value);
     });
 
     setIsLoadingForm(false);

@@ -17,22 +17,25 @@ type Props = ComponentProps<'div'> & {
   onChangeAction: (e: string | undefined) => void;
   placeholder?: string;
   classNameFroInput?: string;
+  onChangeValue?: (e: string) => void;
 };
 
 export default function SearchableSelect({
   options,
   value,
   onChangeAction,
+  onChangeValue,
   placeholder = 'Select...',
   classNameFroInput,
   className,
+
   ...props
 }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const selected = options?.find((opt) => opt.id === value);
+  const selected = value ? options?.find((opt) => opt.id === value) : null;
 
   const filtered = query
     ? options?.filter((opt) =>
@@ -44,6 +47,7 @@ export default function SearchableSelect({
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
+        onChangeValue?.('');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -57,7 +61,7 @@ export default function SearchableSelect({
       ref={ref}
       {...props}
       className={cn(
-        'relative sm:w-[180px]  max-sm:w-full   rounded-[8px] text-dark-grey',
+        'relative sm:w-[180px]  max-sm:w-full  rounded-[8px] text-dark-grey',
         className
       )}
     >
@@ -65,10 +69,11 @@ export default function SearchableSelect({
         value={selected?.name ?? query}
         onChange={(e) => {
           setQuery(e.target.value);
+          onChangeValue?.(e.target.value);
           setOpen(true);
           onChangeAction(undefined);
         }}
-        onFocus={() => setOpen(true)}
+        onClick={() => setOpen(true)}
         placeholder={placeholder}
         className={cn('pr-10', selected && '', classNameFroInput)}
         readOnly={!!selected}
@@ -82,6 +87,7 @@ export default function SearchableSelect({
           onClick={() => {
             onChangeAction(undefined);
             setQuery('');
+            onChangeValue?.('');
           }}
         >
           <X />
@@ -104,6 +110,7 @@ export default function SearchableSelect({
               onClick={() => {
                 onChangeAction(opt.id);
                 setQuery('');
+                onChangeValue?.('');
                 setOpen(false);
               }}
               className="cursor-pointer px-3 py-2 hover:bg-muted rounded-[6px] text-sm"

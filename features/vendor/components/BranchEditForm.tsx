@@ -100,11 +100,16 @@ const BranchEditForm = ({
 
         {/* Row 3: Address */}
 
-        <AddressLandmarkFields
-          form={form}
-          landmarkFieldName="address"
-          isMap={true}
-          location="address"
+        <FormField
+          control={form.control}
+          name="address.block_id"
+          render={({ field }) => (
+            <AddressLandmarkFields
+              form={form}
+              isMap={true}
+              location="address"
+            />
+          )}
         />
 
         <FormField

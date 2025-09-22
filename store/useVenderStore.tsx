@@ -30,6 +30,7 @@ export interface VenderState {
 
   isVendorAccess: boolean;
   isBranchAccess: boolean;
+  isSearchVenderParams: string;
 }
 
 export interface VenderActions {
@@ -57,6 +58,7 @@ const initialState: VenderState = {
   showDriversFilter: false,
   isVendorAccess: false,
   isBranchAccess: false,
+  isSearchVenderParams: '',
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(

@@ -10,13 +10,10 @@ import React, {
 } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-const MyMap = dynamic(
-  () => import('@/shared/components/MyMap/Map'),
-  {
-    ssr: false,
-    loading: () => <p>Loading map...</p>,
-  }
-);
+const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
 
 import dynamic from 'next/dynamic';
 
@@ -27,7 +24,7 @@ import { getArea, getBlock, getBuildings, getStreet } from '@/shared/services';
 
 interface AddressLandmarkProps {
   form: UseFormReturn<any>;
-  landmarkFieldName: string;
+  landmarkFieldName?: string;
   isDisabled?: boolean;
   landmarkFieldPlaceholder?: string;
   isMap?: boolean;
@@ -325,7 +322,7 @@ export default function AddressLandmarkFields({
         <LandmarkInput
           control={control}
           location={location}
-          fieldName={landmarkFieldName}
+          fieldName={landmarkFieldName!}
           fieldPlaceholder={landmarkFieldPlaceholder!}
           handleAddressClick={handleAddressClick}
           handleEnter={handleEnter}
@@ -354,12 +351,12 @@ export default function AddressLandmarkFields({
 
       {isMapOpen && (
         <div className="fixed w-full h-full m-auto bg-black/25 z-50 inset-0 flex rounded-[8px] items-center justify-center ">
-          <div className="w-[max(400px,50%)] mx-auto flex flex-col  bg-white  rounded-[8px] relative z-0 ">
+          <div className="w-[max(400px,50vw)] mx-auto flex flex-col  bg-white  rounded-[8px] relative z-0 ">
             {/* Landmark Inputs */}
             <LandmarkInput
               control={control}
               location={location}
-              fieldName={landmarkFieldName}
+              fieldName={landmarkFieldName!}
               fieldPlaceholder={landmarkFieldPlaceholder!}
               handleAddressClick={handleAddressClick}
               handleEnter={handleEnter}

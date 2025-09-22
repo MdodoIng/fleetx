@@ -28,11 +28,13 @@ const Header: React.FC = () => {
 
   const t = useTranslations('component.common.header');
   const isAccess = isVendorAccess || isBranchAccess;
-  const handleChangeBranch = (e: string | undefined) => {
+  const handleClickBranch = (e: string | undefined) => {
     const branch = branchDetails?.find((r) => r.id === e);
     setValueVenderStore('selectedBranch', branch);
     setValueVenderStore('branchId', e);
   };
+
+
   const handleChangeVender = (e: string | undefined) => {
     const vender = venderList?.find((r) => r.id === e);
     setValueVenderStore('selectedVendor', vender);
@@ -60,7 +62,7 @@ const Header: React.FC = () => {
     >
       {isAccess ? (
         <UserAndBranchSelecter
-          handleChangeBranch={handleChangeBranch}
+          handleChangeBranch={handleClickBranch}
           handleChangeVender={handleChangeVender}
           handleClear={handleClear}
         />

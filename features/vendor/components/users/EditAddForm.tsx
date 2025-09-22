@@ -1,13 +1,12 @@
 'use client';
 import { Input } from '@/shared/components/ui/input';
-import {
-  TypeBranch,
-  TypeVenderListItem,
-} from '@/shared/types/vender';
+import { TypeBranch, TypeVenderListItem } from '@/shared/types/vender';
 import {
   Dispatch,
   FormEvent,
   SetStateAction,
+  useCallback,
+  useEffect,
 } from 'react';
 import { useVenderStore } from '@/store';
 import { UseFormReturn } from 'react-hook-form';
@@ -21,6 +20,7 @@ import {
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
 import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
+import { vendorService } from '@/shared/services/vender';
 
 type Props = {
   form: UseFormReturn<TypeEditUserSchema>;
@@ -61,20 +61,36 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
     });
   };
 
+  const setBranchDetails = useCallback(async () => {
+    try {
+      const res = await vendorService.getBranchDetails(isBranch?.vendor?.id);
+
+      venderStore.setValue('branchDetails', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [isBranch?.vendor?.id]);
+
+  useEffect(() => {
+    setBranchDetails();
+  }, [setBranchDetails]);
+
   return (
     <Form {...form}>
-      <form onSubmit={handleSumbit} className=" flex flex-wrap gap-5">
-        <UserAndBranchSelecter
-          handleChangeBranch={handleChangeBranch}
-          handleChangeVender={handleChangeVender}
-          selectedVendorValue={isBranch?.vendor}
-          selectedBranchValue={isBranch?.branch}
-        />
+      <form onSubmit={handleSumbit} className="grid grid-cols-2 gap-5 w-full">
+        <div className="col-span-2 flex justify-start ">
+          <UserAndBranchSelecter
+            handleChangeBranch={handleChangeBranch}
+            handleChangeVender={handleChangeVender}
+            selectedVendorValue={isBranch?.vendor}
+            selectedBranchValue={isBranch?.branch}
+          />
+        </div>
         <FormField
           control={form.control}
           name="first_name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>First name</FormLabel>
               <FormControl>
                 <Input placeholder="First name" {...field} />

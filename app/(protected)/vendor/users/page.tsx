@@ -9,6 +9,7 @@ import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { vendorService } from '@/shared/services/vender';
 import {
   TypeBranch,
+  TypeVender,
   TypeVenderList,
   TypeVenderListItem,
   TypeVendorUserList,
@@ -21,6 +22,7 @@ import {
   Download,
   Edit,
   GitBranch,
+  LucideProps,
   MagnetIcon,
   Mail,
   Minus,
@@ -32,7 +34,14 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState, type JSX } from 'react';
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useCallback,
+  useEffect,
+  useState,
+  type JSX,
+} from 'react';
 import page from '../../wallet/balance-report/page';
 import {
   Dialog,
@@ -50,11 +59,27 @@ import {
 } from '@/features/vendor/validations/editAddForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEditAddUser } from '@/features/vendor/hooks/useEditAddUser';
+import { useSearchParams } from 'next/navigation';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
 
 function VenderUser() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState(null);
   const {
     setValue,
     selectedBranch,
@@ -64,7 +89,7 @@ function VenderUser() {
     branchDetails,
   } = useVenderStore();
 
-  const [searchValue, setSearchValue] = useState<string | null>(null);
+  const [searchValue, setSearchValue] = useState<string>('');
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
   const [isBranch, setIsBranchAction] = useState<
     | {
@@ -77,15 +102,28 @@ function VenderUser() {
     vendor: selectedVendor!,
   });
   const [isAdd, setIsAddAction] = useState(false);
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<
+    {
+      icon: ForwardRefExoticComponent<
+        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+      >;
+      title: string;
+      value: string;
+      onClick?: () => void;
+    }[][]
+  >([]);
+  const [frist, setFrist] = useState(true);
+  const searchParams = useSearchParams();
 
-  const fetchVendorUserList = async (): Promise<void> => {
+  const search = searchParams.get('id');
+
+  const fetchVendorUserList = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
     try {
       const res = await vendorService.getVendorUserList(
         page,
-        searchValue,
+        frist ? (search ? searchValue : searchValue) : searchValue,
         selectedVendor?.id,
         selectedBranch?.id
       );
@@ -94,15 +132,23 @@ function VenderUser() {
       console.log(error);
     } finally {
       setIsLoading(false);
+      setFrist(false);
     }
-  };
+  }, [
+    page,
+    frist,
+    search,
+    searchValue,
+    selectedVendor?.id,
+    selectedBranch?.id,
+  ]);
 
   useEffect(() => {
     const loadFetchVendorUserList = async () => {
       await fetchVendorUserList();
     };
     loadFetchVendorUserList();
-  }, [selectedBranch?.id, page]);
+  }, [fetchVendorUserList]);
 
   const handleEditClick = async (
     item: TypeVendorUserList,
@@ -121,6 +167,7 @@ function VenderUser() {
         vendor: vender!,
       });
     }
+
     setValue('isEditUser', item);
   };
 
@@ -163,7 +210,7 @@ function VenderUser() {
           ];
         })
       );
-      setTableData(resolvedData);
+      setTableData(resolvedData!);
     };
 
     if (data) fetchTableData();
@@ -187,8 +234,8 @@ function VenderUser() {
       data: data!,
       isBranch,
       setIsBranchAction,
-      isAdd,
-      setIsAddAction,
+      isAdd: isAdd,
+      setIsAddAction: setIsAddAction,
     });
 
   useEffect(() => {
@@ -200,91 +247,90 @@ function VenderUser() {
   console.log(isEditUser?.vendor.user);
 
   return (
-    <>
-      <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-        <>
-          <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-            <div className="flex items-center justify-between gap-10 ">
-              <div className="flex items-center justify-center gap-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setSearchValue(e.target.value)}
-                  />
-                  <Button
-                    onClick={async () => await fetchVendorUserList()}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
-                  >
-                    <Search className="w-5 h-5" /> Search
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Search and Filter */}
-            <div className="flex items-center justify-center gap-1.5">
-              <Button
-                onClick={() => handleAddClick()}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <PlusSquare className="w-5 h-5" /> Add User
-              </Button>
-            </div>
+    <Dashboard className="">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder={'Search Vender'}
+              value={searchValue!}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0 "
+            />
           </div>
+          <Button onClick={() => handleAddClick()}>
+            <PlusSquare className="w-5 h-5" /> Add User
+          </Button>
+        </div>
+      </DashboardHeader>
+      <DashboardContent className="relative z-0 flex-col">
+        {tableData?.length ? (
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSigleList key={idx}>
+                  <TableSigleListContents>
+                    {item.map((i, listIdx) => (
+                      <TableSigleListContent key={listIdx}>
+                        <TableSigleListContentTitle>
+                          <i.icon size={14} />
+                          {i.title}
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle
+                          className="line-clamp-2"
+                          onClick={i.onClick ? () => i.onClick!() : undefined}
+                        >
+                          {i.value}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                    ))}
+                  </TableSigleListContents>
+                </TableSigleList>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          ''
+        )}
 
-          {tableData?.length ? (
-            <TableComponent
-              data={tableData as any}
-              page={page}
-              setPage={setPage}
-              nextSetItemTotal={nextSetItemTotal}
-            />
-          ) : (
-            <>no data</>
-          )}
-        </>
-      </div>
-      {!isLoadingForm && (
-        <Dialog open={!!isEditUser || isAdd}>
-          <DialogContent
-            showCloseButton={false}
-            className="sm:w-[min(90%,700px)] sm:max-w-full"
-          >
-            <DialogHeader>
-              <DialogTitle>
-                {' '}
-                {!!isEditUser ? 'Update User' : 'Create User'}
-              </DialogTitle>
-              <DialogClose
-                asChild
-                onClick={() => {
-                  setValue('isEditUser', undefined);
-                  setIsAddAction(false);
-                }}
-              >
-                <X />
-              </DialogClose>
-            </DialogHeader>
+        {!isLoadingForm && (
+          <Dialog open={!!isEditUser || isAdd}>
+            <DialogContent
+              closeButtonOnClick={() => {
+                setValue('isEditUser', undefined);
+                setIsAddAction(false);
+              }}
+              className="sm:w-[min(90%,700px)] sm:max-w-full"
+            >
+              <DialogHeader>
+                <DialogTitle>
+                  {' '}
+                  {!!isEditUser ? 'Update User' : 'Create User'}
+                </DialogTitle>
+              </DialogHeader>
 
-            <EditAddForm
-              form={editUserForm}
-              isBranch={isBranch!}
-              setIsBranchAction={setIsBranchAction}
-            />
+              <EditAddForm
+                form={editUserForm}
+                isBranch={isBranch!}
+                setIsBranchAction={setIsBranchAction}
+              />
 
-            <DialogFooter>
-              <Button
-                onClick={async () => await handelSumbit(fetchVendorUserList)}
-                type="submit"
-              >
-                Update Branch
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+              <DialogFooter>
+                <Button
+                  onClick={async () => await handelSumbit(fetchVendorUserList)}
+                  type="submit"
+                >
+                  Update Branch
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }
 
