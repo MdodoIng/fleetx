@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  output: 'standalone',
 };
 
 const withNextIntl = createNextIntlPlugin('./locales/request.ts');
