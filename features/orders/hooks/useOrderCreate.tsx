@@ -44,7 +44,6 @@ export default function useOrderCreate(
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
   const {
-    triggerCalculatedTrend,
     currentZoneId,
     defaultZoneId,
     currentStatusZoneETPTrend,
@@ -341,7 +340,6 @@ export default function useOrderCreate(
             estimatedDeliveryReturnFromApi: undefined,
           });
           const res = await handleSaveCurrentDropOff();
-          triggerCalculatedTrend(currentZoneId! ?? defaultZoneId!, branchId!);
 
           if (res) {
             const ot_trend = () => {

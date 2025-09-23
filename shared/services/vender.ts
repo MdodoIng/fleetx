@@ -19,8 +19,9 @@ import {
   TypeVendorUserListRes,
   TypeWalletResponce,
 } from '../types/vender';
+import { TypeAddressByMobileResponse } from '../types/orders';
 import { appConfig } from './app-config';
-import { TypeVendorPricingRuleRes } from '../types/index,d';
+import { TypeVendorPricingRuleRes } from '../types';
 
 export const vendorService = {
   create: (vendor: TypeAddVenderReq) =>
@@ -76,7 +77,7 @@ export const vendorService = {
       body: JSON.stringify(branch),
     }),
 
-  getAddressByMobile: (vendorId: string, branchId: string, mobile: string) =>
+  getAddressByMobile: (vendorId: string, branchId: string, mobile: string): Promise<TypeAddressByMobileResponse> =>
     apiFetch(
       `${appConfig.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),

@@ -622,3 +622,32 @@ export interface TypeZoneData {
   is_active: boolean;
   boundary_coordinates: [number, number][][];
 }
+
+export type TypeAddressByMobileItem = {
+  address: {
+    area: string | null;
+    block: string | null;
+    floor: string;
+    street: string | null;
+    address: string;
+    area_id: string | null;
+    block_id: string | null;
+    building: string | null;
+    landmark: string;
+    latitude: string;
+    longitude: string;
+    street_id: string | null;
+    building_id: string | null;
+    paci_number: string | null;
+    room_number: string;
+    customer_name: string;
+    mobile_number: string;
+    specific_driver_instructions: string | null;
+  };
+  mobile_number: string;
+  customer_name: string;
+};
+
+export type TypeAddressByMobileResponse = {
+  data: TypeAddressByMobileItem[];
+};
