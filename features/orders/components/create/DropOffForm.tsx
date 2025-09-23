@@ -16,6 +16,7 @@ import {
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
+import { useEffect } from 'react';
 
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
@@ -34,21 +35,46 @@ interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
   isCOD: 1 | 2;
   setIsCOD: Dispatch<SetStateAction<1 | 2>>;
+  orderIndex?: number;
 }
 
 const DropoffForm: React.FC<SenderFormProps> = ({
   recipientForm,
   isCOD,
   setIsCOD,
+  orderIndex,
 }) => {
   const { appConstants } = useSharedStore();
   const t = useTranslations('component.features.orders.create');
+
+  // Set the order_index value when orderIndex prop changes
+  useEffect(() => {
+    if (orderIndex !== undefined) {
+      recipientForm.setValue('order_index', orderIndex.toString());
+    }
+  }, [orderIndex, recipientForm]);
   return (
     <Form {...recipientForm}>
       <form onSubmit={(e) => e.preventDefault()}>
         <CardContent
           className={cn('mt-2 grid grid-cols-1 sm:grid-cols-2  gap-4')}
         >
+          {/* order_index - hidden field */}
+          <FormField
+            control={recipientForm.control}
+            name="order_index"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <Input
+                    {...field}
+                    value={field.value || ''}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* phone */}
           <FormField
             control={recipientForm.control}
@@ -83,10 +109,10 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             )}
           />
 
-          {/* orderNumber */}
+          {/* recipientName */}
           <FormField
             control={recipientForm.control}
-            name="order_index"
+            name="customer_name"
             render={({ field }) => (
               <FormItem className="sm:col-span-2 col-span-1 ">
                 <FormLabel>{t('form.recipientName.label')}</FormLabel>
@@ -188,12 +214,24 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                   </FormLabel>
                   <FormControl className="bg-white">
                     <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="9999"
+                      maxLength={4}
                       disabled={isCOD === 2}
                       required={isCOD === 1}
                       placeholder={t('form.amount.placeholder', {
                         value: appConstants?.currency || 'KD',
                       })}
                       {...field}
+                      onChange={(e) => {
+                        // Only allow numbers and decimal point, max 4 digits
+                        const value = e.target.value;
+                        if (value === '' || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+                          field.onChange(value);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

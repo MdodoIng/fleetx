@@ -97,10 +97,7 @@ const DropoffFormSection = ({
             <PlusCircle className="" />{' '}
             {t.rich('dropOffForm.add-dropoff', {
               index: (chunks) => <>{chunks}</>,
-              value:
-                orderStore.dropOffs.length === 0
-                  ? 2
-                  : orderStore.dropOffs.length + 1,
+              value: orderStore.dropOffs.length + 1,
             })}
           </Button>
         ) : (
@@ -132,6 +129,7 @@ const DropoffFormSection = ({
           recipientForm={dropOffForm}
           isCOD={isCOD}
           setIsCOD={setIsCOD}
+          orderIndex={orderStore.dropOffs.length + 1}
         />
       ) : (
         isDropIndex === index && (
@@ -139,6 +137,7 @@ const DropoffFormSection = ({
             recipientForm={dropOffForm}
             isCOD={isCOD}
             setIsCOD={setIsCOD}
+            orderIndex={index! + 1}
           />
         )
       )}

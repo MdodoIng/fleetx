@@ -250,7 +250,7 @@ export default function ShippingForm() {
         <DashboardFooter>
           <DeliverySummaryFooter
             handleOrder={() => functionsDropoffs('order')}
-            handleCancle={() => functionsDropoffs('cancle')}
+            handleCancel={() => functionsDropoffs('cancel')}
           />
         </DashboardFooter>
       </Dashboard>

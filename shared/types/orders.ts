@@ -41,7 +41,6 @@ export type TypeDropOffs = {
   latitude: string;
   longitude: string;
   specific_driver_instructions: string;
-  quantity: number;
   amount_to_collect: number;
   payment_type: number;
 };
@@ -159,14 +158,7 @@ export type TypeOrderHistoryList = TypeLiveOrderItem & {
 export interface TypeOrders {
   vendor_id: string;
   branch_id: string;
-  driver_id: number;
   order_session_id: string;
-  payment_type: number;
-  order_meta: {
-    vendor_name: string;
-    ot_trend: string;
-    ot_free_drivers: number;
-  };
   pick_up: TypePickUp;
   drop_offs: TypeDropOffs[];
 }

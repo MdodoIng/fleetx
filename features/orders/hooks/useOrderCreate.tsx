@@ -64,7 +64,6 @@ export default function useOrderCreate(
         hasValue(pickUpFormValues.street_id);
 
       const dropOffFieldsValid =
-        hasValue(dropOffFormValues.order_index) &&
         hasValue(dropOffFormValues.customer_name) &&
         hasValue(dropOffFormValues.mobile_number) &&
         hasValue(dropOffFormValues.street_id) &&
@@ -146,12 +145,12 @@ export default function useOrderCreate(
       | 'editDropOffWithSave'
       | 'deleteDropOff'
       | 'order'
-      | 'cancle',
+      | 'cancel',
     index: number = 0
   ) => {
     const isFormValid = await validateFormsAsync();
 
-    if (!isFormValid && type !== 'deleteDropOff' && type !== 'cancle') {
+    if (!isFormValid && type !== 'deleteDropOff' && type !== 'cancel') {
       console.warn(
         'Please complete all required fields before adding drop-off'
       );
@@ -337,47 +336,38 @@ export default function useOrderCreate(
           useOrderStore.setState({
             estimatedDeliveryReturnFromApi: undefined,
           });
-          const res = await handleSaveCurrentDropOff();
+
+          // TODO: change this logic to support form and saved dropoffs
+
+          // Always get the latest store state
+          let currentStore = useOrderStore.getState();
+
+          // If no dropoffs in store, add current form as dropoff
+          if (currentStore.dropOffs.length === 0) {
+            await functionsDropoffs('addOneDropoff');
+            // Get updated store state after adding dropoff
+            currentStore = useOrderStore.getState();
+          }
+
+          // Use the latest store data for order creation
+          const res = currentStore.estimatedDeliveryReturnFromApi;
 
           if (res) {
-            const ot_trend = () => {
-              if (currentStatusZoneETPTrend) {
-                let displayValue =
-                  currentStatusZoneETPTrend.etpMins?.toString();
-                if (currentStatusZoneETPTrend.etpMoreThanConfigValue) {
-                  displayValue = '>' + displayValue;
-                } else {
-                  displayValue = '<' + displayValue;
-                }
-                return displayValue;
-              }
-              return '';
-            };
-
-            const order_meta: TypeOrders['order_meta'] = {
-              vendor_name:
-                selectedVendorName! ||
-                user?.user.first_name! + ' ' + user?.user.last_name!,
-              ot_trend: ot_trend(),
-              ot_free_drivers: currentStatusZoneETPTrend?.freeBuddies || 0,
-            };
-
-            console.log(res?.order_session_id, 'dgfds');
 
             const orders: TypeOrders = {
               branch_id: res.branch_id!,
               vendor_id: res.vendor_id!,
-              driver_id: 0,
               order_session_id: res.order_session_id!,
-              payment_type: isCOD,
-              order_meta: order_meta,
-              pick_up: res?.pickup!,
+              pick_up: res.pickup!,
               drop_offs: res.drop_offs!,
             };
 
             try {
+
               const createOrderRes =
                 await orderService.createOnDemandOrders(orders);
+
+              //TODO: Show success alert message and clear form fields
               console.log(createOrderRes, 'orders');
             } catch (error) {
               console.log(error);
@@ -388,13 +378,13 @@ export default function useOrderCreate(
         }
         break;
 
-      case 'cancle':
+      case 'cancel':
         useOrderStore.setState({
           dropOffs: [],
           estimatedDelivery: undefined,
           deliverySummary: undefined,
         });
-        console.log('cancle');
+        console.log('cancel');
         setIsCOD(1);
 
         break;
