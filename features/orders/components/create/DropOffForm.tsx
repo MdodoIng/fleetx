@@ -32,14 +32,12 @@ import { is } from 'zod/v4/locales';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
-
   isCOD: 1 | 2;
   setIsCOD: Dispatch<SetStateAction<1 | 2>>;
 }
 
 const DropoffForm: React.FC<SenderFormProps> = ({
   recipientForm,
-
   isCOD,
   setIsCOD,
 }) => {
@@ -119,7 +117,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                 <FormLabel>{t('form.apartment.label')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('form.recipientName.placeholder')}
+                    placeholder={t('form.apartment.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -152,7 +150,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                 <FormLabel>{t('form.additionalAddress.label')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('form.recipientName.placeholder')}
+                    placeholder={t('form.additionalAddress.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -192,7 +190,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                     <Input
                       disabled={isCOD === 2}
                       required={isCOD === 1}
-                      placeholder={t.rich('form.amount.placeholder', {
+                      placeholder={t('form.amount.placeholder', {
                         value: appConstants?.currency || 'KD',
                       })}
                       {...field}
