@@ -29,7 +29,7 @@ import {
   TypeOrderHistoryList,
   TypeUpdateAddressReq,
 } from '@/shared/types/orders';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -105,9 +105,9 @@ const EditResiver = ({
       street_id: formValues.street_id!,
       ...(formValues.building
         ? {
-            building: formValues.building,
-            building_id: formValues.building_id,
-          }
+          building: formValues.building,
+          building_id: formValues.building_id,
+        }
         : {}),
     };
 
@@ -145,7 +145,7 @@ const EditResiver = ({
               {t('component.features.orders.live.edit-drope-location')}
             </DialogTitle>
           </DialogHeader>
-          <hr className="border-dark-grey/20 " />
+          <hr className="border-dark-grey/10 " />
           <Form {...form}>
             <form
               onSubmit={(e) => e.preventDefault()}

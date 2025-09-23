@@ -617,7 +617,8 @@
             "active": "Active",
             "confirmed": "Confirmed",
             "urgent": "Urgent",
-            "dateRange": "From Date - To Date"
+            "dateRange": "From Date - To Date",
+            "clear":"Clear"
           }
         },
 

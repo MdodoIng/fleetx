@@ -36,42 +36,42 @@ import {
 } from 'lucide-react';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { OperationType } from '@/shared/types/orders';
 import { cn } from '@/shared/lib/utils';
 import { CentralWalletItem } from '@/features/wallet/type';
-import { TypeVenderList } from '@/shared/types/vender';
+import { TypeVendorList } from '@/shared/types/vendor';
 
 interface OrdersPageProps {
   data:
-    | (
-        | {
-            icon: ForwardRefExoticComponent<
-              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-            >;
-            title: string;
-            value: string;
-            onClick?: undefined;
-          }
-        | {
-            icon: ForwardRefExoticComponent<
-              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-            >;
-            title: string;
-            value: JSX.Element;
-            onClick?: undefined;
-          }
-        | {
-            icon: ForwardRefExoticComponent<
-              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-            >;
-            title: string;
-            value: JSX.Element;
-            onClick: () => void;
-          }
-      )[][]
-    | undefined;
+  | (
+    | {
+      icon: ForwardRefExoticComponent<
+        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+      >;
+      title: string;
+      value: string;
+      onClick?: undefined;
+    }
+    | {
+      icon: ForwardRefExoticComponent<
+        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+      >;
+      title: string;
+      value: JSX.Element;
+      onClick?: undefined;
+    }
+    | {
+      icon: ForwardRefExoticComponent<
+        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+      >;
+      title: string;
+      value: JSX.Element;
+      onClick: () => void;
+    }
+  )[][]
+  | undefined;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;
@@ -84,7 +84,7 @@ export default function TableComponent({
   nextSetItemTotal,
 }: OrdersPageProps) {
   const { appConstants } = useSharedStore();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [isEdit, setIsEdit] = useState({ id: '' });
 

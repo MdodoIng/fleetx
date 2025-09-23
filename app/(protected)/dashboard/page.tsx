@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { useOrderStore, useSharedStore, useVenderStore } from '@/store';
+import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
-import { fleetService } from '@/shared/services/fleet';
 import {
   Card,
   CardContent,
@@ -25,14 +24,6 @@ import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { Calendar } from '@/shared/components/ui/calendar';
-import { Button } from '@/shared/components/ui/button';
-import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
@@ -45,7 +36,7 @@ const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
 
 function DashboardCompoent() {
   const { appConstants } = useSharedStore();
-  const { showDriversFilter } = useVenderStore();
+  const { showDriversFilter } = useVendorStore();
 
   const [dashboardData, setDashboardData] =
     useState<TypeDashboardDetailsResponse['data']>(defaultDashboardData);
@@ -64,7 +55,7 @@ function DashboardCompoent() {
     payment_methods: { cod = 0, online = 0 } = {},
   } = dashboardData;
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     if (!date.from || !date.to) {
       return;
     }
@@ -82,18 +73,18 @@ function DashboardCompoent() {
         console.log(dashboardResult, 'dashboardResult');
         setDashboardData(dashboardResult.data);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }
-  };
+  }, [date, selectedDriver]);
 
   useEffect(() => {
     const fetc = async () => {
       await fetchDashboardData();
     };
     fetc();
-  }, [date.from, date.to, selectedDriver]);
+  }, [fetchDashboardData]);
 
   const totalToPay = parseFloat(
     (totalCashCollected - totalDeliveryFees).toFixed(2)
@@ -175,7 +166,8 @@ function DashboardCompoent() {
               onChangeAction={setSelectedDriver}
             />
           )}
-          <DateSelect value={date} setDate={setDate} />
+
+          <DateSelect value={date} onChangeAction={setDate} />
         </div>
       </DashboardHeader>
 

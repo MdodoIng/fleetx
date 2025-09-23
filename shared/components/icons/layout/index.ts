@@ -9,7 +9,7 @@ export { PasswordIcon } from './PasswordIcon';
 export { BillIcon } from './BillIcon';
 export { PeopleListIcon } from './PeopleListIcon';
 export { BalanceReportIcon } from './BalanceReportIcon';
-
+export { OverviewIcon } from './OverviewIcon';
 
 // Utilities
 export {
@@ -35,7 +35,11 @@ export type SidebarIconType =
   | 'bill'
   | 'peopleList'
   | 'userPlus'
-  | 'users' |"balanceReport";
+  | 'users'
+  | 'balanceReport'
+  | 'overview'
+  | 'chartBar'
+  | 'star';
 
 export interface SidebarIconProps {
   width?: number;

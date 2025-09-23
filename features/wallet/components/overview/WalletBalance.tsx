@@ -1,7 +1,7 @@
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { useDir } from '@/shared/lib/hooks';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import {
   getVendorWalletBalanceInit,
   useWalletStore,
@@ -18,7 +18,7 @@ export function WalletBalance({
   const sharedStore = useSharedStore();
   const { walletBalance, isDisableAddCredit } = useWalletStore();
   const { vendorId, branchId, selectedBranch, selectedVendor } =
-    useVenderStore();
+    useVendorStore();
 
   const isLowBalence = Number(walletBalance) < 3;
 
@@ -34,7 +34,7 @@ export function WalletBalance({
   }, [vendorId, branchId, selectedBranch, selectedVendor]);
 
   const t = useTranslations('component.features.wallet');
- 
+
 
   return (
     <Card className=" bg-gradient-to-r from-primary-blue to-purple-600 text-white w-full shrink flex ">

@@ -9,14 +9,14 @@ import {
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useTranslations } from 'next-intl';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 
 export function useOrderStatusHistory(order: TypeOrderHistoryList) {
   const [orderHistorys, setOrderHistorys] =
     useState<TypeOrderStatusHistoryHistory>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isEditDetails } = useVenderStore.getState();
+  const { isEditDetails } = useVendorStore.getState();
 
   const fetchOrderHistory = useCallback(async () => {
     if (!order?.id || isEditDetails) return;
@@ -162,8 +162,8 @@ function BuildStatusHistory(
           ? formattedDate(history.created_at)
           : status === 'inProgress'
             ? t(
-                'component.features.orders.live.details.staus-history.in-progress'
-              )
+              'component.features.orders.live.details.staus-history.in-progress'
+            )
             : t('component.features.orders.live.details.staus-history.pending'),
         completed: status === 'completed',
         active: status === 'active',

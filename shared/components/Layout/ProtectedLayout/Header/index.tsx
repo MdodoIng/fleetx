@@ -1,5 +1,5 @@
 'use client';
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 
@@ -20,9 +20,9 @@ const Header: React.FC = () => {
     isVendorAccess,
     isBranchAccess,
     branchDetails,
-    setValue: setValueVenderStore,
-    venderList,
-  } = useVenderStore();
+    setValue: setValueVendorStore,
+    vendorList: vendorList,
+  } = useVendorStore();
 
   const { setValue: setSharedStore } = useSharedStore();
 
@@ -30,24 +30,24 @@ const Header: React.FC = () => {
   const isAccess = isVendorAccess || isBranchAccess;
   const handleClickBranch = (e: string | undefined) => {
     const branch = branchDetails?.find((r) => r.id === e);
-    setValueVenderStore('selectedBranch', branch);
-    setValueVenderStore('branchId', e);
+    setValueVendorStore('selectedBranch', branch);
+    setValueVendorStore('branchId', e);
   };
 
-  const handleChangeVender = (e: string | undefined) => {
-    const vender = venderList?.find((r) => r.id === e);
-    setValueVenderStore('selectedVendor', vender);
-    setValueVenderStore('vendorId', e);
-    setValueVenderStore('selectedBranch', undefined);
-    setValueVenderStore('branchId', undefined);
+  const handleChangeVendor = (e: string | undefined) => {
+    const vendor = vendorList?.find((r) => r.id === e);
+    setValueVendorStore('selectedVendor', vendor);
+    setValueVendorStore('vendorId', e);
+    setValueVendorStore('selectedBranch', undefined);
+    setValueVendorStore('branchId', undefined);
   };
 
   const handleClear = () => {
-    setValueVenderStore('selectedBranch', undefined);
-    setValueVenderStore('branchId', undefined);
+    setValueVendorStore('selectedBranch', undefined);
+    setValueVendorStore('branchId', undefined);
     if (!user?.roles.includes('VENDOR_USER')) {
-      setValueVenderStore('vendorId', undefined);
-      setValueVenderStore('selectedVendor', undefined);
+      setValueVendorStore('vendorId', undefined);
+      setValueVendorStore('selectedVendor', undefined);
     }
   };
 
@@ -62,10 +62,11 @@ const Header: React.FC = () => {
       {isAccess ? (
         <UserAndBranchSelecter
           handleChangeBranch={handleClickBranch}
-          handleChangeVender={handleChangeVender}
+          handleChangeVendor={handleChangeVendor}
           handleClear={handleClear}
+          
         />
-        
+
       ) : (
         <p className="font-medium max-lg:hidden">{t('title')}</p>
       )}

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { TypeOpsFinUser } from '@/shared/types/vender';
+import { TypeOpsFinUser } from '@/shared/types/vendor';
 import { format } from 'date-fns';
 import { CalendarIcon, Download } from 'lucide-react';
 

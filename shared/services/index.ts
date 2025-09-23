@@ -16,8 +16,7 @@ import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
 import {
   TypeFirstOrderInsightResponse,
-  TypeSuperSaverPromationRes,
-} from '../types/index,d';
+} from '../types';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -85,24 +84,9 @@ export const verifyCustomerAddress = (request: any) =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-export const getAllFreeBuddiesFromB2C = () =>
-  apiFetch(environment.B2C_BASE_URL + 'zoningPushZoneMetric');
-
-export const getSuperSaverPromotion = (
-  vendorId: string,
-  branchId: string
-): Promise<TypeSuperSaverPromationRes> =>
-  apiFetch(
-    appConfig.finServiceApiUrl() +
-      '/super-saver-promotion-status/vendor/' +
-      vendorId +
-      '/branch/' +
-      branchId
-  );
-
 export const getFirstOrderInsight = (
-  fromDate: Date | null,
-  toDate: Date | null
+  fromDate: Date | undefined,
+  toDate: Date | undefined
 ): Promise<TypeFirstOrderInsightResponse> => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-order/insight';
@@ -116,8 +100,8 @@ export const getFirstOrderInsight = (
 export const getFirstOrderList = (
   page: number,
   perPage: number,
-  fromDate: Date | null,
-  toDate: Date | null
+  fromDate: Date | undefined,
+  toDate: Date | undefined
 ) => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
@@ -146,15 +130,11 @@ export const getZone = (request: any) =>
     body: JSON.stringify(request),
     headers: { 'Content-Type': 'application/json' },
   });
-export const getFleetZonePickUpTrendAPI = () =>
-  apiFetch(appConfig.fleetServiceApiUrl() + '/zone-pickup/trend');
-export const getFleetZonePickUpTrendAPINew = () =>
-  apiFetch(appConfig.awsApiGatewayBaseUrl() + '/zone/pickup-agg-data');
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
     appConfig.orderServiceApiUrl() +
-      '/get-customer-bulk-order/' +
-      encryptedOrderNo
+    '/get-customer-bulk-order/' +
+    encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
@@ -233,8 +213,7 @@ export const showServerMessage = (status: ToastStatus, resMessage: string) => {
   let realMessage: string;
 
   if (message) {
-    const key = `apiMessages.${resMessage}`;
-    realMessage = t(key, { defaultValue: message.value });
+    realMessage = t(`apiMessages.${resMessage}` as any, { defaultValue: message.value });
   } else {
     realMessage = t('commonMessages.errorMessage');
   }
@@ -358,16 +337,6 @@ export const getDiffrenceBwCurrentAndLastUpdatedETP = (zoneDetail: any) => {
     return Math.round(zoneDetail.avg_pickup_duration / 60);
   }
   return 0;
-};
-
-export const setSuperSaverWalletInfoMessage = (data: any) => {
-  const t = useTranslations('screens');
-  let messages: string[] = [];
-  if (!data.achieved_supersaver && data.active) {
-    messages.push(t('newOrder.superSaver.push10OrMoreOrders'));
-    messages.push(t('newOrder.superSaver.save50FilsForEachOrder'));
-  }
-  return messages;
 };
 
 // const addGoogleTag = () => {

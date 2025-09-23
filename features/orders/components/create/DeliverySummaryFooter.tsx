@@ -15,10 +15,10 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { Fragment } from 'react';
 export default function DeliverySummaryFooter({
   handleOrder,
-  handleCancle,
+  handleCancel,
 }: {
   handleOrder: () => void;
-  handleCancle: () => void;
+  handleCancel: () => void;
 }) {
   const orderStore = useOrderStore();
 
@@ -70,7 +70,7 @@ export default function DeliverySummaryFooter({
           <div className="flex items-center space-x-2">
             <Button
               variant={'ghost'}
-              onClick={() => handleCancle()}
+              onClick={() => handleCancel()}
               className="cursor-pointer bg-[#6750A414] text-[#1D1B20]"
             >
               {t('button.cancel')}
@@ -112,7 +112,7 @@ export default function DeliverySummaryFooter({
           <CardContent className="w-full overflow-hidden flex gap-4">
             <Button
               variant={'ghost'}
-              onClick={() => handleCancle()}
+              onClick={() => handleCancel()}
               className="cursor-pointer bg-[#6750A414] text-[#1D1B20] w-1/3"
             >
               {t('button.cancel')}

@@ -204,7 +204,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
                           />
                           <span
                             hidden={idx !== 0}
-                            className="h-full max-[400px]:hidden w-px border border-dashed border-dark-grey/50 absolute -bottom-full left-1/2 -translate-x-1/2 -z-10"
+                            className="h-full max-[400px]:hidden w-px border border-dashed border-dark-grey/10 absolute -bottom-full left-1/2 -translate-x-1/2 -z-10"
                           />
                         </span>
                       </div>

@@ -119,7 +119,7 @@ const EditPayment = ({
               {t('component.features.orders.edit-payment')}
             </DialogTitle>
           </DialogHeader>
-          <hr className="border-dark-grey/20 " />
+          <hr className="border-dark-grey/10 " />
           <Form {...form}>
             <form
               onSubmit={(e) => e.preventDefault()}

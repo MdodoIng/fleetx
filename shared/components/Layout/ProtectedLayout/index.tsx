@@ -3,7 +3,7 @@
 import Header from './Header';
 import SideBar from './Sidebar';
 import { useEffect } from 'react';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import {
   setBranchDetails,
   updateZoneAndSome,
@@ -16,7 +16,7 @@ interface BaseLayoutProps {
 }
 
 const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
 
   useEffect(() => {
     async function init() {
@@ -26,11 +26,11 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
     }
 
     init();
-  }, [venderStore.branchId, venderStore.vendorId]);
+  }, [vendorStore.branchId, vendorStore.vendorId]);
 
   useEffect(() => {
     getVendorList();
-  }, [venderStore.isSearchVenderParams]);
+  }, [vendorStore.isSearchVendorParams]);
 
   return (
     <section className="flex items-start justify-start h-svh w-full">

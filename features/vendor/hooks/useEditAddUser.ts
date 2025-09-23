@@ -1,23 +1,23 @@
 'use client';
 
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useVendorStore } from '@/store';
 import { UseFormReturn } from 'react-hook-form';
 import {
   TypeEditVendorBranchSchema,
   TypeEditVendorNameSchema,
-} from '../validations/editVender';
+} from '../validations/editVendor';
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
-  TypeAddVenderReq,
+  TypeAddVendorReq,
   TypeBranch,
-  TypeEditVenderReq,
+  TypeEditVendorReq,
   TypeUpdateVendorUserReq,
-  TypeVender,
-  TypeVenderListItem,
+  TypeVendor,
+  TypeVendorListItem,
   TypeVendorType,
   TypeVendorUserList,
-} from '@/shared/types/vender';
-import { vendorService } from '@/shared/services/vender';
+} from '@/shared/types/vendor';
+import { vendorService } from '@/shared/services/vendor';
 import { hasValue } from '@/shared/lib/helpers';
 import { TypeEditUserSchema } from '../validations/editAddForm';
 
@@ -26,14 +26,14 @@ type Props = {
   data?: TypeVendorUserList[];
   isBranch?: {
     branch: TypeBranch;
-    vendor: TypeVenderListItem;
+    vendor: TypeVendorListItem;
   };
   setIsBranchAction: Dispatch<
     SetStateAction<
       | {
-          branch: TypeBranch;
-          vendor: TypeVenderListItem;
-        }
+        branch: TypeBranch;
+        vendor: TypeVendorListItem;
+      }
       | undefined
     >
   >;
@@ -53,10 +53,10 @@ export const useEditAddUser = ({
     setValue,
     isEditUser,
     branchDetails,
-    venderList,
+    vendorList: vendorList,
     selectedBranch,
     selectedVendor,
-  } = useVenderStore.getState();
+  } = useVendorStore.getState();
   const { user } = useAuthStore.getState();
 
   const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -73,9 +73,9 @@ export const useEditAddUser = ({
           'phone',
         ]);
 
-        const venderFieldsValid = hasValue(editUserFormValues.first_name);
+        const vendorFieldsValid = hasValue(editUserFormValues.first_name);
 
-        return editUserFormValid && venderFieldsValid;
+        return editUserFormValid && vendorFieldsValid;
       } catch (error) {
         console.error('Validation error:', error);
         return false;

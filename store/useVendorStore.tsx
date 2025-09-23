@@ -1,46 +1,44 @@
-import { get } from 'react-hook-form';
 import { create } from 'zustand';
 
 import { persist } from 'zustand/middleware';
 import { useAuthStore } from './useAuthStore';
 import {
   TypeBranch,
-  TypeVender,
-  TypeVenderList,
-  TypeVenderListItem,
+  TypeVendor,
+  TypeVendorList,
   TypeVendorUserList,
-} from '@/shared/types/vender';
+} from '@/shared/types/vendor';
 
-export interface VenderState {
+export interface VendorState {
   branchDetails: TypeBranch[] | undefined;
   vendorId: string | null;
   branchId: string | null;
   branchName?: string | undefined;
   selectedVendorName: string | null;
-  selectedVendor: TypeVender | undefined;
+  selectedVendor: TypeVendor | undefined;
   selectedBranch: TypeBranch | undefined;
   isVendorAdmin: boolean;
   selectedAccountManager: string | undefined;
-  venderList: TypeVenderList | undefined;
-  isEditVenderId: string | undefined;
-  isEditVenderBranchId: string | undefined;
+  vendorList: TypeVendorList | undefined;
+  isEditVendorId: string | undefined;
+  isEditVendorBranchId: string | undefined;
   isEditUser: TypeVendorUserList | undefined;
   isEditDetails: boolean;
   showDriversFilter: boolean;
 
   isVendorAccess: boolean;
   isBranchAccess: boolean;
-  isSearchVenderParams: string;
+  isSearchVendorParams: string;
 }
 
-export interface VenderActions {
+export interface VendorActions {
   clearAll: () => void;
-  setValue: (key: keyof VenderState, value: any) => void;
+  setValue: (key: keyof VendorState, value: any) => void;
   updateSelectedBranch: (branchId?: string) => void;
   getVendorAccountManagerId: () => void;
 }
 
-const initialState: VenderState = {
+const initialState: VendorState = {
   branchDetails: undefined,
   branchName: undefined,
   selectedVendorName: null,
@@ -50,23 +48,23 @@ const initialState: VenderState = {
   vendorId: null,
   isVendorAdmin: false,
   selectedAccountManager: undefined,
-  venderList: undefined,
-  isEditVenderId: undefined,
-  isEditVenderBranchId: undefined,
+  vendorList: undefined,
+  isEditVendorId: undefined,
+  isEditVendorBranchId: undefined,
   isEditUser: undefined,
   isEditDetails: false,
   showDriversFilter: false,
   isVendorAccess: false,
   isBranchAccess: false,
-  isSearchVenderParams: '',
+  isSearchVendorParams: '',
 };
 
-export const useVenderStore = create<VenderState & VenderActions>()(
+export const useVendorStore = create<VendorState & VendorActions>()(
   persist(
     (set, get) => ({
       ...initialState,
 
-      setValue: (key: keyof VenderState, value: any) => set({ [key]: value }),
+      setValue: (key: keyof VendorState, value: any) => set({ [key]: value }),
       updateSelectedBranch: (branchId) => {
         if (!branchId) {
         }
@@ -88,7 +86,7 @@ export const useVenderStore = create<VenderState & VenderActions>()(
     }),
 
     {
-      name: 'vender-storage',
+      name: 'vendor-storage',
     }
   )
 );

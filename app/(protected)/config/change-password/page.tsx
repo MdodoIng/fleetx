@@ -1,21 +1,20 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   changePasswordSchema,
   TypeChangePasswordForm,
 } from '@/features/config/validations/changePpassword';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/shared/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/card';
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
 import {
   Form,
   FormControl,
@@ -25,22 +24,15 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
-import { useAuthStore } from '@/store';
 import userService from '@/shared/services/user';
 import { TypeChangePasswordRequest } from '@/shared/types/user';
-import { toast, Toaster } from 'sonner';
-import {
-  Dashboard,
-  DashboardContent,
-  DashboardHeader,
-  DashboardHeaderRight,
-} from '@/shared/components/ui/dashboard';
+import { useAuthStore } from '@/store';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function ChangePasswordPage() {
-  const { user, logout } = useAuthStore();
-  const router = useRouter();
+  const { user } = useAuthStore();
   const [submitted, setSubmitted] = useState(false);
 
   const form = useForm<TypeChangePasswordForm>({
@@ -53,7 +45,7 @@ export default function ChangePasswordPage() {
     mode: 'onTouched',
   });
 
-  const { handleSubmit, watch } = form;
+  const { handleSubmit } = form;
 
   console.log(user?.user_id, '');
   const onSubmit = async (data: TypeChangePasswordForm) => {
@@ -72,8 +64,8 @@ export default function ChangePasswordPage() {
       console.log(res);
       toast(res.data);
       // logout();
-    } catch (err: any) {
-      toast.error(err);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitted(false);
     }

@@ -14,7 +14,7 @@ import { Input } from '@/shared/components/ui/input';
 import { paymentService } from '@/shared/services/payment';
 
 import { TypeBalanceAlertReq } from '@/shared/types/payment';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { Icon } from '@iconify/react';
 import { Mail, Phone, Save } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -27,7 +27,7 @@ export function AlertSettings() {
   const [alertValue, setAlertValue] = useState('');
   const [method, setMethod] = useState<MethodType[]>(['email']);
   const { vendorId, branchId, selectedBranch, selectedVendor } =
-    useVenderStore();
+    useVendorStore();
 
   const { appConstants } = useSharedStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -84,8 +84,8 @@ export function AlertSettings() {
         setAlertValue(
           res.data.alert_on_amount
             ? parseFloat(
-                parseFloat(res.data.alert_on_amount).toFixed(2)
-              ).toString()
+              parseFloat(res.data.alert_on_amount).toFixed(2)
+            ).toString()
             : '0'
         );
 
@@ -192,7 +192,7 @@ export function AlertSettings() {
         <Button
           onClick={() => configureNotification()}
           variant="outline"
-          className="w-full bg-[#F5F4F5] border-dark-grey/20"
+          className="w-full bg-[#F5F4F5] border-dark-grey/10"
         >
           <Save />
           {t('saveSettings')}

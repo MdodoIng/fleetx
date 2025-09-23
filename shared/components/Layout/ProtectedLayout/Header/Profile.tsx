@@ -11,7 +11,7 @@ import {
 import { APP_PROFILE_MENU } from '@/shared/constants/routes';
 import { filterMenuByRole } from '@/shared/lib/helpers';
 import { cn } from '@/shared/lib/utils';
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useVendorStore } from '@/store';
 import { User, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ export default function Profile() {
     branchId,
     selectedVendor,
     branchName,
-  } = useVenderStore();
+  } = useVendorStore();
 
   const filteredMenu = filterMenuByRole(APP_PROFILE_MENU);
   const t = useTranslations();

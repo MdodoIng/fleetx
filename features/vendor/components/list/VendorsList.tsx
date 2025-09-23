@@ -10,8 +10,8 @@ import {
   User2,
 } from 'lucide-react';
 
-import { TypeVenderList, TypeVenderListItem } from '@/shared/types/vender';
-import { useVenderStore } from '@/store';
+import { TypeVendorList, TypeVendorListItem } from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
 import { Dispatch, SetStateAction } from 'react';
 
 import {
@@ -27,29 +27,29 @@ import { useRouter } from 'next/navigation';
 
 type Props = {
   setSearchValue: Dispatch<SetStateAction<string | null>>;
-  fetchVenderList: () => Promise<void>;
-  data: TypeVenderList;
+  fetchVendorList: () => Promise<void>;
+  data: TypeVendorList;
   page: number;
   nextSetItemTotal: any;
   setPage: Dispatch<SetStateAction<number>>;
 };
 
-const VendersList = ({
+const VendorsList = ({
   setSearchValue,
-  fetchVenderList,
+  fetchVendorList: fetchVendorList,
   data,
   page,
   nextSetItemTotal,
   setPage,
 }: Props) => {
-  const vederStore = useVenderStore();
+  const vedorStore = useVendorStore();
   const { push } = useRouter();
-  const handleEditClick = (item: TypeVenderListItem) => {
-    vederStore.setValue('isEditVenderId', item.id);
+  const handleEditClick = (item: TypeVendorListItem) => {
+    vedorStore.setValue('isEditVendorId', item.id);
     console.log(item.id);
   };
 
-  const handleUserSearhClick = (item: TypeVenderListItem) => {
+  const handleUserSearhClick = (item: TypeVendorListItem) => {
     const searchParams = new URLSearchParams();
     searchParams.set('id', item.name.toString());
     push(`/vendor/users?${searchParams.toString()}`);
@@ -59,7 +59,7 @@ const VendersList = ({
     return [
       {
         icon: User2,
-        title: 'Vender',
+        title: 'Vendor',
         value: item.name,
       },
       {
@@ -130,4 +130,4 @@ const VendersList = ({
   );
 };
 
-export default VendersList;
+export default VendorsList;

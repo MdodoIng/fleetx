@@ -8,7 +8,7 @@ import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
 import { Input } from '@/shared/components/ui/input';
 import { fleetService } from '@/shared/services/fleet';
@@ -44,7 +44,7 @@ export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
 
-  const { isEditDetails, showDriversFilter } = useVenderStore();
+  const { isEditDetails, showDriversFilter } = useVendorStore();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
     orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList)

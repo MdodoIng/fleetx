@@ -1,4 +1,4 @@
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useVendorStore } from '@/store';
 import { apiFetch } from '../lib/utils';
 import { appConfig } from './app-config';
 import {
@@ -33,7 +33,7 @@ export const notificationService = {
 
   getVenodrBarnchUrl(url: string) {
     const { user } = useAuthStore.getState();
-    const { vendorId, branchId } = useVenderStore.getState();
+    const { vendorId, branchId } = useVendorStore.getState();
     switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':

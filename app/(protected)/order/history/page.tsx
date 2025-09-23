@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -66,13 +66,14 @@ import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import SortSelect from '@/shared/components/selectors';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
+import { DateRange } from 'react-day-picker';
+import Rating from '@/features/orders/components/Livelist/TableComponent/Rating';
 
 export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const { appConstants } = useSharedStore();
-  const { isEditDetails, showDriversFilter } = useVenderStore();
+  const { isEditDetails, showDriversFilter } = useVendorStore();
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
   const [selectedAccountManager, setSelectedAccountManager] = useState<
@@ -85,12 +86,17 @@ export default function OrderTrackingDashboard() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [date, setDate] = useState<{ from: Date; to: Date }>();
+  const [date, setDate] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
+  });
   const [selectedDriver, setSelectedDriver] = useState<string>();
 
-  const url = useMemo(() => {
+  const fetchOrderDetails = useCallback(async () => {
+    setIsLoading(true);
+
     const searchAll = true;
-    return orderService.getOrderHistoryUrl(
+    const url = orderService.getOrderHistoryUrl(
       page,
       date?.from,
       date?.to,
@@ -102,20 +108,6 @@ export default function OrderTrackingDashboard() {
       selectedDriver,
       selectedSorting
     );
-  }, [
-    date?.from,
-    date?.to,
-    nextSetItemsToken,
-    page,
-    searchCustomer,
-    searchOrder,
-    selectedAccountManager,
-    selectedDriver,
-    selectedSorting,
-  ]);
-
-  const fetchOrderDetails = useCallback(async () => {
-    setIsLoading(true);
 
     try {
       const res = await orderService.getOrderList(url);
@@ -136,12 +128,22 @@ export default function OrderTrackingDashboard() {
 
       console.log('Error in fetchOrderDetails:', errorMessage);
     }
-  }, [page, url]);
+  }, [
+    date?.from,
+    date?.to,
+    nextSetItemsToken,
+    orderStore,
+    page,
+    searchCustomer,
+    searchOrder,
+    selectedAccountManager,
+    selectedDriver,
+    selectedSorting,
+  ]);
 
   useEffect(() => {
     fetchOrderDetails();
-    console.log(url);
-  }, [fetchOrderDetails, url]);
+  }, [fetchOrderDetails]);
 
   const { exportOrdersToCSV } = useTableExport();
 
@@ -213,9 +215,8 @@ export default function OrderTrackingDashboard() {
                         <p className="rtl:hidden"># FleetX</p>
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          item.class_status
-                        }`}
+                        className={`px-2 py-0.5 rounded-full text-xs ${item.class_status
+                          }`}
                       >
                         {t(item.status)}
                       </span>
@@ -226,9 +227,12 @@ export default function OrderTrackingDashboard() {
                         {item.branch_name}
                       </span>
                     </TableSigleListHeaderRight>
-                    <TableSigleListHeaderLeft className="flex items-center gap-1">
-                      <Clock size={12} />
-                      {item.creation_date}
+                    <TableSigleListHeaderLeft className="flex items-center gap-2">
+                      <Rating order={item} />
+                      <div className="flex items-center gap-1">
+                        <Clock size={12} />
+                        {item.creation_date}
+                      </div>
                     </TableSigleListHeaderLeft>
                   </TableSigleListHeader>
                   <TableSigleListContents>

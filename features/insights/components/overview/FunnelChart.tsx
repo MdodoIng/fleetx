@@ -1,36 +1,45 @@
+import { Card, CardContent, CardTitle } from '@/shared/components/ui/card';
+import { cn } from '@/shared/lib/utils';
+
 export default function FunnelChart({
   data,
 }: {
   data: {
     title: string;
-    count: any;
-    percentage?: any;
+    count: string | number;
+    percentage?: string | number;
   }[];
 }) {
   return (
-    <div className="bg-white rounded-xl p-6 text-center h-[90vh] flex flex-col justify-center items-center">
-      <div className="w-[500px] space-y-6">
+    <Card className="flex items-center justify-center h-full">
+      <CardContent className="space-y-6 flex flex-col items-center justify-center ">
         {data.map((step, idx) => (
-          <div
+          <Card
             key={idx}
-            className={`relative h-24 mx-auto border-t-[76px] border-transparent border-t-[#30d9c4] rounded-[48px] ${
-              idx === 1 ? 'mx-[60px]' : idx === 2 ? 'mx-[115px]' : ''
-            }`}
+            style={{
+              width: `calc(100% - ${idx * 100}px)`,
+            }}
+            className={cn(
+              `relative h-20  mx-auto text-white !rounded-full bg-primary-blue px-10 py-2 flex flex-col items-center justify-between gap-0 `
+            )}
           >
-            <div className="absolute top-[-50px] w-full text-white">
-              <div className="uppercase text-xs tracking-widest font-medium">
-                {step.title}
-              </div>
-              {step.percentage && (
-                <div className="text-white text-opacity-50 text-lg font-bold text-left">
-                  {step.percentage}
-                </div>
-              )}
-              <div className="text-lg font-bold text-center">{step.count}</div>
+            <div className="uppercase text-xs tracking-widest font-medium flex justify-between w-full">
+              <CardTitle className={cn('text-sm')}>{step.title}</CardTitle>
+              <div className=" font-bold text-center">{step.count}</div>
             </div>
-          </div>
+            {step.percentage && (
+              <div
+                style={{
+                  transform: `translateX(${Math.min(parseFloat(step.percentage as string), 90)}%)`,
+                }}
+                className="text-opacity-50 font-bold text-start w-full"
+              >
+                {step.percentage}
+              </div>
+            )}
+          </Card>
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
