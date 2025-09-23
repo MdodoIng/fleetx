@@ -15,7 +15,7 @@ import {
   useAuthStore,
   useOrderStore,
   useSharedStore,
-  useVenderStore,
+  useVendorStore,
 } from '@/store';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +27,7 @@ import {
 } from '@/features/orders/validations/order';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import { useDebounce } from '@/shared/lib/hooks';
 
 export default function ShippingForm() {
@@ -38,7 +38,7 @@ export default function ShippingForm() {
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
-  const { branchId, vendorId, selectedBranch } = useVenderStore();
+  const { branchId, vendorId, selectedBranch } = useVendorStore();
 
   const [isCOD, setIsCOD] = useState<1 | 2>(2);
 

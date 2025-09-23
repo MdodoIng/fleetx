@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 
 import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -72,7 +72,7 @@ import Rating from '@/features/orders/components/Livelist/TableComponent/Rating'
 export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const { appConstants } = useSharedStore();
-  const { isEditDetails, showDriversFilter } = useVenderStore();
+  const { isEditDetails, showDriversFilter } = useVendorStore();
 
   const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
@@ -215,9 +215,8 @@ export default function OrderTrackingDashboard() {
                         <p className="rtl:hidden"># FleetX</p>
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          item.class_status
-                        }`}
+                        className={`px-2 py-0.5 rounded-full text-xs ${item.class_status
+                          }`}
                       >
                         {t(item.status)}
                       </span>

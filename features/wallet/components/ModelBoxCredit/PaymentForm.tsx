@@ -2,11 +2,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { cn } from '@/shared/lib/utils';
-import { useSharedStore, useVenderStore, useWalletStore } from '@/store';
+import { useSharedStore, useVendorStore, useWalletStore } from '@/store';
 import { useAddCredit } from '../../hooks/useAddCredit';
 import { useEffect, useState } from 'react';
-import { vendorService } from '@/shared/services/vender';
-import { TypeBranch } from '@/shared/types/vender';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeBranch } from '@/shared/types/vendor';
 import { Label } from '@/shared/components/ui/label';
 import {
   Select,
@@ -67,7 +67,7 @@ const PaymentForm = ({
     setValue,
     prepareMashkor,
   } = useWalletStore();
-  const { branchDetails } = useVenderStore();
+  const { branchDetails } = useVendorStore();
   const [paymentType, setPaymentType] = useState('');
   const [note, setNote] = useState('');
 

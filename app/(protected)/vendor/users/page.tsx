@@ -1,20 +1,20 @@
 'use client';
-import EditVender from '@/features/vendor/components/list/EditVender';
-import VendersList from '@/features/vendor/components/list/VendersList';
+import EditVendor from '@/features/vendor/components/list/EditVendor';
+import VendorsList from '@/features/vendor/components/list/VendorsList';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import {
   TypeBranch,
-  TypeVender,
-  TypeVenderList,
-  TypeVenderListItem,
+  TypeVendor,
+  TypeVendorList,
+  TypeVendorListItem,
   TypeVendorUserList,
-} from '@/shared/types/vender';
-import { useVenderStore } from '@/store';
+} from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
   Activity,
@@ -76,7 +76,7 @@ import {
   TableSigleListContentTitle,
 } from '@/shared/components/ui/tableList';
 
-function VenderUser() {
+function VendorUser() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState(null);
@@ -85,17 +85,17 @@ function VenderUser() {
     selectedBranch,
     selectedVendor,
     isEditUser,
-    venderList,
+    vendorList: vendorList,
     branchDetails,
-  } = useVenderStore();
+  } = useVendorStore();
 
   const [searchValue, setSearchValue] = useState<string>('');
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
   const [isBranch, setIsBranchAction] = useState<
     | {
-        branch: TypeBranch;
-        vendor: TypeVenderListItem;
-      }
+      branch: TypeBranch;
+      vendor: TypeVendorListItem;
+    }
     | undefined
   >({
     branch: selectedBranch!,
@@ -155,16 +155,16 @@ function VenderUser() {
     branch: TypeBranch | undefined
   ) => {
     setIsBranchAction(undefined);
-    const vender = venderList?.find((r) => r.id === item.vendor.vendor_id);
+    const vendor = vendorList?.find((r) => r.id === item.vendor.vendor_id);
     setIsBranchAction({
-      vendor: vender!,
+      vendor: vendor!,
       branch: branch!,
     });
     if (!branch) {
       const branch = branchDetails?.find((r) => r.id === item.vendor.branch_id);
       setIsBranchAction({
         branch: branch!,
-        vendor: vender!,
+        vendor: vendor!,
       });
     }
 
@@ -255,7 +255,7 @@ function VenderUser() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder={'Search Vender'}
+              placeholder={'Search Vendor'}
               value={searchValue!}
               onChange={(e) => setSearchValue(e.target.value)}
               className="pl-10 !border-none !outline-none !ring-0 "
@@ -334,4 +334,4 @@ function VenderUser() {
   );
 }
 
-export default VenderUser;
+export default VendorUser;

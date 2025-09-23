@@ -14,7 +14,7 @@ import type {
   UserLogin,
   UserRole,
 } from '@/shared/types/user';
-import { clearAllStore, useSharedStore, useVenderStore } from '.';
+import { clearAllStore, useSharedStore, useVendorStore } from '.';
 import { appConfig } from '@/shared/services/app-config';
 import userService from '@/shared/services/user';
 import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
@@ -136,7 +136,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({ isLoading: false, tokenForRest: true });
             return false;
           } else {
-            useVenderStore.setState({
+            useVendorStore.setState({
               vendorId: tokenPayload.user.vendor?.vendor_id,
               branchId: tokenPayload.user.vendor?.branch_id,
             });

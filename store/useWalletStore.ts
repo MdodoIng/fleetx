@@ -1,14 +1,14 @@
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useVenderStore } from './useVenderStore';
+import { useVendorStore } from './useVendorStore';
 import { useAuthStore } from './useAuthStore';
 import { TypeAddCreditDebitformSchema } from '@/features/wallet/validations/paymentForm';
-import { TypeBranch, TypeVender } from '@/shared/types/vender';
+import { TypeBranch, TypeVendor } from '@/shared/types/vendor';
 
 export async function getVendorWalletBalanceInit() {
   const { branchId, vendorId, selectedVendor, selectedBranch } =
-    useVenderStore.getState();
+    useVendorStore.getState();
   const { setValue } = useWalletStore.getState();
 
   const effectiveVendorId = selectedVendor?.id || vendorId;
@@ -43,7 +43,7 @@ export async function getVendorWalletBalanceInit() {
 export function toShowAddCreditButton() {
   const { isCentralWalletEnabled, setValue, successOrdersCount } =
     useWalletStore.getState();
-  const { branchId } = useVenderStore.getState();
+  const { branchId } = useVendorStore.getState();
   const { user } = useAuthStore.getState();
 
   if (isCentralWalletEnabled) {
@@ -106,7 +106,7 @@ export interface WalletState {
     txnNumber: number;
     amount: number;
     branch: TypeBranch | undefined;
-    vendor: TypeVender | undefined;
+    vendor: TypeVendor | undefined;
   }
   | undefined;
 }
@@ -173,7 +173,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
       },
 
       getCentralWalletEnabled: async () => {
-        const { vendorId, selectedVendor } = useVenderStore.getState();
+        const { vendorId, selectedVendor } = useVendorStore.getState();
         const { user } = useAuthStore.getState();
 
         if (!selectedVendor?.id || !vendorId) return;
@@ -225,7 +225,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
               walletBalance: '-',
               isAddCreditDebit: true,
             });
-            useVenderStore.setState({
+            useVendorStore.setState({
               isVendorAdmin: false,
             });
             break;
@@ -237,7 +237,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
               walletBalance: '-',
               isAddCreditDebit: false,
             });
-            useVenderStore.setState({
+            useVendorStore.setState({
               isVendorAdmin: false,
             });
             break;
@@ -248,12 +248,12 @@ export const useWalletStore = create<WalletState & WalletActions>()(
             });
 
             if (user.user.vendor?.branch_id) {
-              useVenderStore.setState({
+              useVendorStore.setState({
                 isVendorAdmin: false,
               });
               getVendorWalletBalanceInit();
             } else {
-              useVenderStore.setState({
+              useVendorStore.setState({
                 isVendorAdmin: true,
               });
               set({

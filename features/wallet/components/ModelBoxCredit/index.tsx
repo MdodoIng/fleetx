@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
 import { Wallet } from 'lucide-react';
 import React, { Dispatch, SetStateAction, useState } from 'react';
@@ -26,7 +26,7 @@ export default function ModelBoxCredit({
   const [amount, setAmount] = useState<number>(0);
   const [selected, setSelected] = useState<number | null>(null);
   const sheredStore = useSharedStore();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const { prepareMashkor } = useWalletStore();
 
   const { submitAddCredit, submitCreditDebitConformed } = useAddCredit();

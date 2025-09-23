@@ -42,12 +42,12 @@ export type TypeBranch = {
   required_min_wallet_balance: string;
   branch_zone: [
     {
-      tookan_region: null;
+      tookan_region: number | null;
     },
   ];
 };
 
-export type TypeVender = {
+export type TypeVendor = {
   id: string;
   name: string;
   name_ar: null;
@@ -62,8 +62,8 @@ export type TypeVender = {
   account_manager: null;
 };
 
-export type TypeVenderRes = {
-  data: TypeVender;
+export type TypeVendorRes = {
+  data: TypeVendor;
 };
 
 export type TypeWallet = {
@@ -76,7 +76,7 @@ export type TypeWalletResponce = {
   data: TypeWallet;
 };
 
-export type TypeVenderListMainBranch = {
+export type TypeVendorListMainBranch = {
   id: string;
   created_at: string;
   updated_at: string;
@@ -105,7 +105,7 @@ export type TypeVenderListMainBranch = {
   vendor: string;
 };
 
-export type TypeVenderListItem = {
+export type TypeVendorListItem = {
   id: string;
   account_manager: null;
   vendor_affiliation: null;
@@ -116,17 +116,17 @@ export type TypeVenderListItem = {
   company_legal_name: null;
   official_name: null;
   is_vendor_central_wallet_enabled: boolean;
-  main_branch: TypeVenderListMainBranch;
+  main_branch: TypeVendorListMainBranch;
 };
 
-export type TypeVenderList = TypeVenderListItem[];
+export type TypeVendorList = TypeVendorListItem[];
 
-export type TypeVenderListRes = {
-  data: TypeVenderList;
+export type TypeVendorListRes = {
+  data: TypeVendorList;
   NEXT_SET_ITEMS_TOKEN: number[];
 };
 
-export type TypeEditVenderReq = {
+export type TypeEditVendorReq = {
   branches: [
     {
       id: string;
@@ -181,7 +181,7 @@ export type TypeEditVenderReq = {
   cod_counter_type: number;
 };
 
-export type TypeAddVenderReq = {
+export type TypeAddVendorReq = {
   branches: [
     {
       address: {

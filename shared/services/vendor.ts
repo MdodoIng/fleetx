@@ -1,45 +1,45 @@
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { storageKeys } from '../lib/storageKeys';
 import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranchByBranchId,
-  TypeAddVenderReq,
+  TypeAddVendorReq,
   TypeAffiliationLisRespoese,
   TypeBranch,
   TypeCreateVendorUserReq,
-  TypeEditVenderReq,
+  TypeEditVendorReq,
   TypeGetCompanyBillingResponse,
   TypeOpsFinUserResponce,
   TypeUpdateCompanyBillingRequest,
   TypeUpdateVendorUserReq,
-  TypeVender,
-  TypeVenderList,
-  TypeVenderListRes,
-  TypeVenderRes,
+  TypeVendor,
+  TypeVendorList,
+  TypeVendorListRes,
+  TypeVendorRes,
   TypeVendorUserListRes,
   TypeWalletResponce,
-} from '../types/vender';
+} from '../types/vendor';
 import { TypeAddressByMobileResponse } from '../types/orders';
 import { appConfig } from './app-config';
 import { TypeVendorPricingRuleRes } from '../types';
 
 export const vendorService = {
-  create: (vendor: TypeAddVenderReq) =>
+  create: (vendor: TypeAddVendorReq) =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/create`, {
       method: 'POST',
       body: JSON.stringify(vendor),
     }),
 
-  update: (req: TypeEditVenderReq) =>
+  update: (req: TypeEditVendorReq) =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/update/${req.id}`, {
       method: 'PUT',
       body: JSON.stringify(req),
     }),
 
-  getVendorDetails: (id: string): Promise<TypeVenderRes> =>
+  getVendorDetails: (id: string): Promise<TypeVendorRes> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/details?id=${id}`),
 
-  getVendorInfo: (id: string): Promise<{ data: TypeVender }> =>
+  getVendorInfo: (id: string): Promise<{ data: TypeVendor }> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/vendor-info/${id}`),
 
   setVendorListurl: (
@@ -48,7 +48,7 @@ export const vendorService = {
     NEXT_SET_ITEMS_TOKEN?: string[] | null
   ) => {
     const { getVendorAccountManagerId, selectedAccountManager } =
-      useVenderStore.getState();
+      useVendorStore.getState();
     getVendorAccountManagerId();
     let url = '/vendors-list?';
     url = perPage ? url + 'page_size=' + perPage : url;
@@ -62,7 +62,7 @@ export const vendorService = {
     return url;
   },
 
-  getVendorList: (url: string): Promise<TypeVenderListRes> =>
+  getVendorList: (url: string): Promise<TypeVendorListRes> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}${url}`),
 
   getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>

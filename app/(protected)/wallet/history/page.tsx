@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
-import { useVenderStore, useSharedStore } from '@/store';
+import { useVendorStore, useSharedStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -25,8 +25,8 @@ import { Calendar } from '@/shared/components/ui/calendar';
 import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
-import { vendorService } from '@/shared/services/vender';
-import { TypeBranch } from '@/shared/types/vender';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeBranch } from '@/shared/types/vendor';
 import {
   Dashboard,
   DashboardHeader,
@@ -75,7 +75,7 @@ export default function OrderTrackingDashboard() {
       branch: TypeBranch | undefined;
     })[]
   >();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
 
   const fetchVendorWalletReport = useCallback(async () => {
     setIsLoading(true);
@@ -141,14 +141,13 @@ export default function OrderTrackingDashboard() {
             />
           </div>
 
-          <DateSelect value={date} onChangeAction={setDate}  />
+          <DateSelect value={date} onChangeAction={setDate} />
           <Button
             onClick={() =>
               exportOrdersToCSV(
                 walletHistory!,
                 'wallet history',
-                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${date?.to ? format(date.to, 'yyyy-MM-dd') : ''
                 }`
               )
             }

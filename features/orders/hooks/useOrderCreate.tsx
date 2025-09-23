@@ -6,11 +6,11 @@ import { debounce } from 'lodash';
 import {
   useAuthStore,
   useSharedStore,
-  useVenderStore,
+  useVendorStore,
   useOrderStore,
   useNotificationStore,
 } from '@/store';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeDropOffs,
@@ -48,7 +48,7 @@ export default function useOrderCreate(
     defaultZoneId,
     currentStatusZoneETPTrend,
   } = useSharedStore();
-  const { branchId, vendorId, selectedVendorName } = useVenderStore();
+  const { branchId, vendorId, selectedVendorName } = useVendorStore();
 
   const pickUpFormValues = pickUpForm.watch();
   const dropOffFormValues = dropOffForm.watch();

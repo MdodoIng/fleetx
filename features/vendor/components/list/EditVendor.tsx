@@ -5,9 +5,9 @@ import { Edit, LocateIcon, Phone, Pin, Type, User2, X } from 'lucide-react';
 import TableComponent from './TableComponent';
 import {
   TypeBranch,
-  TypeEditVenderReq,
-  TypeVender,
-} from '@/shared/types/vender';
+  TypeEditVendorReq,
+  TypeVendor,
+} from '@/shared/types/vendor';
 import {
   Dispatch,
   SetStateAction,
@@ -15,8 +15,8 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useVenderStore } from '@/store';
-import { vendorService } from '@/shared/services/vender';
+import { useVendorStore } from '@/store';
+import { vendorService } from '@/shared/services/vendor';
 import { Label } from '@/shared/components/ui/label';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
@@ -26,7 +26,7 @@ import {
   editVendorNameSchema,
   TypeEditVendorBranchSchema,
   TypeEditVendorNameSchema,
-} from '../../validations/editVender';
+} from '../../validations/editVendor';
 import {
   Dialog,
   DialogClose,
@@ -37,7 +37,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import BranchEditForm from '../BranchEditForm';
 
-import { useAddUpdateVender } from '../../hooks/useAddUpdateVender';
+import { useAddUpdateVendor } from '../../hooks/useAddUpdateVendor';
 import userService from '@/shared/services/user';
 import {
   Table,
@@ -56,36 +56,36 @@ type Props = {
   setPage: Dispatch<SetStateAction<number>>;
 };
 
-const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
-  const venderStore = useVenderStore();
-  const [venderData, setVenderData] = useState<TypeVender | undefined>(
+const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
+  const vendorStore = useVendorStore();
+  const [vendorData, setVendorData] = useState<TypeVendor | undefined>(
     undefined
   );
 
   const [codType, setCodType] = useState<1 | 2>(2);
   const [branchs, setBranchs] =
-    useState<TypeEditVenderReq['branches'][number][]>();
+    useState<TypeEditVendorReq['branches'][number][]>();
   const [accountManagerList, setAccountManagerList] = useState();
   const [isCreateNewBranch, setIsCreateNewBranch] = useState(false);
 
-  const handleEditBranchClick = (item: TypeVender['branches'][number]) => {
-    venderStore.setValue('isEditVenderBranchId', item.id);
+  const handleEditBranchClick = (item: TypeVendor['branches'][number]) => {
+    vendorStore.setValue('isEditVendorBranchId', item.id);
     console.log(item.id);
   };
 
-  const fetchVenderDetails = useCallback(async () => {
-    if (venderStore.isEditVenderId) {
+  const fetchVendorDetails = useCallback(async () => {
+    if (vendorStore.isEditVendorId) {
       try {
         const res = await vendorService.getVendorDetails(
-          venderStore.isEditVenderId!
+          vendorStore.isEditVendorId!
         );
 
-        setVenderData(res.data);
+        setVendorData(res.data);
       } catch (error) {
         console.log(error);
       }
     }
-  }, [venderStore.isEditVenderId]);
+  }, [vendorStore.isEditVendorId]);
 
   async function fetchAccountManagerList() {
     try {
@@ -102,14 +102,14 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
   }
 
   useEffect(() => {
-    const loadFetchVenderDetails = async () => {
-      await fetchVenderDetails();
+    const loadFetchVendorDetails = async () => {
+      await fetchVendorDetails();
       await fetchAccountManagerList();
     };
-    loadFetchVenderDetails();
-  }, [fetchVenderDetails]);
+    loadFetchVendorDetails();
+  }, [fetchVendorDetails]);
 
-  const tableData = venderData?.branches.map((item) => {
+  const tableData = vendorData?.branches.map((item) => {
     return [
       {
         icon: User2,
@@ -203,24 +203,24 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
 
   const {
     validateFormsAsync,
-    updateVenderDetailsForFromApi,
+    updateVendorDetailsForFromApi,
     isLoadingForm,
     handelUpdate,
-  } = useAddUpdateVender(
+  } = useAddUpdateVendor(
     editVendorNameForm,
     editVendorBranchForm,
-    venderData!,
+    vendorData!,
     codType
   );
 
   useEffect(() => {
-    if (venderData) {
-      updateVenderDetailsForFromApi();
+    if (vendorData) {
+      updateVendorDetailsForFromApi();
     }
   }, [
-    venderData,
-    venderStore.isEditVenderBranchId,
-    venderStore.isEditVenderId,
+    vendorData,
+    vendorStore.isEditVendorBranchId,
+    vendorStore.isEditVendorId,
   ]);
 
   const { register: vendorNameRegister } = editVendorNameForm;
@@ -312,7 +312,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
                 'updateAll',
                 isCreateNewBranch,
                 setIsCreateNewBranch,
-                fetchVenderDetails
+                fetchVendorDetails
               )
             }
             type="submit"
@@ -325,11 +325,11 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
       )}
 
       {!isLoadingForm && (
-        <Dialog open={!!venderStore.isEditVenderBranchId || isCreateNewBranch}>
+        <Dialog open={!!vendorStore.isEditVendorBranchId || isCreateNewBranch}>
           <DialogContent
             // showCloseButton={false}
             closeButtonOnClick={() =>
-              venderStore.setValue('isEditVenderBranchId', undefined)
+              vendorStore.setValue('isEditVendorBranchId', undefined)
             }
             className="sm:w-[min(90%,700px)] sm:max-w-full"
           >
@@ -346,7 +346,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
                     'updateBranch',
                     isCreateNewBranch,
                     setIsCreateNewBranch,
-                    fetchVenderDetails
+                    fetchVendorDetails
                   )
                 }
                 type="submit"
@@ -361,4 +361,4 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
   );
 };
 
-export default EditVender;
+export default EditVendor;

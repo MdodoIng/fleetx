@@ -1,6 +1,6 @@
 'use client';
 import { Input } from '@/shared/components/ui/input';
-import { TypeBranch, TypeVenderListItem } from '@/shared/types/vender';
+import { TypeBranch, TypeVendorListItem } from '@/shared/types/vendor';
 import {
   Dispatch,
   FormEvent,
@@ -8,7 +8,7 @@ import {
   useCallback,
   useEffect,
 } from 'react';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
@@ -20,43 +20,43 @@ import {
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
 import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 
 type Props = {
   form: UseFormReturn<TypeEditUserSchema>;
   setIsBranchAction: Dispatch<
     SetStateAction<
       | {
-          branch: TypeBranch;
-          vendor: TypeVenderListItem;
-        }
+        branch: TypeBranch;
+        vendor: TypeVendorListItem;
+      }
       | undefined
     >
   >;
   isBranch: {
     branch: TypeBranch;
-    vendor: TypeVenderListItem;
+    vendor: TypeVendorListItem;
   };
 };
 
 const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
 
   const handleSumbit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
   const handleChangeBranch = (e: string) => {
-    const branch = venderStore.branchDetails?.find((r) => r.id === e);
+    const branch = vendorStore.branchDetails?.find((r) => r.id === e);
     setIsBranchAction({
       branch: branch!,
       vendor: isBranch.vendor,
     });
   };
-  const handleChangeVender = (e: string) => {
-    const vender = venderStore.venderList?.find((r) => r.id === e);
+  const handleChangeVendor = (e: string) => {
+    const vendor = vendorStore.vendorList?.find((r) => r.id === e);
     setIsBranchAction({
-      vendor: vender!,
+      vendor: vendor!,
       branch: undefined as any,
     });
   };
@@ -65,7 +65,7 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
     try {
       const res = await vendorService.getBranchDetails(isBranch?.vendor?.id);
 
-      venderStore.setValue('branchDetails', res.data);
+      vendorStore.setValue('branchDetails', res.data);
     } catch (error) {
       console.log(error);
     }
@@ -81,7 +81,7 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
         <div className="col-span-2 flex justify-start ">
           <UserAndBranchSelecter
             handleChangeBranch={handleChangeBranch}
-            handleChangeVender={handleChangeVender}
+            handleChangeVendor={handleChangeVendor}
             selectedVendorValue={isBranch?.vendor}
             selectedBranchValue={isBranch?.branch}
             classNameFroInput="border"

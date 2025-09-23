@@ -5,9 +5,9 @@ import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { reportService } from '@/shared/services/report';
-import { vendorService } from '@/shared/services/vender';
-import { TypeBranch } from '@/shared/types/vender';
-import { useSharedStore, useVenderStore } from '@/store';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeBranch } from '@/shared/types/vendor';
+import { useSharedStore, useVendorStore } from '@/store';
 import {
   BetweenVerticalEndIcon,
   Download,
@@ -38,7 +38,7 @@ function BalanceReport(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const [data, setData] = useState<BalanceReportItem[]>();
   const [isCentralWallet, setIsCentralWallet] = useState(false);
   const { appConstants } = useSharedStore();
@@ -46,7 +46,7 @@ function BalanceReport(): JSX.Element {
   const fetchCentralWalletBalance = async (): Promise<
     BalanceReportItem[] | undefined
   > => {
-    if (!venderStore.selectedVendor?.id) {
+    if (!vendorStore.selectedVendor?.id) {
       console.warn('No vendor ID available for central wallet');
       return [];
     }
@@ -54,7 +54,7 @@ function BalanceReport(): JSX.Element {
     try {
       const url = reportService.getVendorBalanceUrl(
         page,
-        venderStore.selectedVendor?.id,
+        vendorStore.selectedVendor?.id,
         nextSetItemTotal
       );
       const res = await reportService.getVendorBalanceReport(url);
@@ -72,8 +72,8 @@ function BalanceReport(): JSX.Element {
     try {
       const url = reportService.getBranchWalletBalanceUrl(
         page,
-        venderStore.selectedVendor?.id!,
-        venderStore.selectedBranch?.id!,
+        vendorStore.selectedVendor?.id!,
+        vendorStore.selectedBranch?.id!,
         nextSetItemTotal
       );
       const res = await reportService.getBranchWalletBalanceReport(url);
@@ -84,7 +84,7 @@ function BalanceReport(): JSX.Element {
 
       return await Promise.all(
         res.data.map(async (r) => {
-          const vendor = venderStore.venderList?.find(
+          const vendor = vendorStore.vendorList?.find(
             (item) =>
               r.vendor.name.toLocaleLowerCase() ===
               item.name.toLocaleLowerCase()
@@ -95,7 +95,7 @@ function BalanceReport(): JSX.Element {
           return {
             vendor: r?.vendor.name,
             branch:
-              venderStore.selectedBranch?.name! ||
+              vendorStore.selectedBranch?.name! ||
               vendor?.main_branch.name ||
               'N/A',
             walletBalance: Number(r?.wallet_balance) || 0,
@@ -105,7 +105,7 @@ function BalanceReport(): JSX.Element {
       );
     } catch (error) {
       console.error(
-        `Failed to fetch balance for branch ${venderStore.selectedBranch?.name}:`,
+        `Failed to fetch balance for branch ${vendorStore.selectedBranch?.name}:`,
         error
       );
       return []; // Return empty array to continue processing other branches
@@ -150,8 +150,8 @@ function BalanceReport(): JSX.Element {
     };
     loadFetchBalanceReport();
   }, [
-    venderStore.selectedVendor?.id,
-    venderStore.selectedBranch?.id,
+    vendorStore.selectedVendor?.id,
+    vendorStore.selectedBranch?.id,
     page,
     isCentralWallet,
   ]);

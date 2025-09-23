@@ -21,7 +21,7 @@ import {
   Dot,
 } from 'lucide-react';
 import { paymentMap } from '@/features/orders/constants';
-import { useOrderStore, useSharedStore, useVenderStore } from '@/store';
+import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
 import EditResiver from './EditResiver';
 import EditPayment from './EditPayment';
 import {
@@ -55,7 +55,7 @@ export default function TableComponent({
   const { appConstants } = useSharedStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const orderStore = useOrderStore();
-  const { isEditDetails } = useVenderStore();
+  const { isEditDetails } = useVendorStore();
 
   const handleLoadMore = useCallback(() => {
     setPage((prev) => prev + 10); // load 10 more items
@@ -94,9 +94,8 @@ export default function TableComponent({
                   <p className="rtl:hidden"># FleetX</p>
                 </span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-xs ${
-                    item.class_status
-                  }`}
+                  className={`px-2 py-0.5 rounded-full text-xs ${item.class_status
+                    }`}
                 >
                   {t(item.status)}
                 </span>
