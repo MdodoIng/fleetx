@@ -173,13 +173,13 @@ export async function setHeadingForVendorBranch() {
         setSharedValue(
           'currentZoneId',
           branch.branch_zone.length > 0
-            ? parseInt(branch.branch_zone[0].tookan_region?.toString() ?? '0')
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id ?? '0')
             : undefined
         );
         setSharedValue(
           'defaultZoneId',
           branch.branch_zone.length > 0
-            ? parseInt(branch.branch_zone[0].tookan_region?.toString() ?? '0')
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id ?? '0')
             : undefined
         );
 

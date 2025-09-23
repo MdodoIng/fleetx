@@ -42,7 +42,9 @@ export type TypeBranch = {
   required_min_wallet_balance: string;
   branch_zone: [
     {
-      tookan_region: number | null;
+      tookan_region: {
+        region_id: string | null;
+      };
     },
   ];
 };

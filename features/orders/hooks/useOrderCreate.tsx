@@ -44,8 +44,6 @@ export default function useOrderCreate(
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
   const {
-    currentZoneId,
-    defaultZoneId,
     currentStatusZoneETPTrend,
   } = useSharedStore();
   const { branchId, vendorId, selectedVendorName } = useVendorStore();
