@@ -26,7 +26,7 @@ import { loginSchema, TypeLoginSchema } from '../validations/auth';
 import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm = () => {
-  const { isAuthenticated, isLoading, login, isAuthenticatedCheck } =
+  const { isAuthenticated, isLoading, login } =
     useAuthStore();
   const redirectToHome = useRedirectToHome();
 

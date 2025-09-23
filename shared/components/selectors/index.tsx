@@ -14,7 +14,7 @@ export type TypeSearchableSelectOption = {
 type Props = ComponentProps<'div'> & {
   options: TypeSearchableSelectOption[] | undefined;
   value?: string;
-  onChangeAction: (e: string | undefined) => void;
+  onChangeAction: (e: string ) => void;
   placeholder?: string;
   classNameFroInput?: string;
   onChangeValue?: (e: string) => void;
@@ -26,7 +26,7 @@ export default function SearchableSelect({
   onChangeAction,
   onChangeValue,
   placeholder = 'Select...',
-  classNameFroInput,
+  classNameFroInput = 'border-none',
   className,
 
   ...props
@@ -106,7 +106,7 @@ export default function SearchableSelect({
       )}
 
       {open && filtered?.length > 0 && (
-        <div className="absolute z-10 mt-1 left-1/2 -translate-x-1/2 rounded-md border border-dark-grey/20 shadow bg-white p-2 w-max max-h-[300px] snap-x snap-mandatory min-w-full overflow-auto">
+        <div className="absolute z-10 mt-1 left-1/2 -translate-x-1/2 rounded-md border border-dark-grey/10 shadow bg-white p-2 w-max max-h-[300px] snap-x snap-mandatory min-w-full overflow-auto">
           {filtered?.map((opt) => (
             <div
               key={opt.id}

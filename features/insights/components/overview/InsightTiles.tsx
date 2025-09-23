@@ -1,24 +1,50 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { cn } from '@/shared/lib/utils';
+
 export default function InsightTiles({
   metrics,
 }: {
   metrics: {
     title: string;
-    count: any;
+    count: string | number;
     highlight?: boolean;
   }[];
 }) {
   return (
     <div className="grid grid-cols-3 gap-4">
       {metrics.map(({ title, count, highlight }, idx) => (
-        <div
+        <Card
           key={idx}
-          className={`rounded-xl shadow-md p-6 text-center ${
-            highlight ? 'bg-[#ff8e6e] text-white' : 'bg-white'
-          }`}
+          className={cn(
+            'py-4',
+            highlight ? 'bg-primary-blue text-white' : 'bg-white'
+          )}
         >
-          <div className="text-4xl font-bold">{count}</div>
-          <div className="text-sm font-semibold mt-2">{title}</div>
-        </div>
+          <CardContent className="gap-6 flex flex-col px-4 h-full">
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle
+                className={cn('text-sm opacity-70', highlight && 'text-white opacity-100')}
+              >
+                {title}
+              </CardTitle>
+            </div>
+            <CardContent className="px-0 mt-auto">
+              <CardDescription
+                className={cn(
+                  'text-2xl font-medium',
+                  highlight && 'text-white  opacity-70'
+                )}
+              >
+                {count}
+              </CardDescription>
+            </CardContent>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

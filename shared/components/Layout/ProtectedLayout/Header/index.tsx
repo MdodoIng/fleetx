@@ -64,6 +64,7 @@ const Header: React.FC = () => {
           handleChangeBranch={handleClickBranch}
           handleChangeVender={handleChangeVender}
           handleClear={handleClear}
+          
         />
         
       ) : (

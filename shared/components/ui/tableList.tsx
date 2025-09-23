@@ -111,7 +111,7 @@ function TableSigleListContent({
     <div
       data-slot="table-sigle-list-content"
       className={cn(
-        'flex flex-col p-3 shrink-0 relative z-0 rounded-[8px] border border-dark-grey/50  max-md:max-w-[150px]',
+        'flex flex-col p-3 shrink-0 relative z-0 rounded-[8px] border border-dark-grey/10  max-md:max-w-[150px]',
         className
       )}
       {...props}

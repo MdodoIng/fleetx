@@ -232,7 +232,7 @@ export const reportService = {
     refBy: string,
     fromDate?: Date | null,
     toDate?: Date | null,
-    ref_type: any = 1
+    ref_type = 1
   ): string {
     const { getFormattedDate } = useSharedStore.getState();
     const { selectedAffiliator } = useOrderStore.getState();

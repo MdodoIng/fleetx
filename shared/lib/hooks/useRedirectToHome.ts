@@ -15,15 +15,44 @@ export function useRedirectToHome() {
 
   const redirectToHomeLogic = async () => {
     if (lastPathname) {
-      const allowedRoute = Object.values(routes).find(
-        (route) => route.path === lastPathname
+      const cleanLastPathname = lastPathname.startsWith('/')
+        ? lastPathname
+        : `/${lastPathname}`;
+
+      let allowedRoute = Object.values(routes).find(
+        (route) => route.path === cleanLastPathname
       );
-      if (
-        allowedRoute &&
-        allowedRoute.roles?.some((role) => user?.roles?.includes(role))
-      ) {
-        router.push(lastPathname);
+
+      if (!allowedRoute) {
+        allowedRoute = Object.values(routes).find((route) => {
+          const routeParts = route.path.split('/');
+          const pathParts = cleanLastPathname.split('/');
+
+          if (routeParts.length !== pathParts.length) return false;
+
+          return routeParts.every((part, index) => part === pathParts[index]);
+        });
+      }
+
+      if (allowedRoute) {
+        if (allowedRoute.roles) {
+          if (user?.roles?.some((role) => allowedRoute.roles!.includes(role))) {
+            router.push(cleanLastPathname);
+          } else {
+            console.warn(
+              `User lacks required roles for ${cleanLastPathname}:`,
+              {
+                required: allowedRoute.roles,
+                userRoles: user?.roles,
+              }
+            );
+            router.push('/order/create');
+          }
+        } else {
+          router.push(cleanLastPathname);
+        }
       } else {
+        console.warn(`Route not found: ${cleanLastPathname}`);
         router.push('/order/create');
       }
       return;

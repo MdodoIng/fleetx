@@ -1,106 +1,86 @@
 'use client';
 
-import React, { useState } from 'react';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { cn } from '@/shared/lib/utils';
-import { format } from 'date-fns';
-import { CalendarIcon, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import InsightTiles from '@/features/insights/components/overview/InsightTiles';
 import FunnelChart from '@/features/insights/components/overview/FunnelChart';
 import useInsightBoard from '@/features/insights/hooks/useInsightBoard';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-
-interface DateRange {
-  from?: Date;
-  to?: Date;
-}
+import {
+    Dashboard,
+    DashboardContent,
+    DashboardHeader,
+    DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
 
 function Overview() {
-  const [date, setDate] = useState<DateRange>();
-
-  const {
-    selectedFromDate,
-    selectedToDate,
-    setSelectedFromDate,
-    setSelectedToDate,
-    metrics,
-  } = useInsightBoard();
+  const { date, setDate, metrics } = useInsightBoard();
 
   const { exportOrdersToCSV } = useTableExport();
 
-  const handleDateSelect = (range: DateRange) => {
-    setDate(range);
-    if (range?.from) setSelectedFromDate(range.from);
-    if (range?.to) setSelectedToDate(range.to);
-  };
+  const statisticsInsightTiles = [
+    { title: 'Sign ups', count: metrics.totalSignups },
+    { title: 'Total Recharges', count: metrics.totalRecharges },
+    {
+      title: 'Total First Time Recharges',
+      count: metrics.totalFirstTimeRecharges,
+    },
+    { title: 'Total Orders', count: metrics.totalOrders },
+    {
+      title: 'Total First Time Orders',
+      count: metrics.totalFirstTimeOrders,
+    },
+    {
+      title: 'Total Funnel Activated',
+      count: metrics.totalFunnelActivated,
+    },
+    { title: 'Active Count', count: metrics.activeBranchCount },
+    { title: 'Inactive Count', count: metrics.inactiveBranchCount },
+    {
+      title: 'Reactivated Count',
+      count: metrics.reactivatedFunnelCount,
+    },
+    {
+      title: 'UpToDate Active Count',
+      count: metrics.upToDateActiveCount,
+      highlight: true,
+    },
+  ];
+
+  const statisticsFunnelChart = [
+    { title: 'Signed up', count: metrics.totalSignups },
+    {
+      title: 'First Wallet Recharge',
+      count: metrics.firstWalletRecharges,
+      percentage: metrics.firstWalletRechargesPercentage,
+    },
+    {
+      title: 'Activated',
+      count: metrics.totalActivated,
+      percentage: metrics.totalActivatedPercentage,
+    },
+  ];
 
   return (
-    <div className="flex flex-col items-center bg-gray-50 p-4">
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <DateSelect value={date} onChangeAction={setDate}  />
+    <Dashboard className="h-auto sm:h-full">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        {/* Search and Filter */}
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
+          <DateSelect value={date} onChangeAction={setDate} />
+          <Button className="p-2 hover:bg-gray-100 rounded-lg">
+            <Download className="w-5 h-5" /> Export
+          </Button>
+        </div>
+      </DashboardHeader>
 
-        <Button className="p-2 hover:bg-gray-100 rounded-lg">
-          <Download className="w-5 h-5" /> Export
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InsightTiles
-          metrics={[
-            { title: 'Sign ups', count: metrics.totalSignups },
-            { title: 'Total Recharges', count: metrics.totalRecharges },
-            {
-              title: 'Total First Time Recharges',
-              count: metrics.totalFirstTimeRecharges,
-            },
-            { title: 'Total Orders', count: metrics.totalOrders },
-            {
-              title: 'Total First Time Orders',
-              count: metrics.totalFirstTimeOrders,
-            },
-            {
-              title: 'Total Funnel Activated',
-              count: metrics.totalFunnelActivated,
-            },
-            { title: 'Active Count', count: metrics.activeBranchCount },
-            { title: 'Inactive Count', count: metrics.inactiveBranchCount },
-            {
-              title: 'Reactivated Count',
-              count: metrics.reactivatedFunnelCount,
-            },
-            {
-              title: 'UpToDate Active Count',
-              count: metrics.upToDateActiveCount,
-              highlight: true,
-            },
-          ]}
-        />
-        <FunnelChart
-          data={[
-            { title: 'Signed up', count: metrics.totalSignups },
-            {
-              title: 'First Wallet Recharge',
-              count: metrics.firstWalletRecharges,
-              percentage: metrics.firstWalletRechargesPercentage,
-            },
-            {
-              title: 'Activated',
-              count: metrics.totalActivated,
-              percentage: metrics.totalActivatedPercentage,
-            },
-          ]}
-        />
-      </div>
-    </div>
+      {/* Statistics Cards */}
+      <DashboardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <InsightTiles metrics={statisticsInsightTiles} />
+        <FunnelChart data={statisticsFunnelChart} />
+      </DashboardContent>
+    </Dashboard>
   );
 }
 
