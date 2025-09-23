@@ -111,7 +111,7 @@ export const routes: Routes = {
     path: '/wallet/balance-report',
     title: 'layout.menuItems.walletSubMenu.balanceReport.title',
     subtitle: 'layout.menuItems.walletSubMenu.balanceReport.subtitle',
-    icon: 'myWallet',
+    icon: 'balanceReport',
     roles: ['FINANCE_MANAGER', 'OPERATION_MANAGER', 'SALES_HEAD'],
   },
   BILLING_EDIT_PROFILE: {
@@ -380,12 +380,12 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
       },
     ],
   },
-  {
-    labelKey: routes.SALES_FUNNEL.title,
-    route: routes.SALES_FUNNEL.path,
-    roles: routes.SALES_FUNNEL.roles,
-    icon: routes.SALES_FUNNEL.icon,
-  },
+  // {
+  //   labelKey: routes.SALES_FUNNEL.title,
+  //   route: routes.SALES_FUNNEL.path,
+  //   roles: routes.SALES_FUNNEL.roles,
+  //   icon: routes.SALES_FUNNEL.icon,
+  // },
   {
     labelKey: routes.RATING.title,
     route: routes.RATING.path,

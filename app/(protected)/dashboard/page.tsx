@@ -1,34 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useCallback } from 'react';
 
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
-import {
-  useAuthStore,
-  useOrderStore,
-  useSharedStore,
-  useVenderStore,
-} from '@/store';
-import { Calendar } from '@/shared/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { Button } from '@/shared/components/ui/button';
+import { useOrderStore, useSharedStore, useVenderStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
 import { reportService } from '@/shared/services/report';
 import { fleetService } from '@/shared/services/fleet';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import {
   Card,
   CardContent,
@@ -48,33 +25,15 @@ import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-
-// Type definitions
-interface DashboardData {
-  total_delivery_fees: number;
-  total_cash_collected: number;
-  total_failed_orders: number;
-  delivery_models: {
-    on_demand: number;
-    grouped: number;
-    bulk: number;
-  };
-  payment_methods: {
-    cod: number;
-    online: number;
-  };
-}
-
-interface Driver {
-  fleet_id: string;
-  name: string;
-}
-
-// Updated DateRange to allow `from` and `to` to be optional, matching react-day-picker's DateRange type
-interface DateRange {
-  from?: Date;
-  to?: Date;
-}
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover';
+import { Calendar } from '@/shared/components/ui/calendar';
+import { Button } from '@/shared/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   total_delivery_fees: 0,
@@ -85,20 +44,17 @@ const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
 };
 
 function DashboardCompoent() {
-  const { appConstants, readAppConstants } = useSharedStore();
-  const { driverId, setValue } = useOrderStore();
+  const { appConstants } = useSharedStore();
   const { showDriversFilter } = useVenderStore();
 
   const [dashboardData, setDashboardData] =
     useState<TypeDashboardDetailsResponse['data']>(defaultDashboardData);
-  const [driverList, setDriverList] =
-    useState<TypeFleetDriverResponse['data']>();
 
   const [date, setDate] = useState<DateRange>({
-    from: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    from: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     to: new Date(),
   });
-  const [selectedDriver, setSelectedDriver] = useState<string>();
+  const [selectedDriver, setSelectedDriver] = useState<string | undefined>();
 
   const {
     total_delivery_fees: totalDeliveryFees = 0,
@@ -108,7 +64,7 @@ function DashboardCompoent() {
     payment_methods: { cod = 0, online = 0 } = {},
   } = dashboardData;
 
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = async () => {
     if (!date.from || !date.to) {
       return;
     }
@@ -116,7 +72,7 @@ function DashboardCompoent() {
       const dashboardUrl = reportService.getDashboardUrl({
         selectedFromDate: date.from,
         selectedToDate: date.to,
-        selectedDriver,
+        searchDriver: selectedDriver!,
       });
 
       const dashboardResult =
@@ -130,30 +86,14 @@ function DashboardCompoent() {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }
+  };
+
+  useEffect(() => {
+    const fetc = async () => {
+      await fetchDashboardData();
+    };
+    fetc();
   }, [date.from, date.to, selectedDriver]);
-
-  const fetchDriverData = useCallback(async () => {
-    if (!showDriversFilter) return;
-
-    try {
-      const driverResult = await fleetService.getDriver();
-
-      if (driverResult.data) {
-        setDriverList(driverResult.data);
-      }
-    } catch (error: any) {
-      console.error('Error fetching driver data:', error);
-      setDriverList(undefined);
-    }
-  }, [showDriversFilter]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, [date, fetchDashboardData, driverId]);
-
-  useEffect(() => {
-    fetchDriverData();
-  }, [fetchDriverData]);
 
   const totalToPay = parseFloat(
     (totalCashCollected - totalDeliveryFees).toFixed(2)
@@ -169,19 +109,6 @@ function DashboardCompoent() {
     deliveryFee: totalToPay > 0 ? 'bg-red-100' : 'bg-green-100',
     cashCollected: totalToPay > 0 ? 'bg-green-100' : 'bg-red-100',
     totalToPay: totalToPay > 0 ? 'bg-green-100' : 'bg-red-100',
-  };
-
-  const cardImages = {
-    deliveryFee:
-      totalToPay > 0
-        ? '/images/delivery_red.png'
-        : '/images/delivery_green.png',
-    cashCollected:
-      totalToPay > 0
-        ? '/images/cash_collected_green.png'
-        : '/images/cash_collected_red.png',
-    totalToPay:
-      totalToPay > 0 ? '/images/price_green.svg' : '/images/price_red.svg',
   };
 
   const statisticsCards = Object.entries({
@@ -248,7 +175,7 @@ function DashboardCompoent() {
               onChangeAction={setSelectedDriver}
             />
           )}
-          <DateSelect value={date} onChangeAction={setDate}  />
+          <DateSelect value={date} setDate={setDate} />
         </div>
       </DashboardHeader>
 

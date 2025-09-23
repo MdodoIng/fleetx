@@ -1,13 +1,13 @@
 import React from 'react';
 
-interface IntegrationsIconProps {
+interface IconProps {
   width?: number;
   height?: number;
   color?: string;
   className?: string;
 }
 
-export const PasswordIcon: React.FC<IntegrationsIconProps> = ({
+export const PasswordIcon: React.FC<IconProps> = ({
   width = 24,
   height = 24,
   color = 'currentColor',
