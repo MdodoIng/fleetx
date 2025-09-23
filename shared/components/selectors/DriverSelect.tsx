@@ -1,4 +1,4 @@
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import {
   Dispatch,
   SetStateAction,
@@ -17,7 +17,7 @@ type Props = {
 };
 
 function DriverSelect({ value, onChangeAction }: Props) {
-  const { showDriversFilter } = useVenderStore();
+  const { showDriversFilter } = useVendorStore();
   const t = useTranslations();
 
   const [driverLists, setDriverLists] = useState<
@@ -55,7 +55,7 @@ function DriverSelect({ value, onChangeAction }: Props) {
     <SearchableSelect
       options={options}
       value={value}
-         classNameFroInput='border-none'
+      classNameFroInput='border-none'
       onChangeAction={onChangeAction}
       placeholder={t('component.features.orders.live.search.driver')}
     />

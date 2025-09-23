@@ -14,7 +14,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 
 interface DeliverySummary {
   totalOrders: number;
@@ -35,8 +35,8 @@ interface OrderState {
   orderStatusListData: TypeOrderHistoryList[] | undefined;
   totalCountList: number;
   estimatedDeliveryReturnFromApi:
-    | TypeEstimatedDeliveryReturnFromApi
-    | undefined;
+  | TypeEstimatedDeliveryReturnFromApi
+  | undefined;
   deliverySummary: DeliverySummary | null;
   orderHistoryListData: TypeOrderHistoryList[] | undefined;
   OLDER_DATE: string;
@@ -170,10 +170,10 @@ export const useOrderStore = create<OrderState>()(
             order.to = element.drop_off.address
               ? element.drop_off.address
               : element.drop_off.area +
-                ', ' +
-                element.drop_off.block +
-                ', ' +
-                element.drop_off.street;
+              ', ' +
+              element.drop_off.block +
+              ', ' +
+              element.drop_off.street;
             order.creation_date = new Date(element.created_at).toLocaleString();
             order.amount_collected = element.amount_to_collect;
             if (element.delivery_distance) {

@@ -7,11 +7,11 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { InvoiceFormData, invoiceFormSchema } from '../validations/invoice';
 import { reportService } from '@/shared/services/report';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 
 export function useInvoiceForm() {
   const { branchId, selectedBranch, vendorId, selectedVendor } =
-    useVenderStore();
+    useVendorStore();
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceFormSchema),
     mode: 'onChange',

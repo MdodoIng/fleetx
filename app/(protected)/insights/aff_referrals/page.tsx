@@ -23,7 +23,7 @@ import { reportService } from '@/shared/services/report';
 import { useAuthStore } from '@/store';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { Download, X } from 'lucide-react';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Dashboard,

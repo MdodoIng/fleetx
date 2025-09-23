@@ -2,7 +2,7 @@ import {
   useAuthStore,
   useOrderStore,
   useSharedStore,
-  useVenderStore,
+  useVendorStore,
 } from '@/store';
 import { apiFetch } from '../lib/utils';
 import {
@@ -86,7 +86,7 @@ export const reportService = {
 
   getVenodrBarnchWalletUrl(url: string) {
     const { user } = useAuthStore.getState();
-    const { vendorId, branchId } = useVenderStore.getState();
+    const { vendorId, branchId } = useVendorStore.getState();
     switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
@@ -130,11 +130,11 @@ export const reportService = {
   }: {
     selectedFromDate?: Date;
     selectedToDate?: Date;
-     searchDriver?: string,
+    searchDriver?: string,
   }): string {
     const { getFormattedDate } = useSharedStore.getState();
     const { user } = useAuthStore.getState();
-    const { vendorId, branchId } = useVenderStore.getState();
+    const { vendorId, branchId } = useVendorStore.getState();
 
 
     const from = selectedFromDate ? getFormattedDate(selectedFromDate) : '';
@@ -303,7 +303,7 @@ export const reportService = {
   getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
-        '/funnel/retention/no-order-has-wallet/users',
+      '/funnel/retention/no-order-has-wallet/users',
       {
         method: 'GET',
       }
@@ -339,7 +339,7 @@ export const reportService = {
   getSalesFunnelRetention2Insight(): Promise<any> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
-        '/funnel/retention/no-order-has-wallet/insights',
+      '/funnel/retention/no-order-has-wallet/insights',
       {
         method: 'GET',
       }

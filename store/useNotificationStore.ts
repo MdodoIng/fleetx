@@ -12,11 +12,11 @@ export interface NotificationState {
   busyModeData: any;
   busyModeDisplayMessage: string;
   warningMessage:
-    | {
-        message: string;
-        isEnableToggleButton: boolean;
-      }
-    | undefined;
+  | {
+    message: string;
+    isEnableToggleButton: boolean;
+  }
+  | undefined;
 }
 
 export interface NotificationActions {
@@ -133,27 +133,23 @@ export const useNotificationStore = create<
           currentDate < expiredAt && currentDate > warnedAt
             ? currentDate < activatedAt
               ? get().getBusyModeWarnedMessage(
-                  data.mode_type,
-                  get().getDurationOfTimeInMinutes(activatedAt, expiredAt)
-                )
+                data.mode_type,
+                get().getDurationOfTimeInMinutes(activatedAt, expiredAt)
+              )
               : get().getBusyModeActivatedMessage(
-                  data.mode_type,
-                  `${expiredAt.getHours()}:${expiredAt.getMinutes()}`
-                )
+                data.mode_type,
+                `${expiredAt.getHours()}:${expiredAt.getMinutes()}`
+              )
             : '';
 
         set({ busyModeDisplayMessage: message });
       },
 
       getOperationalHoursTimer: () => {
-        const { triggerCalculatedTrend, currentZoneId } =
-          useSharedStore.getState();
-
         notificationService.getOperationTimeApi().then(
           (res: any) => {
             if (res.data) {
               get().setOperationalHoursDisplayMessage(res.data);
-              triggerCalculatedTrend(currentZoneId!);
             }
           },
           (err: any) => {

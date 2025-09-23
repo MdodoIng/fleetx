@@ -31,14 +31,14 @@ export default function BinaryToggle({
       onClick={toggle}
       className={cn(
         'relative w-12 h-6 rounded-full transition-colors duration-300',
-        value === 2 ? 'bg-primary-blue' : 'bg-gray-300',
+        value === 1 ? 'bg-primary-blue' : 'bg-gray-300',
         className
       )}
     >
       <span
         className={cn(
           'absolute top-0.5  h-5 w-5 rounded-full bg-white transition-all duration-300',
-          value === 2 ? 'left-[calc(100%-22px)]' : 'left-0.5',
+          value === 1 ? 'left-[calc(100%-22px)]' : 'left-0.5',
           classNameForThumb
         )}
       />

@@ -26,7 +26,7 @@ export const pickUpSchema = z.object({
 });
 
 export const dropOffSchema = z.object({
-  order_index: z.string().min(2),
+  order_index: z.string().min(1),
   customer_name: z
     .string()
     .min(1, 'Customer name is required')
@@ -45,8 +45,8 @@ export const dropOffSchema = z.object({
   building_id: z.any(),
   latitude: z.any(),
   longitude: z.any(),
-  apartment_no: z.string().min(2),
-  floor: z.string().min(2),
+  apartment_no: z.string().optional(),
+  floor: z.string().optional(),
   additional_address: z.string().optional(),
   amount_to_collect: z.any().optional(),
 });

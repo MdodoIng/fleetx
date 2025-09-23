@@ -9,14 +9,14 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
 import { useEffect, useState } from 'react';
 import { RecentTransactions } from '@/features/wallet/components/overview/RecentTransactions';
 import DeliveryPricingCard from '@/features/wallet/components/overview/DeliveryPricingCard';
 
 export default function WalletPage() {
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const {
     setTabBasedOnRole,
 
@@ -39,10 +39,10 @@ export default function WalletPage() {
     };
     fetchData();
   }, [
-    venderStore.branchId,
-    venderStore.vendorId,
-    venderStore.selectedBranch,
-    venderStore.selectedVendor,
+    vendorStore.branchId,
+    vendorStore.vendorId,
+    vendorStore.selectedBranch,
+    vendorStore.selectedVendor,
     handleAddCredit,
   ]);
 

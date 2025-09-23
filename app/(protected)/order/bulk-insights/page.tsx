@@ -37,7 +37,7 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { useOrderStore, useVenderStore } from '@/store';
+import { useOrderStore, useVendorStore } from '@/store';
 import { fleetService } from '@/shared/services/fleet';
 import { useTranslations } from 'next-intl';
 import {
@@ -61,7 +61,7 @@ export default function BulkInsightsDashboard() {
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(),
   });
-    const [selectedDriver, setSelectedDriver] = useState<string>();
+  const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const [bulkInsightsData, setBulkInsightsData] = useState({
     created_count: 0,
@@ -125,7 +125,7 @@ export default function BulkInsightsDashboard() {
     },
   ]);
 
-  const { isEditDetails, showDriversFilter } = useVenderStore();
+  const { isEditDetails, showDriversFilter } = useVendorStore();
 
 
   const BUDDY_QUEUED = 15;
@@ -230,7 +230,7 @@ export default function BulkInsightsDashboard() {
               onChangeAction={setSelectedDriver}
             />
           )}
-          <DateSelect value={date} onChangeAction={setDate}  />
+          <DateSelect value={date} onChangeAction={setDate} />
         </div>
       </DashboardHeader>
       <DashboardContent className="flex w-full flex-col items-center justify-start">
