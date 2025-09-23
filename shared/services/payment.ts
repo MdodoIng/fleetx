@@ -9,13 +9,12 @@ import {
   TypePrepareMashkorReq,
   TypeWalletNotifyBalanceRes,
 } from '../types/payment';
-import { AppappConfig, appConfig } from './app-config';
+import { appConfig } from './app-config';
 
 export const paymentService = {
   confirmWalletNotifyBalance(request: TypeBalanceAlertReq): Promise<any> {
     return apiFetch(
-      appConfig.paymentServiceApiUrl() +
-        '/wallet/settings/balance-alert/add',
+      appConfig.paymentServiceApiUrl() + '/wallet/settings/balance-alert/add',
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -134,23 +133,17 @@ export const paymentService = {
   },
 
   addMashkorCredit(request: TypeCreateDebitMashkorReq): Promise<any> {
-    return apiFetch(
-      appConfig.paymentServiceApiUrl() + '/add/mashkor-credit',
-      {
-        method: 'POST',
-        body: JSON.stringify(request),
-      }
-    );
+    return apiFetch(appConfig.paymentServiceApiUrl() + '/add/mashkor-credit', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
   },
 
   addMashkorDebit(request: TypeCreateDebitMashkorReq): Promise<any> {
-    return apiFetch(
-      appConfig.paymentServiceApiUrl() + '/add/mashkor-debit',
-      {
-        method: 'POST',
-        body: JSON.stringify(request),
-      }
-    );
+    return apiFetch(appConfig.paymentServiceApiUrl() + '/add/mashkor-debit', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
   },
 
   getBalanceOfBranches(vendorId: string): Promise<any> {

@@ -10,7 +10,10 @@ import {
   SidebarIconProps,
   PasswordIcon,
   BillIcon,
+  PeopleListIcon,
+  BalanceReportIcon,
 } from './index';
+import { UserPlus, Users } from 'lucide-react';
 
 // Icon mapping for dynamic rendering
 export const iconMap: Record<
@@ -25,6 +28,10 @@ export const iconMap: Record<
   integrations: IntegrationsIcon,
   password: PasswordIcon,
   bill: BillIcon,
+  peopleList: PeopleListIcon,
+  userPlus: UserPlus,
+  users: Users,
+  balanceReport: BalanceReportIcon,
 };
 
 // Get icon component by type

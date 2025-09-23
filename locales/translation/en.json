@@ -1,65 +1,254 @@
 {
   "layout": {
     "menuItems": {
-      "dashboard": "Dashboard",
+      "dashboard": {
+        "title": "Dashboard",
+        "subtitle": "View key metrics and insights"
+      },
       "order": "Order",
       "orderSubMenu": {
-        "newOrder": "New Order",
-        "bulkOrder": "Bulk Order",
-        "orderStatus": "Order Status",
-        "liveOrder": "Active Order",
-        "history": "History",
-        "bulkInsights": "Bulk Insights"
+        "newOrder": {
+          "title": "New Order",
+          "subtitle": "Place your Order here"
+        },
+        "bulkOrder": {
+          "title": "Bulk Order",
+          "subtitle": "Place your Bulk Order here"
+        },
+        "orderStatus": {
+          "title": "Order Status",
+          "subtitle": "Check your Order Status here"
+        },
+        "liveOrder": {
+          "title": "Active Order",
+          "subtitle": "Check your Active Order here"
+        },
+        "history": {
+          "title": "History",
+          "subtitle": "Check your Order History here"
+        },
+        "bulkInsights": {
+          "title": "Bulk Insights",
+          "subtitle": "Check your Bulk Insights here"
+        }
       },
       "vendor": "Vendor",
       "vendorSubMenu": {
-        "vendorList": "Vendor List",
-        "addNewVendor": "Add New Vendor",
-        "users": "Users",
-        "accountManager": "Account Manager"
+        "vendorList": {
+          "title": "Vendor List",
+          "subtitle": "View all your registered vendors"
+        },
+        "addNewVendor": {
+          "title": "Add New Vendor",
+          "subtitle": "Register a new vendor account"
+        },
+        "users": {
+          "title": "Users",
+          "subtitle": "Manage vendor user accounts"
+        },
+        "accountManager": {
+          "title": "Account Manager",
+          "subtitle": "Assign and manage account managers"
+        }
       },
       "wallet": "Wallet",
       "walletSubMenu": {
-        "myWallet": "My Wallet",
-        "history": "History",
-        "paymentHistory": "Payment History",
-        "manualPayment": "Manual Payment",
-        "balanceReport": "Balance Report"
+        "myWallet": {
+          "title": "My Wallet",
+          "subtitle": "Check your current wallet balance"
+        },
+
+        "history": {
+          "title": "History",
+          "subtitle": "View your wallet transaction history"
+        },
+        "paymentHistory": {
+          "title": "Payment History",
+          "subtitle": "Review all past payment transactions"
+        },
+        "manualPayment": {
+          "title": "Manual Payment",
+          "subtitle": "Make a manual payment to your wallet"
+        },
+        "balanceReport": {
+          "title": "Balance Report",
+          "subtitle": "Generate a report of your wallet balance"
+        }
       },
       "billing": "Billing",
       "billingSubMenu": {
-        "editProfile": "Edit Profile",
-        "invoice": "Invoice"
+        "editProfile": {
+          "title": "Edit Profile",
+          "subtitle": "Update your company billing information for invoices"
+        },
+        "invoice": {
+          "title": "Invoice",
+          "subtitle": "View and download your invoices"
+        }
       },
       "insights": "Insights",
       "insightsSubMenu": {
-        "overview": "Overview",
-        "churnReasons": "Churn Reasons",
-        "firstOrder": "First Order",
-        "affReferrals": "Affiliator Referrals",
-        "userReferrals": "User Referrals",
-        "zoneGrowth": "Zone Growth"
+        "overview": {
+          "title": "Overview",
+          "subtitle": "See a summary of your key metrics"
+        },
+        "churnReasons": {
+          "title": "Churn Reasons",
+          "subtitle": "Understand why customers are leaving"
+        },
+        "firstOrder": {
+          "title": "First Order",
+          "subtitle": "Analyze data related to first-time orders"
+        },
+        "affReferrals": {
+          "title": "Affiliator Referrals",
+          "subtitle": "Track referrals from affiliators"
+        },
+        "userReferrals": {
+          "title": "User Referrals",
+          "subtitle": "Monitor user-generated referrals"
+        },
+        "zoneGrowth": {
+          "title": "Zone Growth",
+          "subtitle": "View growth trends across different zones"
+        }
       },
       "others": "Others",
       "othersSubMenu": {
-        "integrations": "Integrations"
+        "integrations": {
+          "title": "Integrations",
+          "subtitle": "Manage third-party integrations"
+        }
       },
-      "salesFunnel": "Sales Funnel",
-      "rating": "Rating",
-      "changePassword": "Change Password",
-      "logout": "Logout",
-      "systemConfiguration": "Configuration",
-      "busyModeHistory": "Busy Mode History",
-      "zoneBusyModeHistory": "Zone Busy Mode History",
-      "integration": "Integration",
-      "editPickUp": "Edit Pick up"
+      "salesFunnel": {
+        "title": "Sales Funnel",
+        "subtitle": "Track customer journey through the sales process"
+      },
+      "rating": {
+        "title": "Rating",
+        "subtitle": "View and manage customer ratings"
+      },
+      "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Update your account password"
+      },
+      "logout": {
+        "title": "Logout",
+        "subtitle": "Sign out of your account"
+      },
+      "systemConfiguration": {
+        "title": "Configuration",
+        "subtitle": "Adjust system-wide settings"
+      },
+      "busyModeHistory": {
+        "title": "Busy Mode History",
+        "subtitle": "View records of busy mode activations"
+      },
+      "zoneBusyModeHistory": {
+        "title": "Zone Busy Mode History",
+        "subtitle": "Review busy mode history by zone"
+      },
+      "integration": {
+        "title": "Integration",
+        "subtitle": "Connect with external services"
+      },
+      "editPickUp": {
+        "title": "Edit Pick up",
+        "subtitle": "Modify pickup location details"
+      }
     },
-    "profile" : {
-      "changePassword" : "Change Password",
-      "editBilling": "Edit Billing Profile ",
-      "logout":"Logout"
+    "profile": {
+      "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Update your profile password"
+      },
+      "editBilling": {
+        "title": "Edit Billing Profile ",
+        "subtitle": "Update your billing details"
+      },
+      "logout": {
+        "title": "Logout",
+        "subtitle": "Sign out from your profile"
+      }
     }
   },
+
+  "deliveryModel": {
+    "unidentified": "Unidentified",
+    "individual": "Individual",
+    "group": "Group",
+    "bulk": "Bulk",
+    "massDeliveries": "Mass deliveries",
+    "superSaverIndividual": "Super Saver Individual",
+    "superSaverGroup": "Super Saver Group"
+  },
+  "orderStatus": {
+    "NEW": {
+      "default": "NEW",
+      "history": "Order placed."
+    },
+    "CONFIRMED": {
+      "default": "CONFIRMED",
+      "history": "Order confirmed."
+    },
+    "BUDDY_UNASSIGNED": {
+      "default": "BUDDY_UNASSIGNED",
+      "history": "Awaiting driver."
+    },
+    "BUDDY_ASSIGNED": {
+      "default": "BUDDY_ASSIGNED",
+      "history": "Driver assigned."
+    },
+    "BUDDY_QUEUED": {
+      "default": "BUDDY_QUEUED",
+      "history": "Order in driver's queue."
+    },
+    "BUDDY_DECLINED": {
+      "default": "BUDDY_DECLINED",
+      "history": "Driver declined; reassigning."
+    },
+    "BUDDY_ACCEPTED": {
+      "default": "BUDDY_ACCEPTED",
+      "history": "Driver accepted; en route."
+    },
+    "PICKUP_STARTED": {
+      "default": "PICKUP_STARTED",
+      "history": "Driver picking up order."
+    },
+    "ARRIVED_PICKUP": {
+      "default": "ARRIVED_PICKUP",
+      "history": "Driver arrived at pickup."
+    },
+    "PICKED_UP": {
+      "default": "PICKED_UP",
+      "history": "Order picked up."
+    },
+    "RESCHEDULED": {
+      "default": "RESCHEDULED",
+      "history": "Order rescheduled."
+    },
+    "IN_DELIVERY": {
+      "default": "IN_DELIVERY",
+      "history": "Order in delivery."
+    },
+    "ARRIVED_DESTINATION": {
+      "default": "ARRIVED_DESTINATION",
+      "history": "Order arrived."
+    },
+    "DELIVERED": {
+      "default": "DELIVERED",
+      "history": "Order delivered."
+    },
+    "CANCELED": {
+      "default": "CANCELED",
+      "history": "Order canceled."
+    },
+    "DELIVERY_FAILED": {
+      "default": "DELIVERY_FAILED",
+      "history": "Delivery failed. Contact support."
+    }
+  },
+
   "apiMessages": {
     "DATA_NOT_FOUND": "Data not found for the specific record",
     "INVALID_REQUEST": "Invalid request",
@@ -271,6 +460,277 @@
       },
       "header": {
         "title": "👋 Hi, Welcome to FleetX"
+      }
+    },
+
+    "features": {
+      "orders": {
+        "walletCard": {
+          "title": "Wallet Balance:",
+          "button": "Recharge"
+        },
+        "create": {
+          "pickUpForm": {
+            "title": "Pick Up",
+            "subtitle": "Our team will collect your Parcel from here"
+          },
+          "dropOffForm": {
+            "title": "Drop-off Point <index>{value}</index>",
+            "subtitle": "We'll deliver your order here",
+            "add-dropoff": "Add Drop-off <index>{value}</index>"
+          },
+
+          "form": {
+            "senderName": {
+              "label": "Sender Name*",
+              "placeholder": "Manas Abdullah"
+            },
+            "phone": {
+              "label": "Phone*",
+              "placeholder1": "+965",
+              "placeholder2": "12345678",
+              "warning-for-droppoff": "We’ll fill your saved address if the number was used before. You can edit it"
+            },
+            "recipientName": {
+              "label": "Recipient Name*",
+              "placeholder": "Enter Customer Name"
+            },
+            "address": {
+              "label": "Address*",
+              "placeholder": "Select Area, Block, Street..."
+            },
+            "apartment": {
+              "label": "Apartment No. (Optional)",
+              "placeholder": "eg: 5"
+            },
+            "floor": {
+              "label": "Floor (Optional)",
+              "placeholder": "eg: Floor 3"
+            },
+            "additionalAddress": {
+              "label": "Additional Address (Optional)",
+              "placeholder": "eg: Mazaya"
+            },
+            "orderNumber": {
+              "label": "Order No. (Optional)",
+              "placeholder": "Enter Order no. – for your records"
+            },
+            "collectCash": {
+              "label": "Collect Cash from Recipient"
+            },
+            "amount": {
+              "default": "Amount",
+              "label": "Amount ({value})",
+              "placeholder": "{value} 0.00"
+            },
+
+            "latitude": {
+              "label": "Latitude",
+              "placeholder": "Enter Latitude"
+            },
+            "longitude": {
+              "label": "Longitude",
+              "placeholder": "Enter Longitude"
+            }
+          },
+          "footer": {
+            "orderDetails": "Order Details",
+            "distance": "Distance:",
+            "drop-off": "Drop-off:",
+            "estTime": "Est. Time:",
+            "min": "Min",
+            "deliveryFee": "Delivery Fee:",
+            "button": {
+              "cancel": "Cancel",
+              "createOrder": "Create Order"
+            }
+          }
+        },
+        "live": {
+          "search": {
+            "default": "Search by Order No, Customer, Phone",
+            "order": "Search Order No ",
+            "customer": "Search Customer",
+            "driver": "Select an Driver"
+          },
+
+          "order": {
+            "title": "Orders",
+            "subtitle": "Here you can find a list of all active order"
+          },
+          "tracking": {
+            "title": "Live Tracking",
+            "subtitle": "Track your order live right here",
+            "driver": {
+              "defult": "Driver",
+              "call": "Call Driver"
+            }
+          },
+          "details": {
+            "title": "Order Details",
+            "subtitle": "Detailed Overview of Your Order Process",
+            "payment-method": "Payment Method",
+            "delivery-fee": "Delivery Fee",
+            "staus-history": {
+              "in-progress": "In Progress",
+              "pending": "pending"
+            },
+
+            "orderNo": "Order No",
+            "sender": "Sender",
+            "receiver": "Receiver",
+            "noDriverAssigned": "No Driver Assigned",
+            "driverQueued": "A driver is queued for pickup, will be assigned shortly",
+            "payment": "Payment"
+          },
+
+          "status-map": {
+            "CONFIRMED": {
+              "title": "Confirmed Orders",
+              "subtitle": "All your confirmed orders are listed here"
+            },
+            "DRIVER_ASSIGNED": {
+              "title": "Drivers Coming to You",
+              "subtitle": "Drivers are on their way to pick up your order"
+            },
+            "BUDDY_QUEUED": {
+              "title": "Waiting for Pickup",
+              "subtitle": "Your order is waiting for pickup"
+            },
+            "IN_DELIVERY": {
+              "title": "In Delivery",
+              "subtitle": "Your order is currently in delivery"
+            }
+          },
+
+          "mins": "Mins",
+          "edit-drope-location": "Edit Drope Location"
+        },
+
+        "history": {
+          "search": {
+            "order": "Search Order No ",
+            "customer": "Search Customer",
+            "driver": "Select an Driver",
+
+            "allOrder": "All Order",
+            "active": "Active",
+            "confirmed": "Confirmed",
+            "urgent": "Urgent",
+            "dateRange": "From Date - To Date"
+          }
+        },
+
+        "export": {
+          "title": "Export",
+          "subtitle": "Export your order data"
+        },
+
+        "save-changes": "Save changes",
+        "service-hours": "Service Hours:",
+        "alertMessage": "Alert Message:",
+        "edit-payment": "Edit Payment"
+      },
+      "wallet": {
+        "walletBalance": "Wallet Balance",
+        "lowBalanceAlert": "Low Balance Alert: <br></br> Add credit to continue placing orders",
+        "addCredit": "Add Credit",
+        "smartRecommendations": "Smart Recommendations?",
+        "detailedPricing": "Detailed Pricing",
+        "viewDetailedKmBasedPricing": "View Detailed Km-based Pricing here",
+        "flatDeliveryFee": "💰Flat Delivery Fee: 1 {value} (0–8 km)",
+        "baseFare": "Base Fare (0–8 km)",
+        "additionalPerKm": "Additional per km (after 8 km)",
+        "example": "Eg: 12Km Delivery= 1.00 {value} (base)+ 0.5 {value} (4 Extra Km)=3.00 {value}",
+        "alertSettings": "Alert Settings",
+        "getNotified": "Get notified before your balance runs out",
+        "notificationMethod": "Notification Method",
+        "email": "Email",
+        "phone": "Phone",
+        "notificationAlert": "🔔 You’ll receive an {methods} notification when your balance falls below {alertValue} {value}",
+        "saveSettings": "Save Settings",
+        "recentTransactions": "Recent Transactions",
+        "allConfirmedOrders": "All your confirmed orders are listed here",
+        "recommendations": {
+          "15": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(30-50 Orders/Month)"
+          },
+          "30": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(50-80 Orders/Month)"
+          },
+          "50": {
+            "label": "Perfect for small Restaurants",
+            "desc": "Covers 30-50 Orders",
+            "label2": "(80+Orders/Month)"
+          }
+        },
+        "smartRechargeRecommendation": "💡 Smart Recharge Recommendation",
+        "chargeWallet": "Charge your Wallet based on your monthly order volume to reduce",
+
+        "frequentRecharging": "Reduce frequent recharging. Quick top-up for faster ordering,",
+
+        "balanceWillBe": "Balance will be",
+        "deliveryCharge": "💰 Delivery Charge: 1.50 {value} per Order",
+        "paymentType": "Payment Type",
+        "selectPaymentType": "Select Payment Type",
+        "creditCard": "Credit Card",
+        "debitCard": "Debit Card",
+        "note": "Note",
+        "recharge-summary": "Recharge Summary",
+
+        "addNotesHere": "You can add some notes here",
+        "branch": "Branch",
+        "currentAmount": "Current Amount",
+        "rechargeAmount": "Recharge Amount",
+        "transaction-type": "Transaction Type",
+        "totalAmount": "Total Amount",
+        "creditAmount": "Credit Amount",
+        "balence": "Balence",
+        "user": "User"
+      },
+
+      "billing": {
+        "edit-profile": {
+          "title": "Here you can edit billing profile !",
+          "subtitle": "Please add/update your company billing Information below. The below details will be reflected in the generated invoice.",
+          "form": {
+            "company-legal-name": {
+              "label": "Company Legal Name",
+              "placeholder": "Company Legal Name"
+            },
+            "company-address": {
+              "label": "Company Address",
+              "placeholder": "Company Address"
+            },
+            "tax-identification-number": {
+              "label": "Tax Identification Number",
+              "placeholder": "TIN"
+            },
+
+            "save-changes": "Save Changes"
+          }
+        }
+      },
+      "config": {
+        "change-password": {
+          "oldPassword": {
+            "label": "Old Password",
+            "placeholder": "password"
+          },
+          "newPassword": {
+            "label": "New Password",
+            "placeholder": "password"
+          },
+          "confirmPassword": {
+            "label": "Confirm Password",
+            "placeholder": "password"
+          },
+          "changePassword": "Change Password"
+        }
       }
     }
   }

@@ -25,11 +25,7 @@
     width: min(94%, 1520px);
     margin-inline: auto;
   }
-  .border {
-    border-style: solid;
-    border-width: 1px;
-    border-color: antiquewhite;
-  }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -38,12 +34,7 @@
     display: none;
   }
 
-  .border-dark-grey\/25 {
-    @apply border-dark-grey/25;
-  }
-  .border-primary-blue {
-    @apply border-primary-blue;
-  }
+
 }
 
 ::-webkit-scrollbar {
@@ -65,9 +56,6 @@
 }
 
 @layer base {
-  * {
-    @apply border-none outline-none;
-  }
   body {
     @apply bg-white text-black;
   }

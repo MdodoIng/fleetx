@@ -35,8 +35,8 @@ export default function MyMap({
   center,
   style = mashkorMap,
   showRoute = true,
-  pickupIcon = '/images/map-marker.svg',
-  dropoffIcon = '/images/map-marker.svg',
+  pickupIcon = '/images/pickupIcon.png',
+  dropoffIcon = '/images/dropoffIcon.png',
 }: Props) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: environment.GOOGLE_KEY!,
@@ -48,7 +48,6 @@ export default function MyMap({
 
   const isArray = Array.isArray(center);
 
-  // Calculate bounds and center for multiple markers
   useEffect(() => {
     if (isArray && center.length >= 2 && mapRef.current) {
       const bounds = new google.maps.LatLngBounds();
@@ -59,7 +58,6 @@ export default function MyMap({
         }
       });
 
-      // Fit the map to show all markers with padding
       mapRef.current.fitBounds(bounds, {
         top: 50,
         right: 50,
@@ -70,6 +68,7 @@ export default function MyMap({
       setMapCenter({ lat: center.lat, lng: center.lng });
       setZoom(15);
     }
+    console.log(center);
   }, [center, isArray]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
@@ -144,7 +143,7 @@ export default function MyMap({
               : (center.lng ?? 47.9774),
           }}
           icon={{
-            url: isArray ? pickupIcon : '/images/map-marker.svg',
+            url: isArray ? pickupIcon : '/images/dropoffIcon.png',
             scaledSize: new google.maps.Size(40, 40),
             anchor: new google.maps.Point(20, 40),
           }}

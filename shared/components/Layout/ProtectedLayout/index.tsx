@@ -1,40 +1,42 @@
 'use client';
-import { withAuth } from './withAuth';
+
 import Header from './Header';
 import SideBar from './Sidebar';
-import { SearchX } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
-
-import { useSharedStore, useVenderStore } from '@/store';
-import { setBranchDetails, updateZoneAndSome } from '@/shared/services/header';
+import { useEffect } from 'react';
+import { useVenderStore } from '@/store';
+import {
+  setBranchDetails,
+  updateZoneAndSome,
+  setHeadingForVendorBranch,
+  getVendorList,
+} from '@/shared/services/header';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
-  header?: {
-    title: string;
-  };
 }
 
-const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children, header }) => {
-  const sharedStore = useSharedStore();
+const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   const venderStore = useVenderStore();
-  useEffect(() => {
-    async function callUpdateZone() {
-      await updateZoneAndSome();
-    }
-    callUpdateZone();
-    console.log('dfa');
-  }, [updateZoneAndSome]);
 
-  useMemo(async () => {
-    await setBranchDetails();
+  useEffect(() => {
+    async function init() {
+      await updateZoneAndSome();
+      await setBranchDetails();
+      await setHeadingForVendorBranch();
+    }
+
+    init();
   }, [venderStore.branchId, venderStore.vendorId]);
 
+  useEffect(() => {
+    getVendorList();
+  }, [venderStore.isSearchVenderParams]);
+
   return (
-    <section className="flex items-start justify-start h-svh  w-full">
-      <SideBar header={header} />
-      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0">
-        <Header {...header} />
+    <section className="flex items-start justify-start h-svh w-full">
+      <SideBar />
+      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white">
+        <Header />
         {children}
       </div>
     </section>

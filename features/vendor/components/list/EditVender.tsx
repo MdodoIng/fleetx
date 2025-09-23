@@ -8,7 +8,13 @@ import {
   TypeEditVenderReq,
   TypeVender,
 } from '@/shared/types/vender';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useVenderStore } from '@/store';
 import { vendorService } from '@/shared/services/vender';
 import { Label } from '@/shared/components/ui/label';
@@ -30,8 +36,19 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import BranchEditForm from '../BranchEditForm';
-import { getAccountManagerList } from '@/shared/services/user';
+
 import { useAddUpdateVender } from '../../hooks/useAddUpdateVender';
+import userService from '@/shared/services/user';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
+import { Card, CardContent } from '@/shared/components/ui/card';
 
 type Props = {
   page: number;
@@ -56,7 +73,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
     console.log(item.id);
   };
 
-  const fetchVenderDetails = async () => {
+  const fetchVenderDetails = useCallback(async () => {
     if (venderStore.isEditVenderId) {
       try {
         const res = await vendorService.getVendorDetails(
@@ -68,11 +85,11 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
         console.log(error);
       }
     }
-  };
+  }, [venderStore.isEditVenderId]);
 
   async function fetchAccountManagerList() {
     try {
-      const res = await getAccountManagerList(1, 1000, null);
+      const res = await userService.getAccountManagerList(1, 1000, null);
 
       // @ts-ignore
       if (res?.data) {
@@ -90,7 +107,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
       await fetchAccountManagerList();
     };
     loadFetchVenderDetails();
-  }, []);
+  }, [fetchVenderDetails]);
 
   const tableData = venderData?.branches.map((item) => {
     return [
@@ -210,26 +227,7 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
 
   return (
     <>
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Edit Vendor Details
-          </h2>
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          <Button
-            onClick={() => venderStore.setValue('isEditVenderId', undefined)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <X className="w-5 h-5" /> Close
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-4 w-full py-10 px-10">
-        {/* Row with inputs + checkboxes */}
+      <Card className="w-full p-4 space-y-4 items-start">
         <div className="grid grid-cols-[300px_300px_auto] items-center gap-6">
           {/* Vendor Name */}
           <div className="space-y-1">
@@ -277,23 +275,37 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
         </div>
 
         {/* Add new branch link */}
-        <Button
-          type="button"
-          onClick={() => setIsCreateNewBranch(true)}
-          className="text-teal-500 font-semibold hover:underline"
-        >
+        <Button type="button" onClick={() => setIsCreateNewBranch(true)}>
           ADD NEW BRANCH
         </Button>
-      </div>
+      </Card>
 
       {tableData?.length ? (
         <>
-          <TableComponent
-            data={tableData as any}
-            page={page}
-            setPage={setPage}
-            nextSetItemTotal={nextSetItemTotal}
-          />
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSigleList key={idx}>
+                  <TableSigleListContents>
+                    {item.map((i, listIdx) => (
+                      <TableSigleListContent key={listIdx}>
+                        <TableSigleListContentTitle>
+                          <i.icon size={14} />
+                          {i.title}
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle
+                          className="line-clamp-2"
+                          onClick={i.onClick ? () => i.onClick() : undefined}
+                        >
+                          {i.value}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                    ))}
+                  </TableSigleListContents>
+                </TableSigleList>
+              ))}
+            </TableLists>
+          </Table>
           <Button
             onClick={() =>
               handelUpdate(
@@ -315,19 +327,14 @@ const EditVender = ({ page, nextSetItemTotal, setPage }: Props) => {
       {!isLoadingForm && (
         <Dialog open={!!venderStore.isEditVenderBranchId || isCreateNewBranch}>
           <DialogContent
-            showCloseButton={false}
+            // showCloseButton={false}
+            closeButtonOnClick={() =>
+              venderStore.setValue('isEditVenderBranchId', undefined)
+            }
             className="sm:w-[min(90%,700px)] sm:max-w-full"
           >
             <DialogHeader>
               <DialogTitle>Update branch</DialogTitle>
-              <DialogClose
-                asChild
-                onClick={() =>
-                  venderStore.setValue('isEditVenderBranchId', undefined)
-                }
-              >
-                <X />
-              </DialogClose>
             </DialogHeader>
 
             <BranchEditForm form={editVendorBranchForm} />

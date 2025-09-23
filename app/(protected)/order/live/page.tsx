@@ -1,19 +1,15 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
 import { Grid, List, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
-import {
-  TypeOrderHistoryList,
-  TypeOrderStatusHistoryHistory,
-} from '@/shared/types/orders';
+import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useVenderStore } from '@/store';
+import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
 import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
-import LoadingPage from '../../loading';
 import { Input } from '@/shared/components/ui/input';
 import { fleetService } from '@/shared/services/fleet';
 import {
@@ -23,120 +19,69 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/shared/lib/utils';
+import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
   const [ordernNumber, setOrdernNumber] = useState('');
-  const orderStore = useOrderStore();
-  const venderStore = useVenderStore();
-  const authStore = useAuthStore();
-  const [searchCustomer, setSearchCustomer] = useState('');
-
+  const [page, setPage] = useState(10);
+  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedDriver, setSelectedDriver] = useState<string>();
+  const isMobile = useMediaQuery('lg');
+
+  const orderStore = useOrderStore();
+  const authStore = useAuthStore();
+
+  const { isEditDetails, showDriversFilter } = useVenderStore();
 
   const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
-    orderStore?.orderHistoryListData &&
-      orderStore?.orderHistoryListData.length > 0
-      ? orderStore?.orderHistoryListData[0]
-      : ({} as TypeOrderHistoryList)
+    orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList)
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(10);
-  const { driverId, setValue } = useOrderStore();
-  const [driverList, setDriverList] =
-    useState<TypeFleetDriverResponse['data']>();
 
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
-
-  const isOrderLiveIsTable =
-    authStore.user?.roles?.some((role) =>
-      [
-        'OPERATION_MANAGER',
-        'FINANCE_MANAGER',
-        'VENDOR_ACCOUNT_MANAGER',
-        'SALES_HEAD',
-      ].includes(role as any)
-    ) ?? false;
-
-  const fetchOrderDetails = async () => {
-    setIsLoading(true);
-
-    const searchAll = authStore.user?.roles.includes('FINANCE_MANAGER')
-      ? null
-      : true;
-
-    const url = orderService.getOrderStatusUrl(
+  const url = useMemo(() => {
+    return orderService.getOrderStatusUrl(
       1,
       page,
       ordernNumber,
-      searchCustomer,
-      driverId!,
-      searchAll
+      searchTerm,
+      selectedDriver!,
+      authStore.user?.roles?.includes('VENDOR_USER') ? null : true
     );
+  }, [page, ordernNumber, searchTerm, selectedDriver, authStore.user?.roles]);
 
+  const fetchOrderDetails = useCallback(async () => {
+    setIsLoading(true);
     try {
       const res = await orderService.getOrderList(url);
-
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
-        if (orderStore.orderStatusListData) {
-          console.log(orderStore.orderStatusListData, 'fafa');
-          setSelectedOrder(orderStore.orderStatusListData[0]);
-        }
+        setSelectedOrder(res.data[0]);
       }
       setNextSetItemsToken(res.count! < page ? null : true);
-      setIsLoading(false);
     } catch (err: any) {
+      console.error('Error fetching orders:', err.message || err);
+    } finally {
       setIsLoading(false);
-
-      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
-      const errorMessage =
-        err.error?.message ||
-        err.message ||
-        'An unknown error occurred while fetching orders.';
-
-      console.error('Error in fetchOrderDetails:', errorMessage);
     }
-  };
-
-  const fetchDriverData = async () => {
-    if (!isOrderLiveIsTable) return;
-
-    try {
-      const driverResult = await fleetService.getDriver();
-
-      if (driverResult.data) {
-        setDriverList(driverResult.data);
-      }
-    } catch (error: any) {
-      console.error('Error fetching driver data:', error);
-      setDriverList(undefined);
-    }
-  };
+  }, [page, url]);
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
-      await fetchOrderDetails();
-    };
-    loadInitialOrders();
-  }, [
-    venderStore.selectedBranch?.id,
-    page,
-    venderStore.selectedVendor?.id,
-    driverId,
-    searchCustomer,
-    ordernNumber,
-  ]);
+    fetchOrderDetails();
+  }, [fetchOrderDetails]);
 
-  useEffect(() => {
-    fetchDriverData();
-  }, [isOrderLiveIsTable]);
-
-  const { statusHistory } = useOrderStatusHistory(
-    selectedOrder,
-    isOrderLiveIsTable
-  );
+  const { statusHistory } = useOrderStatusHistory(selectedOrder);
 
   useEffect(() => {
     if (
@@ -151,129 +96,111 @@ export default function OrderTrackingDashboard() {
     if (document.startViewTransition) {
       document.startViewTransition(() => {
         setIsStyleTabel(style);
+        setSelectedOrder(null);
       });
     } else {
       setIsStyleTabel(style);
+      setSelectedOrder(null);
     }
   }
 
+  const t = useTranslations('component.features.orders.live');
+
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
-
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        {!isOrderLiveIsTable && (
-          <div className="flex items-center justify-between ">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Active Orders
-            </h2>
-          </div>
-        )}
-
+    <Dashboard className="h-auto">
+      <DashboardHeader>
+        <DashboardHeaderRight />
         {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          {isOrderLiveIsTable ? (
-            <div className="flex items-center gap-5">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search Order No"
-                  value={ordernNumber}
-                  onChange={(e) => setOrdernNumber(e.target.value)}
-                  className=""
-                />
-              </div>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search Customer"
-                  value={searchCustomer}
-                  onChange={(e) => setSearchCustomer(e.target.value)}
-                  className=""
-                />
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5">
-                <Select
-                  value={String(driverId)}
-                  onValueChange={(value) => setValue('driverId', Number(value))}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select an Driver" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="null">All Driver</SelectItem>
-                    {driverList?.agents.map((item, idx) => (
-                      <SelectItem key={idx} value={String(item.fleet_id)}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ) : (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search by Order No, Customer, Phone"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 "
-              />
-            </div>
-          )}
-
-          <div
-            hidden={isOrderLiveIsTable}
-            className="flex gap-2 border bg-white rounded-md"
-          >
-            <button
-              onClick={() => handleTableChange('grid')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <Grid className="w-5 h-5 text-gray-600" />
-            </button>
-            <span className="h-auto bg-gray-200 w-0.5 " />
-            <button
-              onClick={() => handleTableChange('list')}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <List className="w-5 h-5 text-gray-600" />
-            </button>
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
+          <div className="relative  max-sm:w-full">
+            <Input
+              type="text"
+              placeholder={t('search.order')}
+              value={ordernNumber}
+              onChange={(e) => setOrdernNumber(e.target.value)}
+              className="!border-none !outline-none !ring-0 pr-10"
+            />
           </div>
-        </div>
-      </div>
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder={t('search.default')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0 pr-10"
+            />
+          </div>
 
-      {isOrderLiveIsTable ? (
-        <TableComponent
-          data={orderStore?.orderStatusListData!}
-          isRating={false}
-          page={page}
-          setPage={setPage}
-          fetchOrderDetails={fetchOrderDetails}
-          nextSetItemTotal={nextSetItemsToken}
-        />
-      ) : orderStore?.orderStatusListData &&
-        orderStore?.orderStatusListData?.length > 0 ? (
-        <>
-          {isStyleTabel === 'grid' && (
-            <GridComponent
-              orders={orderStore?.orderStatusListData!}
-              selectedOrder={selectedOrder}
-              setSelectedOrder={setSelectedOrder}
-              statusHistory={statusHistory}
+          {isEditDetails && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
             />
           )}
 
-          {isStyleTabel === 'list' && (
-            <ListComponent data={orderStore?.orderStatusListData!} />
-          )}
-        </>
-      ) : (
-        'Empty'
-      )}
-    </div>
+          <div
+            hidden={isEditDetails || isMobile}
+            className="flex items-center justify-center border broder-[#2828281A] rounded-md"
+            style={{
+              border: '1px solid #2828281A',
+            }}
+          >
+            {[
+              { type: 'grid', icon: Grid },
+              { type: 'list', icon: List },
+            ].map((item, idx) => (
+              <Fragment key={idx}>
+                <button
+                  onClick={() =>
+                    handleTableChange(item.type as typeof isStyleTabel)
+                  }
+                  className={cn(
+                    'px-3 py-2 hover:bg-gray-100 rounded-lg flex items-center justify-center h-full',
+                    isStyleTabel === item.type
+                      ? ' bg-[#EEF6FE] text-primary-blue'
+                      : ' bg-transparent text-dark-grey'
+                  )}
+                >
+                  <item.icon className="w-5 h-5 " />
+                </button>
+                <span className="h-full flex bg-[#2828281A] w-0.5 last:hidden" />
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </DashboardHeader>
+      <DashboardContent className="flex w-full">
+        {isEditDetails ? (
+          <TableComponent
+            page={page}
+            setPage={setPage}
+            fetchOrderDetails={fetchOrderDetails}
+            nextSetItemTotal={nextSetItemsToken}
+          />
+        ) : orderStore?.orderStatusListData &&
+          orderStore?.orderStatusListData?.length > 0 ? (
+          <>
+            {isStyleTabel === 'grid' && (
+              <GridComponent
+                selectedOrder={selectedOrder}
+                setSelectedOrder={setSelectedOrder}
+                statusHistory={statusHistory}
+              />
+            )}
+
+            {isStyleTabel === 'list' && (
+              <ListComponent
+                selectedOrder={selectedOrder}
+                setSelectedOrder={setSelectedOrder}
+                statusHistory={statusHistory}
+              />
+            )}
+          </>
+        ) : (
+          'Empty'
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }

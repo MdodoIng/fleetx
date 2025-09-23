@@ -1,8 +1,4 @@
-type RootTypeBranch = {
-  data: TypeBranch[];
-};
-
-type RootTypeBranchByBranchId = {
+export type RootTypeBranchByBranchId = {
   data: TypeBranch;
 };
 
@@ -296,4 +292,11 @@ export type TypeUpdateCompanyBillingRequest = {
   company_legal_name?: string;
   company_legal_address?: string;
   tin?: string;
+};
+
+export type TypeAffiliationLisRespoese = {
+  data: {
+    affiliation: unknown[];
+    api_auth: null;
+  };
 };

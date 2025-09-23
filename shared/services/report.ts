@@ -126,14 +126,16 @@ export const reportService = {
   getDashboardUrl({
     selectedFromDate,
     selectedToDate,
+    searchDriver,
   }: {
     selectedFromDate?: Date;
     selectedToDate?: Date;
+     searchDriver?: string,
   }): string {
     const { getFormattedDate } = useSharedStore.getState();
     const { user } = useAuthStore.getState();
     const { vendorId, branchId } = useVenderStore.getState();
-    const { driverId } = useOrderStore.getState();
+
 
     const from = selectedFromDate ? getFormattedDate(selectedFromDate) : '';
     const to = selectedToDate ? getFormattedDate(selectedToDate) : '';
@@ -172,8 +174,8 @@ export const reportService = {
         break;
     }
 
-    if (driverId) {
-      url += `&driver_id=${driverId}`;
+    if (searchDriver) {
+      url += `&driver_id=${searchDriver}`;
     }
 
     return url;

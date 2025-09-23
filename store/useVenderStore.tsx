@@ -1,16 +1,21 @@
-
 import { get } from 'react-hook-form';
 import { create } from 'zustand';
 
 import { persist } from 'zustand/middleware';
 import { useAuthStore } from './useAuthStore';
-import { TypeBranch, TypeVender, TypeVenderList, TypeVenderListItem, TypeVendorUserList } from '@/shared/types/vender';
+import {
+  TypeBranch,
+  TypeVender,
+  TypeVenderList,
+  TypeVenderListItem,
+  TypeVendorUserList,
+} from '@/shared/types/vender';
 
 export interface VenderState {
   branchDetails: TypeBranch[] | undefined;
   vendorId: string | null;
   branchId: string | null;
-  branchName: string | null;
+  branchName?: string | undefined;
   selectedVendorName: string | null;
   selectedVendor: TypeVender | undefined;
   selectedBranch: TypeBranch | undefined;
@@ -20,6 +25,12 @@ export interface VenderState {
   isEditVenderId: string | undefined;
   isEditVenderBranchId: string | undefined;
   isEditUser: TypeVendorUserList | undefined;
+  isEditDetails: boolean;
+  showDriversFilter: boolean;
+
+  isVendorAccess: boolean;
+  isBranchAccess: boolean;
+  isSearchVenderParams: string;
 }
 
 export interface VenderActions {
@@ -31,7 +42,7 @@ export interface VenderActions {
 
 const initialState: VenderState = {
   branchDetails: undefined,
-  branchName: null,
+  branchName: undefined,
   selectedVendorName: null,
   selectedBranch: undefined,
   selectedVendor: undefined,
@@ -43,6 +54,11 @@ const initialState: VenderState = {
   isEditVenderId: undefined,
   isEditVenderBranchId: undefined,
   isEditUser: undefined,
+  isEditDetails: false,
+  showDriversFilter: false,
+  isVendorAccess: false,
+  isBranchAccess: false,
+  isSearchVenderParams: '',
 };
 
 export const useVenderStore = create<VenderState & VenderActions>()(

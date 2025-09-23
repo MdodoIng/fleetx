@@ -29,6 +29,16 @@ import {
   FormItem,
   FormMessage,
 } from '@/shared/components/ui/form';
+import { useTranslations } from 'next-intl';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shared/components/ui/table';
 
 type BranchData = {
   branch: TypeBranch;
@@ -102,9 +112,8 @@ const PaymentForm = ({
     };
     fetchData();
   }, [isMultiplePayment, branchDetails]);
-  
-  
-  console.log(isAddCreditDebit, "isAddCreditDebit")
+
+  const t = useTranslations();
 
   return (
     <>
@@ -117,19 +126,28 @@ const PaymentForm = ({
                 name="paymentType"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Payment Type</Label>
+                    <Label>{t('component.features.wallet.paymentType')}</Label>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Payment Type" />
+                          <SelectValue
+                            placeholder={t(
+                              'component.features.wallet.selectPaymentType'
+                            )}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="credit">Credit Card</SelectItem>
-                        <SelectItem value="debit">Debit Card</SelectItem>
+                        <SelectItem value="credit">
+                          {t('component.features.wallet.creditCard')}
+                        </SelectItem>
+                        <SelectItem value="debit">
+                          {t('component.features.wallet.debitCard')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                    PaymentForm
                   </FormItem>
                 )}
               />
@@ -139,11 +157,18 @@ const PaymentForm = ({
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="amount">Amount</Label>
+                    <Label htmlFor="amount">
+                      {t('component.features.orders.create.form.amount.label')}
+                    </Label>
                     <FormControl>
                       <Input
                         id="amount"
-                        placeholder="Enter amount"
+                        placeholder={t.rich(
+                          'component.features.orders.create.form.amount.placeholder',
+                          {
+                            value: sheredStore.appConstants?.currency,
+                          }
+                        )}
                         type="number"
                         {...field}
                         onChange={(e) => {
@@ -156,7 +181,6 @@ const PaymentForm = ({
                           field.onBlur();
                         }}
                         value={field.value === 0 ? '' : String(field.value)}
-                        className="bg-muted"
                       />
                     </FormControl>
                     <FormMessage />
@@ -169,11 +193,15 @@ const PaymentForm = ({
                 name="note"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="note">Note</Label>
+                    <Label htmlFor="note">
+                      {t('component.features.wallet.note')}
+                    </Label>
                     <FormControl>
                       <Input
                         id="note"
-                        placeholder="You can add some notes here"
+                        placeholder={t(
+                          'component.features.wallet.addNotesHere'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -188,62 +216,81 @@ const PaymentForm = ({
         <>
           {isMultiplePayment ? (
             <div className="pb-10">
-              <h2 className="text-lg font-semibold mb-4">Recharge Summary</h2>
-              <table className="w-full text-sm text-left border-collapse">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 px-3 font-medium text-gray-700">
-                      Branch
-                    </th>
-                    <th className="py-2 px-3 font-medium text-gray-700">
-                      Current Amount
-                    </th>
-                    <th className="py-2 px-3 font-medium text-gray-700">
-                      Recharge Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+              <h2 className="text-lg font-semibold mb-4">
+                {t('component.features.wallet.recharge-summary')}
+              </h2>
+
+              <Table className="w-full text-sm">
+                <TableHeader>
+                  <TableRow className="text-dark-grey ">
+                    <TableHead className="px-3 pr-10 py-2 ">
+                      {' '}
+                      {t('component.features.wallet.branch')}
+                    </TableHead>
+                    <TableHead className="px-3 py-2 ">
+                      {' '}
+                      {t('component.features.wallet.currentAmount')}
+                    </TableHead>
+                    <TableHead className="px-3 py-2 ">
+                      {t('component.features.wallet.rechargeAmount')}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
                   {data?.map((item, idx) => (
-                    <tr key={idx} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-3">{item.branch.name}</td>
-                      <td
-                        className={`py-2 px-3 ${item.currentAmount < 0 ? 'text-red-600' : ''}`}
+                    <TableRow key={idx} className="hover:bg-gray-50">
+                      <TableCell className="px-3 py-2">
+                        {item.branch.name}
+                      </TableCell>
+                      <TableCell
+                        className={`px-3 py-2 ${item.currentAmount < 0 ? 'text-red-600' : ''}`}
                       >
                         {item.currentAmount}
-                      </td>
-                      <td className="py-2 px-3">
+                      </TableCell>
+                      <TableCell className="px-3 py-2">
                         <Input
                           type="number"
                           value={item.rechargeAmount}
                           onChange={(e) =>
                             handleRechargeChange(idx, e.target.value)
                           }
-                          className="w-20 px-2 py-1 border rounded text-right appearance-none"
+                          className="w-auto px-2 py-1 text-right "
                         />
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colSpan={2} className="py-2 px-3 font-semibold">
-                      Total Amount
-                    </td>
-                    <td className="py-2 px-3 font-semibold">{totalRecharge}</td>
-                  </tr>
-                </tfoot>
-              </table>
+                </TableBody>
+
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={2} className="px-3 py-2 font-semibold">
+                      {t('component.features.wallet.totalAmount')}
+                    </TableCell>
+                    <TableCell className="px-3 py-2 font-semibold">
+                      {totalRecharge} {sheredStore.appConstants?.currency}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
             </div>
           ) : (
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium">Credit Amount:</label>
+                <label className="text-sm font-medium">
+                  {' '}
+                  {t('component.features.wallet.creditAmount')}:
+                </label>
                 <div className="flex items-center gap-2 mt-2">
                   <Input
                     value={String(amount) || '0'}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    placeholder="Enter amount"
+                    placeholder={t.rich(
+                      'component.features.orders.create.form.amount.placeholder',
+                      {
+                        value: sheredStore.appConstants?.currency,
+                      }
+                    )}
                     className="flex-1 border-blue-500 focus-visible:ring-blue-500"
                   />
                   <span className="text-sm font-semibold text-gray-600">
@@ -257,7 +304,7 @@ const PaymentForm = ({
       )}
       <div hidden={isMultiplePayment || isAddCreditDebit}>
         <p className="flex items-center gap-2 text-sm font-medium mb-3">
-          💡 Smart Recharge Recommendation
+          {t('component.features.wallet.smartRecommendations')}
         </p>
         <div className="grid grid-cols-3 gap-3">
           {recommendations.map((item, idx) => (
@@ -268,18 +315,18 @@ const PaymentForm = ({
                 setAmount(item.value);
               }}
               className={cn(
-                'cursor-pointer border rounded-xl transition-all',
+                'cursor-pointer bg-[#FEFEE3] ',
                 amount === item.value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'hover:border-blue-400'
+                  ? 'border-primary-blue'
+                  : 'border-[#DEEF03]'
               )}
             >
               <CardContent className="p-4 text-center space-y-2">
                 <p className="text-sm font-bold">
                   {item.value} {sheredStore.appConstants?.currency}
                 </p>
-                <p className="text-xs text-gray-600">{item.label}</p>
-                <span className="inline-block text-[11px] px-2 py-1 rounded-md bg-gray-100 text-gray-600">
+                <p className="text-xs">{item.label}</p>
+                <span className="inline-block text-[11px] px-4 py-1 rounded-[8px] bg-white">
                   {item.desc}
                 </span>
               </CardContent>
@@ -289,11 +336,10 @@ const PaymentForm = ({
       </div>
 
       {/* Footer Note */}
-      <p className="mt-4 text-sm text-gray-600 flex items-center gap-1 justify-center">
-        <span role="img" aria-label="money">
-          💰
-        </span>
-        Delivery Charge: <span className="font-medium">1.50 KD per Order</span>
+      <p className="mt-4 text-sm text-dark-grey/70 text-center">
+        {t.rich('component.features.wallet.deliveryCharge', {
+          value: sheredStore.appConstants?.currency,
+        })}
       </p>
 
       <Button
@@ -302,9 +348,8 @@ const PaymentForm = ({
             ? submitCreditDebitPrepare(addCreditDebitform)
             : submitAddCredit(data || amount)
         }
-        className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 "
       >
-        Add Credit
+        {t('component.features.wallet.addCredit')}
       </Button>
     </>
   );

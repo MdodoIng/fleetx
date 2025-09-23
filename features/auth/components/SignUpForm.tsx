@@ -30,7 +30,7 @@ import {
 import Link from 'next/link';
 import ProgressBar from './ProgressBar';
 import { Eye, EyeOff } from 'lucide-react';
-import AddressLandmarkFields from '@/shared/components/InputSearch';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { businessTypes } from '@/shared/constants/storageConstants';
 import { TypeSingUpRequest } from '@/shared/types/user';
 
@@ -45,7 +45,6 @@ const steps = ['Business Info', 'Personal Info', 'Location Info'];
 
 export default function SignUpForm() {
   const [step, setStep] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuthStore();
 
   const form = useForm<TypeSignUpForm>({
@@ -303,26 +302,13 @@ export default function SignUpForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('fields.password.label')}</FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder={t('fields.password.placeholder')}
-                            {...field}
-                          />
-                        </FormControl>
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword((prev) => !prev)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        >
-                          {showPassword ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
+                      <FormControl>
+                        <Input
+                          type={'password'}
+                          placeholder={t('fields.password.placeholder')}
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -337,6 +323,7 @@ export default function SignUpForm() {
                       <FormControl>
                         <Input
                           type="password"
+                          eyeBtnHide
                           placeholder={t('fields.confirmPassword.placeholder')}
                           {...field}
                         />
@@ -392,9 +379,9 @@ export default function SignUpForm() {
           <div className="flex justify-between pt-4 w-full gap-3">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               className={cn(
-                ' rounded-full overflow-hidden duration-300 px-10',
+                'cursor-pointer bg-[#6750A414] text-[#1D1B20]',
                 step === 0 && 'w-0 px-0 border-0'
               )}
               onClick={() => setStep((s) => s - 1)}

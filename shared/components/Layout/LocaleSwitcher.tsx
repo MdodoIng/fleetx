@@ -1,7 +1,11 @@
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import LocaleSwitcherSelect from './LocaleSwitcherSelect';
 
-export default function LocaleSwitcher({ variant }: {  variant?: "normal" | "dashboard"; }) {
+export default function LocaleSwitcher({
+  variant,
+}: {
+  variant?: 'normal' | 'dashboard';
+}) {
   const locale = useLocale();
 
   return (

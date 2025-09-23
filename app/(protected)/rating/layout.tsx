@@ -6,4 +6,4 @@ function Layout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default withAuth(Layout, ['VENDOR_USER']);
+export default Layout;

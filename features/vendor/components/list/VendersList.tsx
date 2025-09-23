@@ -1,22 +1,29 @@
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
 import {
   Activity,
   Axis3dIcon,
-  Download,
   Edit,
   GitBranch,
   MagnetIcon,
   Minus,
   Phone,
-  Search,
   User,
   User2,
 } from 'lucide-react';
-import TableComponent from './TableComponent';
+
 import { TypeVenderList, TypeVenderListItem } from '@/shared/types/vender';
-import { Dispatch, SetStateAction } from 'react';
 import { useVenderStore } from '@/store';
+import { Dispatch, SetStateAction } from 'react';
+
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   setSearchValue: Dispatch<SetStateAction<string | null>>;
@@ -36,10 +43,16 @@ const VendersList = ({
   setPage,
 }: Props) => {
   const vederStore = useVenderStore();
-
+  const { push } = useRouter();
   const handleEditClick = (item: TypeVenderListItem) => {
     vederStore.setValue('isEditVenderId', item.id);
     console.log(item.id);
+  };
+
+  const handleUserSearhClick = (item: TypeVenderListItem) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set('id', item.name.toString());
+    push(`/vendor/users?${searchParams.toString()}`);
   };
 
   const tableData = data?.map((item) => {
@@ -61,7 +74,7 @@ const VendersList = ({
       },
       {
         icon: Axis3dIcon,
-        title: 'Phone',
+        title: 'Location',
         value: `${item.main_branch.address.area}, ${item.main_branch.address.block}, ${item.main_branch.address.street}`,
       },
       {
@@ -73,6 +86,7 @@ const VendersList = ({
         icon: User2,
         title: 'Users',
         value: <User />,
+        onClick: () => handleUserSearhClick(item),
       },
       {
         icon: Edit,
@@ -84,44 +98,31 @@ const VendersList = ({
   });
   return (
     <>
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <h2 className="text-xl font-semibold text-gray-900">Vendor List</h2>
-          <div className="flex items-center justify-center gap-1.5">
-            <div className="flex items-center gap-1.5">
-              <Input
-                type="text"
-                placeholder="Search..."
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-              <Button
-                onClick={async () => await fetchVenderList()}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <Search className="w-5 h-5" /> Search
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          <Button
-            // onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
-        </div>
-      </div>
-
-      {data?.length ? (
-        <TableComponent
-          data={tableData as any}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={nextSetItemTotal}
-        />
+      {tableData?.length ? (
+        <Table>
+          <TableLists>
+            {tableData.map((item, idx) => (
+              <TableSigleList key={idx}>
+                <TableSigleListContents>
+                  {item.map((i, listIdx) => (
+                    <TableSigleListContent key={listIdx}>
+                      <TableSigleListContentTitle>
+                        <i.icon size={14} />
+                        {i.title}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle
+                        className="line-clamp-2"
+                        onClick={i.onClick ? () => i.onClick() : undefined}
+                      >
+                        {i.value}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                  ))}
+                </TableSigleListContents>
+              </TableSigleList>
+            ))}
+          </TableLists>
+        </Table>
       ) : (
         <>no data</>
       )}

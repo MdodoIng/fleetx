@@ -1,19 +1,27 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
-import { CalendarIcon, Download, Grid, List, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { addDays, format } from 'date-fns';
-
-import GridComponent from '@/features/orders/components/Livelist/GridComponent';
-import ListComponent from '@/features/orders/components/Livelist/ListComponent';
-import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
 import {
-  TypeOrderHistoryList,
-  TypeOrderStatusHistoryHistory,
-} from '@/shared/types/orders';
+  CalendarIcon,
+  Clock,
+  CreditCard,
+  Dot,
+  Download,
+  Info,
+  ListFilter,
+  MapPin,
+  Navigation,
+  Phone,
+  Receipt,
+  Search,
+  Truck,
+  User,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { format } from 'date-fns';
+
+import { TypeOrderHistoryList } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useVenderStore } from '@/store';
-import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
+import { useSharedStore, useVenderStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import {
@@ -23,26 +31,50 @@ import {
 } from '@/shared/components/ui/popover';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import LoadingPage from '../../loading';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import { useTranslations } from 'next-intl';
+import {
+  Table,
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsItem,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+  TableSigleListHeader,
+  TableSigleListHeaderLeft,
+  TableSigleListHeaderRight,
+} from '@/shared/components/ui/tableList';
+import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
+import { paymentMap } from '@/features/orders/constants';
+import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import SortSelect from '@/shared/components/selectors';
+import SearchableSelect from '@/shared/components/selectors';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 
 export default function OrderTrackingDashboard() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [ordernNumber, setOrdernNumber] = useState('');
   const orderStore = useOrderStore();
-  const authStore = useAuthStore();
-  const venderStore = useVenderStore();
+  const { appConstants } = useSharedStore();
+  const { isEditDetails, showDriversFilter } = useVenderStore();
 
-  const [isEditDetails, setIsEditDetails] = useState(false);
-  const [selectedFromDate, setSelectedFromDate] = useState<Date | undefined>(
-    undefined
-  );
-  const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
-    undefined
-  );
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
   const [selectedAccountManager, setSelectedAccountManager] = useState<
     string | undefined
   >(undefined);
@@ -51,31 +83,39 @@ export default function OrderTrackingDashboard() {
   );
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
 
-  const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
-    orderStore?.orderHistoryListData &&
-      orderStore?.orderHistoryListData.length > 0
-      ? orderStore?.orderHistoryListData[0]
-      : ({} as TypeOrderHistoryList)
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [date, setDate] = useState<{ from: Date; to: Date }>();
+  const [selectedDriver, setSelectedDriver] = useState<string>();
 
-  const fetchOrderDetails = async () => {
-    setIsLoading(true);
-
-    const searchAll = isEditDetails ? null : true;
-
-    const url = orderService.getOrderHistoryUrl(
+  const url = useMemo(() => {
+    const searchAll = true;
+    return orderService.getOrderHistoryUrl(
       page,
       date?.from,
       date?.to,
-      ordernNumber,
+      searchOrder,
       searchCustomer,
-      searchDriver,
-      searchAll
+      searchAll,
+      nextSetItemsToken,
+      selectedAccountManager,
+      selectedDriver,
+      selectedSorting
     );
+  }, [
+    date?.from,
+    date?.to,
+    nextSetItemsToken,
+    page,
+    searchCustomer,
+    searchOrder,
+    selectedAccountManager,
+    selectedDriver,
+    selectedSorting,
+  ]);
+
+  const fetchOrderDetails = useCallback(async () => {
+    setIsLoading(true);
 
     try {
       const res = await orderService.getOrderList(url);
@@ -96,97 +136,56 @@ export default function OrderTrackingDashboard() {
 
       console.log('Error in fetchOrderDetails:', errorMessage);
     }
-  };
+  }, [page, url]);
 
   useEffect(() => {
-    const loadInitialOrders = async () => {
-      await fetchOrderDetails();
-    };
-
-    loadInitialOrders();
-  }, [venderStore.selectedBranch?.id, venderStore.selectedBranch?.id, page]);
+    fetchOrderDetails();
+    console.log(url);
+  }, [fetchOrderDetails, url]);
 
   const { exportOrdersToCSV } = useTableExport();
 
-  return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden ">
-      {/* Left Panel - Orders List */}
+  const t = useTranslations();
 
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between ">
-          <h2 className="text-xl font-semibold text-gray-900">Order History</h2>
-        </div>
+  const sortOptions = [
+    { id: 'delivery_distance', name: 'Delivery distance ( Z - A )' },
+    { id: 'delivery_fee', name: 'Delivery fee ( Z - A )' },
+  ];
+  return (
+    <Dashboard className="h-auto">
+      <DashboardHeader>
+        <DashboardHeaderRight />
 
         {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
-          <div className="relative">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+          <div className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
+            <Input
               type="text"
-              placeholder="Search by Order No, Customer, Phone"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={t('component.features.orders.live.search.default')}
+              value={searchOrder}
+              onChange={(e) => setSearchOrder(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0 "
             />
           </div>
-          <select
-            value={selectedFilter}
-            onChange={(e) => setSelectedFilter(e.target.value)}
-            className=" px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option>All Orders</option>
-            <option>Active</option>
-            <option>Confirmed</option>
-            <option>Urgent</option>
-          </select>
 
-          <div className="flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={'outline'}
-                  className={cn(
-                    'w-[280px] justify-start text-left font-normal',
-                    !date?.from && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date?.to ? (
-                      <>
-                        From {format(date.from, 'PP')} - To{' '}
-                        {format(date.to, 'PP')}
-                      </>
-                    ) : (
-                      format(date.from, 'PPP')
-                    )
-                  ) : (
-                    <span>From Date - To Date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 flex">
-                <Calendar
-                  autoFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  // @ts-ignore
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              className="text-primary"
-              onClick={() => console.log('Apply with:', date)}
-            >
-              Apply
-            </Button>
-          </div>
+          {showDriversFilter && (
+            <DriverSelect
+              value={selectedDriver!}
+              onChangeAction={setSelectedDriver}
+            />
+          )}
+          {isEditDetails && (
+            <SearchableSelect
+              options={sortOptions}
+              value={selectedSorting}
+              onChangeAction={setSelectedSorting}
+              placeholder="Sort by..."
+              classNameFroInput="border-none"
+            />
+          )}
 
+          <DateSelect value={date} onChangeAction={setDate} />
           <Button
             onClick={() =>
               exportOrdersToCSV(
@@ -194,25 +193,163 @@ export default function OrderTrackingDashboard() {
                 'order history'
               )
             }
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className=" max-sm:w-full"
           >
             <Download className="w-5 h-5" /> Export
           </Button>
         </div>
-      </div>
-
-      {orderStore?.orderHistoryListData?.length ? (
-        <TableComponent
-          data={orderStore?.orderHistoryListData!}
-          isRating={false}
-          page={page}
-          setPage={setPage}
-          fetchOrderDetails={fetchOrderDetails}
-          nextSetItemTotal={nextSetItemsToken}
-        />
-      ) : (
-        <>no data</>
-      )}
-    </div>
+      </DashboardHeader>
+      <DashboardContent>
+        {orderStore?.orderHistoryListData?.length ? (
+          <Table>
+            <TableLists>
+              {orderStore?.orderHistoryListData!.map((item, idx) => (
+                <TableSigleList key={idx}>
+                  <TableSigleListHeader className="">
+                    <TableSigleListHeaderRight>
+                      <span className="font-semibold text-primary-blue flex">
+                        <p className="ltr:hidden">FleetX #</p>{' '}
+                        {item.fleetx_order_number}{' '}
+                        <p className="rtl:hidden"># FleetX</p>
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs ${
+                          item.class_status
+                        }`}
+                      >
+                        {t(item.status)}
+                      </span>
+                      <span
+                        className={`text-xs text-primary-teal flex items-center `}
+                      >
+                        <Dot />
+                        {item.branch_name}
+                      </span>
+                    </TableSigleListHeaderRight>
+                    <TableSigleListHeaderLeft className="flex items-center gap-1">
+                      <Clock size={12} />
+                      {item.creation_date}
+                    </TableSigleListHeaderLeft>
+                  </TableSigleListHeader>
+                  <TableSigleListContents>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <Receipt size={14} />
+                        {t('component.features.orders.live.details.orderNo')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {item.fleetx_order_number}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <User size={14} />{' '}
+                        {t('component.features.orders.live.details.sender')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {item.customer_name_sender}
+                      </TableSigleListContentDetailsTitle>
+                      <TableSigleListContentDetailsItem>
+                        <Phone size={12} /> {item.phone_number_sender}
+                      </TableSigleListContentDetailsItem>
+                      <TableSigleListContentDetailsItem>
+                        <MapPin size={12} /> {item.from}
+                      </TableSigleListContentDetailsItem>
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <User size={14} />{' '}
+                        {t('component.features.orders.live.details.receiver')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {item.customer_name}
+                      </TableSigleListContentDetailsTitle>
+                      <TableSigleListContentDetailsItem>
+                        <Phone size={12} /> {item.phone_number}
+                      </TableSigleListContentDetailsItem>
+                      <TableSigleListContentDetailsItem>
+                        <MapPin size={12} /> {item.to}
+                      </TableSigleListContentDetailsItem>
+                      {isEditDetails && (
+                        <EditResiver
+                          data={item}
+                          fetchOrderDetails={fetchOrderDetails}
+                        />
+                      )}
+                    </TableSigleListContent>
+                    <TableSigleListContent
+                      className={!item.driver_name ? 'bg-[#F9F8714D]' : ''}
+                    >
+                      {item.driver_name ? (
+                        <>
+                          <TableSigleListContentTitle>
+                            <Truck size={14} />{' '}
+                            {t(
+                              'component.features.orders.live.tracking.driver.defult'
+                            )}
+                          </TableSigleListContentTitle>
+                          <TableSigleListContentDetailsTitle className="text-sm font-medium text-gray-800">
+                            {item.driver_name}
+                          </TableSigleListContentDetailsTitle>
+                          <TableSigleListContentDetailsItem>
+                            <Phone size={12} /> {item.driver_phone}
+                          </TableSigleListContentDetailsItem>
+                          <TableSigleListContentDetailsItem>
+                            <Navigation size={12} /> {item.delivery_distance} km
+                          </TableSigleListContentDetailsItem>
+                        </>
+                      ) : (
+                        <>
+                          <TableSigleListContentTitle className="text-[#915A0B]">
+                            <Clock size={14} className="!text-[#915A0B]" />
+                            {t(
+                              'component.features.orders.live.details.noDriverAssigned'
+                            )}
+                          </TableSigleListContentTitle>
+                          <TableSigleListContentDetailsItem className="">
+                            {t(
+                              'component.features.orders.live.details.driverQueued'
+                            )}
+                          </TableSigleListContentDetailsItem>
+                        </>
+                      )}
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <Info size={14} />{' '}
+                        {t(
+                          'component.features.orders.live.details.delivery-fee'
+                        )}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {' '}
+                        {item.amount_collected} {appConstants?.currency}
+                      </TableSigleListContentDetailsTitle>
+                    </TableSigleListContent>
+                    <TableSigleListContent>
+                      <TableSigleListContentTitle>
+                        <CreditCard size={14} />{' '}
+                        {t('component.features.orders.live.details.payment')}
+                      </TableSigleListContentTitle>
+                      <TableSigleListContentDetailsTitle>
+                        {paymentMap[item.payment_type] || 'Unknown'}
+                      </TableSigleListContentDetailsTitle>
+                      {isEditDetails && (
+                        <EditPayment
+                          data={item}
+                          fetchOrderDetails={fetchOrderDetails}
+                        />
+                      )}
+                    </TableSigleListContent>
+                  </TableSigleListContents>
+                </TableSigleList>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          <>no data</>
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }

@@ -2,8 +2,11 @@ import { User } from '@/features/orders/types/useSalesFunnel';
 import { apiFetch } from '../lib/utils';
 import { AuthRoot, UserLogin } from '../types/auth';
 import { appConfig } from './app-config';
-import { TypeSingUpRequest } from '../types/user';
-
+import {
+  TypeChangePasswordRequest,
+  TypeChangePasswordResponse,
+  TypeSingUpRequest,
+} from '../types/user';
 
 const getUserServiceApiUrl = appConfig.userServiceApiUrl();
 const getVendorServiceApiUrl = appConfig.vendorServiceApiUrl();
@@ -57,7 +60,9 @@ export const userService = {
       body: JSON.stringify(request),
     }),
 
-  changePassword: (request: any) =>
+  changePassword: (
+    request: TypeChangePasswordRequest
+  ): Promise<TypeChangePasswordResponse> =>
     apiFetch(`${getUserServiceApiUrl}/my/password/change`, {
       method: 'POST',
       body: JSON.stringify(request),

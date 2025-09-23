@@ -22,4 +22,30 @@ export type TypeNotificationsResponse = {
   count: number;
 };
 
+export type TypeGetWarningMessageApiResponse = {
+  data: {
+    id: number;
+    message: string;
+    enabled: boolean;
+  }[];
+};
+
 export type { TypeNotificationsResponse as 'data' };
+
+export type TypeOperationTimeApi = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted: boolean;
+  timing_type: number;
+  vendor_id: string | null;
+  branch_id: string | null;
+  start_time: string; // "HH:mm:ss"
+  end_time: string; // "HH:mm:ss"
+  full_day_operational: boolean;
+  next_day: boolean;
+};
+
+export type TypeOperationTimeApiResponse = {
+  data: TypeOperationTimeApi;
+};
