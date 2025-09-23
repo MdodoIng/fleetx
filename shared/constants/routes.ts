@@ -132,7 +132,7 @@ export const routes: Routes = {
     path: '/insights/overview',
     title: 'layout.menuItems.insightsSubMenu.overview.title',
     subtitle: 'layout.menuItems.insightsSubMenu.overview.subtitle',
-    icon: 'history',
+    icon: 'overview',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -144,7 +144,7 @@ export const routes: Routes = {
     path: '/insights/churn-reasons',
     title: 'layout.menuItems.insightsSubMenu.churnReasons.title',
     subtitle: 'layout.menuItems.insightsSubMenu.churnReasons.subtitle',
-    icon: 'history',
+    icon: 'overview',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -156,7 +156,7 @@ export const routes: Routes = {
     path: '/insights/first-order',
     title: 'layout.menuItems.insightsSubMenu.firstOrder.title',
     subtitle: 'layout.menuItems.insightsSubMenu.firstOrder.subtitle',
-    icon: 'history',
+    icon: 'overview',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -168,7 +168,7 @@ export const routes: Routes = {
     path: '/insights/aff_referrals',
     title: 'layout.menuItems.insightsSubMenu.affReferrals.title',
     subtitle: 'layout.menuItems.insightsSubMenu.affReferrals.subtitle',
-    icon: 'history',
+    icon: 'overview',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -180,7 +180,7 @@ export const routes: Routes = {
     path: '/insights/user_referrals',
     title: 'layout.menuItems.insightsSubMenu.userReferrals.title',
     subtitle: 'layout.menuItems.insightsSubMenu.userReferrals.subtitle',
-    icon: 'history',
+    icon: 'overview',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -192,7 +192,7 @@ export const routes: Routes = {
     path: '/insights/zone-growth',
     title: 'layout.menuItems.insightsSubMenu.zoneGrowth.title',
     subtitle: 'layout.menuItems.insightsSubMenu.zoneGrowth.subtitle',
-    icon: 'history',
+    icon: 'chartBar',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -218,7 +218,7 @@ export const routes: Routes = {
     path: '/rating',
     title: 'layout.menuItems.rating.title',
     subtitle: 'layout.menuItems.rating.subtitle',
-    icon: 'history',
+    icon: 'star',
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   CONFIG_CHANGE_PASSWORD: {

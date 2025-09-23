@@ -1,16 +1,14 @@
 import { reportService } from '@/shared/services/report';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { DateRange } from 'react-day-picker';
 import { toast } from 'sonner';
 
-export default function useInsightBoard() {
-  const [selectedFromDate, setSelectedFromDate] = useState(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-  });
 
-  const [selectedToDate, setSelectedToDate] = useState(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth() + 1, 0);
+export default function useInsightBoard() {
+  const [date, setDate] = useState<DateRange>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+
+    to: new Date(),
   });
 
   const [metrics, setMetrics] = useState({
@@ -30,16 +28,9 @@ export default function useInsightBoard() {
     totalActivatedPercentage: '0%',
   });
 
-  useEffect(() => {
-    fetchInsights();
-  }, [selectedFromDate, selectedToDate]);
-
-  const fetchInsights = async () => {
+  const fetchInsights = useCallback(async () => {
     try {
-      const res = await reportService.getDashboardInsight(
-        selectedFromDate,
-        selectedToDate
-      );
+      const res = await reportService.getDashboardInsight(date.from!, date.to!);
 
       const data = res.data;
 
@@ -74,17 +65,22 @@ export default function useInsightBoard() {
         firstWalletRechargesPercentage,
         totalActivatedPercentage,
       });
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Server error');
+    } catch (err: unknown) {
+      toast.error(
+        (err as { response: { data: { message: string } } }).response?.data
+          ?.message || 'Server error'
+      );
       console.error(err);
     }
-  };
+  }, [date.from, date.to, setMetrics]);
+
+  useEffect(() => {
+    fetchInsights();
+  }, [fetchInsights]);
 
   return {
-    selectedFromDate,
-    selectedToDate,
-    setSelectedFromDate,
-    setSelectedToDate,
+    date,
+    setDate,
     metrics,
   };
 }

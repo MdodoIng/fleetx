@@ -11,36 +11,29 @@ import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
-import { DayPicker } from 'react-day-picker';
-
-
-type DateRange = {
-  from: Date;
-  to: Date;
-};
+import { DateRange } from 'react-day-picker';
 
 type Props = {
   value?: DateRange;
-  setDate: Dispatch<SetStateAction<DateRange>>;
+  onChangeAction: Dispatch<SetStateAction<DateRange>>;
 };
 
-function DateSelect({ value, setDate }: Props) {
+function DateSelect({ value, onChangeAction }: Props) {
   const t = useTranslations();
 
-  console.log(value);
   const handleDateSelect = (newDate: DateRange) => {
     if (newDate?.from && newDate?.to) {
-      setDate({
+      onChangeAction({
         from: newDate.from,
         to: newDate.to,
       });
     } else if (newDate?.from) {
-      setDate({
+      onChangeAction({
         from: newDate.from,
         to: newDate.from,
       });
     } else {
-      setDate({
+      onChangeAction({
         from: new Date(new Date().setMonth(new Date().getMonth() - 1)),
         to: new Date(),
       });
@@ -48,7 +41,7 @@ function DateSelect({ value, setDate }: Props) {
   };
 
   return (
-    <div className="flex items-center gap-2 relative bg-white rounded-[8px] max-sm:w-full">
+    <div className="flex items-center relative bg-white rounded-[8px] max-sm:w-full">
       <Popover>
         <PopoverTrigger
           asChild
@@ -75,19 +68,28 @@ function DateSelect({ value, setDate }: Props) {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start" side="bottom">
+        <PopoverContent
+          className="w-auto p-0 pr-10 relative "
+          align="start"
+          side="bottom"
+        >
           <Calendar
             mode="range"
             defaultMonth={value?.from}
-            selected={{
-              from: value?.from,
-              to: value?.to,
-            }}
+            selected={value}
             onSelect={handleDateSelect}
             numberOfMonths={2}
+            required
           />
         </PopoverContent>
       </Popover>
+      <Button
+        variant="ghost"
+        className=""
+        onClick={() => onChangeAction({ from: undefined, to: undefined })}
+      >
+        {t('component.features.orders.history.search.clear')}
+      </Button>
     </div>
   );
 }

@@ -60,7 +60,7 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     } else {
-      useAuthStore().refreshToken();
+      useAuthStore.getState().refreshToken();
     }
     useAuthStore.setState({ isLoading: false });
     return isTokenValid;
@@ -70,7 +70,7 @@ function getInitialAuthState(): boolean {
   }
 }
 
-const initialState: AuthState | any = {
+const initialState = {
   user: null,
   isLoading: true,
   isAuthenticated: false,
@@ -80,7 +80,7 @@ const initialState: AuthState | any = {
 export const useAuthStore = create<AuthState>((set, get) => ({
   ...initialState,
 
-  setValue: (key: keyof AuthState, value: any) => set({ [key]: value }),
+  setValue: (key: keyof AuthState, value) => set({ [key]: value }),
   clearAll: () => set({ ...initialState }),
   hasRole: (role) => {
     const { user } = get();
@@ -113,6 +113,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { hasRole } = get();
     return roles.some((role) => hasRole(role));
   },
+
   login: async (email, password) => {
     set({ isLoading: true });
 
@@ -164,7 +165,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           isLoading: false,
         });
 
-        return tokenPayload;
+        return true;
       }
 
       set({ isLoading: false });
@@ -174,7 +175,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return false;
     }
-    return true;
   },
 
   handleAcceptSla: async () => {
@@ -195,7 +195,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
               foodicsReference: null,
               foodicsIsAlreadyConnected: false,
             });
-           
 
             set({ tokenForRest: false });
           })

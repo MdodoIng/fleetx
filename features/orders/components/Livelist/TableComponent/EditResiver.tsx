@@ -145,7 +145,7 @@ const EditResiver = ({
               {t('component.features.orders.live.edit-drope-location')}
             </DialogTitle>
           </DialogHeader>
-          <hr className="border-dark-grey/20 " />
+          <hr className="border-dark-grey/10 " />
           <Form {...form}>
             <form
               onSubmit={(e) => e.preventDefault()}

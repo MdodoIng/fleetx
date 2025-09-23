@@ -192,7 +192,7 @@ export function AlertSettings() {
         <Button
           onClick={() => configureNotification()}
           variant="outline"
-          className="w-full bg-[#F5F4F5] border-dark-grey/20"
+          className="w-full bg-[#F5F4F5] border-dark-grey/10"
         >
           <Save />
           {t('saveSettings')}

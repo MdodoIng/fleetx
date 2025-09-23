@@ -101,8 +101,8 @@ export const getSuperSaverPromotion = (
   );
 
 export const getFirstOrderInsight = (
-  fromDate: Date | null,
-  toDate: Date | null
+  fromDate: Date | undefined,
+  toDate: Date | undefined
 ): Promise<TypeFirstOrderInsightResponse> => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-order/insight';
@@ -116,8 +116,8 @@ export const getFirstOrderInsight = (
 export const getFirstOrderList = (
   page: number,
   perPage: number,
-  fromDate: Date | null,
-  toDate: Date | null
+  fromDate: Date | undefined,
+  toDate: Date | undefined
 ) => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;

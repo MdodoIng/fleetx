@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { reportService } from '@/shared/services/report';
 import { vendorService } from '@/shared/services/vender';
 import { TypeOpsFinUser } from '@/shared/types/vender';
+import { DateRange } from 'react-day-picker';
 
 export default function useUserReferrals() {
   const [referrals, setReferrals] = useState<any[]>([]);
@@ -16,29 +17,23 @@ export default function useUserReferrals() {
 
   const searchParams = useSearchParams();
   const branchId = searchParams.get('branchId') ?? '';
-  const [fromDate, setFromDate] = useState<Date>();
-  const [toDate, setToDate] = useState<Date>();
+  const [date, setDate] = useState<DateRange>({
+    from: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    to: new Date(),
+  });
   const [trigger, setTrigger] = useState(false);
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
   const [users, setUsers] = useState<TypeOpsFinUser[]>([]);
 
-  useEffect(() => {
-    fetchReferrals();
-  }, [branchId, fromDate, toDate, page, trigger]);
-
-  useEffect(() => {
-    fetchOpsFinUser();
-  }, []);
-
-  async function fetchReferrals() {
+  const fetchReferrals = useCallback(async () => {
     setLoading(true);
     try {
       const url = reportService.getReferralsURLs(
         1,
         page,
         selectedUser,
-        fromDate,
-        toDate,
+        date?.from,
+        date?.to,
         2
       );
       const res = await reportService.getReferrals(url);
@@ -50,9 +45,9 @@ export default function useUserReferrals() {
       setLoading(false);
       setTrigger(false);
     }
-  }
+  }, [date?.from, date?.to, page, selectedUser]);
 
-  async function fetchOpsFinUser() {
+  const fetchOpsFinUser = useCallback(async () => {
     setLoading(true);
     try {
       const res = await vendorService.getOpsFinUser();
@@ -63,7 +58,7 @@ export default function useUserReferrals() {
       setLoading(false);
       setTrigger(false);
     }
-  }
+  }, []);
 
   return {
     referrals,
@@ -74,12 +69,12 @@ export default function useUserReferrals() {
     exporting,
     selectedUser,
     setSelectedUser,
-    fromDate,
-    setFromDate,
-    toDate,
-    setToDate,
     setTrigger,
     users,
     setUsers,
+    fetchReferrals,
+    fetchOpsFinUser,
+    setDate,
+    date,
   };
 }

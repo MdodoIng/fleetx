@@ -84,6 +84,7 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
             handleChangeVender={handleChangeVender}
             selectedVendorValue={isBranch?.vendor}
             selectedBranchValue={isBranch?.branch}
+            classNameFroInput="border"
           />
         </div>
         <FormField

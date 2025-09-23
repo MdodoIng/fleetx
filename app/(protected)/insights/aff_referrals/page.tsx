@@ -25,6 +25,23 @@ import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { Download, X } from 'lucide-react';
 import { vendorService } from '@/shared/services/vender';
 import DateSelect from '@/shared/components/selectors/DateSelect';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { DateRange } from 'react-day-picker';
+import SearchableSelect from '@/shared/components/selectors';
+import { Table } from '@/shared/components/ui/table';
+import {
+  TableLists,
+  TableSigleList,
+  TableSigleListContent,
+  TableSigleListContentDetailsTitle,
+  TableSigleListContents,
+  TableSigleListContentTitle,
+} from '@/shared/components/ui/tableList';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -43,7 +60,7 @@ interface Affiliator {
 const AffiliateReferrals = () => {
   const { user } = useAuthStore();
 
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
+  const [date, setDate] = useState<DateRange>({
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date()),
   });
@@ -122,35 +139,19 @@ const AffiliateReferrals = () => {
   }, [date, selectedAffiliator]);
 
   return (
-    <div className="flex flex-col items-center bg-gray-50 p-4">
-      <div className="flex items-center justify-between w-full  bg-gray-200 px-4 py-3 rounded mb-4">
-        <div className="flex items-center gap-2">
-          <Select
-            value={selectedAffiliator}
-            onValueChange={(value) => setSelectedAffiliator(value)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select Affiliator" />
-            </SelectTrigger>
-            <SelectContent>
-              {affiliators.map((aff) => (
-                <SelectItem key={aff.id} value={aff.id}>
-                  {aff.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {selectedAffiliator && (
-            <span
-              onClick={() => setSelectedAffiliator(undefined)}
-              className="cursor-pointer"
-            >
-              <X />
-            </span>
-          )}
-          <DateSelect value={date} onChangeAction={setDate}  />
-        </div>
-        <Button
+    <Dashboard className="h-auto sm:h-full">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+
+        <div className="flex items-center justify-between  gap-2">
+          <SearchableSelect
+            onChangeAction={setSelectedAffiliator}
+            options={affiliators}
+            placeholder="Selct a Affiliate"
+          />
+
+          <DateSelect value={date} onChangeAction={setDate} />
+          <Button
           // onClick={() =>
           //   exportOrdersToCSV(
           //     referralList,
@@ -160,17 +161,79 @@ const AffiliateReferrals = () => {
           //     }`
           //   )
           // }
-          className="p-2 hover:bg-gray-100 rounded-lg"
-        >
-          <Download className="w-5 h-5" /> Export
-        </Button>
-      </div>
-      {referralList.length ? (
-        <TableComponent data={referralList} />
-      ) : (
-        <p>No data available</p>
-      )}
-    </div>
+          >
+            <Download className="w-5 h-5" /> Export
+          </Button>
+        </div>
+      </DashboardHeader>
+
+      <DashboardContent className="flex-col w-full">
+        <div className="flex flex-col items-center bg-gray-50 p-4">
+          {referralList.length ? (
+            <Table>
+              <TableLists>
+                {referralList.map((item, idx) => (
+                  <TableSigleList key={idx}>
+                    <TableSigleListContents>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Order ID
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.orderNumber}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Order Date
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.orderDate}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Fee
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.fee}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Affiliator
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.affiliator}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Vendor Name
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.vendorName}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                      <TableSigleListContent>
+                        <TableSigleListContentTitle>
+                          Branch Name
+                        </TableSigleListContentTitle>
+                        <TableSigleListContentDetailsTitle>
+                          {item.branchName}
+                        </TableSigleListContentDetailsTitle>
+                      </TableSigleListContent>
+                    </TableSigleListContents>
+                  </TableSigleList>
+                ))}
+              </TableLists>
+            </Table>
+          ) : (
+            ''
+          )}
+        </div>
+      </DashboardContent>
+    </Dashboard>
   );
 };
 

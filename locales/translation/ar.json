@@ -605,7 +605,8 @@
             "active": "نشط",
             "confirmed": "مؤكد",
             "urgent": "عاجل",
-            "dateRange": "من تاريخ - إلى تاريخ"
+            "dateRange": "من تاريخ - إلى تاريخ",
+            "clear":"مسح"
           }
         },
         "export": {

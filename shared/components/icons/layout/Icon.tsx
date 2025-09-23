@@ -7,12 +7,12 @@ interface IconProps {
   className?: string;
 }
 
-export const PasswordIcon: React.FC<IconProps> = ({
+export default function PasswordIcon({
   width = 24,
   height = 24,
   color = 'currentColor',
   className = '',
-}) => {
+}: IconProps) {
   return (
     <svg
       width={width}
@@ -30,6 +30,4 @@ export const PasswordIcon: React.FC<IconProps> = ({
       />
     </svg>
   );
-};
-
-export default PasswordIcon;
+}
