@@ -2,8 +2,7 @@
 
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import ProtectedLayout from '@/shared/components/Layout/ProtectedLayout';
-import { routes } from '@/shared/constants/routes';
-import { useAuthStore, useSharedStore } from '@/store';
+import { useSharedStore } from '@/store';
 import { setUserLocale } from '@/shared/services/locale';
 import { useEffect } from 'react';
 import { defaultLocale } from '@/locales/config';
