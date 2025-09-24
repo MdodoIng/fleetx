@@ -102,7 +102,7 @@ export function useAddCredit() {
 
     try {
       const checkBlockActRes = await checkBlockActivation(
-        vendorId! || selectedVendor?.id!,
+        vendorId! || selectedVendor?.id,
         branchId! || selectedBranch?.id
       );
 
