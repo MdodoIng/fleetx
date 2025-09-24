@@ -37,11 +37,10 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 import { Separator } from '@/shared/components/ui/separator';
 
@@ -111,41 +110,41 @@ function VendorAdd(): JSX.Element {
 
   const tableData = branchs
     ? branchs?.map((item: any, idx) => {
-      return [
-        {
-          icon: User2,
-          title: 'name',
-          value: item.name,
-        },
-        {
-          icon: User2,
-          title: 'Name_ar',
-          value: item.name_ar,
-        },
-        {
-          icon: MapPin,
-          title: 'Area',
-          value: item.address.area,
-        },
-        {
-          icon: Contact,
-          title: 'Contact',
-          value: item.mobile_number,
-        },
-        {
-          icon: User2,
-          title: 'Type',
-          value: item.main_branch ? 'Main Branch' : 'Normal',
-        },
+        return [
+          {
+            icon: User2,
+            title: 'name',
+            value: item.name,
+          },
+          {
+            icon: User2,
+            title: 'Name_ar',
+            value: item.name_ar,
+          },
+          {
+            icon: MapPin,
+            title: 'Area',
+            value: item.address.area,
+          },
+          {
+            icon: Contact,
+            title: 'Contact',
+            value: item.mobile_number,
+          },
+          {
+            icon: User2,
+            title: 'Type',
+            value: item.main_branch ? 'Main Branch' : 'Normal',
+          },
 
-        {
-          icon: User2,
-          title: ' Action',
-          value: <Trash />,
-          onClick: () => handleRemoveBranch(idx),
-        },
-      ];
-    })
+          {
+            icon: User2,
+            title: ' Action',
+            value: <Trash />,
+            onClick: () => handleRemoveBranch(idx),
+          },
+        ];
+      })
     : [];
 
   const { register: vendorNameRegister } = editVendorNameForm;
@@ -249,22 +248,22 @@ function VendorAdd(): JSX.Element {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleListContents key={idx}>
+                <TableSingleListContents key={idx}>
                   {item.map((i, listIdx) => (
-                    <TableSigleListContent key={listIdx}>
-                      <TableSigleListContentTitle>
+                    <TableSingleListContent key={listIdx}>
+                      <TableSingleListContentTitle>
                         <i.icon size={14} />
                         {i.title}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle
                         className="line-clamp-2"
                         onClick={i.onClick ? () => i.onClick() : undefined}
                       >
                         {i.value}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
                   ))}
-                </TableSigleListContents>
+                </TableSingleListContents>
               ))}
             </TableLists>
           </Table>

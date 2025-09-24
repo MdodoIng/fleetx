@@ -48,26 +48,27 @@ import {
 import { useTranslations } from 'next-intl';
 import {
   Table,
+  TableHeader,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsItem,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
-  TableSigleListHeader,
-  TableSigleListHeaderLeft,
-  TableSigleListHeaderRight,
+  TableSingleListContent,
+  TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
+  TableSingleList,
 } from '@/shared/components/ui/tableList';
-import EditResiver from '@/features/orders/components/Livelist/TableComponent/EditResiver';
+import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
-import EditPayment from '@/features/orders/components/Livelist/TableComponent/EditPayment';
+import EditPayment from '@/features/orders/components/ui/EditPayment';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import SortSelect from '@/shared/components/selectors';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
-import Rating from '@/features/orders/components/Livelist/TableComponent/Rating';
+import Rating from '@/features/orders/components/ui/Rating';
 
 export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
@@ -153,6 +154,8 @@ export default function OrderTrackingDashboard() {
     { id: 'delivery_distance', name: 'Delivery distance ( Z - A )' },
     { id: 'delivery_fee', name: 'Delivery fee ( Z - A )' },
   ];
+
+  console.log(orderStore?.orderHistoryListData);
   return (
     <Dashboard className="h-auto">
       <DashboardHeader>
@@ -206,17 +209,18 @@ export default function OrderTrackingDashboard() {
           <Table>
             <TableLists>
               {orderStore?.orderHistoryListData!.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListHeader className="">
-                    <TableSigleListHeaderRight>
+                <TableSingleList key={idx}>
+                  <TableSingleListHeader className="">
+                    <TableSingleListHeaderRight>
                       <span className="font-semibold text-primary-blue flex">
                         <p className="ltr:hidden">FleetX #</p>{' '}
                         {item.fleetx_order_number}{' '}
                         <p className="rtl:hidden"># FleetX</p>
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${item.class_status
-                          }`}
+                        className={`px-2 py-0.5 rounded-full text-xs ${
+                          item.class_status
+                        }`}
                       >
                         {t(item.status)}
                       </span>
@@ -226,127 +230,127 @@ export default function OrderTrackingDashboard() {
                         <Dot />
                         {item.branch_name}
                       </span>
-                    </TableSigleListHeaderRight>
-                    <TableSigleListHeaderLeft className="flex items-center gap-2">
+                    </TableSingleListHeaderRight>
+                    <TableSingleListHeaderLeft className="flex items-center gap-2">
                       <Rating order={item} />
                       <div className="flex items-center gap-1">
                         <Clock size={12} />
                         {item.creation_date}
                       </div>
-                    </TableSigleListHeaderLeft>
-                  </TableSigleListHeader>
-                  <TableSigleListContents>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                    </TableSingleListHeaderLeft>
+                  </TableSingleListHeader>
+                  <TableSingleListContents>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <Receipt size={14} />
                         {t('component.features.orders.live.details.orderNo')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.fleetx_order_number}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <User size={14} />{' '}
                         {t('component.features.orders.live.details.sender')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.customer_name_sender}
-                      </TableSigleListContentDetailsTitle>
-                      <TableSigleListContentDetailsItem>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsItem>
                         <Phone size={12} /> {item.phone_number_sender}
-                      </TableSigleListContentDetailsItem>
-                      <TableSigleListContentDetailsItem>
+                      </TableSingleListContentDetailsItem>
+                      <TableSingleListContentDetailsItem>
                         <MapPin size={12} /> {item.from}
-                      </TableSigleListContentDetailsItem>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsItem>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <User size={14} />{' '}
                         {t('component.features.orders.live.details.receiver')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.customer_name}
-                      </TableSigleListContentDetailsTitle>
-                      <TableSigleListContentDetailsItem>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsItem>
                         <Phone size={12} /> {item.phone_number}
-                      </TableSigleListContentDetailsItem>
-                      <TableSigleListContentDetailsItem>
+                      </TableSingleListContentDetailsItem>
+                      <TableSingleListContentDetailsItem>
                         <MapPin size={12} /> {item.to}
-                      </TableSigleListContentDetailsItem>
-                      {isEditDetails && (
+                      </TableSingleListContentDetailsItem>
+                      {item.is_delivery_address_edit_enabled && (
                         <EditResiver
                           data={item}
                           fetchOrderDetails={fetchOrderDetails}
                         />
                       )}
-                    </TableSigleListContent>
-                    <TableSigleListContent
+                    </TableSingleListContent>
+                    <TableSingleListContent
                       className={!item.driver_name ? 'bg-[#F9F8714D]' : ''}
                     >
                       {item.driver_name ? (
                         <>
-                          <TableSigleListContentTitle>
+                          <TableSingleListContentTitle>
                             <Truck size={14} />{' '}
                             {t(
                               'component.features.orders.live.tracking.driver.defult'
                             )}
-                          </TableSigleListContentTitle>
-                          <TableSigleListContentDetailsTitle className="text-sm font-medium text-gray-800">
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle className="text-sm font-medium text-gray-800">
                             {item.driver_name}
-                          </TableSigleListContentDetailsTitle>
-                          <TableSigleListContentDetailsItem>
+                          </TableSingleListContentDetailsTitle>
+                          <TableSingleListContentDetailsItem>
                             <Phone size={12} /> {item.driver_phone}
-                          </TableSigleListContentDetailsItem>
-                          <TableSigleListContentDetailsItem>
+                          </TableSingleListContentDetailsItem>
+                          <TableSingleListContentDetailsItem>
                             <Navigation size={12} /> {item.delivery_distance} km
-                          </TableSigleListContentDetailsItem>
+                          </TableSingleListContentDetailsItem>
                         </>
                       ) : (
                         <>
-                          <TableSigleListContentTitle className="text-[#915A0B]">
+                          <TableSingleListContentTitle className="text-[#915A0B]">
                             <Clock size={14} className="!text-[#915A0B]" />
                             {t(
                               'component.features.orders.live.details.noDriverAssigned'
                             )}
-                          </TableSigleListContentTitle>
-                          <TableSigleListContentDetailsItem className="">
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsItem className="">
                             {t(
                               'component.features.orders.live.details.driverQueued'
                             )}
-                          </TableSigleListContentDetailsItem>
+                          </TableSingleListContentDetailsItem>
                         </>
                       )}
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <Info size={14} />{' '}
                         {t(
                           'component.features.orders.live.details.delivery-fee'
                         )}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {' '}
                         {item.amount_collected} {appConstants?.currency}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <CreditCard size={14} />{' '}
                         {t('component.features.orders.live.details.payment')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {paymentMap[item.payment_type] || 'Unknown'}
-                      </TableSigleListContentDetailsTitle>
-                      {isEditDetails && (
+                      </TableSingleListContentDetailsTitle>
+                      {item.is_delivery_address_edit_enabled && (
                         <EditPayment
                           data={item}
                           fetchOrderDetails={fetchOrderDetails}
                         />
                       )}
-                    </TableSigleListContent>
-                  </TableSigleListContents>
-                </TableSigleList>
+                    </TableSingleListContent>
+                  </TableSingleListContents>
+                </TableSingleList>
               ))}
             </TableLists>
           </Table>

@@ -3,6 +3,7 @@
 import SlaAccept from '@/features/auth/components/SlaAccept';
 
 function Layout({ children }: { children: React.ReactNode }) {
+  
   return (
     <>
       {children}

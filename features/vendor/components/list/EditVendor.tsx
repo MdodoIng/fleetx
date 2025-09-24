@@ -42,11 +42,12 @@ import userService from '@/shared/services/user';
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
 import { Card, CardContent } from '@/shared/components/ui/card';
 
@@ -285,24 +286,24 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListContents>
+                <TableSingleList key={idx}>
+                  <TableSingleListContents>
                     {item.map((i, listIdx) => (
-                      <TableSigleListContent key={listIdx}>
-                        <TableSigleListContentTitle>
+                      <TableSingleListContent key={listIdx}>
+                        <TableSingleListContentTitle>
                           <i.icon size={14} />
                           {i.title}
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle
                           className="line-clamp-2"
                           onClick={i.onClick ? () => i.onClick() : undefined}
                         >
                           {i.value}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
                     ))}
-                  </TableSigleListContents>
-                </TableSigleList>
+                  </TableSingleListContents>
+                </TableSingleList>
               ))}
             </TableLists>
           </Table>

@@ -197,7 +197,7 @@ export const showToast = (status: ToastStatus, message: string) => {
 };
 
 export const showServerMessage = (status: ToastStatus, resMessage: string) => {
-  const { getLocalStorage } = useSharedStore();
+  const { getLocalStorage } = useSharedStore.getState();
   const t = useTranslations();
   const lang = getLocalStorage('lang') as Locale;
   if (!lang) {
@@ -317,7 +317,7 @@ export const toValidateOperationalHours = () => {
 };
 
 export const checkZoneBusyModeIsEnabled = () => {
-  const { activeBusyModeDetails } = useSharedStore();
+  const { activeBusyModeDetails } = useSharedStore.getState();
   if (!activeBusyModeDetails) return false;
   const now = new Date();
   const activatedAt = new Date(activeBusyModeDetails.activated_at);

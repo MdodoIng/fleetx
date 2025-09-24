@@ -13,8 +13,8 @@ export type TypeSearchableSelectOption = {
 
 type Props = ComponentProps<'div'> & {
   options: TypeSearchableSelectOption[] | undefined;
-  value?: string;
-  onChangeAction: (e: string ) => void;
+  value?: string | number;
+  onChangeAction: (e: string  ) => void;
   placeholder?: string;
   classNameFroInput?: string;
   onChangeValue?: (e: string) => void;

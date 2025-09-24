@@ -1,11 +1,8 @@
 'use client';
 
-import ZoneGrowthFilter from '@/features/insights/components/zone-growth/ZoneGrowthFilter';
-import ZoneGrowthTable from '@/features/insights/components/zone-growth/ZoneGrowthTable';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';
-import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Dashboard,
@@ -14,64 +11,106 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Table,
 } from '@/shared/components/ui/table';
 import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
 import { TypeZoneData } from '@/shared/types/orders';
 import { TypeZoneGrowth } from '@/shared/types/report';
-
-import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function ZoneGrowthPage() {
-  const [zoneList, setZoneList] = useState<TypeZoneData[]>();
-  const [growthData, setGrowthData] = useState<TypeZoneGrowth[]>();
-  const [selectedZone, setSelectedZone] = useState<string>();
-  const [selectedYear, setSelectedYear] = useState<string>();
+  const [zoneList, setZoneList] = useState<TypeZoneData[]>([]);
+  const [growthData, setGrowthData] = useState<TypeZoneGrowth[]>([]);
+  const [selectedZone, setSelectedZone] = useState<number | undefined>(
+    undefined
+  );
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  );
+  const [isLoadingZones, setIsLoadingZones] = useState(false);
+  const [isLoadingGrowth, setIsLoadingGrowth] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch zones
   useEffect(() => {
     async function loadZones() {
-      const zones = await orderService.getZone();
-      setZoneList(zones.data);
+      setIsLoadingZones(true);
+      setError(null);
+      try {
+        const zones = await orderService.getZone();
+        console.log('Zones response:', zones); // Debug log
+        setZoneList(zones.data || []);
+      } catch (err: any) {
+        const errorMessage = err.message || 'Failed to fetch zones';
+        console.error('Error fetching zones:', errorMessage);
+        setError(errorMessage);
+      } finally {
+        setIsLoadingZones(false);
+      }
     }
     loadZones();
   }, []);
 
-  useEffect(() => {
-    async function loadGrowth() {
+  const fecthGrowth = useCallback(async () => {
+    if (!selectedZone || !selectedYear) {
+      console.log('Skipping growth fetch: zone or year not selected');
+      return;
+    }
+    setIsLoadingGrowth(true);
+    setError(null);
+    try {
       const data = await reportService.getZoneGrowth(
-        selectedZone!,
+        selectedZone,
         selectedYear
       );
-      setGrowthData(data.data!);
+      console.log('Growth data response:', data); // Debug log
+      setGrowthData(data.data || []);
+    } catch (err: any) {
+      // Consider a more specific error type if possible
+      const errorMessage = err.message || 'Failed to fetch growth data';
+      console.error('Error fetching growth data:', errorMessage);
+      setError(errorMessage);
+    } finally {
+      setIsLoadingGrowth(false);
     }
-    loadGrowth();
   }, [selectedZone, selectedYear]);
 
+  // Fetch growth data
+  useEffect(() => {
+    async function loadGrowth() {
+      await fecthGrowth();
+    }
+    loadGrowth();
+  }, [fecthGrowth]);
+
+  // Map zones to searchable select options
   const searchZoneOption: TypeSearchableSelectOption[] =
     zoneList?.map((item) => ({
-      id: item.id,
+      id: String(item.id), // Convert to string for SearchableSelect
       name: item.region_name,
     })) || [];
 
-  const current = new Date().getFullYear();
+  // Generate year options (2020 to current year)
+  const currentYear = new Date().getFullYear();
   const searchYearOption: TypeSearchableSelectOption[] = Array.from(
-    { length: current - 2020 + 1 },
-    (_, i) => current - i
-  ).map((item) => {
-    return {
-      id: String(item),
-      name: String(item),
-    };
-  });
+    { length: currentYear - 2010 + 1 },
+    (_, i) => currentYear - i
+  ).map((year) => ({
+    id: String(year), // Convert to string for SearchableSelect
+    name: String(year),
+  }));
 
+  // Sort growth data by month
   const orderData = growthData?.sort((a, b) => a.month - b.month);
 
+  // Month names mapping
   const monthNames: Record<number, string> = {
     0: '',
     1: 'January',
@@ -89,27 +128,36 @@ export default function ZoneGrowthPage() {
   };
 
   return (
-    <Dashboard>
+    <Dashboard className="h-auto">
       <DashboardHeader>
         <DashboardHeaderRight />
-
-        <div className="flex items-center justify-between  gap-2">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
           <SearchableSelect
-            onChangeAction={setSelectedZone}
+            onChangeAction={(value) =>
+              setSelectedZone(value ? Number(value) : undefined)
+            }
             options={searchZoneOption}
             placeholder="Select Zone"
+            value={String(selectedZone)}
+            classNameFroInput="border-none"
           />
-
           <SearchableSelect
             onChangeAction={setSelectedYear}
             options={searchYearOption}
             placeholder="Select Year"
+            value={String(selectedYear)}
+            classNameFroInput="border-none"
           />
         </div>
       </DashboardHeader>
-
       <DashboardContent className="flex-col w-full items-center">
-        {orderData && (
+        {isLoadingZones || isLoadingGrowth ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : orderData && orderData.length > 0 ? (
           <Card className="w-full">
             <CardContent>
               <Table className="w-full overflow-x-auto">
@@ -123,7 +171,7 @@ export default function ZoneGrowthPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orderData?.map((row, idx) => (
+                  {orderData.map((row, idx) => (
                     <TableRow
                       key={row.month}
                       className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
@@ -139,6 +187,8 @@ export default function ZoneGrowthPage() {
               </Table>
             </CardContent>
           </Card>
+        ) : (
+          <div className="text-center text-gray-500">No data available</div>
         )}
       </DashboardContent>
     </Dashboard>

@@ -158,7 +158,9 @@ const PaymentForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="amount">
-                      {t('component.features.orders.create.form.amount.label')}
+                      {t('component.features.orders.create.form.amount.label', {
+                        value: sheredStore.appConstants?.currency,
+                      })}
                     </Label>
                     <FormControl>
                       <Input

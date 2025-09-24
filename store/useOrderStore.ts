@@ -35,8 +35,8 @@ interface OrderState {
   orderStatusListData: TypeOrderHistoryList[] | undefined;
   totalCountList: number;
   estimatedDeliveryReturnFromApi:
-  | TypeEstimatedDeliveryReturnFromApi
-  | undefined;
+    | TypeEstimatedDeliveryReturnFromApi
+    | undefined;
   deliverySummary: DeliverySummary | null;
   orderHistoryListData: TypeOrderHistoryList[] | undefined;
   OLDER_DATE: string;
@@ -170,10 +170,10 @@ export const useOrderStore = create<OrderState>()(
             order.to = element.drop_off.address
               ? element.drop_off.address
               : element.drop_off.area +
-              ', ' +
-              element.drop_off.block +
-              ', ' +
-              element.drop_off.street;
+                ', ' +
+                element.drop_off.block +
+                ', ' +
+                element.drop_off.street;
             order.creation_date = new Date(element.created_at).toLocaleString();
             order.amount_collected = element.amount_to_collect;
             if (element.delivery_distance) {
@@ -256,14 +256,14 @@ function checkDeliveryAddressEditIsEnabled(event: TypeLiveOrderItem): boolean {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
       case 'SALES_HEAD':
-        // if (
-        //   orderStatus?.value == 'DELIVERED' &&
-        //   event.fulfill?.completed_at &&
-        //   Date.now() - +new Date(event.fulfill.completed_at) <
-        //     24 * 60 * 60 * 1000
-        // ) {
-        //   return true;
-        // }
+        if (
+          orderStatus?.value == 'orderStatus.DELIVERED.default' &&
+          event.fulfill?.completed_at &&
+          Date.now() - +new Date(event.fulfill.completed_at) <
+            24 * 60 * 60 * 1000
+        ) {
+          return true;
+        }
         return false;
 
       case 'FINANCE_MANAGER':

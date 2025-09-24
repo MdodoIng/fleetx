@@ -68,12 +68,17 @@ import {
 } from '@/shared/components/ui/dashboard';
 import {
   Table,
+  TableHeader,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContentTitle,
+  TableSingleListContents,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 
 function VendorUser() {
@@ -93,9 +98,9 @@ function VendorUser() {
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
   const [isBranch, setIsBranchAction] = useState<
     | {
-      branch: TypeBranch;
-      vendor: TypeVendorListItem;
-    }
+        branch: TypeBranch;
+        vendor: TypeVendorListItem;
+      }
     | undefined
   >({
     branch: selectedBranch!,
@@ -271,24 +276,24 @@ function VendorUser() {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListContents>
+                <TableSingleList key={idx}>
+                  <TableSingleListContents>
                     {item.map((i, listIdx) => (
-                      <TableSigleListContent key={listIdx}>
-                        <TableSigleListContentTitle>
+                      <TableSingleListContent key={listIdx}>
+                        <TableSingleListContentTitle>
                           <i.icon size={14} />
                           {i.title}
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle
                           className="line-clamp-2"
                           onClick={i.onClick ? () => i.onClick!() : undefined}
                         >
                           {i.value}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
                     ))}
-                  </TableSigleListContents>
-                </TableSigleList>
+                  </TableSingleListContents>
+                </TableSingleList>
               ))}
             </TableLists>
           </Table>

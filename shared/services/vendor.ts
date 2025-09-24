@@ -77,7 +77,11 @@ export const vendorService = {
       body: JSON.stringify(branch),
     }),
 
-  getAddressByMobile: (vendorId: string, branchId: string, mobile: string): Promise<TypeAddressByMobileResponse> =>
+  getAddressByMobile: (
+    vendorId: string,
+    branchId: string,
+    mobile: string
+  ): Promise<TypeAddressByMobileResponse> =>
     apiFetch(
       `${appConfig.vendorServiceApiUrl()}/customers/addresses/${vendorId}/branch/${branchId}?mobile_number=${mobile}`
     ),
@@ -213,6 +217,4 @@ export const vendorService = {
       }
     );
   },
-
-
 };

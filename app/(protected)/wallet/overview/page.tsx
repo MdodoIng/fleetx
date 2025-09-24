@@ -43,7 +43,6 @@ export default function WalletPage() {
     vendorStore.vendorId,
     vendorStore.selectedBranch,
     vendorStore.selectedVendor,
-    handleAddCredit,
   ]);
 
   useEffect(() => {

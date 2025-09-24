@@ -31,6 +31,7 @@ import {
   usedropOffFormValuesForDropffs,
   usePickUpFormValuesForPickUp,
 } from '../libs/helpers';
+import { toast } from 'sonner';
 
 // Custom Hook: useFunctionsDropoffs
 export default function useOrderCreate(
@@ -43,9 +44,7 @@ export default function useOrderCreate(
 ) {
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const {
-    currentStatusZoneETPTrend,
-  } = useSharedStore();
+  const { currentStatusZoneETPTrend } = useSharedStore();
   const { branchId, vendorId, selectedVendorName } = useVendorStore();
 
   const pickUpFormValues = pickUpForm.watch();
@@ -58,16 +57,10 @@ export default function useOrderCreate(
         dropOffForm.trigger(),
       ]);
 
-      const pickUpFieldsValid =
-        hasValue(pickUpFormValues.customer_name) &&
-        hasValue(pickUpFormValues.mobile_number) &&
-        hasValue(pickUpFormValues.street_id);
+      const pickUpFieldsValid = true;
 
       const dropOffFieldsValid =
-        hasValue(dropOffFormValues.customer_name) &&
-        hasValue(dropOffFormValues.mobile_number) &&
-        hasValue(dropOffFormValues.street_id) &&
-        (isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true);
+        isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
 
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
@@ -86,7 +79,6 @@ export default function useOrderCreate(
       useOrderStore.setState({
         estimatedDeliveryReturnFromApi: res.data,
       });
-      orderStore.setEstimatedDeliveryReturnFromApi(res.data);
       console.log(res.data, 'EstimatedDeliveryReturnFromApi');
       return res.data;
     } catch (error) {
@@ -243,7 +235,7 @@ export default function useOrderCreate(
         }
         break;
       case 'saveCurrentDropOff':
-        handleSaveCurrentDropOff();
+        await handleSaveCurrentDropOff();
         break;
       case 'editDropOffWithSave':
         try {
@@ -333,27 +325,34 @@ export default function useOrderCreate(
 
       case 'order':
         try {
-          useOrderStore.setState({
-            estimatedDeliveryReturnFromApi: undefined,
+          const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
+            dropOffFormValues: dropOffFormValues,
+            vendorId: vendorId!,
+            isCOD: isCOD,
           });
 
-          // TODO: change this logic to support form and saved dropoffs
+          const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          // Always get the latest store state
-          let currentStore = useOrderStore.getState();
+          const updatedPickUp = usePickUpFormValuesForPickUp({
+            pickUpFormValues: pickUpFormValues,
+          });
 
-          // If no dropoffs in store, add current form as dropoff
-          if (currentStore.dropOffs.length === 0) {
-            await functionsDropoffs('addOneDropoff');
-            // Get updated store state after adding dropoff
-            currentStore = useOrderStore.getState();
-          }
+          const estimatedDeliveryData: TypeEstimatedDelivery = {
+            branch_id: branchId!,
+            vendor_id: vendorId!,
+            drop_offs: newDropOffs,
+            delivery_model: orderStore.deliveryModel.key,
+            order_session_id:
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
+              null,
+            pickup: updatedPickUp,
+          };
 
-          // Use the latest store data for order creation
-          const res = currentStore.estimatedDeliveryReturnFromApi;
+          const res = await updateCalculateDeliveryEstimate(
+            estimatedDeliveryData!
+          );
 
           if (res) {
-
             const orders: TypeOrders = {
               branch_id: res.branch_id!,
               vendor_id: res.vendor_id!,
@@ -363,12 +362,20 @@ export default function useOrderCreate(
             };
 
             try {
-
               const createOrderRes =
                 await orderService.createOnDemandOrders(orders);
 
               //TODO: Show success alert message and clear form fields
               console.log(createOrderRes, 'orders');
+
+              toast.message(
+                'Successfully added and calculated estimate for new drop-off'
+              );
+              functionsDropoffs('cancel');
+
+              console.log(
+                'Successfully added and calculated estimate for new drop-off'
+              );
             } catch (error) {
               console.log(error);
             }
@@ -384,7 +391,8 @@ export default function useOrderCreate(
           estimatedDelivery: undefined,
           deliverySummary: undefined,
         });
-        console.log('cancel');
+        dropOffForm.reset(emptyDropOff);
+        dropOffForm.clearErrors();
         setIsCOD(1);
 
         break;
