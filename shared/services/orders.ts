@@ -14,7 +14,7 @@ import {
   TypeUpdatePaymentReq,
   TypeZoneResponce,
 } from '@/shared/types/orders';
-import { useAuthStore, useOrderStore, useVenderStore } from '@/store';
+import { useAuthStore, useOrderStore, useVendorStore } from '@/store';
 import { useSharedStore } from '@/store/useSharedStore';
 
 export const orderService = {
@@ -71,7 +71,7 @@ export const orderService = {
     searchAll: boolean | null = true
   ) {
     let url: string = '/active-list?page=' + page + '&page_size=' + perPage;
-    const { branchId, vendorId } = useVenderStore.getState();
+    const { branchId, vendorId } = useVendorStore.getState();
     const { user } = useAuthStore.getState();
 
     switch (user?.roles[0]) {
@@ -167,7 +167,7 @@ export const orderService = {
     searchAll: boolean | null = true
   ) {
     const currentUser = getDecodedAccessToken();
-    const { vendorId, branchId } = useVenderStore.getState();
+    const { vendorId, branchId } = useVendorStore.getState();
 
     switch (currentUser?.roles[0]) {
       case 'OPERATION_MANAGER':

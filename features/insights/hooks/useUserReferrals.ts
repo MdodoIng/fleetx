@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { reportService } from '@/shared/services/report';
-import { vendorService } from '@/shared/services/vender';
-import { TypeOpsFinUser } from '@/shared/types/vender';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeOpsFinUser } from '@/shared/types/vendor';
 import { DateRange } from 'react-day-picker';
 
 export default function useUserReferrals() {

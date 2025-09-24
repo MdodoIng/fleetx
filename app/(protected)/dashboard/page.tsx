@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { useSharedStore, useVenderStore } from '@/store';
+import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import {
@@ -36,7 +36,7 @@ const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
 
 function DashboardCompoent() {
   const { appConstants } = useSharedStore();
-  const { showDriversFilter } = useVenderStore();
+  const { showDriversFilter } = useVendorStore();
 
   const [dashboardData, setDashboardData] =
     useState<TypeDashboardDetailsResponse['data']>(defaultDashboardData);
@@ -73,7 +73,7 @@ function DashboardCompoent() {
         console.log(dashboardResult, 'dashboardResult');
         setDashboardData(dashboardResult.data);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }

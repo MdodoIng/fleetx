@@ -1,22 +1,22 @@
 'use client';
 
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { UseFormReturn } from 'react-hook-form';
 import {
   TypeEditVendorBranchSchema,
   TypeEditVendorNameSchema,
-} from '../validations/editVender';
+} from '../validations/editVendor';
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
-  TypeAddVenderReq,
-  TypeEditVenderReq,
-  TypeVender,
+  TypeAddVendorReq,
+  TypeEditVendorReq,
+  TypeVendor,
   TypeVendorType,
-} from '@/shared/types/vender';
-import { vendorService } from '@/shared/services/vender';
+} from '@/shared/types/vendor';
+import { vendorService } from '@/shared/services/vendor';
 import { hasValue } from '@/shared/lib/helpers';
 
-const branchTemplate: TypeEditVenderReq['branches'][number] = {
+const branchTemplate: TypeEditVendorReq['branches'][number] = {
   id: '',
   name: '',
   name_ar: null,
@@ -63,7 +63,7 @@ const branchTemplate: TypeEditVenderReq['branches'][number] = {
   ],
 };
 
-const newVenderBranchTemplate = {
+const newVendorBranchTemplate = {
   name: '',
   name_ar: null,
   mobile_number: '',
@@ -85,16 +85,16 @@ const newVenderBranchTemplate = {
   },
 };
 
-export const useAddUpdateVender = (
+export const useAddUpdateVendor = (
   editVendorNameForm: UseFormReturn<TypeEditVendorNameSchema>,
   editVendorBranchForm: UseFormReturn<TypeEditVendorBranchSchema>,
-  venderData: TypeVender,
+  vendorData: TypeVendor,
   codType: 1 | 2
 ) => {
-  const venderStore = useVenderStore.getState();
+  const vendorStore = useVendorStore.getState();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
   const [branchs, setBranchs] = useState<
-    TypeEditVenderReq['branches'][number][] | undefined
+    TypeEditVendorReq['branches'][number][] | undefined
   >(undefined);
 
   const validateFormsAsync = async (
@@ -105,9 +105,9 @@ export const useAddUpdateVender = (
         // Trigger validation on both forms
         const vendorNameValid = await editVendorNameForm.trigger();
 
-        const venderFieldsValid = hasValue(editVendorNameFormValues.name);
+        const vendorFieldsValid = hasValue(editVendorNameFormValues.name);
 
-        return vendorNameValid && venderFieldsValid;
+        return vendorNameValid && vendorFieldsValid;
       } catch (error) {
         console.error('Validation error:', error);
         return false;
@@ -120,19 +120,19 @@ export const useAddUpdateVender = (
           editVendorNameForm.trigger(),
         ]);
 
-        const venderFieldsValid = hasValue(editVendorNameFormValues.name);
+        const vendorFieldsValid = hasValue(editVendorNameFormValues.name);
 
         const vendorBranchFieldsValid =
           hasValue(editVendorBranchFormValues.name) &&
           hasValue(editVendorBranchFormValues.mobile_number) &&
           hasValue(editVendorBranchFormValues.address.street);
 
-        return venderStore.isEditVenderBranchId
+        return vendorStore.isEditVendorBranchId
           ? vendorBranchValid
           : true &&
-              vendorNameValid &&
-              vendorBranchFieldsValid &&
-              venderFieldsValid;
+          vendorNameValid &&
+          vendorBranchFieldsValid &&
+          vendorFieldsValid;
       } catch (error) {
         console.error('Validation error:', error);
         return false;
@@ -144,16 +144,16 @@ export const useAddUpdateVender = (
   const editVendorBranchFormValues = editVendorBranchForm.watch();
 
   function mapBranchDynamic(
-    data: Partial<TypeEditVenderReq['branches'][number]>,
-    template: TypeEditVenderReq['branches'][number],
+    data: Partial<TypeEditVendorReq['branches'][number]>,
+    template: TypeEditVendorReq['branches'][number],
     isCreateNewBranch?: boolean,
-    resVender?: any,
+    resVendor?: any,
     type?: 'add'
-  ): TypeEditVenderReq['branches'][number] {
+  ): TypeEditVendorReq['branches'][number] {
     const result = structuredClone(template); // safer than {...template}
 
     (
-      Object.keys(template) as (keyof TypeEditVenderReq['branches'][number])[]
+      Object.keys(template) as (keyof TypeEditVendorReq['branches'][number])[]
     ).forEach((key) => {
       // @ts-ignore
       if (data[key] !== undefined) {
@@ -166,7 +166,7 @@ export const useAddUpdateVender = (
       // Always ensure vendor object exists
       result.vendor = {
         ...(result.vendor ?? {}),
-        ...(isCreateNewBranch && resVender?.data ? resVender.data : {}),
+        ...(isCreateNewBranch && resVendor?.data ? resVendor.data : {}),
         name: editVendorNameFormValues.name,
         name_ar: editVendorNameFormValues.name_ar!,
         cod_counter_type: codType,
@@ -176,23 +176,23 @@ export const useAddUpdateVender = (
     return result;
   }
 
-  const updateVenderDetailsForFromApi = () => {
-    if (!venderData?.id) return;
+  const updateVendorDetailsForFromApi = () => {
+    if (!vendorData?.id) return;
     setIsLoadingForm(true);
 
     // Populate vendor-level form
-    if (venderData && Object.keys(venderData).length) {
+    if (vendorData && Object.keys(vendorData).length) {
       editVendorNameForm.setValue(
         'cod_counter_type',
-        venderData.cod_counter_type
+        vendorData.cod_counter_type
       );
-      editVendorNameForm.setValue('name', venderData.name);
-      editVendorNameForm.setValue('name_ar', venderData.name_ar ?? '');
+      editVendorNameForm.setValue('name', vendorData.name);
+      editVendorNameForm.setValue('name_ar', vendorData.name_ar ?? '');
     }
 
     // Find selected branch
-    const branch = venderData.branches?.find(
-      (item) => item.id === venderStore.isEditVenderBranchId
+    const branch = vendorData.branches?.find(
+      (item) => item.id === vendorStore.isEditVendorBranchId
     );
 
     if (branch) {
@@ -213,7 +213,7 @@ export const useAddUpdateVender = (
     type: 'updateAll' | 'updateBranch' = 'updateBranch',
     isCreateNewBranch: boolean,
     setIsCreateNewBranch: Dispatch<SetStateAction<boolean>>,
-    fetchVenderDetails: () => Promise<void>
+    fetchVendorDetails: () => Promise<void>
   ) => {
     const isFormValid = await validateFormsAsync(
       type === 'updateAll' ? 'save' : undefined
@@ -225,45 +225,45 @@ export const useAddUpdateVender = (
       return;
     }
 
-    const resVender = await vendorService.getVendorDetails(venderData?.id!);
+    const resVendor = await vendorService.getVendorDetails(vendorData?.id!);
 
-    let branch = venderData?.branches?.find(
-      (item) => item.id === venderStore.isEditVenderBranchId
+    let branch = vendorData?.branches?.find(
+      (item) => item.id === vendorStore.isEditVendorBranchId
     );
-    const formFixBrachs = venderData?.branches.map((item) => {
+    const formFixBrachs = vendorData?.branches.map((item) => {
       return mapBranchDynamic(
-        item as Partial<TypeEditVenderReq['branches'][number]>,
+        item as Partial<TypeEditVendorReq['branches'][number]>,
         branchTemplate,
         isCreateNewBranch,
-        resVender
+        resVendor
       );
     });
 
     const formFixBrach = branch
       ? mapBranchDynamic(
-          branch as Partial<TypeEditVenderReq['branches'][number]>,
-          branchTemplate,
-          isCreateNewBranch,
-          resVender
-        )
+        branch as Partial<TypeEditVendorReq['branches'][number]>,
+        branchTemplate,
+        isCreateNewBranch,
+        resVendor
+      )
       : mapBranchDynamic(
-          editVendorBranchFormValues! as any,
-          newVenderBranchTemplate! as any,
-          isCreateNewBranch,
-          resVender
-        );
+        editVendorBranchFormValues! as any,
+        newVendorBranchTemplate! as any,
+        isCreateNewBranch,
+        resVendor
+      );
 
     console.log(formFixBrach, 'editVendorBranchFormValues');
     const formFixBrachVal = formFixBrach
       ? mapBranchDynamic(editVendorBranchFormValues! as any, formFixBrach)
       : false;
 
-    const editBranchIndex = venderData?.branches.findIndex(
-      (item) => item.id === venderStore.isEditVenderBranchId
+    const editBranchIndex = vendorData?.branches.findIndex(
+      (item) => item.id === vendorStore.isEditVendorBranchId
     );
 
-    const req: TypeEditVenderReq = {
-      id: venderData?.id!,
+    const req: TypeEditVendorReq = {
+      id: vendorData?.id!,
       cod_counter_type: codType,
       name: editVendorNameFormValues.name,
       name_ar: editVendorNameFormValues.name_ar!,
@@ -279,9 +279,9 @@ export const useAddUpdateVender = (
 
       editVendorBranchForm.reset();
       type === 'updateAll'
-        ? venderStore.setValue('isEditVenderId', undefined)
-        : await fetchVenderDetails();
-      venderStore.setValue('isEditVenderBranchId', undefined);
+        ? vendorStore.setValue('isEditVendorId', undefined)
+        : await fetchVendorDetails();
+      vendorStore.setValue('isEditVendorBranchId', undefined);
       setIsCreateNewBranch(false);
     }
   };
@@ -298,7 +298,7 @@ export const useAddUpdateVender = (
 
     const formFixBrach = mapBranchDynamic(
       editVendorBranchFormValues! as any,
-      newVenderBranchTemplate as any,
+      newVendorBranchTemplate as any,
       undefined,
       null,
       'add'
@@ -319,7 +319,7 @@ export const useAddUpdateVender = (
     });
   };
 
-  const handelSaveVender = async (
+  const handelSaveVendor = async (
     isVendorType: (keyof typeof TypeVendorType)[]
   ) => {
     const isFormValid = await validateFormsAsync('save');
@@ -345,7 +345,7 @@ export const useAddUpdateVender = (
         vendor_type = TypeVendorType.B2B_Vendor;
       }
 
-      const branchToPut: TypeAddVenderReq['branches'] = branchs?.map(
+      const branchToPut: TypeAddVendorReq['branches'] = branchs?.map(
         (item, idx) => {
           return {
             address: {
@@ -357,9 +357,9 @@ export const useAddUpdateVender = (
               street_id: item.address.street_id,
               ...(item.address.building
                 ? {
-                    building: item.address.building ?? '',
-                    building_id: item.address.building_id ?? null,
-                  }
+                  building: item.address.building ?? '',
+                  building_id: item.address.building_id ?? null,
+                }
                 : {}),
               paci_number: item.address.paci_number,
               landmark: item.address.landmark,
@@ -380,7 +380,7 @@ export const useAddUpdateVender = (
         }
       ) as any;
 
-      const vendorDataToSave: TypeAddVenderReq = {
+      const vendorDataToSave: TypeAddVendorReq = {
         cod_counter_type: codType,
         name: editVendorNameFormValues.name,
         name_ar: editVendorNameFormValues.name_ar!,
@@ -415,12 +415,12 @@ export const useAddUpdateVender = (
 
   return {
     validateFormsAsync,
-    updateVenderDetailsForFromApi,
+    updateVendorDetailsForFromApi,
     handelUpdate,
     isLoadingForm,
     handelAddBranch,
     branchs,
     handleRemoveBranch,
-    handelSaveVender,
+    handelSaveVendor,
   };
 };

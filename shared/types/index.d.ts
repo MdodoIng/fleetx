@@ -1,19 +1,3 @@
-export interface TypeSuperSaverPromationRes {
-  data: {
-    start_time: string;
-    end_time: string;
-    full_day: boolean;
-    next_day: boolean;
-    enabled: boolean;
-    active_orders_count: number;
-    success_orders_count: number;
-    achieved_supersaver: boolean;
-    super_saver_reach_order_count: number;
-    active: boolean;
-    delivery_fee_rule: any;
-    delivery_fee_rule_type: any;
-  };
-}
 
 export interface TypeVendorPricingRuleRes {
   data: {

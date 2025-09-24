@@ -13,12 +13,8 @@ import { persist } from 'zustand/middleware';
 
 import {
   checkZoneBusyModeIsEnabled,
-  getAllFreeBuddiesFromB2C,
   getDiffrenceBwCurrentAndLastUpdatedETP,
-  getFleetZonePickUpTrendAPINew,
-  getSuperSaverPromotion,
   logError,
-  setSuperSaverWalletInfoMessage,
   // toValidateOperationalHours,
   toValidateOperationalHours,
 } from '@/shared/services';
@@ -69,12 +65,6 @@ export interface SharedActions {
   readAppConstants: () => Promise<void>;
   verifyAppVersionUpdate: (apiVersion: string) => void;
   calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => void;
-  triggerCalculatedTrend: (zoneId: number) => void;
-  setSuperSaverPromation: (
-    vendorId: string,
-    branchId: string,
-    currencyCode: string
-  ) => Promise<string[]>;
   // Add other actions that modify state here
 
   // Utils
@@ -91,8 +81,6 @@ export interface SharedActions {
   clearLocalStorage: () => void;
   setValue: (key: keyof SharedState, value: any) => void;
   clearAll: () => unknown;
-  getFleetZonePickUpTrend: () => Promise<void>;
-  getAllFreeBuddiesOnLoad: () => Promise<void>;
 }
 
 const initialState: SharedState = {
@@ -132,6 +120,7 @@ const initialState: SharedState = {
   isValidCancelOrReschedule: undefined,
   isCollapsed: false,
   showLanguage: false,
+  lastPathname: undefined,
 };
 
 export const useSharedStore = create<SharedState & SharedActions>()(
@@ -262,16 +251,6 @@ export const useSharedStore = create<SharedState & SharedActions>()(
           }
         },
 
-        setSuperSaverPromation: async (vendorId: string, branchId: string) => {
-          try {
-            const res: any = await getSuperSaverPromotion(vendorId, branchId);
-            return setSuperSaverWalletInfoMessage(res.data);
-          } catch (err: any) {
-            logError(err.message);
-            return [];
-          }
-        },
-
         calculateTrendToShowETP: (zoneDetail: any, freeBuddies: any) => {
           const { operationalHours, activeBusyModeDetails } = get();
           const { getLocalStorage } = get();
@@ -328,62 +307,6 @@ export const useSharedStore = create<SharedState & SharedActions>()(
           // addGoogleTag();
         },
 
-        getFleetZonePickUpTrend: async () => {
-          try {
-            const res: any = await getFleetZonePickUpTrendAPINew();
-
-            if (res.data) {
-              res.data.forEach((element: any) => {
-                element.system_response_at = new Date();
-              });
-              set({ fleetZonePickUpTrend: res.data });
-              const { getLocalStorage } = get();
-              const branchId =
-                getLocalStorage(storageConstants.branch_id) || '';
-              get().triggerCalculatedTrend(get().currentZoneId!);
-            }
-          } catch (err: any) {
-            logError(err?.error?.message);
-          }
-        },
-
-        getAllFreeBuddiesOnLoad: async () => {
-          try {
-            const res: any = await getAllFreeBuddiesFromB2C();
-            if (res) {
-              set({ freeDriverData: res });
-              const { getLocalStorage } = get();
-              const branchId =
-                getLocalStorage(storageConstants.branch_id) || '';
-              get().triggerCalculatedTrend(get().currentZoneId!);
-            }
-          } catch (err: any) {
-            logError(err);
-          }
-        },
-
-        triggerCalculatedTrend: async (zoneId: number) => {
-          const {
-            fleetZonePickUpTrend,
-            freeDriverData,
-            calculateTrendToShowETP,
-            getFleetZonePickUpTrend,
-            getAllFreeBuddiesOnLoad,
-          } = get();
-
-          if (!fleetZonePickUpTrend) {
-            await getFleetZonePickUpTrend();
-          }
-          if (!freeDriverData) {
-            await getAllFreeBuddiesOnLoad();
-          }
-
-          const zoneTrend = fleetZonePickUpTrend?.find(
-            (x: any) => x.zone_region_id === zoneId
-          );
-          const freeBuddies = freeDriverData.find((x) => x.regionId === zoneId);
-          calculateTrendToShowETP(zoneTrend, freeBuddies);
-        },
       };
     },
     {

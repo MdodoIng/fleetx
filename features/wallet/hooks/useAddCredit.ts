@@ -7,8 +7,8 @@ import {
   TypeInitiateReq,
   TypePrepareMashkorReq,
 } from '@/shared/types/payment';
-import { TypeBranch } from '@/shared/types/vender';
-import { useAuthStore, useVenderStore } from '@/store';
+import { TypeBranch } from '@/shared/types/vendor';
+import { useAuthStore, useVendorStore } from '@/store';
 import {
   getVendorWalletBalanceInit,
   useWalletStore,
@@ -40,8 +40,8 @@ export function useAddCredit() {
     isVendorAdmin,
     selectedBranch,
     selectedVendor,
-    setValue: setValueVenderStore,
-  } = useVenderStore.getState();
+    setValue: setValueVendorStore,
+  } = useVendorStore.getState();
   const { user } = useAuthStore.getState();
 
   const [dialogState, setDialogState] = useState<{
@@ -74,7 +74,7 @@ export function useAddCredit() {
         selectedBranch?.id !== prepareMashkor.branch.id ||
         selectedVendor?.id !== prepareMashkor.vendor.id
       ) {
-        useVenderStore.setState({
+        useVendorStore.setState({
           branchId: prepareMashkor.branch.id,
           vendorId: prepareMashkor.vendor.id,
           selectedBranch: prepareMashkor.branch,
@@ -142,17 +142,17 @@ export function useAddCredit() {
     const payment =
       typeof amount === 'number'
         ? [
-            {
-              amount: amount,
-              branch_id: branchId || selectedBranch!.id,
-            },
-          ]
+          {
+            amount: amount,
+            branch_id: branchId || selectedBranch!.id,
+          },
+        ]
         : amount.map((item) => {
-            return {
-              amount: item.rechargeAmount,
-              branch_id: item.branch.id!,
-            };
-          });
+          return {
+            amount: item.rechargeAmount,
+            branch_id: item.branch.id!,
+          };
+        });
 
     const totalRecharge = payment?.reduce(
       (sum, item) => sum + (Number(item.amount) || 0),
@@ -161,18 +161,18 @@ export function useAddCredit() {
 
     const reqoust: TypeInitiateReq = isCentralWalletEnabled
       ? {
-          vendor_id: vendorId!,
-          amount: parseFloat(
-            typeof amount === 'number' ? amount.toFixed(2) : '0.00'
-          ),
-          language: locale?.toUpperCase(),
-        }
+        vendor_id: vendorId!,
+        amount: parseFloat(
+          typeof amount === 'number' ? amount.toFixed(2) : '0.00'
+        ),
+        language: locale?.toUpperCase(),
+      }
       : {
-          amount: totalRecharge,
-          branch_payments: payment,
-          language: locale?.toUpperCase(),
-          vendor_id: vendorId!,
-        };
+        amount: totalRecharge,
+        branch_payments: payment,
+        language: locale?.toUpperCase(),
+        vendor_id: vendorId!,
+      };
 
     const res = await paymentService.initiate(reqoust);
     console.log(res);

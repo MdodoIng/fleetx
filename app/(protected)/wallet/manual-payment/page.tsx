@@ -19,12 +19,12 @@ import {
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import {
   TypeManualPaymentHistoryReportRes,
   TypePayment,
 } from '@/shared/types/payment';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { format } from 'date-fns';
 import {
   Axis3dIcon,
@@ -69,7 +69,7 @@ function ManualReport(): JSX.Element {
   const [tableData, setTableData] = useState<any[]>([]);
   const [paymentType, setPaymentType] =
     useState<(typeof TypePayment)[number]['id']>();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
 
   const fetchPaymentHistoryReport = async () => {
     setIsLoading(true);
@@ -79,8 +79,8 @@ function ManualReport(): JSX.Element {
         100,
         date?.from!,
         date?.to!,
-        venderStore.selectedVendor?.id!,
-        venderStore.selectedBranch?.id!,
+        vendorStore.selectedVendor?.id!,
+        vendorStore.selectedBranch?.id!,
         paymentType!
       );
       const res = await paymentService.getManualPaymentHistoryReport(url);
@@ -104,8 +104,8 @@ function ManualReport(): JSX.Element {
     };
     loadInitialPaymentHistoryReport();
   }, [
-    venderStore.selectedVendor?.id,
-    venderStore.selectedBranch?.id,
+    vendorStore.selectedVendor?.id,
+    vendorStore.selectedBranch?.id,
     page,
     date?.from,
     date?.to,
@@ -195,7 +195,7 @@ function ManualReport(): JSX.Element {
             )}
           </Select>
 
-          <DateSelect value={date} onChangeAction={setDate}  />
+          <DateSelect value={date} onChangeAction={setDate} />
         </div>
 
         {/* Search and Filter */}

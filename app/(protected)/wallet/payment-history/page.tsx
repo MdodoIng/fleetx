@@ -19,12 +19,12 @@ import {
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import {
   TypeManualPaymentHistoryReportRes,
   TypePayment,
 } from '@/shared/types/payment';
-import { useVenderStore } from '@/store';
+import { useVendorStore } from '@/store';
 import { format } from 'date-fns';
 import {
   Axis3dIcon,
@@ -76,7 +76,7 @@ function PaymentHistory(): JSX.Element {
   const [invoicePaymentIdsData, setInvoicePaymentIdsData] = useState<
     any[] | undefined
   >(undefined);
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
 
   const fetchPaymentHistoryReport = async () => {
     setIsLoading(true);
@@ -216,7 +216,7 @@ function PaymentHistory(): JSX.Element {
               <SelectValue placeholder="Select Vendor" />
             </SelectTrigger>
             <SelectContent>
-              {venderStore?.venderList?.map((type) => (
+              {vendorStore?.vendorList?.map((type) => (
                 <SelectItem key={type.id} value={String(type.id)}>
                   {type.name}
                 </SelectItem>
@@ -249,7 +249,7 @@ function PaymentHistory(): JSX.Element {
               </span>
             )}
           </Select>
-          <DateSelect value={date} onChangeAction={setDate}  />
+          <DateSelect value={date} onChangeAction={setDate} />
         </div>
 
         {/* Search and Filter */}

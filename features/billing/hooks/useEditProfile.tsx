@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { vendorService } from '@/shared/services/vender';
-import { useVenderStore } from '@/store';
-import { TypeUpdateCompanyBillingRequest } from '@/shared/types/vender';
+import { vendorService } from '@/shared/services/vendor';
+import { useVendorStore } from '@/store';
+import { TypeUpdateCompanyBillingRequest } from '@/shared/types/vendor';
 
 export const billingProfileSchema = z.object({
   companyLegalName: z
@@ -21,7 +21,7 @@ export const billingProfileSchema = z.object({
 export type BillingProfileFormData = z.infer<typeof billingProfileSchema>;
 
 export default function useEditProfile() {
-  const { vendorId, selectedVendor } = useVenderStore();
+  const { vendorId, selectedVendor } = useVendorStore();
 
   const form = useForm<BillingProfileFormData>({
     resolver: zodResolver(billingProfileSchema),

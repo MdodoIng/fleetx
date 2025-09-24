@@ -1,16 +1,16 @@
 'use client';
 import { environment } from '@/environments/environment';
-import { useAuthStore, useSharedStore, useVenderStore } from '@/store';
-import { vendorService } from './vender';
+import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
+import { vendorService } from './vendor';
 import { useNotificationStore } from '@/store/useNotificationStore';
 
 export const setBranchDetails = async () => {
-  const venderStore = useVenderStore.getState();
+  const vendorStore = useVendorStore.getState();
 
   try {
-    const res = await vendorService.getBranchDetails(venderStore.vendorId!);
+    const res = await vendorService.getBranchDetails(vendorStore.vendorId!);
 
-    venderStore.setValue('branchDetails', res.data);
+    vendorStore.setValue('branchDetails', res.data);
   } catch (error) {
     console.log(error);
   }
@@ -20,9 +20,9 @@ export const getVendorList = async () => {
   const {
     getVendorAccountManagerId,
     setValue,
-    isSearchVenderParams,
-    venderList,
-  } = useVenderStore.getState();
+    isSearchVendorParams: isSearchVendorParams,
+    vendorList: vendorList,
+  } = useVendorStore.getState();
   const { user } = useAuthStore.getState();
 
   getVendorAccountManagerId();
@@ -34,20 +34,20 @@ export const getVendorList = async () => {
   ) {
     const url = vendorService.setVendorListurl(
       null,
-      isSearchVenderParams,
+      isSearchVendorParams,
       null
     );
 
     try {
       const res = await vendorService.getVendorList(url);
 
-      const existingIds = new Set(venderList?.map((item) => item.id) || []);
+      const existingIds = new Set(vendorList?.map((item) => item.id) || []);
       const newVendors = res.data.filter(
         (vendor) => !existingIds.has(vendor.id)
       );
-      const updatedVenderList = [...(venderList || []), ...newVendors];
+      const updatedVendorList = [...(vendorList || []), ...newVendors];
 
-      setValue('venderList', updatedVenderList);
+      setValue('vendorList', updatedVendorList);
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -55,13 +55,13 @@ export const getVendorList = async () => {
   }
 };
 
-export const setVenderDetails = async () => {
-  const venderStore = useVenderStore.getState();
-  if (venderStore.vendorId) {
+export const setVendorDetails = async () => {
+  const vendorStore = useVendorStore.getState();
+  if (vendorStore.vendorId) {
     try {
-      const res = await vendorService.getVendorDetails(venderStore.vendorId!);
+      const res = await vendorService.getVendorDetails(vendorStore.vendorId!);
 
-      venderStore.setValue('selectedVendor', res.data);
+      vendorStore.setValue('selectedVendor', res.data);
     } catch (error) {
       console.log(error);
     }
@@ -70,7 +70,7 @@ export const setVenderDetails = async () => {
 
 export async function updateZoneAndSome() {
   const { branchDetails, branchId, selectedBranch, selectedVendor, setValue } =
-    useVenderStore.getState();
+    useVendorStore.getState();
   const sharedStore = useSharedStore.getState();
   await getVendorList();
 
@@ -78,7 +78,7 @@ export async function updateZoneAndSome() {
     await setBranchDetails();
   }
   if (!selectedVendor) {
-    await setVenderDetails();
+    await setVendorDetails();
   }
 
   const selectedBranchId = selectedBranch?.id || branchId;
@@ -89,7 +89,7 @@ export async function updateZoneAndSome() {
         'currentZoneId',
         branch.branch_zone.length > 0
           ? // @ts-ignore
-            parseInt(branch.branch_zone[0].tookan_region?.region_id as any)
+          parseInt(branch.branch_zone[0].tookan_region?.region_id as any)
           : undefined
       );
       sharedStore.setValue('defaultZoneId', sharedStore.currentZoneId);
@@ -110,13 +110,11 @@ export async function setHeadingForVendorBranch() {
   } = useNotificationStore.getState();
 
   const {
-    getFleetZonePickUpTrend,
-    getAllFreeBuddiesOnLoad,
     readAppConstants,
     setValue: setSharedValue,
   } = useSharedStore.getState();
 
-  const { setValue: setVendorValue, branchDetails } = useVenderStore.getState();
+  const { setValue: setVendorValue, branchDetails } = useVendorStore.getState();
 
   if (!user) return;
 
@@ -150,9 +148,6 @@ export async function setHeadingForVendorBranch() {
     user.roles.includes('SALES_HEAD') ||
     user.roles.includes('FINANCE_MANAGER')
   ) {
-    if (environment.LOCAL_ADDRESS_ENABLED) {
-      getAllFreeBuddiesOnLoad();
-    }
     setSharedValue('showLanguage', false);
     setVendorValue('isEditDetails', true);
     setVendorValue('showDriversFilter', true);
@@ -178,19 +173,15 @@ export async function setHeadingForVendorBranch() {
         setSharedValue(
           'currentZoneId',
           branch.branch_zone.length > 0
-            ? parseInt(branch.branch_zone[0].tookan_region?.region_id)
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id ?? '0')
             : undefined
         );
         setSharedValue(
           'defaultZoneId',
           branch.branch_zone.length > 0
-            ? parseInt(branch.branch_zone[0].tookan_region?.region_id)
+            ? parseInt(branch.branch_zone[0].tookan_region?.region_id ?? '0')
             : undefined
         );
-
-        if (environment.LOCAL_ADDRESS_ENABLED) {
-          getAllFreeBuddiesOnLoad();
-        }
 
         setVendorValue('branchName', branch.name);
         setVendorValue('selectedBranch', branch);

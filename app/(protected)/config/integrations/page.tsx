@@ -27,7 +27,7 @@ import { cn } from '@/shared/lib/utils';
 import { Check, Copy, Eye, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import dummi from '@/assets/images/logo.webp';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import { useAuthStore } from '@/store';
 import LoadingPage from '../../loading';
 
@@ -104,7 +104,7 @@ export default function PlatformGrid() {
       };
       const response = await vendorService.activateAffiliation(request);
 
-    
+
       if (response.data) {
         setActivate(affiliationId);
         setActivateKeys(response.data, affiliationId);

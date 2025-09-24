@@ -48,10 +48,6 @@ export const appConfig = {
   googleKey(): string {
     return environment.GOOGLE_KEY;
   },
-
-  awsApiGatewayBaseUrl(): string {
-    return environment.AWS_API_GATEWAY_BASE_URL;
-  },
 };
 
 

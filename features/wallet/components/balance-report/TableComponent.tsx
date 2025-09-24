@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { statusColors, paymentMap } from '@/features/orders/constants';
 
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { OperationType } from '@/shared/types/orders';
 import { cn } from '@/shared/lib/utils';
@@ -47,7 +47,7 @@ export default function TableComponent({
   nextSetItemTotal,
 }: OrdersPageProps) {
   const { appConstants } = useSharedStore();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const handleLoadMore = useCallback(() => {
@@ -126,7 +126,7 @@ export default function TableComponent({
                     <GitBranch size={14} /> Branch.
                   </span>
                   <span className={cn('text-sm font-medium text-gray-800')}>
-                    {item.branch} 
+                    {item.branch}
                   </span>
                 </div>
                 <div className="flex flex-col p-3 rounded-lg border bg-gray-50">

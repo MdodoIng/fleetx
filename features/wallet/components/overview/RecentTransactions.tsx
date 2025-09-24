@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useCallback, useEffect, useState } from 'react';
-import { useSharedStore, useVenderStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { format } from 'date-fns';
@@ -21,14 +21,14 @@ import { useTranslations } from 'next-intl';
 export function RecentTransactions({ isOpen }: { isOpen: any }) {
   const [walletHistory, setWalletHistory] =
     useState<TypeWalletTransactionHistoryRes['data']>();
-  const venderStore = useVenderStore();
+  const vendorStore = useVendorStore();
   const sharedStore = useSharedStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchVendorWalletBalance = useCallback(async () => {
     setIsLoading(true);
     try {
-      if (venderStore.vendorId) {
+      if (vendorStore.vendorId) {
         const walletHistoryUrl = reportService.getWalletHistoryUrl(
           4,
           null,
@@ -54,7 +54,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     } finally {
       setIsLoading(false);
     }
-  }, [venderStore.vendorId]);
+  }, [vendorStore.vendorId]);
 
   useEffect(() => {
     const loadInitialWalletBalance = async () => {

@@ -64,8 +64,8 @@ export default function ChangePasswordPage() {
       console.log(res);
       toast(res.data);
       // logout();
-    } catch (err) {
-      toast.error(err || 'An error occurred');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitted(false);
     }

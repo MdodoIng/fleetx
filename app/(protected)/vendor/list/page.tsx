@@ -1,12 +1,12 @@
 'use client';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vender';
-import { TypeVenderList } from '@/shared/types/vender';
-import { useVenderStore } from '@/store';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeVendorList } from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
 import { useCallback, useEffect, useState, type JSX } from 'react';
-import VendersList from '@/features/vendor/components/list/VendersList';
-import EditVender from '@/features/vendor/components/list/EditVender';
+import VendorsList from '@/features/vendor/components/list/VendorsList';
+import EditVendor from '@/features/vendor/components/list/EditVendor';
 import {
   Dashboard,
   DashboardContent,
@@ -17,19 +17,19 @@ import { Input } from '@/shared/components/ui/input';
 import { Download, Search, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 
-function VenderList(): JSX.Element {
+function VendorList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
-  const { isEditVenderId, getVendorAccountManagerId, setValue } =
-    useVenderStore();
+  const { isEditVendorId: isEditVendorId, getVendorAccountManagerId, setValue } =
+    useVendorStore();
 
   const [searchValue, setSearchValue] = useState<string | null>('');
-  const [data, setData] = useState<TypeVenderList | undefined>(undefined);
+  const [data, setData] = useState<TypeVendorList | undefined>(undefined);
 
   // Updated main function
 
-  const fetchVenderList = useCallback(async (): Promise<void> => {
+  const fetchVendorList = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
     try {
@@ -55,11 +55,11 @@ function VenderList(): JSX.Element {
   }, [getVendorAccountManagerId, page, searchValue]);
 
   useEffect(() => {
-    const loadFetchVenderList = async () => {
-      await fetchVenderList();
+    const loadFetchVendorList = async () => {
+      await fetchVendorList();
     };
-    loadFetchVenderList();
-  }, [fetchVenderList]);
+    loadFetchVendorList();
+  }, [fetchVendorList]);
 
   console.log(data, 'aeefeafsafaaf');
 
@@ -71,16 +71,16 @@ function VenderList(): JSX.Element {
     <Dashboard className="">
       <DashboardHeader>
         <DashboardHeaderRight
-          title={isEditVenderId && 'Edit Vendor Details'}
-          subtitle={isEditVenderId && 'Manage Vendor Information'}
+          title={isEditVendorId && 'Edit Vendor Details'}
+          subtitle={isEditVendorId && 'Manage Vendor Information'}
         />
 
         <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
-          <div hidden={!!isEditVenderId} className="relative max-sm:w-full">
+          <div hidden={!!isEditVendorId} className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder={'Search Vender'}
+              placeholder={'Search Vendor'}
               value={searchValue!}
               onChange={(e) => setSearchValue(e.target.value)}
               className="pl-10 !border-none !outline-none !ring-0 "
@@ -88,12 +88,12 @@ function VenderList(): JSX.Element {
           </div>
           <Button
             // onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-            //   onClick={() => venderStore.setValue('isEditVenderId', undefined)}
+            //   onClick={() => vendorStore.setValue('isEditVendorId', undefined)}
             onClick={() =>
-              isEditVenderId ? setValue('isEditVenderId', undefined) : ''
+              isEditVendorId ? setValue('isEditVendorId', undefined) : ''
             }
           >
-            {isEditVenderId ? (
+            {isEditVendorId ? (
               <>
                 <X className="w-5 h-5" /> Close{' '}
               </>
@@ -106,17 +106,17 @@ function VenderList(): JSX.Element {
         </div>
       </DashboardHeader>
       <DashboardContent className="relative z-0 flex-col">
-        {isEditVenderId ? (
-          <EditVender
+        {isEditVendorId ? (
+          <EditVendor
             nextSetItemTotal={nextSetItemTotal}
             page={page}
             setPage={setPage}
           />
         ) : (
           data && (
-            <VendersList
+            <VendorsList
               data={data!}
-              fetchVenderList={fetchVenderList}
+              fetchVendorList={fetchVendorList}
               nextSetItemTotal={nextSetItemTotal}
               page={page}
               setPage={setPage}
@@ -129,4 +129,4 @@ function VenderList(): JSX.Element {
   );
 }
 
-export default VenderList;
+export default VendorList;

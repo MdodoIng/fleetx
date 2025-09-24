@@ -1,13 +1,13 @@
 import { useSharedStore } from './useSharedStore';
 import { useOrderStore } from './useOrderStore';
-import { useVenderStore } from './useVenderStore';
+import { useVendorStore } from './useVendorStore';
 import { useWalletStore } from './useWalletStore';
 import { useNotificationStore } from './useNotificationStore';
 import { useAuthStore } from './useAuthStore';
 
 export {
   useAuthStore,
-  useVenderStore,
+  useVendorStore,
   useOrderStore,
   useWalletStore,
   useNotificationStore,
@@ -16,7 +16,7 @@ export {
 export const clearAllStore = () => {
   useOrderStore.getState().clearAll();
   useSharedStore.getState().clearAll();
-  useVenderStore.getState().clearAll();
+  useVendorStore.getState().clearAll();
   useWalletStore.getState().clearAll();
   useNotificationStore.getState().clearAll();
 };

@@ -1,25 +1,25 @@
 'use client';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import {
-  TypeEditVenderReq,
-  TypeVenderList,
+  TypeEditVendorReq,
+  TypeVendorList,
   TypeVendorType,
-} from '@/shared/types/vender';
-import { useVenderStore } from '@/store';
+} from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
 import { useEffect, useState, type JSX } from 'react';
-import VendersList from '@/features/vendor/components/list/VendersList';
-import EditVender from '@/features/vendor/components/list/EditVender';
+import VendorsList from '@/features/vendor/components/list/VendorsList';
+import EditVendor from '@/features/vendor/components/list/EditVendor';
 import { useForm } from 'react-hook-form';
 import {
   editVendorBranchSchema,
   editVendorNameSchema,
   TypeEditVendorBranchSchema,
   TypeEditVendorNameSchema,
-} from '@/features/vendor/validations/editVender';
+} from '@/features/vendor/validations/editVendor';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAddUpdateVender } from '@/features/vendor/hooks/useAddUpdateVender';
+import { useAddUpdateVendor } from '@/features/vendor/hooks/useAddUpdateVendor';
 import { Button } from '@/shared/components/ui/button';
 import { Label } from '@/shared/components/ui/label';
 import { Input } from '@/shared/components/ui/input';
@@ -45,8 +45,8 @@ import {
 } from '@/shared/components/ui/tableList';
 import { Separator } from '@/shared/components/ui/separator';
 
-function VenderAdd(): JSX.Element {
-  const venderStore = useVenderStore();
+function VendorAdd(): JSX.Element {
+  const vendorStore = useVendorStore();
   const [codType, setCodType] = useState<1 | 2>(2);
   const [isVendorType, setIsVendorType] = useState<
     (keyof typeof TypeVendorType)[]
@@ -99,53 +99,53 @@ function VenderAdd(): JSX.Element {
     branchs,
     isLoadingForm,
     handleRemoveBranch,
-    handelSaveVender,
-  } = useAddUpdateVender(
+    handelSaveVendor,
+  } = useAddUpdateVendor(
     editVendorNameForm,
     editVendorBranchForm,
     '' as any,
     codType
   );
 
-  console.log(venderStore.selectedBranch?.id);
+  console.log(vendorStore.selectedBranch?.id);
 
   const tableData = branchs
     ? branchs?.map((item: any, idx) => {
-        return [
-          {
-            icon: User2,
-            title: 'name',
-            value: item.name,
-          },
-          {
-            icon: User2,
-            title: 'Name_ar',
-            value: item.name_ar,
-          },
-          {
-            icon: MapPin,
-            title: 'Area',
-            value: item.address.area,
-          },
-          {
-            icon: Contact,
-            title: 'Contact',
-            value: item.mobile_number,
-          },
-          {
-            icon: User2,
-            title: 'Type',
-            value: item.main_branch ? 'Main Branch' : 'Normal',
-          },
+      return [
+        {
+          icon: User2,
+          title: 'name',
+          value: item.name,
+        },
+        {
+          icon: User2,
+          title: 'Name_ar',
+          value: item.name_ar,
+        },
+        {
+          icon: MapPin,
+          title: 'Area',
+          value: item.address.area,
+        },
+        {
+          icon: Contact,
+          title: 'Contact',
+          value: item.mobile_number,
+        },
+        {
+          icon: User2,
+          title: 'Type',
+          value: item.main_branch ? 'Main Branch' : 'Normal',
+        },
 
-          {
-            icon: User2,
-            title: ' Action',
-            value: <Trash />,
-            onClick: () => handleRemoveBranch(idx),
-          },
-        ];
-      })
+        {
+          icon: User2,
+          title: ' Action',
+          value: <Trash />,
+          onClick: () => handleRemoveBranch(idx),
+        },
+      ];
+    })
     : [];
 
   const { register: vendorNameRegister } = editVendorNameForm;
@@ -268,7 +268,7 @@ function VenderAdd(): JSX.Element {
               ))}
             </TableLists>
           </Table>
-          <Button onClick={() => handelSaveVender(isVendorType)} type="submit">
+          <Button onClick={() => handelSaveVendor(isVendorType)} type="submit">
             Save All
           </Button>
         </>
@@ -279,4 +279,4 @@ function VenderAdd(): JSX.Element {
   );
 }
 
-export default VenderAdd;
+export default VendorAdd;

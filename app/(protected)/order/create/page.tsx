@@ -15,7 +15,7 @@ import {
   useAuthStore,
   useOrderStore,
   useSharedStore,
-  useVenderStore,
+  useVendorStore,
 } from '@/store';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +27,7 @@ import {
 } from '@/features/orders/validations/order';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { vendorService } from '@/shared/services/vender';
+import { vendorService } from '@/shared/services/vendor';
 import { useDebounce } from '@/shared/lib/hooks';
 
 export default function ShippingForm() {
@@ -38,7 +38,7 @@ export default function ShippingForm() {
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
-  const { branchId, vendorId, selectedBranch } = useVenderStore();
+  const { branchId, vendorId, selectedBranch } = useVendorStore();
 
   const [isCOD, setIsCOD] = useState<1 | 2>(2);
 
@@ -128,6 +128,7 @@ export default function ShippingForm() {
     }
   }, [user, branchId, orderStore.dropOffs, isDropIndex, dropOffForm]);
 
+
   const searchAddressByMobileNumber = useCallback(
     async (mobileNumber: string) => {
       try {
@@ -137,14 +138,40 @@ export default function ShippingForm() {
           mobileNumber
         );
 
-        console.log(res, 'afds');
-        if (res.data.address) {
-          Object.entries(res.data.address).forEach(([key, value]) => {
-            dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
-          });
+        console.log(res, 'address search result');
+        console.log('Full response data:', JSON.stringify(res.data, null, 2));
+
+        // Handle array response - get the first address if available
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          const firstAddress = res.data[0];
+          console.log('First address object:', JSON.stringify(firstAddress, null, 2));
+
+          if (firstAddress.address) {
+            // Set the address details from the first result
+            dropOffForm.setValue('additional_address', firstAddress.address.address);
+            dropOffForm.setValue('area', firstAddress.address.area || '');
+            dropOffForm.setValue('block', firstAddress.address.block || '');
+            dropOffForm.setValue('street', firstAddress.address.street || '');
+            dropOffForm.setValue('building', firstAddress.address.building || '');
+            dropOffForm.setValue('floor', firstAddress.address.floor || '');
+            dropOffForm.setValue('apartment_no', firstAddress.address.room_number || '');
+            dropOffForm.setValue('latitude', firstAddress.address.latitude);
+            dropOffForm.setValue('longitude', firstAddress.address.longitude);
+
+            // Set customer details if available
+            const customerName = firstAddress.customer_name || firstAddress.address.customer_name;
+
+            if (customerName) {
+              dropOffForm.setValue('customer_name', customerName);
+              console.log('Customer name set to:', dropOffForm.getValues('customer_name'));
+            }
+          }
+        } else {
+          // No addresses found for this mobile number
+          console.log('No addresses found for mobile number:', mobileNumber);
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error searching address by mobile number:', error);
       }
     },
     [vendorId, branchId, dropOffForm]
@@ -168,7 +195,7 @@ export default function ShippingForm() {
   useEffect(() => {
     updatePickUpDetailsForBranchUser();
     updateDropOutDetailsForStore();
-    return () => {};
+    return () => { };
   }, [updateDropOutDetailsForStore, updatePickUpDetailsForBranchUser]);
 
   const isDropoffOne = orderStore.dropOffs
@@ -223,7 +250,7 @@ export default function ShippingForm() {
         <DashboardFooter>
           <DeliverySummaryFooter
             handleOrder={() => functionsDropoffs('order')}
-            handleCancle={() => functionsDropoffs('cancle')}
+            handleCancel={() => functionsDropoffs('cancel')}
           />
         </DashboardFooter>
       </Dashboard>

@@ -41,7 +41,6 @@ export type TypeDropOffs = {
   latitude: string;
   longitude: string;
   specific_driver_instructions: string;
-  quantity: number;
   amount_to_collect: number;
   payment_type: number;
 };
@@ -159,14 +158,7 @@ export type TypeOrderHistoryList = TypeLiveOrderItem & {
 export interface TypeOrders {
   vendor_id: string;
   branch_id: string;
-  driver_id: number;
   order_session_id: string;
-  payment_type: number;
-  order_meta: {
-    vendor_name: string;
-    ot_trend: string;
-    ot_free_drivers: number;
-  };
   pick_up: TypePickUp;
   drop_offs: TypeDropOffs[];
 }
@@ -622,3 +614,32 @@ export interface TypeZoneData {
   is_active: boolean;
   boundary_coordinates: [number, number][][];
 }
+
+export type TypeAddressByMobileItem = {
+  address: {
+    area: string | null;
+    block: string | null;
+    floor: string;
+    street: string | null;
+    address: string;
+    area_id: string | null;
+    block_id: string | null;
+    building: string | null;
+    landmark: string;
+    latitude: string;
+    longitude: string;
+    street_id: string | null;
+    building_id: string | null;
+    paci_number: string | null;
+    room_number: string;
+    customer_name: string;
+    mobile_number: string;
+    specific_driver_instructions: string | null;
+  };
+  mobile_number: string;
+  customer_name: string;
+};
+
+export type TypeAddressByMobileResponse = {
+  data: TypeAddressByMobileItem[];
+};
