@@ -108,14 +108,14 @@ const ListComponent: React.FC<{
                       <span className="font-medium opacity-70 text-sm">
                         {order.fleetx_order_number}
                       </span>
-                      <p className="font-medium text-lg">
+                      <p className="font-medium ">
                         {order.customer_name}
                       </p>
                     </div>
                     <div className="flex flex-col items-end text-xs">
                       <span
                         className={cn(
-                          'px-2 py-1 rounded-full text-white bg-red-400',
+                          'px-2 py-1 rounded-full text-white text-xs',
                           order.class_status
                         )}
                       >

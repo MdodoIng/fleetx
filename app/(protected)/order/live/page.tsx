@@ -112,8 +112,8 @@ export default function OrderTrackingDashboard() {
       <DashboardHeader>
         <DashboardHeaderRight />
         {/* Search and Filter */}
-        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
-          <div className="relative  max-sm:w-full">
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full flex-wrap justify-between">
+          <div className="relative max-sm:w-full">
             <Input
               type="text"
               placeholder={t('search.order')}

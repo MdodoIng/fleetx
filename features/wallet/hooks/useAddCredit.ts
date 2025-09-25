@@ -103,15 +103,18 @@ export function useAddCredit() {
       const apiVenderId = vendorId || selectedVendor?.id;
       const apibranchId = branchId || selectedBranch?.id;
 
-      const checkBlockActRes = await checkBlockActivation(
-        apiVenderId!,
-        apibranchId
-      );
+      if (user?.roles.includes('VENDOR_USER')) {
+        const checkBlockActRes = await checkBlockActivation(
+          apiVenderId!,
+          apibranchId
+        );
 
-      if (checkBlockActRes.data.blocked) {
-        toast.error('Blocked by system policy');
-        setValue('isShowAddCreditButton', false);
-        return false;
+        if (checkBlockActRes.data.blocked) {
+          toast.error('Blocked by system policy');
+          setValue('isShowAddCreditButton', false);
+          return false;
+        }
+        return true;
       }
 
       if (isCentralWalletEnabled) {

@@ -265,11 +265,13 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         labelKey: routes.ORDER_BULK.title,
         route: routes.ORDER_BULK.path,
         icon: routes.ORDER_BULK.icon,
+        roles: routes.ORDER_BULK.roles,
       },
       {
         labelKey: routes.ORDER_BULK_INSIGHTS.title,
         route: routes.ORDER_BULK_INSIGHTS.path,
         icon: routes.ORDER_BULK_INSIGHTS.icon,
+        roles: routes.ORDER_BULK_INSIGHTS.roles,
       },
     ],
   },
