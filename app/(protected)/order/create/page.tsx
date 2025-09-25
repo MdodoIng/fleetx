@@ -11,12 +11,7 @@ import {
 import AlertMessage from '@/features/orders/components/AlertMessage';
 import WalletCard from '@/features/orders/components/WalletCard';
 import DeliverySummaryFooter from '@/features/orders/components/create/DeliverySummaryFooter';
-import {
-  useAuthStore,
-  useOrderStore,
-  useSharedStore,
-  useVendorStore,
-} from '@/store';
+import { useOrderStore, useVendorStore } from '@/store';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -29,6 +24,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
 import { vendorService } from '@/shared/services/vendor';
 import { toast } from 'sonner';
+import { useStore } from 'zustand';
+import { CreateFallback } from '@/shared/components/fallback';
 
 export default function ShippingForm() {
   const orderStore = useOrderStore();
@@ -39,6 +36,7 @@ export default function ShippingForm() {
   const { branchId, vendorId, selectedBranch } = useVendorStore();
 
   const [isCOD, setIsCOD] = useState<1 | 2>(2);
+  const [loading, setLoading] = useState(true);
 
   const pickUpForm = useForm<TypePickUpSchema>({
     resolver: zodResolver(pickUpSchema),
@@ -105,9 +103,8 @@ export default function ShippingForm() {
 
       pickUpForm.setValue('customer_name', selectedBranch.name);
       pickUpForm.setValue('mobile_number', selectedBranch?.mobile_number);
-
-      toast.warning('Pick Up form has been Upadated Please Check The values');
     }
+    setLoading(false);
   }, [branchId, pickUpForm, selectedBranch]);
 
   const updateDropOutDetailsForStore = useCallback(() => {
@@ -123,6 +120,8 @@ export default function ShippingForm() {
         }
       );
     }
+    setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branchId, isDropIndex, orderStore.dropOffs]);
 
   const searchAddressByMobileNumber = useCallback(
@@ -162,10 +161,6 @@ export default function ShippingForm() {
                 dropOffForm.getValues('customer_name')
               );
             }
-
-            toast.warning(
-              'Drop Off form has been Upadated Please Check The values'
-            );
           }
         } else {
           // No addresses found for this mobile number
@@ -175,6 +170,7 @@ export default function ShippingForm() {
         console.error('Error searching address by mobile number:', error);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [vendorId, branchId]
   );
 
@@ -196,6 +192,7 @@ export default function ShippingForm() {
   useEffect(() => {
     updatePickUpDetailsForBranchUser();
     updateDropOutDetailsForStore();
+
     return () => {};
   }, [updateDropOutDetailsForStore, updatePickUpDetailsForBranchUser]);
 
@@ -207,6 +204,8 @@ export default function ShippingForm() {
 
   const isValid =
     !dropOffForm.formState.isValid || !pickUpForm.formState.isValid;
+
+  if (loading) return <CreateFallback />;
 
   return (
     <>

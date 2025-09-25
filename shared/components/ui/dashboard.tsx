@@ -25,7 +25,7 @@ function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="dashboard-header"
       className={cn(
-        'flex items-start justify-between max-xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full  ',
+        'flex items-start justify-between max-2xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full  ',
         className
       )}
       {...props}

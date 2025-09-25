@@ -1,4 +1,5 @@
 import { apiFetch } from '../lib/utils';
+import { TypeGetDashBoardResponce } from '../types/rate';
 import { appConfig } from './app-config';
 
 export const rateService = {
@@ -59,7 +60,7 @@ export const rateService = {
     );
   },
 
-  getDashBoard() {
+  getDashBoard(): Promise<TypeGetDashBoardResponce> {
     return apiFetch(appConfig.rateServiceApiUrl() + '/dashboard', {
       method: 'GET',
     });

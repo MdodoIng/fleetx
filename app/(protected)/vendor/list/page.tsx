@@ -16,9 +16,10 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Download, Search, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
+import { TableFallback } from '@/shared/components/fallback';
 
 function VendorList(): JSX.Element {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
   const { isEditVendorId: isEditVendorId, getVendorAccountManagerId, setValue } =
@@ -30,7 +31,7 @@ function VendorList(): JSX.Element {
   // Updated main function
 
   const fetchVendorList = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
+   
 
     try {
       getVendorAccountManagerId();
@@ -65,7 +66,7 @@ function VendorList(): JSX.Element {
 
   const { exportOrdersToCSV } = useTableExport();
 
-  console.log();
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="">

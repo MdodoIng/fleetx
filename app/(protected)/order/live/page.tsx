@@ -29,6 +29,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
 import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { TableFallback } from '@/shared/components/fallback';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,7 +37,7 @@ export default function OrderTrackingDashboard() {
   const [page, setPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedDriver, setSelectedDriver] = useState<string>();
   const isMobile = useMediaQuery('lg');
@@ -62,7 +63,6 @@ export default function OrderTrackingDashboard() {
   }, [page, ordernNumber, searchTerm, selectedDriver, authStore.user?.roles]);
 
   const fetchOrderDetails = useCallback(async () => {
-    setIsLoading(true);
     try {
       const res = await orderService.getOrderList(url);
       if (res.data) {
@@ -70,10 +70,9 @@ export default function OrderTrackingDashboard() {
         setSelectedOrder(res.data[0]);
       }
       setNextSetItemsToken(res.count! < page ? null : true);
+      setIsLoading(false);
     } catch (err: any) {
       console.error('Error fetching orders:', err.message || err);
-    } finally {
-      setIsLoading(false);
     }
   }, [page, url]);
 
@@ -105,6 +104,8 @@ export default function OrderTrackingDashboard() {
   }
 
   const t = useTranslations('component.features.orders.live');
+
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto">

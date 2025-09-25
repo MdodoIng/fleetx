@@ -10,11 +10,11 @@ import {
 import { FunnelType, User, Zone } from '../../types/useSalesFunnel';
 import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
+import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
 
 interface Props {
   types: FunnelType[];
   zones: Zone[];
-  managers: User[];
   selectedType: string;
   selectedZone: string;
   selectedManager: string;
@@ -29,7 +29,6 @@ interface Props {
 export default function FunnelFilterHeader({
   types,
   zones,
-  managers,
   selectedType,
   selectedZone,
   selectedManager,
@@ -79,23 +78,11 @@ export default function FunnelFilterHeader({
       </div>
 
       {/* Account Manager */}
-      <div className="flex flex-col w-60">
-        <label className="text-sm font-medium text-gray-600 mb-1">
-          Filter by Account Manager
-        </label>
-        <Select value={selectedManager} onValueChange={onManagerChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Manager" />
-          </SelectTrigger>
-          <SelectContent>
-            {managers.map((u) => (
-              <SelectItem key={u.id} value={u.id}>
-                {u.first_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <AccountManagerSelect
+        value={selectedManager}
+        onChangeAction={onManagerChange}
+      
+      />
 
       {/* Search */}
       <div className="flex flex-col w-60">

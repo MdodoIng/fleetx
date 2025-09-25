@@ -87,23 +87,25 @@ export function useAddCredit() {
 
   const handleAddCredit = async () => {
     if (!vendorId || (!selectedVendor?.id && isAddCreditDebit)) {
-      toast.warning('Please select a vendor');
       return false;
     }
 
     if (isAddCreditDebit) {
       if (
         (vendorId! && branchId!) ||
-        (selectedBranch?.id && selectedVendor?.id!)
+        (selectedBranch?.id && selectedVendor?.id)
       ) {
         setValue('isDisableAddCredit', true);
       }
     }
 
     try {
+      const apiVenderId = vendorId || selectedVendor?.id;
+      const apibranchId = branchId || selectedBranch?.id;
+
       const checkBlockActRes = await checkBlockActivation(
-        vendorId! || selectedVendor?.id,
-        branchId! || selectedBranch?.id
+        apiVenderId!,
+        apibranchId
       );
 
       if (checkBlockActRes.data.blocked) {

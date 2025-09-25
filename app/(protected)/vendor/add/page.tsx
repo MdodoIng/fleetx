@@ -43,10 +43,12 @@ import {
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 import { Separator } from '@/shared/components/ui/separator';
+import { TableFallback } from '@/shared/components/fallback';
 
 function VendorAdd(): JSX.Element {
   const vendorStore = useVendorStore();
   const [codType, setCodType] = useState<1 | 2>(2);
+
   const [isVendorType, setIsVendorType] = useState<
     (keyof typeof TypeVendorType)[]
   >(['B2B_Vendor']);
@@ -105,8 +107,6 @@ function VendorAdd(): JSX.Element {
     '' as any,
     codType
   );
-
-  console.log(vendorStore.selectedBranch?.id);
 
   const tableData = branchs
     ? branchs?.map((item: any, idx) => {

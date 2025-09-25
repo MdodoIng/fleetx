@@ -16,6 +16,7 @@ import {
 } from '../ui/select';
 
 import { getDirection } from '@/shared/lib/helpers/getDirection';
+import { useSharedStore } from '@/store';
 
 type Props = {
   defaultValue: string;
@@ -32,7 +33,7 @@ export default function LocaleSwitcherSelect({
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
-
+  const { showLanguage } = useSharedStore();
   function onChange(value: string) {
     const locale = value as Locale;
     startTransition(() => {
@@ -41,7 +42,7 @@ export default function LocaleSwitcherSelect({
   }
 
   return (
-    <div className="relative">
+    <div hidden={!showLanguage} className="relative">
       <Select
         defaultValue={defaultValue}
         onOpenChange={setIsOpen}

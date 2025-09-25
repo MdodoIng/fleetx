@@ -1,5 +1,6 @@
 'use client';
 
+import { TableFallback } from '@/shared/components/fallback';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';
@@ -34,14 +35,14 @@ export default function ZoneGrowthPage() {
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
-  const [isLoadingZones, setIsLoadingZones] = useState(false);
-  const [isLoadingGrowth, setIsLoadingGrowth] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+ 
   const [error, setError] = useState<string | null>(null);
 
   // Fetch zones
   useEffect(() => {
     async function loadZones() {
-      setIsLoadingZones(true);
+      
       setError(null);
       try {
         const zones = await orderService.getZone();
@@ -52,7 +53,7 @@ export default function ZoneGrowthPage() {
         console.error('Error fetching zones:', errorMessage);
         setError(errorMessage);
       } finally {
-        setIsLoadingZones(false);
+        setIsLoading(false);
       }
     }
     loadZones();
@@ -63,7 +64,7 @@ export default function ZoneGrowthPage() {
       console.log('Skipping growth fetch: zone or year not selected');
       return;
     }
-    setIsLoadingGrowth(true);
+  
     setError(null);
     try {
       const data = await reportService.getZoneGrowth(
@@ -78,7 +79,7 @@ export default function ZoneGrowthPage() {
       console.error('Error fetching growth data:', errorMessage);
       setError(errorMessage);
     } finally {
-      setIsLoadingGrowth(false);
+      setIsLoading(false);
     }
   }, [selectedZone, selectedYear]);
 
@@ -127,6 +128,8 @@ export default function ZoneGrowthPage() {
     12: 'December',
   };
 
+  if (isLoading) return <TableFallback />;
+
   return (
     <Dashboard className="h-auto">
       <DashboardHeader>
@@ -151,13 +154,7 @@ export default function ZoneGrowthPage() {
         </div>
       </DashboardHeader>
       <DashboardContent className="flex-col w-full items-center">
-        {isLoadingZones || isLoadingGrowth ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
-          </div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
-        ) : orderData && orderData.length > 0 ? (
+        { orderData && orderData.length > 0 ? (
           <Card className="w-full">
             <CardContent>
               <Table className="w-full overflow-x-auto">

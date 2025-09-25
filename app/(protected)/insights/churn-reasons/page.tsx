@@ -28,6 +28,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { DateRange } from 'react-day-picker';
+import { InsightsFallback } from '@/shared/components/fallback';
 
 interface ChurnReason {
   reason: string;
@@ -40,11 +41,10 @@ function ChurnReasons() {
     to: new Date(),
   });
   const [churnReasons, setChurnReasons] = useState<ChurnReason[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchChurnReasonsData = useCallback(
     async (callback?: () => void) => {
-      setIsLoading(true);
       try {
         const response = await reportService.getChurnReasonsInsights(
           date?.from ?? null,
@@ -77,6 +77,8 @@ function ChurnReasons() {
   useEffect(() => {
     fetchChurnReasonsData();
   }, [fetchChurnReasonsData]);
+
+  if (isLoading) return <InsightsFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">

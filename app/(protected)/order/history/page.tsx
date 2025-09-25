@@ -69,6 +69,8 @@ import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
 import Rating from '@/features/orders/components/ui/Rating';
+import { TableFallback } from '@/shared/components/fallback';
+import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
 
 export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
@@ -85,7 +87,7 @@ export default function OrderTrackingDashboard() {
   );
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [date, setDate] = useState<DateRange>({
     from: undefined,
@@ -94,8 +96,6 @@ export default function OrderTrackingDashboard() {
   const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const fetchOrderDetails = useCallback(async () => {
-    setIsLoading(true);
-
     const searchAll = true;
     const url = orderService.getOrderHistoryUrl(
       page,
@@ -117,10 +117,7 @@ export default function OrderTrackingDashboard() {
         orderStore.setSourceForTable('orderHistoryListData', res.data);
       }
       setNextSetItemsToken(res.count! < page ? null : true);
-      setIsLoading(false);
     } catch (err: any) {
-      setIsLoading(false);
-
       // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
       const errorMessage =
         err.error?.message ||
@@ -128,6 +125,8 @@ export default function OrderTrackingDashboard() {
         'An unknown error occurred while fetching orders.';
 
       console.log('Error in fetchOrderDetails:', errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   }, [
     date?.from,
@@ -155,14 +154,14 @@ export default function OrderTrackingDashboard() {
     { id: 'delivery_fee', name: 'Delivery fee ( Z - A )' },
   ];
 
-  console.log(orderStore?.orderHistoryListData);
+  if (isLoading) return <TableFallback />;
   return (
     <Dashboard className="h-auto">
       <DashboardHeader>
         <DashboardHeaderRight />
 
         {/* Search and Filter */}
-        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-md:flex-wrap">
           <div className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -174,10 +173,29 @@ export default function OrderTrackingDashboard() {
             />
           </div>
 
+          {isEditDetails && (
+            <div className="relative max-sm:w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder={'Search Customer ..'}
+                value={searchCustomer}
+                onChange={(e) => setSearchCustomer(e.target.value)}
+                className="pl-10 !border-none !outline-none !ring-0 "
+              />
+            </div>
+          )}
+
           {showDriversFilter && (
             <DriverSelect
               value={selectedDriver!}
               onChangeAction={setSelectedDriver}
+            />
+          )}
+          {isEditDetails && (
+            <AccountManagerSelect
+              value={selectedAccountManager}
+              onChangeAction={setSelectedAccountManager}
             />
           )}
           {isEditDetails && (

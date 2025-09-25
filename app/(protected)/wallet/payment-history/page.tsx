@@ -53,6 +53,7 @@ import SearchableSelect from '@/shared/components/selectors';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import VendorSelecter from '@/shared/components/selectors/VendorSelecter';
 import { DateRange } from 'react-day-picker';
+import { TableFallback } from '@/shared/components/fallback';
 
 function PaymentHistory(): JSX.Element {
   const t = useTranslations();
@@ -66,7 +67,7 @@ function PaymentHistory(): JSX.Element {
   const [invoicePaymentId, setInvoicePaymentId] = useState<string | undefined>(
     undefined
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
   const [date, setDate] = useState<DateRange>({
@@ -80,15 +81,14 @@ function PaymentHistory(): JSX.Element {
 
   // Fetch payment history data
   const fetchPaymentHistoryReport = async () => {
-    setIsLoading(true);
     try {
       const url = paymentService.getPaymentHistoryReportUrl(
         1,
         page,
         date.from!,
         date.to!,
-        invoicePaymentId,
-        selectedVendor
+        invoicePaymentId!,
+        selectedVendor!
       );
       const res = await paymentService.getPaymentHistoryReport(url);
       setData(res.data || []);
@@ -99,15 +99,14 @@ function PaymentHistory(): JSX.Element {
         err.message ||
         'An unknown error occurred while fetching payment history.';
       console.error('Error in fetchPaymentHistoryReport:', errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   // Effect to fetch payment history on mount and when dependencies change
   useEffect(() => {
     fetchPaymentHistoryReport();
-  }, [page, date?.from, date?.to, selectedVendor, invoicePaymentId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, date.from, date.to, selectedVendor, invoicePaymentId]);
 
   // Transform data for table display
   useEffect(() => {
@@ -156,10 +155,14 @@ function PaymentHistory(): JSX.Element {
         })
       );
       setTableData(resolvedData);
+
+      setIsLoading(false);
     };
 
     if (data) fetchTableData();
   }, [data]);
+
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto">
@@ -189,6 +192,7 @@ function PaymentHistory(): JSX.Element {
           </div>
 
           <VendorSelecter
+          classNameFroInput='border-none'
             selectedVendorValue={selectedVendor}
             handleChangeVendor={setSelectedVendor}
           />

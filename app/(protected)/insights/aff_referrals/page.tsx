@@ -42,6 +42,7 @@ import {
   TableSingleListContents,
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
+import { TableFallback } from '@/shared/components/fallback';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -70,7 +71,7 @@ const AffiliateReferrals = () => {
   const [vendorBranch, setVendorBranch] = useState<any[]>([]);
   const [referralList, setReferralList] = useState<AffiliateReferralData[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState<number>(10);
 
   const { exportOrdersToCSV } = useTableExport();
@@ -112,7 +113,6 @@ const AffiliateReferrals = () => {
       return;
     }
 
-    setIsLoading(true);
     try {
       const url = reportService.getReferralsURLs(
         1,
@@ -137,6 +137,9 @@ const AffiliateReferrals = () => {
   useEffect(() => {
     fetchReferralDetails();
   }, [date, selectedAffiliator]);
+  
+  
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">

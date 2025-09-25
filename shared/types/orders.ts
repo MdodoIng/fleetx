@@ -485,19 +485,19 @@ export const OperationType = [
   { key: 4, value: 'DeductFee', color: 'bg-red-600', arrow: 'down' },
   {
     key: 5,
-    value: 'MashkorCredit',
+    value: 'FleetX Credit',
     color: 'bg-emerald-600',
     arrow: 'up',
   },
   {
     key: 6,
-    value: 'MashkorDebit',
+    value: 'FleetX Debit',
     color: 'bg-purple-600',
     arrow: 'down',
   },
   {
     key: 7,
-    value: 'MashkorDebit',
+    value: 'FleetX Debit',
     color: 'bg-pink-600',
     arrow: 'down',
   },

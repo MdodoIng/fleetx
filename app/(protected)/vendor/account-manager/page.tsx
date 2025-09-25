@@ -2,42 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-  Plus,
-  Pencil,
-  User,
-  Users,
-  BarChart,
-  Dot,
-  Phone,
-  Mail,
-  Search,
-} from 'lucide-react';
+import { Pencil, User, Users, Dot, Phone, Mail, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardIcon,
-  CardTitle,
-} from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from '@/shared/components/ui/dialog';
 import { AddEditAccountManagerForm } from '@/features/vendor/components/addEditAccountManagerForm';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/components/ui/table';
+import { Table } from '@/shared/components/ui/table';
 import {
   TableLists,
   TableSingleList,
@@ -57,12 +26,14 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import userService from '@/shared/services/user';
+import { TableFallback } from '@/shared/components/fallback';
 
 export function AccountManagers() {
   const [data, setData] = useState([]);
   const [totalCount, setTotalCount] = useState();
   const [search, setSearch] = useState();
   const [page, setPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
@@ -71,14 +42,19 @@ export function AccountManagers() {
       console.log(newData);
       setData(newData.data);
       setTotalCount(newData.count);
+      
     } catch (error) {
       toast('Failed to refresh account managers.');
+    } finally {
+      setIsLoading(false);
     }
   }, [page, search]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="">

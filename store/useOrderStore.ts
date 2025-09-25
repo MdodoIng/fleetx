@@ -1,5 +1,5 @@
 import {
-    DeliverySummary,
+  DeliverySummary,
   OrderStatus,
   TypeDelivery,
   TypeDropOffs,
@@ -16,8 +16,6 @@ import { persist } from 'zustand/middleware';
 import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
 import { vendorService } from '@/shared/services/vendor';
-
-
 
 interface OrderState {
   dropOffs: TypeDropOffs[];
@@ -53,7 +51,7 @@ interface OrderState {
   setValue: <K extends keyof OrderState>(key: K, value: OrderState[K]) => void;
 }
 
-const initialState: OrderState | any = {
+const initialState = {
   dropOffs: [],
   selectedDropOffs: [],
   selectedPage: 1,

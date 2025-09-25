@@ -1,10 +1,8 @@
 'use client';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import { TableFallback } from '@/shared/components/fallback';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
 import {
   Dashboard,
   DashboardContent,
@@ -13,18 +11,6 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
-import {
   Table,
   TableLists,
   TableSingleList,
@@ -32,12 +18,8 @@ import {
   TableSingleListContentDetailsTitle,
   TableSingleListContents,
   TableSingleListContentTitle,
-  TableSingleListHeader,
-  TableSingleListHeaderLeft,
-  TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
 import { vendorService } from '@/shared/services/vendor';
 import {
@@ -48,7 +30,6 @@ import { useVendorStore } from '@/store';
 import { format } from 'date-fns';
 import {
   Axis3dIcon,
-  CalendarIcon,
   Columns,
   Download,
   LucideProps,
@@ -58,7 +39,6 @@ import {
   Search,
   ServerCrash,
   Type,
-  X,
 } from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
 
@@ -77,7 +57,7 @@ function ManualReport(): JSX.Element {
     undefined
   );
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
 
@@ -101,18 +81,17 @@ function ManualReport(): JSX.Element {
   >([]);
   const [paymentType, setPaymentType] =
     useState<(typeof TypePayment)[number]['id']>();
-  const vendorStore = useVendorStore();
+  const { vendorId, branchId } = useVendorStore();
 
   const fetchPaymentHistoryReport = async () => {
-    setIsLoading(true);
     try {
       const url = paymentService.getManualPaymentHistoryReportUrl(
         1,
         100,
-        date?.from!,
-        date?.to!,
-        vendorStore.selectedVendor?.id!,
-        vendorStore.selectedBranch?.id!,
+        date?.from,
+        date?.to,
+        vendorId!,
+        branchId!,
         paymentType!
       );
       const res = await paymentService.getManualPaymentHistoryReport(url);
@@ -125,8 +104,6 @@ function ManualReport(): JSX.Element {
         err.message ||
         'An unknown error occurred while fetching wallet balance.';
       console.error('Error in fetchVendorWalletBalance:', errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -135,14 +112,8 @@ function ManualReport(): JSX.Element {
       await fetchPaymentHistoryReport();
     };
     loadInitialPaymentHistoryReport();
-  }, [
-    vendorStore.selectedVendor?.id,
-    vendorStore.selectedBranch?.id,
-    page,
-    date?.from,
-    date?.to,
-    paymentType,
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorId, branchId, page, date.from, date.to, paymentType]);
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -188,6 +159,7 @@ function ManualReport(): JSX.Element {
         })
       );
       setTableData(resolvedData);
+      setIsLoading(false);
     };
 
     if (data) fetchTableData();
@@ -199,6 +171,8 @@ function ManualReport(): JSX.Element {
   };
 
   const { exportOrdersToCSV } = useTableExport();
+
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard>
@@ -244,7 +218,6 @@ function ManualReport(): JSX.Element {
             <TableLists>
               {tableData.map((item, idx) => (
                 <TableSingleList key={idx}>
-            
                   <TableSingleListContents>
                     {item.map((itemSingle, singlIdx) => (
                       <TableSingleListContent key={singlIdx}>

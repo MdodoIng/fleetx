@@ -1,4 +1,4 @@
-import { TypeVendorListItem } from '@/shared/types/vendor';
+import { TypeVendor, TypeVendorListItem } from '@/shared/types/vendor';
 
 import { useVendorStore } from '@/store';
 import React from 'react';
@@ -7,7 +7,7 @@ import SearchableSelect from '.';
 type Props = {
   handleChangeVendor: (e: string) => void;
   classNameFroInput?: string;
-  selectedVendorValue?: TypeVendorListItem | string;
+  selectedVendorValue?: TypeVendorListItem | TypeVendor | string;
   type?: 'header';
 };
 

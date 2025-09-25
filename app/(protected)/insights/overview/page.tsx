@@ -8,14 +8,15 @@ import FunnelChart from '@/features/insights/components/overview/FunnelChart';
 import useInsightBoard from '@/features/insights/hooks/useInsightBoard';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
-    Dashboard,
-    DashboardContent,
-    DashboardHeader,
-    DashboardHeaderRight,
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
+import { OverviewFallback } from '@/shared/components/fallback';
 
 function Overview() {
-  const { date, setDate, metrics } = useInsightBoard();
+  const { date, setDate, metrics, isLoading } = useInsightBoard();
 
   const { exportOrdersToCSV } = useTableExport();
 
@@ -61,6 +62,8 @@ function Overview() {
       percentage: metrics.totalActivatedPercentage,
     },
   ];
+
+  if (isLoading) return <OverviewFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">

@@ -65,6 +65,7 @@ const Header: React.FC = () => {
           handleChangeVendor={handleChangeVendor}
           handleClear={handleClear}
           classNameFroInput='border'
+          type='header'
           
         />
 

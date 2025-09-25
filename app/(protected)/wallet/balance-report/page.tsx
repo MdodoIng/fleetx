@@ -33,9 +33,10 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
+import { TableFallback } from '@/shared/components/fallback';
 
 function BalanceReport(): JSX.Element {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
   const vendorStore = useVendorStore();
@@ -114,8 +115,6 @@ function BalanceReport(): JSX.Element {
 
   // Updated main function
   const fetchBalanceReport = async (): Promise<void> => {
-    setIsLoading(true);
-
     try {
       let data: BalanceReportItem[];
 
@@ -149,6 +148,7 @@ function BalanceReport(): JSX.Element {
       await fetchBalanceReport();
     };
     loadFetchBalanceReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     vendorStore.selectedVendor?.id,
     vendorStore.selectedBranch?.id,
@@ -186,16 +186,15 @@ function BalanceReport(): JSX.Element {
 
   const { exportOrdersToCSV } = useTableExport();
 
+  if (isLoading) return <TableFallback />;
+
   return (
     <Dashboard className="">
       <DashboardHeader>
         <DashboardHeaderRight />
         <div className="flex gap-1.5">
           <div className="flex items-center justify-center gap-1.5">
-            <Button
-              onClick={() => setIsCentralWallet(!isCentralWallet)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
+            <Button onClick={() => setIsCentralWallet(!isCentralWallet)}>
               <Wallet className="w-5 h-5" />{' '}
               {isCentralWallet ? 'Central Wallet' : 'Branch Wallet'}
             </Button>
@@ -203,7 +202,6 @@ function BalanceReport(): JSX.Element {
           <div className="flex items-center justify-center gap-1.5">
             <Button
               onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <Download className="w-5 h-5" /> Export
             </Button>

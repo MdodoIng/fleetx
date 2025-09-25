@@ -8,53 +8,40 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 
-export default function DashboardFallback() {
+export default function CreateFallback() {
   return (
-    <Dashboard className="">
+    <Dashboard className="h-auto sm:h-full">
       <DashboardHeader>
         <DashboardHeaderRight />
         {/* Search and Filter Skeleton */}
-        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between ">
-          <Skeleton className="h-10 w-40" />
-          <Skeleton className="h-10 w-40" />
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
+          <Skeleton className="h-14 w-40" /> {/* DriverSelect placeholder */}
+          <Skeleton className="h-14 w-40" /> {/* DateSelect placeholder */}
         </div>
       </DashboardHeader>
 
       {/* Statistics Cards Skeleton */}
-      <DashboardContent className="flex w-full h-full flex-col items-center justify-start">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 w-full">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} className="h-32 w-full rounded-lg" />
-          ))}
-        </div>
-
-        {/* Analytics Blocks Skeleton */}
-        <div
-          className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]  h-full w-full gap-5"
-        >
+      <DashboardContent className="flex w-full flex-col items-center justify-start">
+        <div className="grid md:grid-cols-2 grid-cols-1 w-full gap-5 p-4">
           {Array.from({ length: 2 }).map((_, index) => (
-            <Skeleton key={index} className="h-80 w-full rounded-lg">
-              <div className="flex flex-col gap-3 p-4">
-                <Skeleton className="h-4 w-1/3" />
+            <Skeleton key={index} className="w-full rounded-lg">
+              <div className="flex flex-col gap-10 p-4">
+                <Skeleton className="h-10 w-8/12" /> {/* Card title placeholder */}
                 {Array.from({ length: 3 }).map((_, itemIndex) => (
-                  <div key={itemIndex} className="flex justify-between items-center">
-                    <Skeleton className="h-4 w-1/4" />
-                    <Skeleton className="h-4 w-1/6" />
+                  <div
+                    key={itemIndex}
+                    className="flex justify-between flex-col items-center space-y-10"
+                  >
+                    <Skeleton className="h-60 w-full" /> {/* Value placeholder */}
+                    <Skeleton className="h-10 w-full" /> {/* Sub-value or icon placeholder */}
                   </div>
                 ))}
-                {index === 1 && (
-                  <>
-                    <Skeleton className="h-px w-full my-2" />
-                    <div className="flex justify-between items-center">
-                      <Skeleton className="h-4 w-1/4" />
-                      <Skeleton className="h-4 w-1/6" />
-                    </div>
-                  </>
-                )}
               </div>
             </Skeleton>
           ))}
         </div>
+
+
       </DashboardContent>
     </Dashboard>
   );

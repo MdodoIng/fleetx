@@ -143,7 +143,7 @@ export function AddEditAccountManagerForm({
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="e.g. muhammed@mashkor.com"
+                      placeholder="e.g. muhammed@fleetx.com"
                       {...field}
                       disabled={isEditMode}
                     />
@@ -179,7 +179,7 @@ export function AddEditAccountManagerForm({
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="e.g. mashkor123"
+                        placeholder="e.g. fleetx123"
                         {...field}
                       />
                     </FormControl>

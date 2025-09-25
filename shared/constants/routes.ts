@@ -12,6 +12,7 @@ export const routes: Routes = {
     title: 'layout.menuItems.orderSubMenu.bulkOrder.title',
     subtitle: 'layout.menuItems.orderSubMenu.bulkOrder.subtitle',
     icon: 'newOrder',
+    roles: ['OPERATION_MANAGER'],
   },
   ORDER_LIVE: {
     path: '/order/live',
@@ -30,6 +31,7 @@ export const routes: Routes = {
     title: 'layout.menuItems.orderSubMenu.bulkInsights.title',
     subtitle: 'layout.menuItems.orderSubMenu.bulkInsights.subtitle',
     icon: 'bulkInsights',
+    roles: ['OPERATION_MANAGER'],
   },
   DASHBOARD: {
     path: '/dashboard',
