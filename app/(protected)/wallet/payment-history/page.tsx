@@ -1,14 +1,9 @@
 'use client';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
+import { Search } from 'lucide-react';
+import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -17,18 +12,13 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
 import { vendorService } from '@/shared/services/vendor';
-import {
-  TypeManualPaymentHistoryReportRes,
-  TypePayment,
-} from '@/shared/types/payment';
+import { TypeManualPaymentHistoryReportRes } from '@/shared/types/payment';
 import { useVendorStore } from '@/store';
 import { format } from 'date-fns';
 import {
   Axis3dIcon,
-  CalendarIcon,
   Columns,
   Download,
   MagnetIcon,
@@ -39,27 +29,47 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import {
+  Table,
+  TableLists,
+  TableSingleList,
+  TableSingleListHeader,
+  TableSingleListHeaderRight,
+  TableSingleListHeaderLeft,
+  TableSingleListContents,
+  TableSingleListContent,
+  TableSingleListContentTitle,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContentDetailsItem,
+} from '@/shared/components/ui/tableList';
+import { useTranslations } from 'next-intl';
+import SearchableSelect from '@/shared/components/selectors';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import VendorSelecter from '@/shared/components/selectors/VendorSelecter';
+import { DateRange } from 'react-day-picker';
 
 function PaymentHistory(): JSX.Element {
+  const t = useTranslations();
+  const vendorStore = useVendorStore();
+  const { exportOrdersToCSV } = useTableExport();
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [ordernNumber, setOrdernNumber] = useState('');
-
-  const [isEditDetails, setIsEditDetails] = useState(false);
-
-  const [searchOrder, setSearchOrder] = useState('');
-  const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
-
-  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
+  const [selectedVendor, setSelectedVendor] = useState<string | undefined>(
     undefined
   );
-
+  const [invoicePaymentId, setInvoicePaymentId] = useState<string | undefined>(
+    undefined
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
-
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     to: new Date(),
   });
@@ -67,17 +77,8 @@ function PaymentHistory(): JSX.Element {
     []
   );
   const [tableData, setTableData] = useState<any[]>([]);
-  const [selectedVendor, setSelectedVendor] = useState<string | undefined>(
-    undefined
-  );
-  const [invoicePaymentId, setInvoicePaymentId] = useState<string | undefined>(
-    undefined
-  );
-  const [invoicePaymentIdsData, setInvoicePaymentIdsData] = useState<
-    any[] | undefined
-  >(undefined);
-  const vendorStore = useVendorStore();
 
+  // Fetch payment history data
   const fetchPaymentHistoryReport = async () => {
     setIsLoading(true);
     try {
@@ -86,107 +87,72 @@ function PaymentHistory(): JSX.Element {
         page,
         date.from!,
         date.to!,
-        invoicePaymentId!,
-        selectedVendor!
+        invoicePaymentId,
+        selectedVendor
       );
       const res = await paymentService.getPaymentHistoryReport(url);
-      console.log(res);
-
-      setData(res.data!);
+      setData(res.data || []);
+      setNextSetItemTotal(res.count! < page ? null : true);
     } catch (err: any) {
       const errorMessage =
         err.error?.message ||
         err.message ||
-        'An unknown error occurred while fetching wallet balance.';
-      console.error('Error in fetchVendorWalletBalance:', errorMessage);
+        'An unknown error occurred while fetching payment history.';
+      console.error('Error in fetchPaymentHistoryReport:', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Effect to fetch payment history on mount and when dependencies change
   useEffect(() => {
-    const loadInitialPaymentHistoryReport = async () => {
-      await fetchPaymentHistoryReport();
-    };
-    loadInitialPaymentHistoryReport();
+    fetchPaymentHistoryReport();
   }, [page, date?.from, date?.to, selectedVendor, invoicePaymentId]);
+
+  // Transform data for table display
   useEffect(() => {
     const fetchTableData = async () => {
       if (!data) return;
       const resolvedData = await Promise.all(
         data.map(async (item: any) => {
           const res = await vendorService.getBranchDetails(item.vendor_id);
-          const branch = res.data?.find((x) => x.id === item?.branch_id);
-          return [
-            {
-              icon: Axis3dIcon,
-              title: 'Vendor',
-              value: item.payment_meta?.vendor_name || branch?.vendor.name,
-            },
-            {
-              icon: MagnetIcon,
-              title: 'Branch',
-              value:
-                item.branch_payment[0]?.payment_meta?.branch_name ||
-                branch?.name,
-            },
-            {
-              icon: ReceiptPoundSterling,
-              title: 'Payment Id',
-              value: item.payment_id,
-            },
-
-            {
-              icon: ReceiptPoundSterling,
-              title: 'Invoice Id',
-              value: item.invoice_id,
-            },
-            {
-              icon: ReceiptPoundSterling,
-              title: 'Invoice Reference',
-              value: item.invoice_reference,
-            },
-            {
-              icon: Columns,
-              title: 'Transaction Date',
-              value: (() => {
-                let transactionDate: string | undefined;
-                item?.success_response?.Data?.InvoiceTransactions?.forEach(
-                  (x: any) => {
-                    if (x.TransactionStatus == 'Succss') {
-                      transactionDate = x?.TransactionDate;
-                    }
+          const branch = res.data?.find((x: any) => x.id === item?.branch_id);
+          return {
+            vendor:
+              item.payment_meta?.vendor_name || branch?.vendor.name || 'N/A',
+            branch:
+              item.branch_payment[0]?.payment_meta?.branch_name ||
+              branch?.name ||
+              'N/A',
+            paymentId: item.payment_id || 'N/A',
+            invoiceId: item.invoice_id || 'N/A',
+            invoiceReference: item.invoice_reference || 'N/A',
+            transactionDate: (() => {
+              let transactionDate: string | undefined;
+              item?.success_response?.Data?.InvoiceTransactions?.forEach(
+                (x: any) => {
+                  if (x.TransactionStatus === 'Success') {
+                    transactionDate = x?.TransactionDate;
                   }
-                );
-                return transactionDate ? formatDate(transactionDate) : 'N/A';
-              })(),
-            },
-            {
-              icon: Type,
-              title: 'Gateway',
-              value: (() => {
-                let paymentGateway: string | undefined;
-                item?.success_response?.Data?.InvoiceTransactions?.forEach(
-                  (x: any) => {
-                    paymentGateway = x?.PaymentGateway;
-                  }
-                );
-                return paymentGateway;
-              })(),
-            },
-
-            {
-              icon: Notebook,
-              title: 'Customer',
-              value: item.customer_email,
-            },
-            {
-              icon: Notebook,
-              title: 'Customer Ref',
-              value: item.customer_ref,
-            },
-            { icon: ServerCrash, title: 'Amount', value: item.amount },
-          ];
+                }
+              );
+              return transactionDate
+                ? format(new Date(transactionDate), 'dd MMM yyyy hh:mm a')
+                : 'N/A';
+            })(),
+            paymentGateway: (() => {
+              let paymentGateway: string | undefined;
+              item?.success_response?.Data?.InvoiceTransactions?.forEach(
+                (x: any) => {
+                  paymentGateway = x?.PaymentGateway;
+                }
+              );
+              return paymentGateway || 'N/A';
+            })(),
+            customer: item.customer_email || 'N/A',
+            customerRef: item.customer_ref || 'N/A',
+            amount: item.amount || 'N/A',
+          };
         })
       );
       setTableData(resolvedData);
@@ -195,93 +161,147 @@ function PaymentHistory(): JSX.Element {
     if (data) fetchTableData();
   }, [data]);
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return format(date, 'dd MMM yyyy hh:mm a');
-  };
-
-  const { exportOrdersToCSV } = useTableExport();
-
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
+    <Dashboard className="h-auto">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0"
+            />
+          </div>
 
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <Select
-            value={selectedVendor}
-            onValueChange={(value) => setSelectedVendor(value as any)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select Vendor" />
-            </SelectTrigger>
-            <SelectContent>
-              {vendorStore?.vendorList?.map((type) => (
-                <SelectItem key={type.id} value={String(type.id)}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-            {selectedVendor && (
-              <span onClick={() => setSelectedVendor(undefined)} className="">
-                <X />
-              </span>
-            )}
-          </Select>
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Invoice Payment Id"
+              value={invoicePaymentId}
+              onChange={(e) => setInvoicePaymentId(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0"
+            />
+          </div>
 
-          <Select
-            value={invoicePaymentId}
-            onValueChange={(value) => setInvoicePaymentId(value as any)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select Invoice/Payment" />
-            </SelectTrigger>
-            <SelectContent>
-              {invoicePaymentIdsData?.map((type) => (
-                <SelectItem key={type.id} value={String(type.id)}>
-                  {type.name}
-                </SelectItem>
-              )) ?? null}
-            </SelectContent>
-            {invoicePaymentId && (
-              <span onClick={() => setInvoicePaymentId(undefined)} className="">
-                <X />
-              </span>
-            )}
-          </Select>
+          <VendorSelecter
+            selectedVendorValue={selectedVendor}
+            handleChangeVendor={setSelectedVendor}
+          />
+
           <DateSelect value={date} onChangeAction={setDate} />
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
           <Button
-            // onClick={() =>
-            //   exportOrdersToCSV(
-            //     data!,
-            //     'wallet history',
-            //     `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-            //       date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-            //     }`
-            //   )
-            // }
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            onClick={() =>
+              exportOrdersToCSV(
+                tableData,
+                'payment_history',
+                `payment_history_${date?.from ? format(date.from, 'yyyy-MM-dd') : ''}_${
+                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+                }`
+              )
+            }
+            className="max-sm:w-full"
           >
             <Download className="w-5 h-5" /> Export
           </Button>
         </div>
-      </div>
-
-      {data?.length ? (
-        <TableComponent
-          data={tableData}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={null}
-        />
-      ) : (
-        <>no data</>
-      )}
-    </div>
+      </DashboardHeader>
+      <DashboardContent>
+        {tableData?.length ? (
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSingleList key={idx}>
+                  <TableSingleListHeader>
+                    <TableSingleListHeaderRight>
+                      <span className="font-semibold text-primary-blue">
+                        Payment ID: {item.paymentId}
+                      </span>
+                      <span className="text-xs text-primary-teal flex items-center">
+                        <ReceiptPoundSterling size={12} />
+                        {item.invoiceReference}
+                      </span>
+                    </TableSingleListHeaderRight>
+                    <TableSingleListHeaderLeft>
+                      <div className="flex items-center gap-1">
+                        <Columns size={12} />
+                        {item.transactionDate}
+                      </div>
+                    </TableSingleListHeaderLeft>
+                  </TableSingleListHeader>
+                  <TableSingleListContents>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <Axis3dIcon size={14} />
+                        Vendor
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.vendor}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <MagnetIcon size={14} />
+                        Branch
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.branch}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <ReceiptPoundSterling size={14} />
+                        Invoice ID
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.invoiceId}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <Type size={14} />
+                        Gateway
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.paymentGateway}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <Notebook size={14} />
+                        Customer
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.customer}
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsItem>
+                        {item.customerRef}
+                      </TableSingleListContentDetailsItem>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
+                        <ServerCrash size={14} />
+                        Amount
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.amount}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                  </TableSingleListContents>
+                </TableSingleList>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          <div className="text-center text-gray-500">No data available</div>
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }
+
 export default PaymentHistory;

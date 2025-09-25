@@ -22,14 +22,12 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { useDir } from '@/shared/lib/hooks';
 import { cn } from '@/shared/lib/utils';
 import { orderService } from '@/shared/services/orders';
 import {
   TypeOrderHistoryList,
   TypeUpdateAddressReq,
 } from '@/shared/types/orders';
-import { useVendorStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -44,7 +42,6 @@ const EditResiver = ({
   fetchOrderDetails: () => Promise<void>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-
 
   const form = useForm<TypeAddressSchema>({
     resolver: zodResolver(addressSchema),
@@ -105,9 +102,9 @@ const EditResiver = ({
       street_id: formValues.street_id!,
       ...(formValues.building
         ? {
-          building: formValues.building,
-          building_id: formValues.building_id,
-        }
+            building: formValues.building,
+            building_id: formValues.building_id,
+          }
         : {}),
     };
 
@@ -125,17 +122,11 @@ const EditResiver = ({
   };
 
   const t = useTranslations();
-  const { dirState } = useDir();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
-      <form>
+      <form className='mt-auto'>
         <DialogTrigger asChild>
-          <Button
-            className={cn(
-              'absolute !p-1 h-auto top-2 ',
-              dirState ? 'left-2' : 'right-2'
-            )}
-          >
+          <Button variant={"outline"} className={cn('h-auto  w-full mt-2')}>
             <Edit />
           </Button>
         </DialogTrigger>

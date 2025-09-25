@@ -2,7 +2,6 @@
 import { TypeDropOffs, TypePickUp } from '@/shared/types/orders';
 import { TypeDropOffSchema, TypePickUpSchema } from '../validations/order';
 
-
 export const usePickUpFormValuesForPickUp = ({
   pickUpFormValues,
 }: {
@@ -28,7 +27,11 @@ export const usePickUpFormValuesForPickUp = ({
   };
 
   // Conditionally add building and building_id only if building is not empty
-  if (pickUpFormValues.building_id && pickUpFormValues.building_id.trim() !== '') {
+  if (
+    pickUpFormValues.building_id
+    // &&
+    // pickUpFormValues.building_id.trim() !== ''
+  ) {
     basePickUp.building = pickUpFormValues.building;
     basePickUp.building_id = pickUpFormValues.building_id as any;
   }
@@ -71,7 +74,11 @@ export const usedropOffFormValuesForDropffs = ({
   };
 
   // Conditionally add building and building_id only if building is not empty
-  if (dropOffFormValues.building_id && dropOffFormValues.building_id.trim() !== '') {
+  if (
+    dropOffFormValues.building_id
+    // &&
+    // dropOffFormValues.building_id?.trim() !== ''
+  ) {
     baseDropOff.building = dropOffFormValues.building;
     baseDropOff.building_id = dropOffFormValues.building_id as any;
   }

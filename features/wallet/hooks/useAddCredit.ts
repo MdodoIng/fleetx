@@ -102,7 +102,7 @@ export function useAddCredit() {
 
     try {
       const checkBlockActRes = await checkBlockActivation(
-        vendorId! || selectedVendor?.id!,
+        vendorId! || selectedVendor?.id,
         branchId! || selectedBranch?.id
       );
 
@@ -142,17 +142,17 @@ export function useAddCredit() {
     const payment =
       typeof amount === 'number'
         ? [
-          {
-            amount: amount,
-            branch_id: branchId || selectedBranch!.id,
-          },
-        ]
+            {
+              amount: amount,
+              branch_id: branchId || selectedBranch!.id,
+            },
+          ]
         : amount.map((item) => {
-          return {
-            amount: item.rechargeAmount,
-            branch_id: item.branch.id!,
-          };
-        });
+            return {
+              amount: item.rechargeAmount,
+              branch_id: item.branch.id!,
+            };
+          });
 
     const totalRecharge = payment?.reduce(
       (sum, item) => sum + (Number(item.amount) || 0),
@@ -161,18 +161,18 @@ export function useAddCredit() {
 
     const reqoust: TypeInitiateReq = isCentralWalletEnabled
       ? {
-        vendor_id: vendorId!,
-        amount: parseFloat(
-          typeof amount === 'number' ? amount.toFixed(2) : '0.00'
-        ),
-        language: locale?.toUpperCase(),
-      }
+          vendor_id: vendorId!,
+          amount: parseFloat(
+            typeof amount === 'number' ? amount.toFixed(2) : '0.00'
+          ),
+          language: locale?.toUpperCase(),
+        }
       : {
-        amount: totalRecharge,
-        branch_payments: payment,
-        language: locale?.toUpperCase(),
-        vendor_id: vendorId!,
-      };
+          amount: totalRecharge,
+          branch_payments: payment,
+          language: locale?.toUpperCase(),
+          vendor_id: vendorId!,
+        };
 
     const res = await paymentService.initiate(reqoust);
     console.log(res);
@@ -207,7 +207,6 @@ export function useAddCredit() {
         branch: selectedBranch,
         vendor: selectedVendor,
       });
-      toast.success('Amount credited successfully');
 
       if (isCentralWalletEnabled) {
       }

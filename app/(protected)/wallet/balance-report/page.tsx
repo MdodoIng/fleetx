@@ -27,11 +27,11 @@ import {
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 
 function BalanceReport(): JSX.Element {
@@ -190,7 +190,7 @@ function BalanceReport(): JSX.Element {
     <Dashboard className="">
       <DashboardHeader>
         <DashboardHeaderRight />
-        <div className='flex gap-1.5'>
+        <div className="flex gap-1.5">
           <div className="flex items-center justify-center gap-1.5">
             <Button
               onClick={() => setIsCentralWallet(!isCentralWallet)}
@@ -215,21 +215,21 @@ function BalanceReport(): JSX.Element {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListContents>
+                <TableSingleList key={idx}>
+                  <TableSingleListContents>
                     {item.map((i, listIdx) => (
-                      <TableSigleListContent key={listIdx}>
-                        <TableSigleListContentTitle>
+                      <TableSingleListContent key={listIdx}>
+                        <TableSingleListContentTitle>
                           <i.icon size={14} />
                           {i.title}
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle className="line-clamp-2">
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle className="line-clamp-2">
                           {i.value}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
                     ))}
-                  </TableSigleListContents>
-                </TableSigleList>
+                  </TableSingleListContents>
+                </TableSingleList>
               ))}
             </TableLists>
           </Table>

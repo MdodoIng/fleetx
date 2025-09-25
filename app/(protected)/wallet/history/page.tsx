@@ -44,14 +44,14 @@ import { useTranslations } from 'next-intl';
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
-  TableSigleListHeader,
-  TableSigleListHeaderLeft,
-  TableSigleListHeaderRight,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { OperationType } from '@/shared/types/orders';
 import LoadingPage from '../../loading';
@@ -147,7 +147,8 @@ export default function OrderTrackingDashboard() {
               exportOrdersToCSV(
                 walletHistory!,
                 'wallet history',
-                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
+                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
                 }`
               )
             }
@@ -169,9 +170,9 @@ export default function OrderTrackingDashboard() {
               );
 
               return (
-                <TableSigleList key={idx}>
-                  <TableSigleListHeader className="">
-                    <TableSigleListHeaderRight>
+                <TableSingleList key={idx}>
+                  <TableSingleListHeader className="">
+                    <TableSingleListHeaderRight>
                       <span className="font-semibold text-primary-blue flex">
                         {txn.txn_number}
                       </span>
@@ -186,47 +187,47 @@ export default function OrderTrackingDashboard() {
                           {txn.branch.name}
                         </span>
                       )}
-                    </TableSigleListHeaderRight>
-                    <TableSigleListHeaderLeft className="flex items-center gap-1">
+                    </TableSingleListHeaderRight>
+                    <TableSingleListHeaderLeft className="flex items-center gap-1">
                       <Clock size={12} />
                       {format(new Date(txn.txn_at), 'PPp')}
-                    </TableSigleListHeaderLeft>
-                  </TableSigleListHeader>
-                  <TableSigleListContents>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                    </TableSingleListHeaderLeft>
+                  </TableSingleListHeader>
+                  <TableSingleListContents>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <User2 size={14} />
                         {t('component.features.wallet.user')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {txn.branch?.vendor.name}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <DollarSign size={14} />
                         {t(
                           'component.features.orders.create.form.amount.default'
                         )}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle
                         className={`${operation_type?.color.replaceAll('bg', 'text')}`}
                       >
                         {isCredit ? '+' : ''}
                         {txn.txn_amount} {appConstants?.currency}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                    <TableSingleListContent>
+                      <TableSingleListContentTitle>
                         <CreditCard size={14} />
                         {t('component.features.wallet.balence')}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle>
                         {txn.balance.balance_amount} {appConstants?.currency}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                  </TableSigleListContents>
-                </TableSigleList>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
+                  </TableSingleListContents>
+                </TableSingleList>
               );
             })}
           </TableLists>

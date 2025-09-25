@@ -78,8 +78,13 @@ export const routes: Routes = {
     path: '/vendor/account-manager',
     title: 'layout.menuItems.vendorSubMenu.accountManager.title',
     subtitle: 'layout.menuItems.vendorSubMenu.accountManager.subtitle',
-    icon: 'history',
-    roles: ['VENDOR_ACCOUNT_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+    icon: 'chartNoAxesGantt',
+    roles: [
+      'VENDOR_ACCOUNT_MANAGER',
+      'SALES_HEAD',
+      'FINANCE_MANAGER',
+      'OPERATION_MANAGER',
+    ],
   },
   WALLET_OVERVIEW: {
     path: '/wallet/overview',

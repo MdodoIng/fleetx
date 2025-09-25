@@ -33,7 +33,6 @@ import { useDebounce } from '@/shared/lib/hooks';
 export default function ShippingForm() {
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const { readAppConstants } = useSharedStore();
   const [isDropIndex, setIsDropofIndex] = useState<number>(
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );

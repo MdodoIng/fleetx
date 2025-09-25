@@ -2,19 +2,18 @@
 
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import ProtectedLayout from '@/shared/components/Layout/ProtectedLayout';
-import { routes } from '@/shared/constants/routes';
-import { useAuthStore, useSharedStore } from '@/store';
+import { useSharedStore } from '@/store';
+import { setUserLocale } from '@/shared/services/locale';
+import { useEffect } from 'react';
+import { defaultLocale } from '@/locales/config';
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const { lastPathname } = useSharedStore();
-  const { user } = useAuthStore();
-  
+  const { showLanguage } = useSharedStore();
 
-  const allowedRoute = Object.values(routes).find((route) =>
-    route.path.endsWith(lastPathname)
-  );
-  
-  console.log(allowedRoute,allowedRoute?.roles ? allowedRoute.roles?.some((role) => user?.roles?.includes(role)) : "")
+  useEffect(() => {
+    if (showLanguage) return;
+    setUserLocale(defaultLocale);
+  }, [showLanguage]);
 
   return <ProtectedLayout>{children}</ProtectedLayout>;
 }

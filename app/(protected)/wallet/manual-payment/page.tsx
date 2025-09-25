@@ -1,9 +1,17 @@
 'use client';
 import TableComponent from '@/features/vendor/components/list/TableComponent';
 import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
 import {
   Popover,
   PopoverContent,
@@ -16,6 +24,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import {
+  Table,
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
+} from '@/shared/components/ui/tableList';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
@@ -31,9 +51,11 @@ import {
   CalendarIcon,
   Columns,
   Download,
+  LucideProps,
   MagnetIcon,
   Notebook,
   ReceiptPoundSterling,
+  Search,
   ServerCrash,
   Type,
   X,
@@ -66,7 +88,17 @@ function ManualReport(): JSX.Element {
   const [data, setData] = useState<TypeManualPaymentHistoryReportRes['data']>(
     []
   );
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<
+    Array<
+      Array<{
+        icon: React.ForwardRefExoticComponent<
+          Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
+        >;
+        title: string;
+        value: string | 'Credit' | 'Debit' | undefined;
+      }>
+    >
+  >([]);
   const [paymentType, setPaymentType] =
     useState<(typeof TypePayment)[number]['id']>();
   const vendorStore = useVendorStore();
@@ -169,65 +201,74 @@ function ManualReport(): JSX.Element {
   const { exportOrdersToCSV } = useTableExport();
 
   return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
-
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <Select
-            value={String(paymentType)}
-            onValueChange={(value) => setPaymentType(value as any)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select payment type" />
-            </SelectTrigger>
-            <SelectContent>
-              {TypePayment.map((type) => (
-                <SelectItem key={type.id} value={String(type.id)}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-            {paymentType && (
-              <span onClick={() => setPaymentType(undefined)} className="">
-                <X />
-              </span>
-            )}
-          </Select>
+    <Dashboard>
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search payments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0"
+            />
+          </div>
+          <SearchableSelect
+            options={TypePayment}
+            value={paymentType}
+            onChangeAction={setPaymentType}
+          />
 
           <DateSelect value={date} onChangeAction={setDate} />
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
           <Button
-            // onClick={() =>
-            //   exportOrdersToCSV(
-            //     data!,
-            //     'wallet history',
-            //     `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-            //       date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-            //     }`
-            //   )
-            // }
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            onClick={() =>
+              exportOrdersToCSV(
+                tableData,
+                'manual_payment_history',
+                `manual_payment_history_${date?.from ? format(date.from, 'yyyy-MM-dd') : ''}_${
+                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+                }`
+              )
+            }
+            className="max-sm:w-full"
           >
             <Download className="w-5 h-5" /> Export
           </Button>
         </div>
-      </div>
-
-      {data?.length ? (
-        <TableComponent
-          data={tableData}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={null}
-        />
-      ) : (
-        <>no data</>
-      )}
-    </div>
+      </DashboardHeader>
+      <DashboardContent>
+        {tableData?.length ? (
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSingleList key={idx}>
+            
+                  <TableSingleListContents>
+                    {item.map((itemSingle, singlIdx) => (
+                      <TableSingleListContent key={singlIdx}>
+                        <TableSingleListContentTitle>
+                          <itemSingle.icon size={14} />
+                          {itemSingle.title}
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {itemSingle.value}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+                    ))}
+                  </TableSingleListContents>
+                </TableSingleList>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          <div className="flex items-center justify-center h-full w-full text-muted-foreground">
+            No data available
+          </div>
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }
 export default ManualReport;
