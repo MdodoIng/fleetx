@@ -13,6 +13,8 @@ import {
 import { vendorService } from '@/shared/services/vendor';
 import { orderService } from '@/shared/services/orders';
 import {
+  DeliverySummary,
+  TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
@@ -29,7 +31,7 @@ import { hasValue } from '@/shared/lib/helpers/index';
 import {
   emptyDropOff,
   usedropOffFormValuesForDropffs,
-  usePickUpFormValuesForPickUp,
+  usepickUpFormValuesForPickUp,
 } from '../libs/helpers';
 import { toast } from 'sonner';
 
@@ -44,7 +46,7 @@ export default function useOrderCreate(
 ) {
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const { currentStatusZoneETPTrend } = useSharedStore();
+  const { currentStatusZoneETPTrend, appConstants } = useSharedStore();
   const { branchId, vendorId, selectedVendorName } = useVendorStore();
 
   const pickUpFormValues = pickUpForm.watch();
@@ -62,6 +64,8 @@ export default function useOrderCreate(
       const dropOffFieldsValid =
         isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
 
+      
+      console.log(dropOffForm.formState.errors)
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
       );
@@ -76,11 +80,35 @@ export default function useOrderCreate(
   ): Promise<TypeEstimatedDeliveryReturnFromApi | undefined> => {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
-      useOrderStore.setState({
-        estimatedDeliveryReturnFromApi: res.data,
-      });
-      console.log(res.data, 'EstimatedDeliveryReturnFromApi');
-      return res.data;
+      if (res) {
+        const deliverySummary: DeliverySummary = {
+          deliveryModel: String(
+            TypeDelivery.find((item) => item.key === res.data.delivery_model)
+              ?.value
+          ),
+          estTime: res.data.drop_offs.reduce(
+            (sum, item) => sum + (item.delivery_duration || 0),
+            0
+          ),
+          totalDelivery:
+            res.data.drop_offs.reduce(
+              (sum, item) => sum + (item.delivery_fee || 0),
+              0
+            ) + String(appConstants?.currency),
+          totalKM:
+            res.data.drop_offs.reduce(
+              (sum, item) => sum + (item.delivery_distance || 0),
+              0
+            ) + 'Km',
+          totalOrders: res.data.drop_offs.length,
+        };
+        useOrderStore.setState({
+          estimatedDeliveryReturnFromApi: res.data,
+          deliverySummary: deliverySummary,
+        });
+        console.log(res.data, 'EstimatedDeliveryReturnFromApi');
+        return res.data;
+      }
     } catch (error) {
       console.log(error, 'sgfdsg');
       return undefined;
@@ -95,7 +123,7 @@ export default function useOrderCreate(
       drop_offs: newDropOffs,
       delivery_model: orderStore.deliveryModel.key,
       order_session_id: orderStore.estimatedDelivery?.order_session_id || null,
-      pickup: usePickUpFormValuesForPickUp({
+      pickup: usepickUpFormValuesForPickUp({
         pickUpFormValues: pickUpFormValues,
       }),
     };
@@ -110,7 +138,7 @@ export default function useOrderCreate(
               vendorId: vendorId!,
               isCOD: isCOD,
             }),
-          } as any;
+          };
 
           return {
             ...state,
@@ -160,7 +188,7 @@ export default function useOrderCreate(
 
           const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          const updatedPickUp = usePickUpFormValuesForPickUp({
+          const updatedPickUp = usepickUpFormValuesForPickUp({
             pickUpFormValues: pickUpFormValues,
           });
 
@@ -170,7 +198,7 @@ export default function useOrderCreate(
             drop_offs: newDropOffs,
             delivery_model: orderStore.deliveryModel.key,
             order_session_id:
-              orderStore.estimatedDeliveryReturnFromApi?.order_session_id! ||
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
               null,
             pickup: updatedPickUp,
           };
@@ -333,7 +361,7 @@ export default function useOrderCreate(
 
           const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          const updatedPickUp = usePickUpFormValuesForPickUp({
+          const updatedPickUp = usepickUpFormValuesForPickUp({
             pickUpFormValues: pickUpFormValues,
           });
 
@@ -368,14 +396,8 @@ export default function useOrderCreate(
               //TODO: Show success alert message and clear form fields
               console.log(createOrderRes, 'orders');
 
-              toast.message(
-                'Successfully added and calculated estimate for new drop-off'
-              );
+              toast.message('Successfully added Your Order');
               functionsDropoffs('cancel');
-
-              console.log(
-                'Successfully added and calculated estimate for new drop-off'
-              );
             } catch (error) {
               console.log(error);
             }

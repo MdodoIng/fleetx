@@ -1,4 +1,5 @@
 import {
+    DeliverySummary,
   OrderStatus,
   TypeDelivery,
   TypeDropOffs,
@@ -16,13 +17,7 @@ import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
 import { vendorService } from '@/shared/services/vendor';
 
-interface DeliverySummary {
-  totalOrders: number;
-  totalDelivery: string;
-  totalKM: string;
-  deliveryModel: string;
-  estTime: number;
-}
+
 
 interface OrderState {
   dropOffs: TypeDropOffs[];

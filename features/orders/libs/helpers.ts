@@ -2,7 +2,7 @@
 import { TypeDropOffs, TypePickUp } from '@/shared/types/orders';
 import { TypeDropOffSchema, TypePickUpSchema } from '../validations/order';
 
-export const usePickUpFormValuesForPickUp = ({
+export const usepickUpFormValuesForPickUp = ({
   pickUpFormValues,
 }: {
   pickUpFormValues: TypePickUpSchema;
@@ -49,24 +49,26 @@ export const usedropOffFormValuesForDropffs = ({
   isCOD: 1 | 2;
 }): TypeDropOffs => {
   // Base object with common fields
-  const baseDropOff: any = {
-    id: new Date() as any,
-    vendor_order_id: null as any, //TODO: add vendor order id input from user
+  const baseDropOff = {
+    id: new Date(),
+    vendor_order_id: null, //TODO: add vendor order id input from user
     address: '',
     customer_name: dropOffFormValues.customer_name,
     area: dropOffFormValues.area,
-    area_id: dropOffFormValues.area_id as any,
+    area_id: dropOffFormValues.area_id,
     block: dropOffFormValues.block,
-    block_id: dropOffFormValues.block_id as any,
+    block_id: dropOffFormValues.block_id,
     street: dropOffFormValues.street,
-    street_id: dropOffFormValues.street_id as any,
+    street_id: dropOffFormValues.street_id,
     floor: dropOffFormValues.floor ?? '',
     room_number: dropOffFormValues.apartment_no ?? '',
+    apartment_no: dropOffFormValues.apartment_no,
     latitude: dropOffFormValues.latitude,
     longitude: dropOffFormValues.longitude,
     landmark: dropOffFormValues.additional_address!,
+    additional_address: dropOffFormValues.additional_address,
     mobile_number: dropOffFormValues.mobile_number,
-    order_index: dropOffFormValues.order_index as any,
+    order_index: dropOffFormValues.order_index,
     display_address: dropOffFormValues.additional_address!,
     payment_type: isCOD,
     paci_number: '',

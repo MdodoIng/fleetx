@@ -29,7 +29,6 @@ import { cn } from '@/shared/lib/utils';
 type Props = {
   index?: number;
   isDropIndex: number;
-  dropOffFormValues: TypeDropOffSchema;
   item?: TypeDropOffs;
 
   dropOffForm: UseFormReturn<TypeDropOffSchema>;
@@ -49,7 +48,6 @@ type Props = {
 const DropoffFormSection = ({
   index,
   isDropIndex,
-  dropOffFormValues,
   item,
   dropOffForm,
   isCOD,
@@ -125,12 +123,14 @@ const DropoffFormSection = ({
       </CardHeader>
 
       {isSingle ? (
+        <>
         <DropoffForm
           recipientForm={dropOffForm}
           isCOD={isCOD}
           setIsCOD={setIsCOD}
           orderIndex={orderStore.dropOffs.length + 1}
         />
+        </>
       ) : (
         isDropIndex === index && (
           <DropoffForm

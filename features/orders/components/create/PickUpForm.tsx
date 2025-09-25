@@ -129,13 +129,14 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
             {/* Address */}
             <FormField
               control={senderForm.control}
-              name="area"
+              name="street"
               render={() => (
                 <AddressLandmarkFields
                   form={senderForm}
                   landmarkFieldName={t('form.address.label')}
                   isMap
                 />
+                
               )}
             />
 

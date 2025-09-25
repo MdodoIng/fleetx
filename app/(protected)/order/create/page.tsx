@@ -28,10 +28,9 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
 import { vendorService } from '@/shared/services/vendor';
-import { useDebounce } from '@/shared/lib/hooks';
+import { toast } from 'sonner';
 
 export default function ShippingForm() {
-  const { user } = useAuthStore();
   const orderStore = useOrderStore();
   const [isDropIndex, setIsDropofIndex] = useState<number>(
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
@@ -89,8 +88,6 @@ export default function ShippingForm() {
     reValidateMode: 'onBlur',
   });
 
-  const dropOffFormValues = dropOffForm.watch();
-
   const { functionsDropoffs } = useOrderCreate(
     pickUpForm,
     dropOffForm,
@@ -108,12 +105,13 @@ export default function ShippingForm() {
 
       pickUpForm.setValue('customer_name', selectedBranch.name);
       pickUpForm.setValue('mobile_number', selectedBranch?.mobile_number);
+
+      toast.warning('Pick Up form has been Upadated Please Check The values');
     }
   }, [branchId, pickUpForm, selectedBranch]);
 
   const updateDropOutDetailsForStore = useCallback(() => {
     if (
-      user?.roles?.includes('VENDOR_USER') &&
       branchId &&
       orderStore.dropOffs &&
       isDropIndex >= 0 &&
@@ -125,8 +123,7 @@ export default function ShippingForm() {
         }
       );
     }
-  }, [user, branchId, orderStore.dropOffs, isDropIndex, dropOffForm]);
-
+  }, [branchId, isDropIndex, orderStore.dropOffs]);
 
   const searchAddressByMobileNumber = useCallback(
     async (mobileNumber: string) => {
@@ -143,27 +140,32 @@ export default function ShippingForm() {
         // Handle array response - get the first address if available
         if (res.data && Array.isArray(res.data) && res.data.length > 0) {
           const firstAddress = res.data[0];
-          console.log('First address object:', JSON.stringify(firstAddress, null, 2));
+          console.log(
+            'First address object:',
+            JSON.stringify(firstAddress, null, 2)
+          );
 
           if (firstAddress.address) {
             // Set the address details from the first result
-            dropOffForm.setValue('additional_address', firstAddress.address.address);
-            dropOffForm.setValue('area', firstAddress.address.area || '');
-            dropOffForm.setValue('block', firstAddress.address.block || '');
-            dropOffForm.setValue('street', firstAddress.address.street || '');
-            dropOffForm.setValue('building', firstAddress.address.building || '');
-            dropOffForm.setValue('floor', firstAddress.address.floor || '');
-            dropOffForm.setValue('apartment_no', firstAddress.address.room_number || '');
-            dropOffForm.setValue('latitude', firstAddress.address.latitude);
-            dropOffForm.setValue('longitude', firstAddress.address.longitude);
+            Object.entries(firstAddress.address).forEach(([key, value]) => {
+              dropOffForm.setValue(key as keyof TypeDropOffSchema, value);
+            });
 
             // Set customer details if available
-            const customerName = firstAddress.customer_name || firstAddress.address.customer_name;
+            const customerName =
+              firstAddress.customer_name || firstAddress.address.customer_name;
 
             if (customerName) {
               dropOffForm.setValue('customer_name', customerName);
-              console.log('Customer name set to:', dropOffForm.getValues('customer_name'));
+              console.log(
+                'Customer name set to:',
+                dropOffForm.getValues('customer_name')
+              );
             }
+
+            toast.warning(
+              'Drop Off form has been Upadated Please Check The values'
+            );
           }
         } else {
           // No addresses found for this mobile number
@@ -173,7 +175,7 @@ export default function ShippingForm() {
         console.error('Error searching address by mobile number:', error);
       }
     },
-    [vendorId, branchId, dropOffForm]
+    [vendorId, branchId]
   );
 
   const mobileNumber = dropOffForm.watch('mobile_number');
@@ -194,7 +196,7 @@ export default function ShippingForm() {
   useEffect(() => {
     updatePickUpDetailsForBranchUser();
     updateDropOutDetailsForStore();
-    return () => { };
+    return () => {};
   }, [updateDropOutDetailsForStore, updatePickUpDetailsForBranchUser]);
 
   const isDropoffOne = orderStore.dropOffs
@@ -202,6 +204,9 @@ export default function ShippingForm() {
       ? true
       : false
     : false;
+
+  const isValid =
+    !dropOffForm.formState.isValid || !pickUpForm.formState.isValid;
 
   return (
     <>
@@ -220,7 +225,6 @@ export default function ShippingForm() {
             {orderStore.dropOffs?.map((item, idx) => (
               <DropoffFormSection
                 dropOffForm={dropOffForm}
-                dropOffFormValues={dropOffFormValues}
                 functionsDropoffs={functionsDropoffs}
                 index={idx}
                 isCOD={isCOD}
@@ -235,7 +239,6 @@ export default function ShippingForm() {
               <>
                 <DropoffFormSection
                   dropOffForm={dropOffForm}
-                  dropOffFormValues={dropOffFormValues}
                   functionsDropoffs={functionsDropoffs}
                   isCOD={isCOD}
                   setIsCOD={setIsCOD}
@@ -250,6 +253,7 @@ export default function ShippingForm() {
           <DeliverySummaryFooter
             handleOrder={() => functionsDropoffs('order')}
             handleCancel={() => functionsDropoffs('cancel')}
+            isValid={isValid}
           />
         </DashboardFooter>
       </Dashboard>
