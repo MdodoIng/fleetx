@@ -75,9 +75,9 @@ function BalanceReport(): JSX.Element {
     try {
       const url = reportService.getBranchWalletBalanceUrl(
         page,
-        vendorStore.selectedVendor?.id!,
-        vendorStore.selectedBranch?.id!,
-        nextSetItemTotal
+        vendorStore.selectedVendor?.id ?? '',
+        vendorStore.selectedBranch?.id ?? '',
+        null
       );
       const res = await reportService.getBranchWalletBalanceReport(url);
 
