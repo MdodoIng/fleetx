@@ -10,7 +10,7 @@ export interface TypeRootRatingResponse {
 export interface typePostRating {
   order_number: string;
   rating: number;
-  improvment_item: number;
+  improvment_item: number | null;
 }
 
 export type OverallRatingType =

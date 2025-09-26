@@ -1,5 +1,7 @@
 'use client';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
@@ -87,7 +89,7 @@ function ManualReport(): JSX.Element {
     try {
       const url = paymentService.getManualPaymentHistoryReportUrl(
         1,
-        100,
+        page,
         date?.from,
         date?.to,
         vendorId!,
@@ -98,6 +100,7 @@ function ManualReport(): JSX.Element {
       console.log(res);
 
       setData(res.data!);
+      setNextSetItemTotal(res.count < page ? null : true);
     } catch (err: any) {
       const errorMessage =
         err.error?.message ||
@@ -112,7 +115,7 @@ function ManualReport(): JSX.Element {
       await fetchPaymentHistoryReport();
     };
     loadInitialPaymentHistoryReport();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorId, branchId, page, date.from, date.to, paymentType]);
 
   useEffect(() => {
@@ -233,12 +236,15 @@ function ManualReport(): JSX.Element {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          <div className="flex items-center justify-center h-full w-full text-muted-foreground">
-            No data available
-          </div>
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

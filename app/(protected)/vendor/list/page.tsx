@@ -1,5 +1,4 @@
 'use client';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { vendorService } from '@/shared/services/vendor';
 import { TypeVendorList } from '@/shared/types/vendor';
@@ -17,13 +16,17 @@ import { Input } from '@/shared/components/ui/input';
 import { Download, Search, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
 
 function VendorList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
-  const { isEditVendorId: isEditVendorId, getVendorAccountManagerId, setValue } =
-    useVendorStore();
+  const {
+    isEditVendorId: isEditVendorId,
+    getVendorAccountManagerId,
+    setValue,
+  } = useVendorStore();
 
   const [searchValue, setSearchValue] = useState<string | null>('');
   const [data, setData] = useState<TypeVendorList | undefined>(undefined);
@@ -31,8 +34,6 @@ function VendorList(): JSX.Element {
   // Updated main function
 
   const fetchVendorList = useCallback(async (): Promise<void> => {
-   
-
     try {
       getVendorAccountManagerId();
       const url = vendorService.setVendorListurl(page, searchValue, null);
@@ -40,6 +41,7 @@ function VendorList(): JSX.Element {
       try {
         const res = await vendorService.getVendorList(url);
         setData(res.data);
+        setNextSetItemTotal(res.data.length < page ? null : true);
       } catch (error) {
         console.log(error);
       }
@@ -113,17 +115,14 @@ function VendorList(): JSX.Element {
             page={page}
             setPage={setPage}
           />
+        ) : data ? (
+          <VendorsList
+            data={data!}
+            nextSetItemTotal={nextSetItemTotal}
+            setPage={setPage}
+          />
         ) : (
-          data && (
-            <VendorsList
-              data={data!}
-              fetchVendorList={fetchVendorList}
-              nextSetItemTotal={nextSetItemTotal}
-              page={page}
-              setPage={setPage}
-              setSearchValue={setSearchValue}
-            />
-          )
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

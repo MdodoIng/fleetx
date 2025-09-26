@@ -27,22 +27,24 @@ import {
 } from '@/shared/components/ui/dashboard';
 import userService from '@/shared/services/user';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 export function AccountManagers() {
   const [data, setData] = useState([]);
-  const [totalCount, setTotalCount] = useState();
+
   const [search, setSearch] = useState();
   const [page, setPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     try {
       const newData = await userService.getAccountManagerList(1, page, search);
 
-      console.log(newData);
       setData(newData.data);
-      setTotalCount(newData.count);
-      
+
+      setNextSetItemTotal(res.data.length < page ? null : true);
     } catch (error) {
       toast('Failed to refresh account managers.');
     } finally {
@@ -174,12 +176,15 @@ export function AccountManagers() {
                     </TableSingleListContents>
                   </TableSingleList>
                 ))}
+                <LoadMore
+                  setPage={setPage}
+                  nextSetItemTotal={nextSetItemTotal}
+                  type="table"
+                />
               </TableLists>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center py-8">
-              <span className="mt-4 text-gray-500">Whoops! No data found</span>
-            </div>
+            <NoData />
           )}
         </div>
       </DashboardContent>

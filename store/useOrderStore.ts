@@ -46,7 +46,7 @@ interface OrderState {
     key: 'orderStatusListData' | 'orderHistoryListData',
     data: TypeLiveOrderItem[],
     clearData?: boolean
-  ) => void;
+  ) =>  TypeOrderHistoryList[];
   clearAll: () => unknown;
   setValue: <K extends keyof OrderState>(key: K, value: OrderState[K]) => void;
 }
@@ -232,6 +232,7 @@ export const useOrderStore = create<OrderState>()(
         set({
           [key]: orderList,
         });
+        return orderList;
       },
     }),
 

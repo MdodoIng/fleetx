@@ -34,6 +34,8 @@ import {
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 function BalanceReport(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -127,6 +129,7 @@ function BalanceReport(): JSX.Element {
       }
 
       setData(data!);
+      setNextSetItemTotal(data.length < page ? null : true);
       console.log(`Successfully fetched ${data.length} balance records`);
     } catch (err: any) {
       const errorMessage =
@@ -155,8 +158,6 @@ function BalanceReport(): JSX.Element {
     page,
     isCentralWallet,
   ]);
-
-  console.log(data, 'aeefeafsafaaf');
 
   const tableData = data?.map((item) => {
     return [
@@ -229,10 +230,15 @@ function BalanceReport(): JSX.Element {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          ''
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

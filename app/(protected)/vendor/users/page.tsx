@@ -4,6 +4,7 @@ import { Input } from '@/shared/components/ui/input';
 import { vendorService } from '@/shared/services/vendor';
 import {
   TypeBranch,
+  TypeVendor,
   TypeVendorListItem,
   TypeVendorUserList,
 } from '@/shared/types/vendor';
@@ -58,11 +59,12 @@ import {
   TableSingleListContents,
 } from '@/shared/components/ui/tableList';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 function VendorUser() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState(null);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
   const {
     setValue,
     selectedBranch,
@@ -77,7 +79,7 @@ function VendorUser() {
   const [isBranch, setIsBranchAction] = useState<
     | {
         branch: TypeBranch;
-        vendor: TypeVendorListItem;
+        vendor: TypeVendorListItem | TypeVendor;
       }
     | undefined
   >({
@@ -109,6 +111,7 @@ function VendorUser() {
         selectedBranch?.id
       );
       setData(res.data);
+      setNextSetItemTotal(res.data.length < page ? null : true);
     } catch (error) {
       console.log(error);
     } finally {
@@ -192,7 +195,8 @@ function VendorUser() {
           ];
         })
       );
-      setTableData(resolvedData!);
+      // @ts-ignore
+      setTableData(resolvedData);
       setIsLoading(false);
     };
 
@@ -226,7 +230,7 @@ function VendorUser() {
     if (isEditUser) {
       updateUserDetailsForFromApi();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditUser]);
 
   if (isLoading) return <TableFallback />;
@@ -275,6 +279,11 @@ function VendorUser() {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (

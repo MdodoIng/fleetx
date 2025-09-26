@@ -1,3 +1,4 @@
+/** eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -64,8 +65,7 @@ export default function useOrderCreate(
       const dropOffFieldsValid =
         isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
 
-      
-      console.log(dropOffForm.formState.errors)
+      console.log(dropOffForm.formState.errors);
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
       );
@@ -81,31 +81,8 @@ export default function useOrderCreate(
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
       if (res) {
-        const deliverySummary: DeliverySummary = {
-          deliveryModel: String(
-            TypeDelivery.find((item) => item.key === res.data.delivery_model)
-              ?.value
-          ),
-          estTime: res.data.drop_offs.reduce(
-            (sum, item) => sum + (item.delivery_duration || 0),
-            0
-          ),
-          totalDelivery:
-            res.data.drop_offs.reduce(
-              (sum, item) => sum + (item.delivery_fee || 0),
-              0
-            ) + String(appConstants?.currency),
-          totalKM:
-            res.data.drop_offs.reduce(
-              (sum, item) => sum + (item.delivery_distance || 0),
-              0
-            ) + 'Km',
-          totalOrders: res.data.drop_offs.length,
-        };
-        useOrderStore.setState({
-          estimatedDeliveryReturnFromApi: res.data,
-          deliverySummary: deliverySummary,
-        });
+        useOrderStore.getState().setEstimatedDeliveryReturnFromApi(res.data);
+
         console.log(res.data, 'EstimatedDeliveryReturnFromApi');
         return res.data;
       }
@@ -170,6 +147,14 @@ export default function useOrderCreate(
   ) => {
     const isFormValid = await validateFormsAsync();
 
+    if (!vendorId) {
+      toast.message('Please Select a vender');
+      return;
+    }
+    if (!branchId) {
+      toast.message('Please Select a brach');
+      return;
+    }
     if (!isFormValid && type !== 'deleteDropOff' && type !== 'cancel') {
       console.warn(
         'Please complete all required fields before adding drop-off'
@@ -212,6 +197,7 @@ export default function useOrderCreate(
               const updatedDropOffs = [...state.dropOffs];
               if (state.dropOffs === undefined || state.dropOffs.length === 0) {
                 updatedDropOffs.push(newDropOff);
+
                 updatedDropOffs.push(emptyDropOff as any);
               } else {
                 updatedDropOffs.length - 1 <= isDropIndex
@@ -229,7 +215,7 @@ export default function useOrderCreate(
               };
             });
 
-            setIsCOD(1);
+            setIsCOD(2);
             dropOffForm.reset(emptyDropOff);
             dropOffForm.clearErrors();
             console.log(
@@ -415,7 +401,7 @@ export default function useOrderCreate(
         });
         dropOffForm.reset(emptyDropOff);
         dropOffForm.clearErrors();
-        setIsCOD(1);
+        setIsCOD(2);
 
         break;
 

@@ -32,7 +32,7 @@ export default function OrderTrackingDashboard() {
   const [ordernNumber, setOrdernNumber] = useState('');
   const [page, setPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
-  const [nextSetItemsToken, setNextSetItemsToken] = useState();
+  const [nextSetItemsToken, setNextSetItemsToken] = useState<number | null>();
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedDriver, setSelectedDriver] = useState<string>();
@@ -69,26 +69,29 @@ export default function OrderTrackingDashboard() {
   ]);
 
   const fetchOrderDetails = useCallback(async () => {
+    setNextSetItemsToken(null);
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+      // @ts-ignore
       const res: TypeRootLiveOrderList = await orderService.getOrderList(url);
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
+        // @ts-ignore
         setSelectedOrder(res.data[0]);
       }
       console.log(res);
 
-      setNextSetItemsToken(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        res.count ? (res.count <= res.data.length ? null : true) : null
-      );
+      setIsLoading(false);
+      setTimeout(() => {
+        setNextSetItemsToken(
+          // @ts-ignore
+          res.count ? (res.count <= res.data.length ? null : true) : null
+        );
+      }, 1000);
+
       setIsLoading(false);
     } catch (err) {
       console.error('Error fetching orders:', err);
+      setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
@@ -182,36 +185,39 @@ export default function OrderTrackingDashboard() {
         </div>
       </DashboardHeader>
       <DashboardContent className="flex w-full">
-        {isEditDetails ? (
+        {orderStore?.orderStatusListData &&
+        orderStore?.orderStatusListData?.length > 0 ? (
           <>
-            <TableComponent
-              setPage={setPage}
-              fetchOrderDetails={fetchOrderDetails}
-              nextSetItemTotal={nextSetItemsToken}
-            />
-          </>
-        ) : orderStore?.orderStatusListData &&
-          orderStore?.orderStatusListData?.length > 0 ? (
-          <>
-            {isStyleTabel === 'grid' && (
-              <GridComponent
-                selectedOrder={selectedOrder!}
-                setSelectedOrder={setSelectedOrder}
-                statusHistory={statusHistory}
+            {isEditDetails ? (
+              <TableComponent
+                setPage={setPage}
+                fetchOrderDetails={fetchOrderDetails}
+                nextSetItemTotal={nextSetItemsToken}
               />
-            )}
+            ) : (
+              <>
+                {isStyleTabel === 'grid' && (
+                  <GridComponent
+                    selectedOrder={selectedOrder!}
+                    setSelectedOrder={setSelectedOrder}
+                    statusHistory={statusHistory}
+                  />
+                )}
 
-            {isStyleTabel === 'list' && (
-              <ListComponent
-                selectedOrder={selectedOrder!}
-                setSelectedOrder={setSelectedOrder}
-                statusHistory={statusHistory}
-              />
+                {isStyleTabel === 'list' && (
+                  <ListComponent
+                    selectedOrder={selectedOrder!}
+                    setSelectedOrder={setSelectedOrder}
+                    statusHistory={statusHistory}
+                  />
+                )}
+              </>
             )}
           </>
         ) : (
           <NoData />
         )}
+
       </DashboardContent>
     </Dashboard>
   );

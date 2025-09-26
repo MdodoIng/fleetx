@@ -26,14 +26,14 @@ type Props = {
   data?: TypeVendorUserList[];
   isBranch?: {
     branch: TypeBranch;
-    vendor: TypeVendorListItem;
+    vendor: TypeVendorListItem | TypeVendor;
   };
   setIsBranchAction: Dispatch<
     SetStateAction<
       | {
-        branch: TypeBranch;
-        vendor: TypeVendorListItem;
-      }
+          branch: TypeBranch;
+          vendor: TypeVendorListItem | TypeVendor;
+        }
       | undefined
     >
   >;

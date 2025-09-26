@@ -123,7 +123,7 @@ export const orderService = {
     searchOrder?: string,
     searchCustomer?: string,
     searchAll: boolean | null = true,
-    nextSetItemTotal?: string[],
+    nextSetItemTotal?: string[] | null,
     selectedAccountManager?: string,
     searchDriver?: string,
     sortField?: string
@@ -166,10 +166,10 @@ export const orderService = {
     searchDriver?: string | null,
     searchAll: boolean | null = true
   ) {
-    const currentUser = getDecodedAccessToken();
+    const { user } = useAuthStore.getState();
     const { vendorId, branchId } = useVendorStore.getState();
 
-    switch (currentUser?.roles[0]) {
+    switch (user?.roles[0]) {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
       case 'SALES_HEAD':
@@ -189,7 +189,7 @@ export const orderService = {
         }
         break;
       case 'VENDOR_USER':
-        if (!currentUser.user.vendor?.branch_id) {
+        if (!user.user.vendor?.branch_id) {
           if (branchId) {
             url = url + '&branch_id=' + branchId;
           }

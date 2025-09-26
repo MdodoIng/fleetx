@@ -3,20 +3,15 @@
 import { useState, useEffect } from 'react';
 import { notificationService } from '@/shared/services/notification';
 import { TypeNotificationItem } from '@/shared/types/notification';
-import { Bell, SendHorizontal } from 'lucide-react';
+import { SendHorizontal } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  PopoverAnchor,
 } from '@/shared/components/ui/popover';
-import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import Image from 'next/image';
 import bellIcon from '@/assets/icons/notification.svg';
 import { cn } from '@/shared/lib/utils';
-import { PopoverClose } from '@radix-ui/react-popover';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { OperationType } from '@/shared/types/orders';
 import { formatDate } from 'date-fns';
@@ -31,7 +26,7 @@ export default function Notification() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+
   const [page, setPage] = useState(10);
 
   useEffect(() => {
@@ -41,11 +36,10 @@ export default function Notification() {
         const response = await notificationService.getNotification(
           notificationService.getNotificationHistoryUrl(page, null, null)
         );
-        console.log(response);
+
         if (!response.data) throw new Error('Failed to fetch notifications');
         setNotifications(response.data);
         setNotificationCount(response.count || 0);
-        setHasMore(response.data.length === page);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -55,13 +49,6 @@ export default function Notification() {
 
     fetchNotifications();
   }, [page]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loading) {
-      setPage(page + 10);
-    }
-  };
 
   const unreadCount = notifications.filter((item) => !item.vendor_read).length;
 
@@ -164,8 +151,6 @@ export default function Notification() {
               })}
 
               <LoadMore
-                size="small"
-                message="No more notifications"
                 count={notifications.length}
                 loadMoreNumber={notificationCount}
                 setPage={setPage}

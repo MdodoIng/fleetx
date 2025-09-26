@@ -54,6 +54,8 @@ import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import VendorSelecter from '@/shared/components/selectors/VendorSelecter';
 import { DateRange } from 'react-day-picker';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 function PaymentHistory(): JSX.Element {
   const t = useTranslations();
@@ -192,7 +194,7 @@ function PaymentHistory(): JSX.Element {
           </div>
 
           <VendorSelecter
-          classNameFroInput='border-none'
+            classNameFroInput="border-none"
             selectedVendorValue={selectedVendor}
             handleChangeVendor={setSelectedVendor}
           />
@@ -298,10 +300,15 @@ function PaymentHistory(): JSX.Element {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          <div className="text-center text-gray-500">No data available</div>
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

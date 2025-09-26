@@ -269,7 +269,8 @@ export type TypeLiveOrderItem = {
 
 export type TypeRootLiveOrderList = {
   data: TypeLiveOrderItem[];
-  count: number;
+  count?: number;
+  NEXT_SET_ITEMS_TOKEN?: number[];
 };
 
 export type TypeRootLiveBuilkOrderListInsights = {
@@ -285,7 +286,6 @@ export type TypeRootLiveBuilkOrderListInsights = {
     };
   };
 };
-
 
 export type TypeOrderStatusHistoryHistory = {
   status_history: {

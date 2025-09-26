@@ -28,8 +28,8 @@ export default function LoadMore({
 }: NoDataProps) {
   const observerRef = useRef<HTMLDivElement>(null);
   const hasMore = nextSetItemTotal !== null || count < loadMoreNumber;
-  
-  console.log(nextSetItemTotal)
+
+  console.log(nextSetItemTotal);
 
   const skeltons: Record<typeof type, JSX.Element> = {
     table: <TableSkeleton columns={4} rows={1} />,
@@ -48,25 +48,24 @@ export default function LoadMore({
   };
 
   useEffect(() => {
-    if (!hasMore) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 10);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-    return () => {
+    if (hasMore) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            setPage((prev) => prev + 10);
+          }
+        },
+        { threshold: 0.1 }
+      );
       if (observerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        observer.unobserve(observerRef.current);
+        observer.observe(observerRef.current);
       }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      return () => {
+        if (observerRef.current) {
+          observer.unobserve(observerRef.current);
+        }
+      };
+    }
   }, [hasMore]);
 
   return (
@@ -97,7 +96,7 @@ export default function LoadMore({
           />
         </div>
       ) : (
-        <div className="w-full " ref={observerRef}>
+        <div className="w-full" ref={observerRef}>
           {skeltons[type]}
         </div>
       )}
