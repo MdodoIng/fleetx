@@ -20,6 +20,8 @@ import { PopoverClose } from '@radix-ui/react-popover';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { OperationType } from '@/shared/types/orders';
 import { formatDate } from 'date-fns';
+import NoData from '@/shared/components/fetch/NoData';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,7 +107,7 @@ export default function Notification() {
           </button>
         </div>
         <div
-          onScroll={handleScroll}
+          // onScroll={handleScroll}
           className="max-h-96 overflow-y-auto overflow-x-hidden hide-scrollbar flex flex-col mt-4"
           style={{ direction: 'ltr' }}
         >
@@ -154,25 +156,24 @@ export default function Notification() {
                         </p>
                       </div>
                     </div>
-                    <span className="w-full bg-dark-grey/20 h-[1px] mt-2 group-last:hidden" />
+                    {idx !== notifications.length - 1 && (
+                      <span className="w-full bg-dark-grey/20 h-[1px] mt-2" />
+                    )}
                   </div>
                 );
               })}
-              {loading && (
-                <div className="text-center text-muted-foreground">
-                  Loading more...
-                </div>
-              )}
-              {!hasMore && notifications.length > 0 && (
-                <div className="text-center text-muted-foreground">
-                  No more notifications
-                </div>
-              )}
+
+              <LoadMore
+                size="small"
+                message="No more notifications"
+                count={notifications.length}
+                loadMoreNumber={notificationCount}
+                setPage={setPage}
+                type="skeleton-small"
+              />
             </>
           ) : (
-            <div className="text-center text-muted-foreground">
-              No notifications
-            </div>
+            <NoData size="small" message="No notifications" />
           )}
         </div>
       </PopoverContent>

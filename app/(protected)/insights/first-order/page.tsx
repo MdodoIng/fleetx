@@ -1,6 +1,6 @@
 'use client';
 
-import { InsightsFallback } from '@/shared/components/fallback';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Card,

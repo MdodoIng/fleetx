@@ -6,19 +6,14 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import GridComponent from '@/features/orders/components/Livelist/GridComponent';
 import ListComponent from '@/features/orders/components/Livelist/ListComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
-import { TypeOrderHistoryList } from '@/shared/types/orders';
-import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
-import TableComponent from '@/features/orders/components/Livelist/TableComponent/index';
-import { Input } from '@/shared/components/ui/input';
-import { fleetService } from '@/shared/services/fleet';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
+  TypeOrderHistoryList,
+  TypeRootLiveOrderList,
+} from '@/shared/types/orders';
+import { useOrderStore } from '@/store/useOrderStore';
+import { useAuthStore, useVendorStore } from '@/store';
+import TableComponent from '@/features/orders/components/Livelist/TableComponent';
+import { Input } from '@/shared/components/ui/input';
 import {
   Dashboard,
   DashboardContent,
@@ -29,14 +24,15 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
 import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [ordernNumber, setOrdernNumber] = useState('');
   const [page, setPage] = useState(10);
   const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
-  const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
+  const [nextSetItemsToken, setNextSetItemsToken] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedDriver, setSelectedDriver] = useState<string>();
@@ -45,42 +41,63 @@ export default function OrderTrackingDashboard() {
   const orderStore = useOrderStore();
   const authStore = useAuthStore();
 
-  const { isEditDetails, showDriversFilter } = useVendorStore();
+  const { isEditDetails, vendorId, branchId } = useVendorStore();
 
-  const [selectedOrder, setSelectedOrder] = useState<TypeOrderHistoryList>(
-    orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList)
-  );
+  const [selectedOrder, setSelectedOrder] = useState<
+    TypeOrderHistoryList | undefined
+  >(orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList));
 
   const url = useMemo(() => {
     return orderService.getOrderStatusUrl(
       1,
-      page,
+      isEditDetails ? page : null,
       ordernNumber,
       searchTerm,
       selectedDriver!,
       authStore.user?.roles?.includes('VENDOR_USER') ? null : true
     );
-  }, [page, ordernNumber, searchTerm, selectedDriver, authStore.user?.roles]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    page,
+    ordernNumber,
+    searchTerm,
+    selectedDriver,
+    authStore.user?.roles,
+    isEditDetails,
+    branchId,
+    vendorId,
+  ]);
 
   const fetchOrderDetails = useCallback(async () => {
     try {
-      const res = await orderService.getOrderList(url);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const res: TypeRootLiveOrderList = await orderService.getOrderList(url);
       if (res.data) {
         orderStore.setSourceForTable('orderStatusListData', res.data);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         setSelectedOrder(res.data[0]);
       }
-      setNextSetItemsToken(res.count! < page ? null : true);
+      console.log(res);
+
+      setNextSetItemsToken(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        res.count ? (res.count <= res.data.length ? null : true) : null
+      );
       setIsLoading(false);
-    } catch (err: any) {
-      console.error('Error fetching orders:', err.message || err);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
     }
-  }, [page, url]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url]);
 
   useEffect(() => {
     fetchOrderDetails();
   }, [fetchOrderDetails]);
 
-  const { statusHistory } = useOrderStatusHistory(selectedOrder);
+  const { statusHistory } = useOrderStatusHistory(selectedOrder!);
 
   useEffect(() => {
     if (
@@ -92,15 +109,8 @@ export default function OrderTrackingDashboard() {
   }, [orderStore.orderStatusListData]);
 
   function handleTableChange(style: 'grid' | 'list') {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        setIsStyleTabel(style);
-        setSelectedOrder(null);
-      });
-    } else {
-      setIsStyleTabel(style);
-      setSelectedOrder(null);
-    }
+    setIsStyleTabel(style);
+    setSelectedOrder(undefined);
   }
 
   const t = useTranslations('component.features.orders.live');
@@ -173,18 +183,19 @@ export default function OrderTrackingDashboard() {
       </DashboardHeader>
       <DashboardContent className="flex w-full">
         {isEditDetails ? (
-          <TableComponent
-            page={page}
-            setPage={setPage}
-            fetchOrderDetails={fetchOrderDetails}
-            nextSetItemTotal={nextSetItemsToken}
-          />
+          <>
+            <TableComponent
+              setPage={setPage}
+              fetchOrderDetails={fetchOrderDetails}
+              nextSetItemTotal={nextSetItemsToken}
+            />
+          </>
         ) : orderStore?.orderStatusListData &&
           orderStore?.orderStatusListData?.length > 0 ? (
           <>
             {isStyleTabel === 'grid' && (
               <GridComponent
-                selectedOrder={selectedOrder}
+                selectedOrder={selectedOrder!}
                 setSelectedOrder={setSelectedOrder}
                 statusHistory={statusHistory}
               />
@@ -192,14 +203,14 @@ export default function OrderTrackingDashboard() {
 
             {isStyleTabel === 'list' && (
               <ListComponent
-                selectedOrder={selectedOrder}
+                selectedOrder={selectedOrder!}
                 setSelectedOrder={setSelectedOrder}
                 statusHistory={statusHistory}
               />
             )}
           </>
         ) : (
-          'Empty'
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

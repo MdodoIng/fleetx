@@ -1,5 +1,5 @@
 'use client';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';

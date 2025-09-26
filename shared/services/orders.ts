@@ -64,7 +64,7 @@ export const orderService = {
 
   getOrderStatusUrl(
     page: number,
-    perPage: number,
+    perPage: number | null,
     searchOrder?: string,
     searchCustomer?: string,
     searchDriver?: string | number,
@@ -282,7 +282,6 @@ export const orderService = {
       url = url + '&to_date=' + to;
     }
 
-    return this.getOrderStatusCommonUrl(url, null, null,
-      searchDriver, null);
+    return this.getOrderStatusCommonUrl(url, null, null, searchDriver, null);
   },
 };

@@ -26,7 +26,7 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import userService from '@/shared/services/user';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 export function AccountManagers() {
   const [data, setData] = useState([]);

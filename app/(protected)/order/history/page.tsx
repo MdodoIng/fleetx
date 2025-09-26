@@ -69,7 +69,7 @@ import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
 import Rating from '@/features/orders/components/ui/Rating';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
 
 export default function OrderTrackingDashboard() {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
+import React, { Dispatch, Fragment, SetStateAction, useState } from 'react';
 import { MapPin, Clock, Phone, ShipWheel, LucideProps } from 'lucide-react';
 import {
   TypeOrderHistoryList,
@@ -28,9 +28,11 @@ import {
 
 interface GridComponentProps {
   selectedOrder: TypeOrderHistoryList | null;
-  setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setSelectedOrder: Dispatch<SetStateAction<any>>;
   statusHistory: TypeStatusHistoryForUi[];
   isModel?: boolean;
+
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -38,6 +40,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
   setSelectedOrder,
   statusHistory,
   isModel: toggleModel = false,
+
 }) => {
   const { orderStatusListData } = useOrderStore();
   const t = useTranslations('component.features.orders.live');
@@ -51,7 +54,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
     type?: 'driver';
     location?: string;
     cta: {
-      label: string;
+      label: string | undefined;
       link: string;
     };
     icon: {
@@ -326,7 +329,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
         <Dialog
           open={!!selectedOrder}
           onOpenChange={() => {
-            setSelectedOrder(null);
+            setSelectedOrder(undefined);
             setIsModel(false);
           }}
         >

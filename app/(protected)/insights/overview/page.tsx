@@ -13,7 +13,7 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { OverviewFallback } from '@/shared/components/fallback';
+import { OverviewFallback } from '@/shared/components/fetch/fallback';
 
 function Overview() {
   const { date, setDate, metrics, isLoading } = useInsightBoard();

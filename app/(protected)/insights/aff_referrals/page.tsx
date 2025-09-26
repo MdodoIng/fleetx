@@ -42,7 +42,7 @@ import {
   TableSingleListContents,
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 interface AffiliateReferralData {
   orderNumber: string;

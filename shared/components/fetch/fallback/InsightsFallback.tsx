@@ -13,13 +13,13 @@ import {
     TableSingleList,
     TableSingleListContent,
     TableSingleListContents,
-} from '../ui/tableList';
+} from '@/shared/components/ui/tableList';
 import {
     Card,
     CardContent,
     CardDescription,
     CardIcon
-} from '../ui/card';
+} from '@/shared/components/ui/card';
 
 export default function InsightsFallback() {
   return (

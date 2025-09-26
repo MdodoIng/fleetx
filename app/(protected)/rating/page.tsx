@@ -30,7 +30,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
 import { toast } from 'sonner';
-import { RatingFallback } from '@/shared/components/fallback';
+import { RatingFallback } from '@/shared/components/fetch/fallback';
 
 // Improvement categories
 const IMPROVEMENT_CATEGORIES = [

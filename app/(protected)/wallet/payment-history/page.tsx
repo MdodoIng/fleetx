@@ -53,7 +53,7 @@ import SearchableSelect from '@/shared/components/selectors';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import VendorSelecter from '@/shared/components/selectors/VendorSelecter';
 import { DateRange } from 'react-day-picker';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 function PaymentHistory(): JSX.Element {
   const t = useTranslations();

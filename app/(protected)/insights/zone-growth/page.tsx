@@ -1,6 +1,6 @@
 'use client';
 
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';

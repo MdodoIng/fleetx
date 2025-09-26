@@ -4,7 +4,7 @@ import FilterHeader from '@/features/insights/components/user_referrals/FilterHe
 import NoData from '@/features/insights/components/user_referrals/NoData';
 import ReferralTable from '@/features/insights/components/user_referrals/ReferralTable';
 import useUserReferrals from '@/features/insights/hooks/useUserReferrals';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';

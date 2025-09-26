@@ -14,7 +14,7 @@ import { useWalletStore } from '@/store/useWalletStore';
 import { useEffect, useState } from 'react';
 import { RecentTransactions } from '@/features/wallet/components/overview/RecentTransactions';
 import DeliveryPricingCard from '@/features/wallet/components/overview/DeliveryPricingCard';
-import { CreateFallback } from '@/shared/components/fallback';
+import { CreateFallback } from '@/shared/components/fetch/fallback';
 
 export default function WalletPage() {
   const vendorStore = useVendorStore();

@@ -43,7 +43,7 @@ import {
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 import { Separator } from '@/shared/components/ui/separator';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 function VendorAdd(): JSX.Element {
   const vendorStore = useVendorStore();

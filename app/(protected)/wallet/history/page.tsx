@@ -56,7 +56,7 @@ import {
 import { OperationType } from '@/shared/types/orders';
 import LoadingPage from '../../loading';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import { DateRange } from 'react-day-picker';
 
 export default function OrderTrackingDashboard() {

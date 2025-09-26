@@ -25,7 +25,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
-import { DashboardFallback } from '@/shared/components/fallback';
+import { DashboardFallback } from '@/shared/components/fetch/fallback';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   total_delivery_fees: 0,

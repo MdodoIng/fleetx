@@ -75,7 +75,7 @@ import { paymentMap } from '@/features/orders/constants';
 import EditPayment from '@/features/orders/components/ui/EditPayment';
 import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { DateRange } from 'react-day-picker';
-import { InsightsFallback } from '@/shared/components/fallback';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 export default function BulkInsightsDashboard() {
   const [loading, setLoading] = useState(true);

@@ -28,7 +28,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { DateRange } from 'react-day-picker';
-import { InsightsFallback } from '@/shared/components/fallback';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 interface ChurnReason {
   reason: string;

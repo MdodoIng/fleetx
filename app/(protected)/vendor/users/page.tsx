@@ -57,7 +57,7 @@ import {
   TableSingleListContentTitle,
   TableSingleListContents,
 } from '@/shared/components/ui/tableList';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 function VendorUser() {
   const [isLoading, setIsLoading] = useState(true);

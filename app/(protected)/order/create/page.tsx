@@ -25,7 +25,7 @@ import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
 import { vendorService } from '@/shared/services/vendor';
 import { toast } from 'sonner';
 import { useStore } from 'zustand';
-import { CreateFallback } from '@/shared/components/fallback';
+import { CreateFallback } from '@/shared/components/fetch/fallback';
 
 export default function ShippingForm() {
   const orderStore = useOrderStore();

@@ -16,7 +16,7 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Download, Search, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { TableFallback } from '@/shared/components/fallback';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 function VendorList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
