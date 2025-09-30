@@ -21,6 +21,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import {
   Phone,
   User,
+  Calendar,
   MapPin,
   Truck,
   Clock,
@@ -29,6 +30,11 @@ import {
   CheckCircle,
   Search,
   CalendarIcon,
+  Dot,
+  Navigation,
+  Info,
+  CreditCard,
+  Receipt,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import {
@@ -46,18 +52,36 @@ import {
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { format } from 'date-fns';
-import { Calendar } from '@/shared/components/ui/calendar';
 import { orderService } from '@/shared/services/orders';
 import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
+import {
+  Table,
+  TableHeader,
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContentTitle,
+  TableSingleListContents,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
+} from '@/shared/components/ui/tableList';
+import { paymentMap } from '@/features/orders/constants';
+import EditPayment from '@/features/orders/components/ui/EditPayment';
+import EditResiver from '@/features/orders/components/ui/EditResiver';
+import { DateRange } from 'react-day-picker';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 export default function BulkInsightsDashboard() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [submitted, setSubmitted] = useState(false);
-  const [date, setDate] = useState<{ from: Date; to: Date }>({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(),
   });
@@ -127,22 +151,8 @@ export default function BulkInsightsDashboard() {
 
   const { isEditDetails, showDriversFilter } = useVendorStore();
 
-
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';
-
-  const updateBulkOrder = (order, action) => {
-    setSubmitted(true);
-    // Handle dispatch/cancel logic here
-    console.log(`${action} order:`, order);
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 1000);
-  };
-
-  const editAddress = (order) => {
-    console.log('Edit address for order:', order);
-  };
 
   const getStatusBadgeVariant = (status) => {
     const variants = {
@@ -161,7 +171,11 @@ export default function BulkInsightsDashboard() {
 
   const fetchBulkInsightsData = useCallback(async () => {
     try {
-      const url = orderService.getBulkInsightsUrl(date?.from, date?.to, selectedDriver);
+      const url = orderService.getBulkInsightsUrl(
+        date?.from,
+        date?.to,
+        selectedDriver
+      );
       const res: TypeRootLiveBuilkOrderListInsights =
         await orderService.getOrderList(url);
       if (!res.data) {
@@ -170,6 +184,7 @@ export default function BulkInsightsDashboard() {
 
       setBulkInsightsData(res.data.insights);
       setOrdersList(res.data.orders_list);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching bulk insights data:', error);
       // Handle error appropriately, e.g., display an error message to the user.
@@ -216,7 +231,7 @@ export default function BulkInsightsDashboard() {
     },
   ];
 
-  const t = useTranslations();
+  if (loading) return <InsightsFallback />;
 
   return (
     <Dashboard className="">
@@ -257,262 +272,193 @@ export default function BulkInsightsDashboard() {
         </div>
 
         {/* Orders List */}
-        <div className="space-y-4 max-h-[1000px] overflow-y-auto">
+        <div className="space-y-4 max-h-[1000px] overflow-y-auto w-full">
           {ordersList.length > 0 ? (
-            ordersList.map((order) => (
-              <Card key={order.id} className="bg-blue-50/30">
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
-                    {/* Order Info */}
-                    <div className="lg:col-span-1">
-                      <div className="bg-white rounded-lg p-3 h-full">
-                        <div className="space-y-2">
-                          <div>
-                            <Label className="text-xs text-gray-500">
-                              Mashkor Order No
-                            </Label>
-                            <Badge
-                              variant="outline"
-                              className="bg-teal-50 text-teal-700 border-teal-200 block mt-1 text-xs"
-                            >
-                              {order.mashkor_order_number}
-                            </Badge>
-                          </div>
-                          <div>
-                            <Label className="text-xs text-gray-500">
-                              Order No
-                            </Label>
-                            <p className="text-sm font-medium">
-                              {order.order_number}
-                            </p>
-                          </div>
-                          {order.status_change_reason &&
-                            order.primary_status === 120 && (
-                              <div className="text-center">
-                                <p className="text-xs text-red-500 font-semibold">
-                                  {order.status_change_reason}
-                                </p>
-                              </div>
-                            )}
-                          <div className="text-center mt-3">
-                            <Badge
-                              variant={getStatusBadgeVariant(
-                                order.class_status
-                              )}
-                              className="text-xs"
-                            >
-                              {order.status}
-                            </Badge>
-                          </div>
+            <Table>
+              <TableLists>
+                {ordersList?.map((order, idx) => (
+                  <TableSingleList key={idx}>
+                    <TableSingleListHeader className="">
+                      <TableSingleListHeaderRight>
+                        <span className="font-semibold text-primary-blue flex">
+                          <p className="ltr:hidden">FleetX #</p>
+                          {order.mashkor_order_number}
+                          <p className="rtl:hidden"># FleetX</p>
+                        </span>
+                        <Badge
+                          variant={
+                            getStatusBadgeVariant?.(order.class_status) ||
+                            'default'
+                          }
+                          className="text-xs"
+                        >
+                          {order.status}
+                        </Badge>
+                        <span className="text-xs text-primary-teal flex items-center">
+                          <Dot />
+                          {order.branch_name || order.order_number}
+                        </span>
+                      </TableSingleListHeaderRight>
+                      <TableSingleListHeaderLeft className="flex items-center gap-2">
+                        {/* Rating component from prompt is omitted as it's not defined or imported */}
+                        <div className="flex items-center gap-1">
+                          <Clock size={12} />
+                          {order.delivered_date ||
+                            order.canceled_at ||
+                            order.creation_date}
                         </div>
-                      </div>
-                    </div>
+                      </TableSingleListHeaderLeft>
+                    </TableSingleListHeader>
 
-                    {/* Customer Info */}
-                    <div className="lg:col-span-1">
-                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold mb-1">
-                            Receiver
-                          </p>
-                          <div className="space-y-1">
-                            <div className="flex items-center text-xs">
-                              <User className="h-3 w-3 text-teal-500 mr-1" />
-                              <span>{order.customer_name}</span>
-                            </div>
-                            <div className="flex items-center text-xs">
-                              <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                              <span>{order.phone_number}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold mb-1">
-                            Sender
-                          </p>
-                          <div className="space-y-1">
-                            <div className="flex items-center text-xs">
-                              <User className="h-3 w-3 text-teal-500 mr-1" />
-                              <span>{order.customer_name_sender}</span>
-                            </div>
-                            <div className="flex items-center text-xs">
-                              <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                              <span>{order.phone_number_sender}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Addresses */}
-                    <div className="lg:col-span-1">
-                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold mb-1">
-                            From
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {order.from.slice(0, 50)}
-                          </p>
-                        </div>
-                        <div className="relative">
-                          {order.is_delivery_address_edit_enabled && (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="absolute -top-1 right-0 h-5 w-5 bg-teal-500 hover:bg-teal-600 border-teal-500"
-                              onClick={() => editAddress(order)}
-                            >
-                              <Edit2 className="h-2 w-2 text-white" />
-                            </Button>
+                    <TableSingleListContents>
+                      {/* Order Number */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Receipt size={14} />
+                          Order No
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {order.mashkor_order_number}
+                        </TableSingleListContentDetailsTitle>
+                        {order.status_change_reason &&
+                          order.primary_status === 120 && (
+                            <TableSingleListContentDetailsItem className="text-red-500 font-semibold">
+                              {order.status_change_reason}
+                            </TableSingleListContentDetailsItem>
                           )}
-                          <div className="flex items-start gap-1">
-                            <p className="text-xs text-teal-600 font-semibold">
-                              To
-                            </p>
-                            {order.is_addr_last_updated_by_customer && (
-                              <CheckCircle className="h-3 w-3 text-teal-500" />
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-600 pr-6">
-                            {order.to.slice(0, 50)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      </TableSingleListContent>
 
-                    {/* Driver Info / Actions */}
-                    <div className="lg:col-span-1">
-                      {isEditDetails ? (
-                        <div className="bg-white rounded-lg p-3 h-full">
-                          {order.primary_status === BUDDY_QUEUED ? (
-                            <div className="space-y-2">
-                              <p className="text-xs text-teal-600">
-                                Buddy will pick up your order
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              <div>
-                                <p className="text-xs text-teal-600 font-semibold">
-                                  Driver
-                                </p>
-                                <p className="text-xs">{order.driver_name}</p>
-                              </div>
-                              <div className="flex items-center text-xs">
-                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.driver_phone}</span>
-                              </div>
-                            </div>
+                      {/* Sender */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <User size={14} />
+                          Sender
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {order.customer_name_sender}
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsItem>
+                          <Phone size={12} />
+                          {order.phone_number_sender}
+                        </TableSingleListContentDetailsItem>
+                        <TableSingleListContentDetailsItem>
+                          <MapPin size={12} />
+                          {order.from?.slice(0, 50)}
+                        </TableSingleListContentDetailsItem>
+                      </TableSingleListContent>
+
+                      {/* Receiver */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <User size={14} />
+                          Receiver
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {order.customer_name}
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsItem>
+                          <Phone size={12} />
+                          {order.phone_number}
+                        </TableSingleListContentDetailsItem>
+                        <TableSingleListContentDetailsItem>
+                          <MapPin size={12} />
+                          {order.to?.slice(0, 50)}
+                          {order.is_addr_last_updated_by_customer && (
+                            <CheckCircle className="h-3 w-3 text-teal-500 ml-1" />
                           )}
-                          <div className="flex gap-1 mt-3">
-                            <Button
-                              size="sm"
-                              className="flex-1 text-xs h-8 bg-teal-500 hover:bg-teal-600"
-                              onClick={() => updateBulkOrder(order, 'dispatch')}
-                              disabled={submitted}
-                            >
-                              Dispatch
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              className="flex-1 text-xs h-8"
-                              onClick={() => updateBulkOrder(order, 'cancel')}
-                              disabled={submitted}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-white rounded-lg p-3 h-full bg-truck-pattern bg-no-repeat bg-right-top bg-contain">
-                          {order.primary_status === BUDDY_QUEUED ? (
-                            <div>
-                              <p className="text-xs text-teal-600 font-semibold">
-                                Buddy will pick up your order
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-1">
-                              <div>
-                                <p className="text-xs text-teal-600 font-semibold">
-                                  Driver
-                                </p>
-                                <p className="text-xs">{order.driver_name}</p>
-                              </div>
-                              <div className="flex items-center text-xs">
-                                <Phone className="h-3 w-3 text-teal-500 mr-1" />
-                                <span>{order.driver_phone}</span>
-                              </div>
-                            </div>
-                          )}
-                          <div className="flex items-center text-xs mt-2">
-                            <Calendar className="h-3 w-3 text-gray-400 mr-1" />
-                            <span>
-                              {order.delivered_date || order.canceled_at}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                        </TableSingleListContentDetailsItem>
+                        {order.is_delivery_address_edit_enabled && (
+                          <EditResiver data={order} />
+                        )}
+                        {/* EditResiver component from prompt is omitted as it's not defined or imported */}
+                      </TableSingleListContent>
 
-                    {/* Payment Info */}
-                    <div className="lg:col-span-1">
-                      <div className="bg-white rounded-lg p-3 h-full space-y-2">
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold">
-                            Cash on Delivery
-                          </p>
-                          <p className="text-xs font-medium">
-                            {order.amount_collected.toFixed(3)} {currencyCode}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold">
-                            Delivery Fees
-                          </p>
-                          <p className="text-xs font-medium">
-                            {order.delivery_fee.toFixed(3)} {currencyCode}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-teal-600 font-semibold">
-                            Payment Method
-                          </p>
-                          <p className="text-xs">
-                            {order.payment_type === 1 ? 'COD' : 'ONLINE'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      {/* Driver Info */}
+                      <TableSingleListContent
+                        className={
+                          order.primary_status === BUDDY_QUEUED
+                            ? 'bg-[#F9F8714D]'
+                            : ''
+                        }
+                      >
+                        {order.primary_status === BUDDY_QUEUED ? (
+                          <>
+                            <TableSingleListContentTitle className="text-[#915A0B]">
+                              <Clock size={14} className="!text-[#915A0B]" />
+                              Buddy Queued
+                            </TableSingleListContentTitle>
+                            <TableSingleListContentDetailsItem>
+                              Buddy will pick up your order
+                            </TableSingleListContentDetailsItem>
+                          </>
+                        ) : order.driver_name ? (
+                          <>
+                            <TableSingleListContentTitle>
+                              <Truck size={14} />
+                              Driver
+                            </TableSingleListContentTitle>
+                            <TableSingleListContentDetailsTitle className="text-sm font-medium text-gray-800">
+                              {order.driver_name}
+                            </TableSingleListContentDetailsTitle>
+                            <TableSingleListContentDetailsItem>
+                              <Phone size={12} />
+                              {order.driver_phone}
+                            </TableSingleListContentDetailsItem>
+                            <TableSingleListContentDetailsItem>
+                              <Navigation size={12} />
+                              {order.delivery_distance?.toFixed(1)} km
+                            </TableSingleListContentDetailsItem>
+                          </>
+                        ) : (
+                          <>
+                            <TableSingleListContentTitle className="text-[#915A0B]">
+                              <Clock size={14} className="!text-[#915A0B]" />
+                              No Driver Assigned
+                            </TableSingleListContentTitle>
+                            <TableSingleListContentDetailsItem>
+                              Driver queued for assignment
+                            </TableSingleListContentDetailsItem>
+                          </>
+                        )}
+                      </TableSingleListContent>
 
-                    {/* Distance */}
-                    <div className="lg:col-span-1">
-                      <div className="bg-white rounded-lg p-3 h-full text-center">
-                        <p className="text-xs text-teal-600 font-semibold mb-1">
-                          Distance Travelled
-                        </p>
-                        <p className="text-xs font-medium">
-                          {order.delivery_distance.toFixed(1)} KM
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                      {/* Delivery Fee */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Info size={14} />
+                          Delivery Fee
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {order.delivery_fee?.toFixed(3)} {currencyCode}
+                        </TableSingleListContentDetailsTitle>
+                        {/* The prompt shows amount_collected here, but based on original context, delivery_fee seems more appropriate for "Delivery Fee" section */}
+                      </TableSingleListContent>
+
+                      {/* Payment Info */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <CreditCard size={14} />
+                          Payment
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {paymentMap[order.payment_type] || 'Unknown'}
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsItem>
+                          <Info size={12} />
+                          COD: {order.amount_collected?.toFixed(3)}{' '}
+                          {currencyCode}
+                        </TableSingleListContentDetailsItem>
+                        {/* EditPayment component from prompt is omitted as it's not defined or imported */}
+                      </TableSingleListContent>
+
+                      {/* The original Distance section is removed as distance is now under Driver Info */}
+                    </TableSingleListContents>
+                  </TableSingleList>
+                ))}
+              </TableLists>
+            </Table>
           ) : (
-            <div className="text-center py-12">
-              <div className="w-32 h-32 mx-auto mb-4 opacity-50">
-                <img
-                  src="/assets/images/nodata.png"
-                  alt="No data"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <p className="text-gray-500">Whoops! No data found</p>
-            </div>
+            ''
           )}
         </div>
       </DashboardContent>

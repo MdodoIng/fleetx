@@ -1,37 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { SetStateAction } from 'react';
 import { MapPin, Clock } from 'lucide-react';
 import {
-  TypeOrderHistoryList,
-  TypeStatusHistoryForUi,
+    TypeOrderHistoryList,
+    TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
-import { statusColors } from '../../constants';
-import OrderTrackingModel from './OrderTrackingModel';
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog, DialogContent, DialogTitle
 } from '@/shared/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
 import GridComponent from './GridComponent';
-import { useDir } from '@/shared/lib/hooks';
 
 const ListComponent: React.FC<{
   statusHistory: TypeStatusHistoryForUi[];
   selectedOrder: TypeOrderHistoryList | null;
-  setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setSelectedOrder: React.Dispatch<SetStateAction<any>>;
 }> = ({ statusHistory, selectedOrder, setSelectedOrder }) => {
   const orderStore = useOrderStore();
 
@@ -75,7 +69,6 @@ const ListComponent: React.FC<{
     {}
   );
 
-  const { dirState } = useDir();
 
   return (
     <>
@@ -108,14 +101,12 @@ const ListComponent: React.FC<{
                       <span className="font-medium opacity-70 text-sm">
                         {order.fleetx_order_number}
                       </span>
-                      <p className="font-medium text-lg">
-                        {order.customer_name}
-                      </p>
+                      <p className="font-medium ">{order.customer_name}</p>
                     </div>
                     <div className="flex flex-col items-end text-xs">
                       <span
                         className={cn(
-                          'px-2 py-1 rounded-full text-white bg-red-400',
+                          'px-2 py-1 rounded-full text-white text-xs',
                           order.class_status
                         )}
                       >
@@ -149,7 +140,7 @@ const ListComponent: React.FC<{
         onOpenChange={() => setSelectedOrder(null)}
       >
         <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0 border-none">
-          <DialogTitle asChild className="hidden"></DialogTitle>
+          <DialogTitle className="hidden"></DialogTitle>
 
           {selectedOrder && (
             <GridComponent

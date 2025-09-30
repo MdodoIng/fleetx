@@ -1,25 +1,26 @@
 'use client';
 
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
-    Card,
-    CardContent,
-    CardDescription, CardTitle
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
 } from '@/shared/components/ui/card';
 import {
-    Dashboard,
-    DashboardContent,
-    DashboardHeader,
-    DashboardHeaderRight,
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import {
-    Table,
-    TableLists,
-    TableSigleList,
-    TableSigleListContent,
-    TableSigleListContentDetailsTitle,
-    TableSigleListContents,
-    TableSigleListContentTitle,
+  Table,
+  TableLists,
+  TableSingleListHeader,
+  TableSingleListContent,
+  TableSingleListContents,
+  TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
 import { RATE_REASONS_EN } from '@/shared/constants/storageConstants';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
@@ -39,7 +40,7 @@ function FirstOrderInsights() {
   const [tableData, setTableData] = useState<any[]>([]);
   const [page, setPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { exportOrdersToCSV } = useTableExport();
 
@@ -64,7 +65,7 @@ function FirstOrderInsights() {
   }, [date?.from, date?.to]);
 
   const fetchTableData = useCallback(async () => {
-    setIsLoading(true);
+  
     try {
       const res = await getFirstOrderList(1, page, date?.from, date?.to);
       const transformed =
@@ -91,6 +92,8 @@ function FirstOrderInsights() {
     fetchInsights();
     fetchTableData();
   }, [fetchInsights, fetchTableData]);
+
+  if (isLoading) return <InsightsFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">
@@ -141,58 +144,58 @@ function FirstOrderInsights() {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListContents>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                <TableSingleListHeader key={idx}>
+                  <TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Order ID
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.orderId}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Vendor
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.vendor}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Branch
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.branch}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Rating
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.rating}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Improvement Type
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.improvementType}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                    <TableSigleListContent>
-                      <TableSigleListContentTitle>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
                         Order Numbers
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle>
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
                         {item.orderNumbers}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
-                  </TableSigleListContents>
-                </TableSigleList>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                  </TableSingleListContents>
+                </TableSingleListHeader>
               ))}
             </TableLists>
           </Table>

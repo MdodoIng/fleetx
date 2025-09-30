@@ -1,6 +1,8 @@
 import { cn } from '@/shared/lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
 import { ComponentProps, useState } from 'react';
+import { FormControl } from './form';
+import { useTranslations } from 'next-intl';
 
 export const classForInput = [
   'file:text-foreground placeholder:text-dark-grey/50  dark:bg-input/30  flex h-12 w-full min-w-0 px-3 py-4 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-dark-grey/25 rounded-[8px] border bg-white',
@@ -47,4 +49,34 @@ function Input({
   );
 }
 
-export { Input };
+function InputPhone({
+  className,
+  ...props
+}: ComponentProps<'input'> & { eyeBtnHide?: boolean }) {
+  const t = useTranslations();
+  return (
+    <>
+      <div className={cn('grid grid-cols-[80px_1fr] gap-2 w-full ', className)}>
+        <Input
+          disabled
+          defaultValue={t(
+            'component.features.orders.create.form.phone.placeholder1'
+          )}
+          placeholder={t(
+            'component.features.orders.create.form.phone.placeholder1'
+          )}
+          className=""
+        />
+        <Input
+          placeholder={t(
+            'component.features.orders.create.form.phone.placeholder2'
+          )}
+          {...props}
+          className="w-full"
+        />
+      </div>
+    </>
+  );
+}
+
+export { Input, InputPhone };

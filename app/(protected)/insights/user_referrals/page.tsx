@@ -4,6 +4,7 @@ import FilterHeader from '@/features/insights/components/user_referrals/FilterHe
 import NoData from '@/features/insights/components/user_referrals/NoData';
 import ReferralTable from '@/features/insights/components/user_referrals/ReferralTable';
 import useUserReferrals from '@/features/insights/hooks/useUserReferrals';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';
@@ -17,15 +18,15 @@ import {
 } from '@/shared/components/ui/dashboard';
 import {
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  Table,
+  TableSingleListHeader,
+  TableSingleListContents,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContent,
 } from '@/shared/components/ui/tableList';
 import { useAuthStore } from '@/store';
 import { format } from 'date-fns';
-import { Download, Loader2, Table } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function ReferralDashboard() {
@@ -57,6 +58,8 @@ export default function ReferralDashboard() {
       name: item.first_name,
     };
   });
+  
+    if (loading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">
@@ -69,6 +72,7 @@ export default function ReferralDashboard() {
           <SearchableSelect
             onChangeAction={setSelectedUser}
             options={searchOption}
+            value={selectedUser}
             placeholder="Search User"
           />
 
@@ -88,61 +92,61 @@ export default function ReferralDashboard() {
             <Table>
               <TableLists>
                 {referrals.map((item, idx) => (
-                  <TableSigleList key={idx}>
-                    <TableSigleListContents>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                  <TableSingleListHeader key={idx}>
+                    <TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Referral
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.refBonusTo}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Order Date
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {format(
                             new Date(item.orderDate),
                             'dd MMM yyyy hh:mm a'
                           )}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Order
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.orderNumber}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Vendor
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.vendorName}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Branch
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.branchName}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Delivery Fee
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.fee?.toFixed(2)}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                    </TableSigleListContents>
-                  </TableSigleList>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                    </TableSingleListContents>
+                  </TableSingleListHeader>
                 ))}
               </TableLists>
             </Table>

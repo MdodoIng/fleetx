@@ -17,31 +17,23 @@ import { Dispatch, SetStateAction } from 'react';
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
 import { useRouter } from 'next/navigation';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 type Props = {
-  setSearchValue: Dispatch<SetStateAction<string | null>>;
-  fetchVendorList: () => Promise<void>;
   data: TypeVendorList;
-  page: number;
   nextSetItemTotal: any;
   setPage: Dispatch<SetStateAction<number>>;
 };
 
-const VendorsList = ({
-  setSearchValue,
-  fetchVendorList: fetchVendorList,
-  data,
-  page,
-  nextSetItemTotal,
-  setPage,
-}: Props) => {
+const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
   const vedorStore = useVendorStore();
   const { push } = useRouter();
   const handleEditClick = (item: TypeVendorListItem) => {
@@ -102,25 +94,30 @@ const VendorsList = ({
         <Table>
           <TableLists>
             {tableData.map((item, idx) => (
-              <TableSigleList key={idx}>
-                <TableSigleListContents>
+              <TableSingleList key={idx}>
+                <TableSingleListContents>
                   {item.map((i, listIdx) => (
-                    <TableSigleListContent key={listIdx}>
-                      <TableSigleListContentTitle>
+                    <TableSingleListContent key={listIdx}>
+                      <TableSingleListContentTitle>
                         <i.icon size={14} />
                         {i.title}
-                      </TableSigleListContentTitle>
-                      <TableSigleListContentDetailsTitle
+                      </TableSingleListContentTitle>
+                      <TableSingleListContentDetailsTitle
                         className="line-clamp-2"
                         onClick={i.onClick ? () => i.onClick() : undefined}
                       >
                         {i.value}
-                      </TableSigleListContentDetailsTitle>
-                    </TableSigleListContent>
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContent>
                   ))}
-                </TableSigleListContents>
-              </TableSigleList>
+                </TableSingleListContents>
+              </TableSingleList>
             ))}
+            <LoadMore
+              setPage={setPage}
+              nextSetItemTotal={nextSetItemTotal}
+              type="table"
+            />
           </TableLists>
         </Table>
       ) : (

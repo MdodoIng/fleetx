@@ -1,23 +1,27 @@
 'use client';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
+  Table,
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+} from '@/shared/components/ui/tableList';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { cn } from '@/shared/lib/utils';
 import { paymentService } from '@/shared/services/payment';
 import { vendorService } from '@/shared/services/vendor';
 import {
@@ -28,15 +32,15 @@ import { useVendorStore } from '@/store';
 import { format } from 'date-fns';
 import {
   Axis3dIcon,
-  CalendarIcon,
   Columns,
   Download,
+  LucideProps,
   MagnetIcon,
   Notebook,
   ReceiptPoundSterling,
+  Search,
   ServerCrash,
   Type,
-  X,
 } from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
 
@@ -55,7 +59,7 @@ function ManualReport(): JSX.Element {
     undefined
   );
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
 
@@ -66,35 +70,43 @@ function ManualReport(): JSX.Element {
   const [data, setData] = useState<TypeManualPaymentHistoryReportRes['data']>(
     []
   );
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<
+    Array<
+      Array<{
+        icon: React.ForwardRefExoticComponent<
+          Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
+        >;
+        title: string;
+        value: string | 'Credit' | 'Debit' | undefined;
+      }>
+    >
+  >([]);
   const [paymentType, setPaymentType] =
     useState<(typeof TypePayment)[number]['id']>();
-  const vendorStore = useVendorStore();
+  const { vendorId, branchId } = useVendorStore();
 
   const fetchPaymentHistoryReport = async () => {
-    setIsLoading(true);
     try {
       const url = paymentService.getManualPaymentHistoryReportUrl(
         1,
-        100,
-        date?.from!,
-        date?.to!,
-        vendorStore.selectedVendor?.id!,
-        vendorStore.selectedBranch?.id!,
+        page,
+        date?.from,
+        date?.to,
+        vendorId!,
+        branchId!,
         paymentType!
       );
       const res = await paymentService.getManualPaymentHistoryReport(url);
       console.log(res);
 
       setData(res.data!);
+      setNextSetItemTotal(res.count < page ? null : true);
     } catch (err: any) {
       const errorMessage =
         err.error?.message ||
         err.message ||
         'An unknown error occurred while fetching wallet balance.';
       console.error('Error in fetchVendorWalletBalance:', errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -103,14 +115,8 @@ function ManualReport(): JSX.Element {
       await fetchPaymentHistoryReport();
     };
     loadInitialPaymentHistoryReport();
-  }, [
-    vendorStore.selectedVendor?.id,
-    vendorStore.selectedBranch?.id,
-    page,
-    date?.from,
-    date?.to,
-    paymentType,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorId, branchId, page, date.from, date.to, paymentType]);
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -156,6 +162,7 @@ function ManualReport(): JSX.Element {
         })
       );
       setTableData(resolvedData);
+      setIsLoading(false);
     };
 
     if (data) fetchTableData();
@@ -168,66 +175,79 @@ function ManualReport(): JSX.Element {
 
   const { exportOrdersToCSV } = useTableExport();
 
-  return (
-    <div className="flex bg-gray-50 flex-col items-center overflow-hidden">
-      {/* Left Panel - Orders List */}
+  if (isLoading) return <TableFallback />;
 
-      <div className="flex items-center justify-between w-[calc(100%-16px)] bg-gray-200 px-3 py-3 mx-2 my-2 rounded">
-        <div className="flex items-center justify-between gap-10 ">
-          <Select
-            value={String(paymentType)}
-            onValueChange={(value) => setPaymentType(value as any)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select payment type" />
-            </SelectTrigger>
-            <SelectContent>
-              {TypePayment.map((type) => (
-                <SelectItem key={type.id} value={String(type.id)}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-            {paymentType && (
-              <span onClick={() => setPaymentType(undefined)} className="">
-                <X />
-              </span>
-            )}
-          </Select>
+  return (
+    <Dashboard>
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search payments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0"
+            />
+          </div>
+          <SearchableSelect
+            options={TypePayment}
+            value={paymentType}
+            onChangeAction={setPaymentType}
+          />
 
           <DateSelect value={date} onChangeAction={setDate} />
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex items-center justify-center gap-1.5">
           <Button
-            // onClick={() =>
-            //   exportOrdersToCSV(
-            //     data!,
-            //     'wallet history',
-            //     `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-            //       date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-            //     }`
-            //   )
-            // }
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            onClick={() =>
+              exportOrdersToCSV(
+                tableData,
+                'manual_payment_history',
+                `manual_payment_history_${date?.from ? format(date.from, 'yyyy-MM-dd') : ''}_${
+                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+                }`
+              )
+            }
+            className="max-sm:w-full"
           >
             <Download className="w-5 h-5" /> Export
           </Button>
         </div>
-      </div>
-
-      {data?.length ? (
-        <TableComponent
-          data={tableData}
-          page={page}
-          setPage={setPage}
-          nextSetItemTotal={null}
-        />
-      ) : (
-        <>no data</>
-      )}
-    </div>
+      </DashboardHeader>
+      <DashboardContent>
+        {tableData?.length ? (
+          <Table>
+            <TableLists>
+              {tableData.map((item, idx) => (
+                <TableSingleList key={idx}>
+                  <TableSingleListContents>
+                    {item.map((itemSingle, singlIdx) => (
+                      <TableSingleListContent key={singlIdx}>
+                        <TableSingleListContentTitle>
+                          <itemSingle.icon size={14} />
+                          {itemSingle.title}
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {itemSingle.value}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+                    ))}
+                  </TableSingleListContents>
+                </TableSingleList>
+              ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
+            </TableLists>
+          </Table>
+        ) : (
+          <NoData />
+        )}
+      </DashboardContent>
+    </Dashboard>
   );
 }
 export default ManualReport;

@@ -4,18 +4,18 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { orderService } from '@/shared/services/orders';
 import {
   OrderStatusValues,
-  TypeOrderHistoryList,
+  TypeLiveOrderItem,
   TypeOrderStatusHistoryHistory,
   TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useTranslations } from 'next-intl';
 import { useVendorStore } from '@/store';
 
-export function useOrderStatusHistory(order: TypeOrderHistoryList) {
+export function useOrderStatusHistory(order: TypeLiveOrderItem) {
   const [orderHistorys, setOrderHistorys] =
     useState<TypeOrderStatusHistoryHistory>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | unknown>(null);
   const { isEditDetails } = useVendorStore.getState();
 
   const fetchOrderHistory = useCallback(async () => {
@@ -25,9 +25,9 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
       setError(null);
       const res = await orderService.getOrderStatusById(order.id);
       setOrderHistorys(res.data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching order status history:', err);
-      setError(err.message || 'An unknown error occurred');
+      setError(err || 'An unknown error occurred');
     } finally {
       setLoading(false);
     }
@@ -51,9 +51,10 @@ export function useOrderStatusHistory(order: TypeOrderHistoryList) {
 }
 
 function BuildStatusHistory(
-  order: TypeOrderHistoryList,
+  order: TypeLiveOrderItem,
   orderHistorys: TypeOrderStatusHistoryHistory,
-  t: () => string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any
 ): TypeStatusHistoryForUi[] {
   const base = [
     {
@@ -162,8 +163,8 @@ function BuildStatusHistory(
           ? formattedDate(history.created_at)
           : status === 'inProgress'
             ? t(
-              'component.features.orders.live.details.staus-history.in-progress'
-            )
+                'component.features.orders.live.details.staus-history.in-progress'
+              )
             : t('component.features.orders.live.details.staus-history.pending'),
         completed: status === 'completed',
         active: status === 'active',

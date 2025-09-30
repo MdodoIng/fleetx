@@ -87,29 +87,34 @@ export function useAddCredit() {
 
   const handleAddCredit = async () => {
     if (!vendorId || (!selectedVendor?.id && isAddCreditDebit)) {
-      toast.warning('Please select a vendor');
       return false;
     }
 
     if (isAddCreditDebit) {
       if (
         (vendorId! && branchId!) ||
-        (selectedBranch?.id && selectedVendor?.id!)
+        (selectedBranch?.id && selectedVendor?.id)
       ) {
         setValue('isDisableAddCredit', true);
       }
     }
 
     try {
-      const checkBlockActRes = await checkBlockActivation(
-        vendorId! || selectedVendor?.id!,
-        branchId! || selectedBranch?.id
-      );
+      const apiVenderId = vendorId || selectedVendor?.id;
+      const apibranchId = branchId || selectedBranch?.id;
 
-      if (checkBlockActRes.data.blocked) {
-        toast.error('Blocked by system policy');
-        setValue('isShowAddCreditButton', false);
-        return false;
+      if (user?.roles.includes('VENDOR_USER')) {
+        const checkBlockActRes = await checkBlockActivation(
+          apiVenderId!,
+          apibranchId
+        );
+
+        if (checkBlockActRes.data.blocked) {
+          toast.error('Blocked by system policy');
+          setValue('isShowAddCreditButton', false);
+          return false;
+        }
+        return true;
       }
 
       if (isCentralWalletEnabled) {
@@ -142,17 +147,17 @@ export function useAddCredit() {
     const payment =
       typeof amount === 'number'
         ? [
-          {
-            amount: amount,
-            branch_id: branchId || selectedBranch!.id,
-          },
-        ]
+            {
+              amount: amount,
+              branch_id: branchId || selectedBranch!.id,
+            },
+          ]
         : amount.map((item) => {
-          return {
-            amount: item.rechargeAmount,
-            branch_id: item.branch.id!,
-          };
-        });
+            return {
+              amount: item.rechargeAmount,
+              branch_id: item.branch.id!,
+            };
+          });
 
     const totalRecharge = payment?.reduce(
       (sum, item) => sum + (Number(item.amount) || 0),
@@ -161,18 +166,18 @@ export function useAddCredit() {
 
     const reqoust: TypeInitiateReq = isCentralWalletEnabled
       ? {
-        vendor_id: vendorId!,
-        amount: parseFloat(
-          typeof amount === 'number' ? amount.toFixed(2) : '0.00'
-        ),
-        language: locale?.toUpperCase(),
-      }
+          vendor_id: vendorId!,
+          amount: parseFloat(
+            typeof amount === 'number' ? amount.toFixed(2) : '0.00'
+          ),
+          language: locale?.toUpperCase(),
+        }
       : {
-        amount: totalRecharge,
-        branch_payments: payment,
-        language: locale?.toUpperCase(),
-        vendor_id: vendorId!,
-      };
+          amount: totalRecharge,
+          branch_payments: payment,
+          language: locale?.toUpperCase(),
+          vendor_id: vendorId!,
+        };
 
     const res = await paymentService.initiate(reqoust);
     console.log(res);
@@ -207,7 +212,6 @@ export function useAddCredit() {
         branch: selectedBranch,
         vendor: selectedVendor,
       });
-      toast.success('Amount credited successfully');
 
       if (isCentralWalletEnabled) {
       }

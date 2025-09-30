@@ -48,11 +48,7 @@ const LoginForm = () => {
     }
   }
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      redirectToHome();
-    }
-  }, [isAuthenticated, redirectToHome]);
+
 
   const t = useTranslations('auth');
 

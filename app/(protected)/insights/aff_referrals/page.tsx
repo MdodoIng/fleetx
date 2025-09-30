@@ -33,15 +33,16 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { DateRange } from 'react-day-picker';
 import SearchableSelect from '@/shared/components/selectors';
-import { Table } from '@/shared/components/ui/table';
+
 import {
+  Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListContent,
+  TableSingleListContents,
+  TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
+import { TableFallback } from '@/shared/components/fetch/fallback';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -70,7 +71,7 @@ const AffiliateReferrals = () => {
   const [vendorBranch, setVendorBranch] = useState<any[]>([]);
   const [referralList, setReferralList] = useState<AffiliateReferralData[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState<number>(10);
 
   const { exportOrdersToCSV } = useTableExport();
@@ -112,7 +113,6 @@ const AffiliateReferrals = () => {
       return;
     }
 
-    setIsLoading(true);
     try {
       const url = reportService.getReferralsURLs(
         1,
@@ -137,6 +137,9 @@ const AffiliateReferrals = () => {
   useEffect(() => {
     fetchReferralDetails();
   }, [date, selectedAffiliator]);
+  
+  
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">
@@ -173,63 +176,63 @@ const AffiliateReferrals = () => {
             <Table>
               <TableLists>
                 {referralList.map((item, idx) => (
-                  <TableSigleList key={idx}>
-                    <TableSigleListContents>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                  <TableSingleListHeader key={idx}>
+                    <TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Order ID
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.orderNumber}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Order Date
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.orderDate}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Fee
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.fee}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Affiliator
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.affiliator}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Vendor Name
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.vendorName}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                      <TableSigleListContent>
-                        <TableSigleListContentTitle>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                      <TableSingleListContents>
+                        <TableSingleListContentDetailsTitle>
                           Branch Name
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle>
+                        </TableSingleListContentDetailsTitle>
+                        <TableSingleListContentDetailsTitle>
                           {item.branchName}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
-                    </TableSigleListContents>
-                  </TableSigleList>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContents>
+                    </TableSingleListContents>
+                  </TableSingleListHeader>
                 ))}
               </TableLists>
             </Table>
           ) : (
-            ''
+            null
           )}
         </div>
       </DashboardContent>

@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/shared/components/ui/dialog';
 import { useSharedStore, useVendorStore } from '@/store';
 import { useWalletStore } from '@/store/useWalletStore';
@@ -27,7 +28,7 @@ export default function ModelBoxCredit({
   const [selected, setSelected] = useState<number | null>(null);
   const sheredStore = useSharedStore();
   const vendorStore = useVendorStore();
-  const { prepareMashkor } = useWalletStore();
+  const { prepareMashkor, setValue, walletBalance } = useWalletStore();
 
   const { submitAddCredit, submitCreditDebitConformed } = useAddCredit();
 
@@ -54,13 +55,20 @@ export default function ModelBoxCredit({
     },
   ];
 
+  const handlclose = () => {
+    setValue('prepareMashkor', undefined);
+    setIsOpen(undefined);
+  };
+
+  const ballence = Number(walletBalance) + (prepareMashkor?.type === "credit" ? Number(prepareMashkor?.amount) : -Number(prepareMashkor?.amount));
+
   return (
     <>
       <Dialog
         open={isOpen !== undefined}
         onOpenChange={(open) => !open && setIsOpen(undefined)}
       >
-        <DialogContent className="sm:max-w-fit">
+        <DialogContent closeButtonOnClick={handlclose} className="sm:max-w-fit">
           <DialogHeader>
             <DialogTitle className=" font-semibold inline-flex text-gray-700 items-center gap-2">
               {isOpen === 1 ? (
@@ -101,12 +109,12 @@ export default function ModelBoxCredit({
           )}
           {prepareMashkor && (
             <div className="flex items-center justify-between py-4">
-              <div className="flex flex-col justify-end items-end">
-                <p className="text-sm text-gray-500">
-                  Balance will be {prepareMashkor.amount}
+              <div className="flex flex-col justify-end items-center gap-2 w-full">
+                <p className="text-sm text-dark-grey/65">
+                  Balance will be {ballence}
                 </p>
                 <Button
-                  className="w-full max-w-[200px] text-lg font-semibold py-6"
+                  className="w-full "
                   onClick={async () =>
                     await submitCreditDebitConformed({ setIsOpen: setIsOpen })
                   }

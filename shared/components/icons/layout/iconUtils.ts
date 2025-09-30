@@ -14,7 +14,13 @@ import {
   BalanceReportIcon,
   OverviewIcon,
 } from './index';
-import { ChartBar, Star, UserPlus, Users } from 'lucide-react';
+import {
+  ChartBar,
+  ChartNoAxesGantt,
+  Star,
+  UserPlus,
+  Users,
+} from 'lucide-react';
 
 // Icon mapping for dynamic rendering
 export const iconMap: Record<
@@ -36,6 +42,7 @@ export const iconMap: Record<
   overview: OverviewIcon,
   chartBar: ChartBar,
   star: Star,
+  chartNoAxesGantt: ChartNoAxesGantt,
 };
 
 // Get icon component by type

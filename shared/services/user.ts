@@ -112,7 +112,7 @@ export const userService = {
     perPage: number,
     search?: string | null
   ) => {
-    let url = `/vendor-account-manager/list?page=${page}&page_size=${perPage}`;
+    let url = `/vendor-acount-manager/list?page=${page}&page_size=${perPage}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     return apiFetch(`${getUserServiceApiUrl}${url}`, {
       method: 'GET',
@@ -120,13 +120,13 @@ export const userService = {
   },
 
   createAccountManager: (request: any) =>
-    apiFetch(`${getUserServiceApiUrl}/vendor-account-manager/create`, {
+    apiFetch(`${getUserServiceApiUrl}/vendor-acount-manager/create`, {
       method: 'POST',
       body: JSON.stringify(request),
     }),
 
   updateAccountManager: (request: any, id: string) =>
-    apiFetch(`${getUserServiceApiUrl}/vendor-account-manager/update/${id}`, {
+    apiFetch(`${getUserServiceApiUrl}/vendor-acount-manager/update/${id}`, {
       method: 'PUT',
       body: JSON.stringify(request),
     }),

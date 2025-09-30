@@ -5,6 +5,7 @@ import { useSharedStore, useWalletStore } from '@/store';
 import { getVendorWalletBalanceInit } from '@/store/useWalletStore';
 import { Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function WalletCard({
@@ -34,9 +35,11 @@ export default function WalletCard({
           {appConstants?.currency}.{walletBalance}
         </p>
       </div>
-      <Button variant="default" className="ml-auto">
-        {t('button')}
-      </Button>
+      <Link href="/wallet/overview">
+        <Button variant="default" className="ml-auto">
+          {t('button')}
+        </Button>
+      </Link>
     </div>
   );
 }

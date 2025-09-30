@@ -1,110 +1,195 @@
 'use client';
-import { useAuthStore } from '@/store/useAuthStore';
-import Link from 'next/link';
-import { type JSX } from 'react';
 
-function ProtectedContent(): JSX.Element {
-  const { user, logout } = useAuthStore();
+import { useCallback, useEffect, useState } from 'react';
+
+import { Pencil, User, Users, Dot, Phone, Mail, Search } from 'lucide-react';
+import { toast } from 'sonner';
+import { Input } from '@/shared/components/ui/input';
+import { AddEditAccountManagerForm } from '@/features/vendor/components/addEditAccountManagerForm';
+import { Table } from '@/shared/components/ui/table';
+import {
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
+} from '@/shared/components/ui/tableList';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import userService from '@/shared/services/user';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+
+export function AccountManagers() {
+  const [data, setData] = useState([]);
+
+  const [search, setSearch] = useState();
+  const [page, setPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const newData = await userService.getAccountManagerList(1, page, search);
+
+      setData(newData.data);
+
+      setNextSetItemTotal(res.data.length < page ? null : true);
+    } catch (error) {
+      toast('Failed to refresh account managers.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, search]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (isLoading) return <TableFallback />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                Vendor Account Managers
-              </h1>
-              <p className="text-gray-600">
-                Welcome to the vendor account managers section of our
-                application!
-              </p>
-            </div>
-            <button
-              onClick={logout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Logout
-            </button>
+    <Dashboard className="">
+      <DashboardHeader>
+        <DashboardHeaderRight />
+        {/* Search and Add Button */}
+        <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
+          <div className="relative max-sm:w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Seacrh a Account Manager"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 !border-none !outline-none !ring-0 "
+            />
           </div>
 
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-green-800 mb-2">
-              🎉 Access Granted!
-            </h2>
-            <p className="text-green-700">
-              You have successfully accessed this protected page. This content
-              is only available to authorized users.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                User Information
-              </h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>Name:</strong> {user?.name}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user?.email}
-                </p>
-                <p>
-                  <strong>Role:</strong>{' '}
-                  <span className="capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {user?.role}
-                  </span>
-                </p>
-                <p>
-                  <strong>User ID:</strong> {user?.id}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Account Manager Features
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>✅ Manage Vendor Assignments</li>
-                <li>✅ View Performance Metrics</li>
-                <li>✅ Edit Account Details</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-blue-800 mb-3">
-              📋 Vendor Account Manager Content
-            </h3>
-            <p className="text-blue-700 mb-4">
-              This section is dedicated to managing vendor account managers.
-            </p>
-            <ul className="list-disc list-inside text-blue-700 space-y-1">
-              <li>Assign vendors to account managers</li>
-              <li>Manage account manager details</li>
-            </ul>
-          </div>
-
-          <div className="flex gap-4">
-            <Link
-              href="/"
-              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Back to Home
-            </Link>
-            <Link
-              href="/admin-only"
-              className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              Try Admin Page
-            </Link>
-          </div>
+          <AddEditAccountManagerForm onSave={fetchData} />
         </div>
-      </div>
-    </div>
+      </DashboardHeader>
+      <DashboardContent className="flex w-full flex-col items-center justify-start">
+        {/* Account Managers List */}
+        <div className="space-y-4 max-h-[1000px] overflow-y-auto w-full">
+          {data.length > 0 ? (
+            <Table>
+              <TableLists>
+                {data.map((manager, idx) => (
+                  <TableSingleList key={manager.id}>
+                    <TableSingleListHeader className="">
+                      <TableSingleListHeaderRight>
+                        <span className="font-semibold text-primary-blue flex">
+                          {manager.first_name} {manager.last_name}
+                        </span>
+                        <span className="text-xs text-primary-teal flex items-center">
+                          <Dot />
+                          {manager.email}
+                        </span>
+                      </TableSingleListHeaderRight>
+                      <TableSingleListHeaderLeft className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Phone size={12} />
+                          {manager.phone}
+                        </div>
+                      </TableSingleListHeaderLeft>
+                    </TableSingleListHeader>
+
+                    <TableSingleListContents>
+                      {/* First Name */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <User size={14} />
+                          First Name
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {manager.first_name}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+
+                      {/* Last Name */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <User size={14} />
+                          Last Name
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {manager.last_name}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+
+                      {/* Phone Number */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Phone size={14} />
+                          Phone Number
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {manager.phone}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+
+                      {/* Email */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Mail size={14} />
+                          Email
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {manager.email}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+
+                      {/* Vendor Count */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Users size={14} />
+                          Vendor Count
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle>
+                          {manager.vendor_count}
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
+
+                      {/* Action */}
+                      <TableSingleListContent>
+                        <TableSingleListContentTitle>
+                          <Pencil size={14} />
+                          Action
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsItem>
+                          <AddEditAccountManagerForm
+                            editDetails={manager}
+                            onSave={fetchData}
+                          />
+                        </TableSingleListContentDetailsItem>
+                      </TableSingleListContent>
+                    </TableSingleListContents>
+                  </TableSingleList>
+                ))}
+                <LoadMore
+                  setPage={setPage}
+                  nextSetItemTotal={nextSetItemTotal}
+                  type="table"
+                />
+              </TableLists>
+            </Table>
+          ) : (
+            <NoData />
+          )}
+        </div>
+      </DashboardContent>
+    </Dashboard>
   );
 }
 
-export default ProtectedContent;
+export default AccountManagers;

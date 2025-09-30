@@ -52,7 +52,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
     if (orderIndex !== undefined) {
       recipientForm.setValue('order_index', orderIndex.toString());
     }
-  }, [orderIndex, recipientForm]);
+  }, [orderIndex]);
   return (
     <Form {...recipientForm}>
       <form onSubmit={(e) => e.preventDefault()}>
@@ -66,10 +66,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
             render={({ field }) => (
               <FormItem className="hidden">
                 <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value || ''}
-                  />
+                  <Input {...field} value={field.value || ''} />
                 </FormControl>
               </FormItem>
             )}
@@ -228,7 +225,10 @@ const DropoffForm: React.FC<SenderFormProps> = ({
                       onChange={(e) => {
                         // Only allow numbers and decimal point, max 4 digits
                         const value = e.target.value;
-                        if (value === '' || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+                        if (
+                          value === '' ||
+                          /^\d{0,4}(\.\d{0,2})?$/.test(value)
+                        ) {
                           field.onChange(value);
                         }
                       }}

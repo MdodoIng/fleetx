@@ -114,7 +114,7 @@ export const ErrorMessages: Array<{ key: string; value: string }> = [
   { key: 'PHONE_ALREADY_EXIST', value: 'Phone already exists.' },
   {
     key: 'BRANCH_NAME_ALREADY_EXIST',
-    value: 'Branch name already exists. Please contact Mashkor support team',
+    value: 'Branch name already exists. Please contact FleetX support team',
   },
   {
     key: 'ADDRESS_ALREADY_VERIFIED',

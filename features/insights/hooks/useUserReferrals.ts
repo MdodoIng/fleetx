@@ -9,7 +9,7 @@ import { DateRange } from 'react-day-picker';
 
 export default function useUserReferrals() {
   const [referrals, setReferrals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [exporting, setExporting] = useState(false);
@@ -26,7 +26,6 @@ export default function useUserReferrals() {
   const [users, setUsers] = useState<TypeOpsFinUser[]>([]);
 
   const fetchReferrals = useCallback(async () => {
-    setLoading(true);
     try {
       const url = reportService.getReferralsURLs(
         1,
@@ -48,7 +47,6 @@ export default function useUserReferrals() {
   }, [date?.from, date?.to, page, selectedUser]);
 
   const fetchOpsFinUser = useCallback(async () => {
-    setLoading(true);
     try {
       const res = await vendorService.getOpsFinUser();
       setUsers(res.data);

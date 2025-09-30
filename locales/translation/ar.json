@@ -286,7 +286,7 @@
     "API_ALREADY_ACTIVATED": "هذا تم تنشيطه بالفعل",
     "ORDER_DELIVERED_OR_CANCELLED": "عفوًا، لا يمكنك تعديل هذا الطلب لأنه تم إغلاقه بالفعل.",
     "PHONE_ALREADY_EXIST": "الهاتف موجود بالفعل.",
-    "BRANCH_NAME_ALREADY_EXIST": "اسم الفرع موجود بالفعل. يرجى الاتصال بفريق دعم Mashkor",
+    "BRANCH_NAME_ALREADY_EXIST": "اسم الفرع موجود بالفعل. يرجى الاتصال بفريق دعم FleetX",
     "ADDRESS_ALREADY_VERIFIED": "العميل قام بالفعل بالتحقق من العنوان",
     "ORDER_STATUS_BEYOND_ADDR_UPDATE_BY_CUSTOMER": "بدأ التسليم بالفعل أو تم إلغاؤه",
     "VENDOR_BRANCH_INVOICE_NOT_GENERATED": "لم يتم إنشاء الفاتورة",

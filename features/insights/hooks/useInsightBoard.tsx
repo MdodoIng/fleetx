@@ -3,13 +3,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { toast } from 'sonner';
 
-
 export default function useInsightBoard() {
   const [date, setDate] = useState<DateRange>({
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
 
     to: new Date(),
   });
+  const [isLoading, setIsloading] = useState(true);
 
   const [metrics, setMetrics] = useState({
     totalSignups: 0,
@@ -71,6 +71,8 @@ export default function useInsightBoard() {
           ?.message || 'Server error'
       );
       console.error(err);
+    } finally {
+      setIsloading(false);
     }
   }, [date.from, date.to, setMetrics]);
 
@@ -82,5 +84,6 @@ export default function useInsightBoard() {
     date,
     setDate,
     metrics,
+    isLoading
   };
 }

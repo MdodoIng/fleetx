@@ -1,51 +1,34 @@
 'use client';
-import EditVendor from '@/features/vendor/components/list/EditVendor';
-import VendorsList from '@/features/vendor/components/list/VendorsList';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { vendorService } from '@/shared/services/vendor';
 import {
   TypeBranch,
   TypeVendor,
-  TypeVendorList,
   TypeVendorListItem,
   TypeVendorUserList,
 } from '@/shared/types/vendor';
 import { useVendorStore } from '@/store';
-import { useAuthStore } from '@/store/useAuthStore';
 import {
-  Activity,
   Axis3dIcon,
-  Download,
   Edit,
-  GitBranch,
   LucideProps,
   MagnetIcon,
   Mail,
-  Minus,
   Phone,
   PlusSquare,
   Search,
-  User,
   User2,
-  X,
 } from 'lucide-react';
-import Link from 'next/link';
 import {
   ForwardRefExoticComponent,
   RefAttributes,
   useCallback,
   useEffect,
   useState,
-  type JSX,
 } from 'react';
-import page from '../../wallet/balance-report/page';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -69,17 +52,19 @@ import {
 import {
   Table,
   TableLists,
-  TableSigleList,
-  TableSigleListContent,
-  TableSigleListContentDetailsTitle,
-  TableSigleListContents,
-  TableSigleListContentTitle,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContentTitle,
+  TableSingleListContents,
 } from '@/shared/components/ui/tableList';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 function VendorUser() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState(null);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
   const {
     setValue,
     selectedBranch,
@@ -93,9 +78,9 @@ function VendorUser() {
   const [data, setData] = useState<TypeVendorUserList[] | undefined>(undefined);
   const [isBranch, setIsBranchAction] = useState<
     | {
-      branch: TypeBranch;
-      vendor: TypeVendorListItem;
-    }
+        branch: TypeBranch;
+        vendor: TypeVendorListItem | TypeVendor;
+      }
     | undefined
   >({
     branch: selectedBranch!,
@@ -118,8 +103,6 @@ function VendorUser() {
   const search = searchParams.get('id');
 
   const fetchVendorUserList = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-
     try {
       const res = await vendorService.getVendorUserList(
         page,
@@ -128,10 +111,10 @@ function VendorUser() {
         selectedBranch?.id
       );
       setData(res.data);
+      setNextSetItemTotal(res.data.length < page ? null : true);
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
       setFrist(false);
     }
   }, [
@@ -156,10 +139,12 @@ function VendorUser() {
   ) => {
     setIsBranchAction(undefined);
     const vendor = vendorList?.find((r) => r.id === item.vendor.vendor_id);
-    setIsBranchAction({
-      vendor: vendor!,
-      branch: branch!,
-    });
+    if (vendor) {
+      setIsBranchAction({
+        vendor: vendor!,
+        branch: branch!,
+      });
+    }
     if (!branch) {
       const branch = branchDetails?.find((r) => r.id === item.vendor.branch_id);
       setIsBranchAction({
@@ -210,10 +195,13 @@ function VendorUser() {
           ];
         })
       );
-      setTableData(resolvedData!);
+      // @ts-ignore
+      setTableData(resolvedData);
+      setIsLoading(false);
     };
 
     if (data) fetchTableData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
   const editUserForm = useForm<TypeEditUserSchema>({
     resolver: zodResolver(editUserSchema),
@@ -242,9 +230,10 @@ function VendorUser() {
     if (isEditUser) {
       updateUserDetailsForFromApi();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditUser]);
 
-  console.log(isEditUser?.vendor.user);
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="">
@@ -271,25 +260,30 @@ function VendorUser() {
           <Table>
             <TableLists>
               {tableData.map((item, idx) => (
-                <TableSigleList key={idx}>
-                  <TableSigleListContents>
+                <TableSingleList key={idx}>
+                  <TableSingleListContents>
                     {item.map((i, listIdx) => (
-                      <TableSigleListContent key={listIdx}>
-                        <TableSigleListContentTitle>
+                      <TableSingleListContent key={listIdx}>
+                        <TableSingleListContentTitle>
                           <i.icon size={14} />
                           {i.title}
-                        </TableSigleListContentTitle>
-                        <TableSigleListContentDetailsTitle
+                        </TableSingleListContentTitle>
+                        <TableSingleListContentDetailsTitle
                           className="line-clamp-2"
                           onClick={i.onClick ? () => i.onClick!() : undefined}
                         >
                           {i.value}
-                        </TableSigleListContentDetailsTitle>
-                      </TableSigleListContent>
+                        </TableSingleListContentDetailsTitle>
+                      </TableSingleListContent>
                     ))}
-                  </TableSigleListContents>
-                </TableSigleList>
+                  </TableSingleListContents>
+                </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (

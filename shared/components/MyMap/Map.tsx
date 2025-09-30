@@ -115,7 +115,7 @@ export default function MyMap({
         center={mapCenter}
         zoom={zoom}
         options={{
-          scrollwheel: true,
+          scrollwheel: false,
           disableDefaultUI: false,
           zoomControlOptions: {
             position: google.maps.ControlPosition.RIGHT_TOP,

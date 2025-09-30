@@ -3,23 +3,20 @@
 import { useState, useEffect } from 'react';
 import { notificationService } from '@/shared/services/notification';
 import { TypeNotificationItem } from '@/shared/types/notification';
-import { Bell, SendHorizontal } from 'lucide-react';
+import { SendHorizontal } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  PopoverAnchor,
 } from '@/shared/components/ui/popover';
-import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import Image from 'next/image';
 import bellIcon from '@/assets/icons/notification.svg';
 import { cn } from '@/shared/lib/utils';
-import { PopoverClose } from '@radix-ui/react-popover';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { OperationType } from '@/shared/types/orders';
 import { formatDate } from 'date-fns';
+import NoData from '@/shared/components/fetch/NoData';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +26,7 @@ export default function Notification() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+
   const [page, setPage] = useState(10);
 
   useEffect(() => {
@@ -39,11 +36,10 @@ export default function Notification() {
         const response = await notificationService.getNotification(
           notificationService.getNotificationHistoryUrl(page, null, null)
         );
-        console.log(response);
+
         if (!response.data) throw new Error('Failed to fetch notifications');
         setNotifications(response.data);
         setNotificationCount(response.count || 0);
-        setHasMore(response.data.length === page);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -53,13 +49,6 @@ export default function Notification() {
 
     fetchNotifications();
   }, [page]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loading) {
-      setPage(page + 10);
-    }
-  };
 
   const unreadCount = notifications.filter((item) => !item.vendor_read).length;
 
@@ -105,7 +94,7 @@ export default function Notification() {
           </button>
         </div>
         <div
-          onScroll={handleScroll}
+          // onScroll={handleScroll}
           className="max-h-96 overflow-y-auto overflow-x-hidden hide-scrollbar flex flex-col mt-4"
           style={{ direction: 'ltr' }}
         >
@@ -154,25 +143,22 @@ export default function Notification() {
                         </p>
                       </div>
                     </div>
-                    <span className="w-full bg-dark-grey/20 h-[1px] mt-2 group-last:hidden" />
+                    {idx !== notifications.length - 1 && (
+                      <span className="w-full bg-dark-grey/20 h-[1px] mt-2" />
+                    )}
                   </div>
                 );
               })}
-              {loading && (
-                <div className="text-center text-muted-foreground">
-                  Loading more...
-                </div>
-              )}
-              {!hasMore && notifications.length > 0 && (
-                <div className="text-center text-muted-foreground">
-                  No more notifications
-                </div>
-              )}
+
+              <LoadMore
+                count={notifications.length}
+                loadMoreNumber={notificationCount}
+                setPage={setPage}
+                type="skeleton-small"
+              />
             </>
           ) : (
-            <div className="text-center text-muted-foreground">
-              No notifications
-            </div>
+            <NoData size="small" message="No notifications" />
           )}
         </div>
       </PopoverContent>

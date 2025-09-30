@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 
 import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
@@ -25,6 +25,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
+import { DashboardFallback } from '@/shared/components/fetch/fallback';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   total_delivery_fees: 0,
@@ -37,6 +38,7 @@ const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
 function DashboardCompoent() {
   const { appConstants } = useSharedStore();
   const { showDriversFilter } = useVendorStore();
+  const [loading, setLoading] = useState(true);
 
   const [dashboardData, setDashboardData] =
     useState<TypeDashboardDetailsResponse['data']>(defaultDashboardData);
@@ -82,6 +84,7 @@ function DashboardCompoent() {
   useEffect(() => {
     const fetc = async () => {
       await fetchDashboardData();
+      setLoading(false);
     };
     fetc();
   }, [fetchDashboardData]);
@@ -152,7 +155,7 @@ function DashboardCompoent() {
     },
   });
 
-  const t = useTranslations();
+  if (loading) return <DashboardFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">
@@ -197,7 +200,7 @@ function DashboardCompoent() {
 
         {/* Analytics Blocks */}
         <div
-          className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] p-2
+          className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]
       w-full gap-5"
         >
           {analyticsBlocks.map(([title, data]) => (

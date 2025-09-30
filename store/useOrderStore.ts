@@ -1,4 +1,5 @@
 import {
+  DeliverySummary,
   OrderStatus,
   TypeDelivery,
   TypeDropOffs,
@@ -16,14 +17,6 @@ import { useSharedStore } from './useSharedStore';
 import { getDecodedAccessToken } from '@/shared/services';
 import { vendorService } from '@/shared/services/vendor';
 
-interface DeliverySummary {
-  totalOrders: number;
-  totalDelivery: string;
-  totalKM: string;
-  deliveryModel: string;
-  estTime: number;
-}
-
 interface OrderState {
   dropOffs: TypeDropOffs[];
   pickUp: TypePickUp | undefined;
@@ -35,8 +28,8 @@ interface OrderState {
   orderStatusListData: TypeOrderHistoryList[] | undefined;
   totalCountList: number;
   estimatedDeliveryReturnFromApi:
-  | TypeEstimatedDeliveryReturnFromApi
-  | undefined;
+    | TypeEstimatedDeliveryReturnFromApi
+    | undefined;
   deliverySummary: DeliverySummary | null;
   orderHistoryListData: TypeOrderHistoryList[] | undefined;
   OLDER_DATE: string;
@@ -53,12 +46,12 @@ interface OrderState {
     key: 'orderStatusListData' | 'orderHistoryListData',
     data: TypeLiveOrderItem[],
     clearData?: boolean
-  ) => void;
+  ) =>  TypeOrderHistoryList[];
   clearAll: () => unknown;
   setValue: <K extends keyof OrderState>(key: K, value: OrderState[K]) => void;
 }
 
-const initialState: OrderState | any = {
+const initialState = {
   dropOffs: [],
   selectedDropOffs: [],
   selectedPage: 1,
@@ -170,10 +163,10 @@ export const useOrderStore = create<OrderState>()(
             order.to = element.drop_off.address
               ? element.drop_off.address
               : element.drop_off.area +
-              ', ' +
-              element.drop_off.block +
-              ', ' +
-              element.drop_off.street;
+                ', ' +
+                element.drop_off.block +
+                ', ' +
+                element.drop_off.street;
             order.creation_date = new Date(element.created_at).toLocaleString();
             order.amount_collected = element.amount_to_collect;
             if (element.delivery_distance) {
@@ -239,6 +232,7 @@ export const useOrderStore = create<OrderState>()(
         set({
           [key]: orderList,
         });
+        return orderList;
       },
     }),
 
@@ -256,14 +250,14 @@ function checkDeliveryAddressEditIsEnabled(event: TypeLiveOrderItem): boolean {
       case 'OPERATION_MANAGER':
       case 'VENDOR_ACCOUNT_MANAGER':
       case 'SALES_HEAD':
-        // if (
-        //   orderStatus?.value == 'DELIVERED' &&
-        //   event.fulfill?.completed_at &&
-        //   Date.now() - +new Date(event.fulfill.completed_at) <
-        //     24 * 60 * 60 * 1000
-        // ) {
-        //   return true;
-        // }
+        if (
+          orderStatus?.value == 'orderStatus.DELIVERED.default' &&
+          event.fulfill?.completed_at &&
+          Date.now() - +new Date(event.fulfill.completed_at) <
+            24 * 60 * 60 * 1000
+        ) {
+          return true;
+        }
         return false;
 
       case 'FINANCE_MANAGER':
