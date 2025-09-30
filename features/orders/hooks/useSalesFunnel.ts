@@ -15,7 +15,7 @@ export function useSalesFunnel() {
     { id: 4, name: 'Reactivation' },
   ]);
   const [zones, setZones] = useState<Zone[]>([]);
-  const [managers, setManagers] = useState<User[]>([]);
+
 
   // filters
   const [selectedType, setSelectedType] = useState<number>(1);
@@ -43,9 +43,6 @@ export function useSalesFunnel() {
 
   useEffect(() => {
     orderService.getZone().then((res) => setZones(res.data));
-    userService.getAccountManagerList(1, 1000, null).then((res: any) =>
-      setManagers(res.data)
-    );
   }, []);
 
   useEffect(() => {
@@ -207,7 +204,6 @@ export function useSalesFunnel() {
   return {
     types,
     zones,
-    managers,
     selectedType: String(selectedType),
     selectedZone,
     selectedManager,

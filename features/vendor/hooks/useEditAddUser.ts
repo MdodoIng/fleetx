@@ -26,14 +26,14 @@ type Props = {
   data?: TypeVendorUserList[];
   isBranch?: {
     branch: TypeBranch;
-    vendor: TypeVendorListItem;
+    vendor: TypeVendorListItem | TypeVendor;
   };
   setIsBranchAction: Dispatch<
     SetStateAction<
       | {
-        branch: TypeBranch;
-        vendor: TypeVendorListItem;
-      }
+          branch: TypeBranch;
+          vendor: TypeVendorListItem | TypeVendor;
+        }
       | undefined
     >
   >;
@@ -112,8 +112,8 @@ export const useEditAddUser = ({
   };
 
   const requst: TypeUpdateVendorUserReq = {
-    branch_id: isBranch?.branch ? isBranch?.branch.id : '',
     vendor_id: isBranch?.vendor ? isBranch?.vendor.id : '',
+    branch_id: isBranch?.branch ? isBranch?.branch.id : '',
     cod_counter_type: isEditUser ? isEditUser.vendor.cod_counter_type! : 2,
     email: editUserFormValues.email,
     first_name: editUserFormValues.first_name,

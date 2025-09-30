@@ -14,10 +14,11 @@ export type TypeSearchableSelectOption = {
 type Props = ComponentProps<'div'> & {
   options: TypeSearchableSelectOption[] | undefined;
   value?: string | number;
-  onChangeAction: (e: string  ) => void;
+  onChangeAction: (e: string) => void;
   placeholder?: string;
   classNameFroInput?: string;
   onChangeValue?: (e: string) => void;
+  loading?: boolean;
 };
 
 export default function SearchableSelect({
@@ -28,12 +29,14 @@ export default function SearchableSelect({
   placeholder = 'Select...',
   classNameFroInput = 'border-none',
   className,
+  loading,
 
   ...props
 }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [isLoading] = useState(loading);
 
   const selected = value ? options?.find((opt) => opt.id === value) : null;
 
@@ -65,7 +68,8 @@ export default function SearchableSelect({
       {...props}
       className={cn(
         'relative sm:w-[180px]  max-sm:w-full  rounded-[8px] text-dark-grey',
-        className
+        className,
+        isLoading && 'animate-pulse'
       )}
     >
       <Input

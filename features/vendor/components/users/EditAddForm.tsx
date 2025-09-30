@@ -1,6 +1,10 @@
 'use client';
 import { Input } from '@/shared/components/ui/input';
-import { TypeBranch, TypeVendorListItem } from '@/shared/types/vendor';
+import {
+  TypeBranch,
+  TypeVendor,
+  TypeVendorListItem,
+} from '@/shared/types/vendor';
 import {
   Dispatch,
   FormEvent,
@@ -27,15 +31,15 @@ type Props = {
   setIsBranchAction: Dispatch<
     SetStateAction<
       | {
-        branch: TypeBranch;
-        vendor: TypeVendorListItem;
-      }
+          branch: TypeBranch;
+          vendor: TypeVendorListItem | TypeVendor;
+        }
       | undefined
     >
   >;
   isBranch: {
     branch: TypeBranch;
-    vendor: TypeVendorListItem;
+    vendor: TypeVendorListItem | TypeVendor;
   };
 };
 

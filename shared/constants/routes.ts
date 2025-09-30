@@ -12,6 +12,7 @@ export const routes: Routes = {
     title: 'layout.menuItems.orderSubMenu.bulkOrder.title',
     subtitle: 'layout.menuItems.orderSubMenu.bulkOrder.subtitle',
     icon: 'newOrder',
+    roles: ['OPERATION_MANAGER'],
   },
   ORDER_LIVE: {
     path: '/order/live',
@@ -30,6 +31,7 @@ export const routes: Routes = {
     title: 'layout.menuItems.orderSubMenu.bulkInsights.title',
     subtitle: 'layout.menuItems.orderSubMenu.bulkInsights.subtitle',
     icon: 'bulkInsights',
+    roles: ['OPERATION_MANAGER'],
   },
   DASHBOARD: {
     path: '/dashboard',
@@ -263,11 +265,13 @@ export const APP_SIDEBAR_MENU: MenuItem[] = [
         labelKey: routes.ORDER_BULK.title,
         route: routes.ORDER_BULK.path,
         icon: routes.ORDER_BULK.icon,
+        roles: routes.ORDER_BULK.roles,
       },
       {
         labelKey: routes.ORDER_BULK_INSIGHTS.title,
         route: routes.ORDER_BULK_INSIGHTS.path,
         icon: routes.ORDER_BULK_INSIGHTS.icon,
+        roles: routes.ORDER_BULK_INSIGHTS.roles,
       },
     ],
   },

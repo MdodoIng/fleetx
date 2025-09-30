@@ -23,27 +23,17 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
   TableSingleListHeader,
-
 } from '@/shared/components/ui/tableList';
 import { useRouter } from 'next/navigation';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 type Props = {
-  setSearchValue: Dispatch<SetStateAction<string | null>>;
-  fetchVendorList: () => Promise<void>;
   data: TypeVendorList;
-  page: number;
   nextSetItemTotal: any;
   setPage: Dispatch<SetStateAction<number>>;
 };
 
-const VendorsList = ({
-  setSearchValue,
-  fetchVendorList: fetchVendorList,
-  data,
-  page,
-  nextSetItemTotal,
-  setPage,
-}: Props) => {
+const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
   const vedorStore = useVendorStore();
   const { push } = useRouter();
   const handleEditClick = (item: TypeVendorListItem) => {
@@ -123,6 +113,11 @@ const VendorsList = ({
                 </TableSingleListContents>
               </TableSingleList>
             ))}
+            <LoadMore
+              setPage={setPage}
+              nextSetItemTotal={nextSetItemTotal}
+              type="table"
+            />
           </TableLists>
         </Table>
       ) : (

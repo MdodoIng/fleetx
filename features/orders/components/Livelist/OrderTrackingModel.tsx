@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin, Clock, Phone, LocateFixed, ShipWheel } from 'lucide-react';
+import { MapPin, Phone, LocateFixed, ShipWheel } from 'lucide-react';
 import {
   TypeOrderHistoryList,
   TypeStatusHistoryForUi,

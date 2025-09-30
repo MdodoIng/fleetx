@@ -50,7 +50,7 @@ export default async function RootLayout({
       style={dirState ? rHZak.style : montserrat.style}
     >
       <body>
-        <Toaster position="top-right" />
+        <Toaster position="top-right" richColors />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

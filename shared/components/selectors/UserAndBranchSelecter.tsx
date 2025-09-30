@@ -2,12 +2,13 @@ import { Button } from '@/shared/components/ui/button';
 
 import { TypeBranch, TypeVendorListItem } from '@/shared/types/vendor';
 
-import { useAuthStore, useVendorStore } from '@/store';
-import React from 'react';
-import SearchableSelect from '.';
-import { Store, X } from 'lucide-react';
-import { Icon } from '@iconify/react';
+import { useVendorStore } from '@/store';
+import React, { useCallback, useEffect, useState } from 'react';
+import SearchableSelect, { TypeSearchableSelectOption } from '.';
+import { X } from 'lucide-react';
 import VendorSelecter from './VendorSelecter';
+import { vendorService } from '@/shared/services/vendor';
+import { setBranchDetails } from '@/shared/services/header';
 
 type Props = {
   handleChangeBranch: (e: string) => void;
@@ -16,6 +17,8 @@ type Props = {
   handleClear?: () => void;
   selectedVendorValue?: TypeVendorListItem;
   selectedBranchValue?: TypeBranch;
+  type?: 'header' | undefined;
+  optionsBranch?: TypeBranch[];
 };
 
 const UserAndBranchSelecter: React.FC<Props> = ({
@@ -25,6 +28,8 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   selectedVendorValue,
   selectedBranchValue,
   classNameFroInput = '',
+  type,
+  optionsBranch,
 }) => {
   const {
     selectedBranch,
@@ -32,22 +37,32 @@ const UserAndBranchSelecter: React.FC<Props> = ({
     isVendorAccess,
     selectedVendor,
     branchDetails,
-    vendorList: vendorList,
-    setValue,
   } = useVendorStore();
+  const [optionsForBranch, setOptionsForBranch] =
+    useState<TypeSearchableSelectOption[]>();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const isSelectedBranch = selectedBranchValue || selectedBranch;
   const isSelectedVendor = selectedVendorValue || selectedVendor;
   const isAccess = isVendorAccess || isBranchAccess;
 
-  const optionsBranch: {
-    id: string;
-    name: string;
-  }[] =
-    branchDetails?.map((item) => ({
-      id: item.id,
-      name: item.name,
-    })) || [];
+  useEffect(() => {
+    if (!isSelectedVendor?.id) return;
+    setIsLoading(true);
+    vendorService
+      .getBranchDetails(isSelectedVendor.id)
+      .then((res) => {
+        const options: TypeSearchableSelectOption[] =
+          res.data.map((item) => ({
+            id: item.id,
+            name: item.name,
+          })) || [];
+
+        setOptionsForBranch(options);
+      })
+      .finally(() => setIsLoading(true));
+  }, [isSelectedVendor?.id]);
 
   return (
     <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
@@ -56,7 +71,8 @@ const UserAndBranchSelecter: React.FC<Props> = ({
         <VendorSelecter
           handleChangeVendor={handleChangeVendor}
           classNameFroInput={classNameFroInput}
-          type="header"
+          selectedVendorValue={isSelectedVendor}
+          type={type}
         />
         //   <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
         //     <Store className="size-5 opacity-50" />
@@ -70,12 +86,13 @@ const UserAndBranchSelecter: React.FC<Props> = ({
       {isBranchAccess && (
         // <div className="relative z-0  border border-dark-grey/10 rounded-[8px] ">
         <SearchableSelect
-          options={optionsBranch}
+          options={optionsForBranch}
           value={isSelectedBranch?.id}
           onChangeAction={handleChangeBranch}
           placeholder={'Select Branch'}
           className="sm:w-auto"
           classNameFroInput={classNameFroInput}
+          loading={isLoading}
         />
         //   <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
         //     <Icon

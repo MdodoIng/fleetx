@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
+import React, { Dispatch, Fragment, SetStateAction, useState } from 'react';
 import { MapPin, Clock, Phone, ShipWheel, LucideProps } from 'lucide-react';
 import {
   TypeOrderHistoryList,
@@ -28,9 +28,11 @@ import {
 
 interface GridComponentProps {
   selectedOrder: TypeOrderHistoryList | null;
-  setSelectedOrder: React.Dispatch<React.SetStateAction<TypeOrderHistoryList>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setSelectedOrder: Dispatch<SetStateAction<any>>;
   statusHistory: TypeStatusHistoryForUi[];
   isModel?: boolean;
+
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -38,6 +40,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
   setSelectedOrder,
   statusHistory,
   isModel: toggleModel = false,
+
 }) => {
   const { orderStatusListData } = useOrderStore();
   const t = useTranslations('component.features.orders.live');
@@ -51,7 +54,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
     type?: 'driver';
     location?: string;
     cta: {
-      label: string;
+      label: string | undefined;
       link: string;
     };
     icon: {
@@ -100,10 +103,10 @@ const GridComponent: React.FC<GridComponentProps> = ({
   ];
 
   const Componet = () => (
-    <div className="grid gap-4 grid-cols-12 w-full ">
+    <div className="grid gap-4 grid-cols-12 w-full">
       <Card
         hidden={isModel}
-        className="lg:col-span-3 col-span-12 flex flex-col w-full overflow-hidden "
+        className="lg:col-span-3 col-span-12 flex flex-col w-full lg:max-h-[calc(100vh-80px)] overflow-hidden "
       >
         <CardHeader>
           <CardTitle className="text-sm font-medium">
@@ -111,7 +114,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
           </CardTitle>
           <CardDescription>{t('order.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex lg:h-[calc(100vh-40px)] w-full overflow-y-auto flex-col gap-4">
+
+        <CardContent className="flex w-full overflow-y-auto hide-scrollbar snap-mandatory flex-col gap-4">
           {orderStatusListData?.map((order) => (
             <div
               key={order.id}
@@ -171,7 +175,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
       {/* Center Panel - Live Tracking Map */}
       <Card
         hidden={isMobile && !isModel}
-        className="lg:col-span-6 col-span-12 flex flex-col h-full overflow-y-auto"
+        className="lg:col-span-6 col-span-12 flex flex-col h-full  lg:max-h-[calc(100vh-80px)] overflow-hidden"
       >
         <CardHeader>
           <CardTitle className="text-sm font-medium">
@@ -179,7 +183,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
           </CardTitle>
           <CardDescription>{t('details.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-4 overflow-y-auto hide-scrollbar snap-mandatory">
           {selectedOrder && (
             <>
               <Card className="p-6 flex flex-col">
@@ -243,7 +247,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
               </Card>
 
               {/* Map Container */}
-              <Card className="">
+              <Card className="p-0 ">
                 <MyMap
                   center={[
                     {
@@ -266,8 +270,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
       <Card
         hidden={isMobile && !isModel}
         className={cn(
-          ' w-full lg:col-span-3 col-span-12',
-          isModel && 'lg:col-span-6 !col-span-12'
+          ' w-full lg:col-span-3 col-span-12 lg:max-h-[calc(100vh-80px)] overflow-hidden',
+          isModel && 'lg:col-span-6 col-span-12'
         )}
       >
         <CardHeader>
@@ -276,7 +280,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
           </CardTitle>
           <CardDescription>{t('tracking.subtitle')}</CardDescription>
         </CardHeader>
-        <CardContent className="flex  flex-col gap-4">
+        <CardContent className="flex  flex-col gap-4 overflow-y-auto hide-scrollbar snap-mandatory">
           {selectedOrder && (
             <>
               <div className="flex justify-between items-start">
@@ -325,7 +329,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
         <Dialog
           open={!!selectedOrder}
           onOpenChange={() => {
-            setSelectedOrder(null);
+            setSelectedOrder(undefined);
             setIsModel(false);
           }}
         >

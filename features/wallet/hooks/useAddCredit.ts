@@ -87,29 +87,34 @@ export function useAddCredit() {
 
   const handleAddCredit = async () => {
     if (!vendorId || (!selectedVendor?.id && isAddCreditDebit)) {
-      toast.warning('Please select a vendor');
       return false;
     }
 
     if (isAddCreditDebit) {
       if (
         (vendorId! && branchId!) ||
-        (selectedBranch?.id && selectedVendor?.id!)
+        (selectedBranch?.id && selectedVendor?.id)
       ) {
         setValue('isDisableAddCredit', true);
       }
     }
 
     try {
-      const checkBlockActRes = await checkBlockActivation(
-        vendorId! || selectedVendor?.id,
-        branchId! || selectedBranch?.id
-      );
+      const apiVenderId = vendorId || selectedVendor?.id;
+      const apibranchId = branchId || selectedBranch?.id;
 
-      if (checkBlockActRes.data.blocked) {
-        toast.error('Blocked by system policy');
-        setValue('isShowAddCreditButton', false);
-        return false;
+      if (user?.roles.includes('VENDOR_USER')) {
+        const checkBlockActRes = await checkBlockActivation(
+          apiVenderId!,
+          apibranchId
+        );
+
+        if (checkBlockActRes.data.blocked) {
+          toast.error('Blocked by system policy');
+          setValue('isShowAddCreditButton', false);
+          return false;
+        }
+        return true;
       }
 
       if (isCentralWalletEnabled) {

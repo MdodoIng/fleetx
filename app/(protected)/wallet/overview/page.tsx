@@ -14,23 +14,22 @@ import { useWalletStore } from '@/store/useWalletStore';
 import { useEffect, useState } from 'react';
 import { RecentTransactions } from '@/features/wallet/components/overview/RecentTransactions';
 import DeliveryPricingCard from '@/features/wallet/components/overview/DeliveryPricingCard';
+import { CreateFallback } from '@/shared/components/fetch/fallback';
 
 export default function WalletPage() {
   const vendorStore = useVendorStore();
-  const {
-    setTabBasedOnRole,
-
-    prepareMashkor,
-  } = useWalletStore();
+  const { setTabBasedOnRole, prepareMashkor } = useWalletStore();
   const { handleAddCredit, handlePrepareMashkor } = useAddCredit();
 
   const [isOpen, setIsOpen] = useState<number | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const setTab = async () => {
       await setTabBasedOnRole();
     };
     setTab();
+    setIsLoading(false);
   }, [setTabBasedOnRole]);
 
   useEffect(() => {
@@ -38,6 +37,7 @@ export default function WalletPage() {
       await handleAddCredit();
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     vendorStore.branchId,
     vendorStore.vendorId,
@@ -49,7 +49,10 @@ export default function WalletPage() {
     if (prepareMashkor) {
       handlePrepareMashkor({ setIsOpen: setIsOpen });
     }
-  }, [prepareMashkor, handlePrepareMashkor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prepareMashkor]);
+
+  if (isLoading) return <CreateFallback />;
 
   return (
     <Dashboard className="h-auto w-full">

@@ -19,7 +19,7 @@ function FunnelPage() {
   const {
     types,
     zones,
-    managers,
+  
     selectedType,
     selectedZone,
     selectedManager,
@@ -51,7 +51,6 @@ function FunnelPage() {
       <FunnelFilterHeader
         types={types}
         zones={zones}
-        managers={managers}
         selectedType={selectedType}
         selectedZone={selectedZone}
         selectedManager={selectedManager}

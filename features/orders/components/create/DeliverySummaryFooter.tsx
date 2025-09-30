@@ -16,13 +16,15 @@ import { Fragment } from 'react';
 export default function DeliverySummaryFooter({
   handleOrder,
   handleCancel,
+  isValid = false,
 }: {
   handleOrder: () => void;
   handleCancel: () => void;
+  isValid: boolean;
 }) {
   const orderStore = useOrderStore();
 
-  const { totalKM, totalOrders, estTime, totalDelivery } =
+  const { estTime, totalDelivery, totalKM, totalOrders } =
     orderStore.deliverySummary || {};
 
   const t = useTranslations('component.features.orders.create.footer');
@@ -40,7 +42,7 @@ export default function DeliverySummaryFooter({
     },
     {
       icon: <Clock className="w-4 h-4 text-gray-500" />,
-      text: estTime + ' ' + t('min'),
+      text: estTime ? estTime + ' ' + t('min') : '',
       label: t('estTime'),
     },
     {
@@ -52,7 +54,7 @@ export default function DeliverySummaryFooter({
 
   return (
     <>
-      <Card className="w-full max-md:hidden bg-white ">
+      <Card className="w-full max-md:hidden bg-white py-4 ">
         <CardContent className=" sm:rounded-[8px]  bg-white   flex  items-center justify-between   text-sm text-gray-700  flex-wrap gap-x-10 gap-y-4 ">
           <div className="flex items-center space-x-6 max-sm:bg-whites ">
             <span className="font-medium text-primary-blue cursor-pointer">
@@ -75,7 +77,11 @@ export default function DeliverySummaryFooter({
             >
               {t('button.cancel')}
             </Button>
-            <Button onClick={() => handleOrder()} className="cursor-pointer">
+            <Button
+              disabled={isValid}
+              onClick={() => handleOrder()}
+              className="cursor-pointer"
+            >
               {t('button.createOrder')}
             </Button>
           </div>
@@ -118,6 +124,7 @@ export default function DeliverySummaryFooter({
               {t('button.cancel')}
             </Button>
             <Button
+              disabled={isValid}
               onClick={() => handleOrder()}
               className="cursor-pointer w-full shrink"
             >

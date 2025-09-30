@@ -119,7 +119,7 @@ const initialState: SharedState = {
   bulkOrderPrimaryStatus: undefined,
   isValidCancelOrReschedule: undefined,
   isCollapsed: false,
-  showLanguage: false,
+  showLanguage: true,
   lastPathname: undefined,
 };
 

@@ -1,36 +1,27 @@
 'use client';
 import { orderService } from '@/shared/services/orders';
 import {
-  CalendarIcon,
   Clock,
   CreditCard,
   Dot,
   Download,
-  Info,
-  ListFilter,
-  MapPin,
+  Info, MapPin,
   Navigation,
   Phone,
   Receipt,
   Search,
   Truck,
-  User,
+  User
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { format } from 'date-fns';
+import { useCallback, useEffect, useState } from 'react';
 
-import { TypeOrderHistoryList } from '@/shared/types/orders';
+import {
+  TypeLiveOrderItem, TypeRootLiveOrderList
+} from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useSharedStore, useVendorStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { Calendar } from '@/shared/components/ui/calendar';
-import { cn } from '@/shared/lib/utils';
 import {
   Dashboard,
   DashboardContent,
@@ -38,18 +29,9 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import { useTranslations } from 'next-intl';
 import {
-  Table,
-  TableHeader,
-  TableLists,
+  Table, TableLists,
   TableSingleListContent,
   TableSingleListContentDetailsItem,
   TableSingleListContentDetailsTitle,
@@ -58,22 +40,26 @@ import {
   TableSingleListHeader,
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
-  TableSingleList,
+  TableSingleList
 } from '@/shared/components/ui/tableList';
 import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
 import EditPayment from '@/features/orders/components/ui/EditPayment';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import SortSelect from '@/shared/components/selectors';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { DateRange } from 'react-day-picker';
 import Rating from '@/features/orders/components/ui/Rating';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 export default function OrderTrackingDashboard() {
-  const orderStore = useOrderStore();
+  const { setSourceForTable, orderHistoryListData } = useOrderStore();
   const { appConstants } = useSharedStore();
-  const { isEditDetails, showDriversFilter } = useVendorStore();
+  const { isEditDetails, showDriversFilter, vendorId, branchId } =
+    useVendorStore();
 
   const [searchOrder, setSearchOrder] = useState('');
   const [searchCustomer, setSearchCustomer] = useState('');
@@ -84,8 +70,9 @@ export default function OrderTrackingDashboard() {
     undefined
   );
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
+  const [data, setData] = useState<TypeLiveOrderItem[]>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [date, setDate] = useState<DateRange>({
     from: undefined,
@@ -94,8 +81,7 @@ export default function OrderTrackingDashboard() {
   const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const fetchOrderDetails = useCallback(async () => {
-    setIsLoading(true);
-
+    setNextSetItemsToken(null);
     const searchAll = true;
     const url = orderService.getOrderHistoryUrl(
       page,
@@ -104,42 +90,46 @@ export default function OrderTrackingDashboard() {
       searchOrder,
       searchCustomer,
       searchAll,
-      nextSetItemsToken,
+      null,
       selectedAccountManager,
       selectedDriver,
       selectedSorting
     );
 
     try {
-      const res = await orderService.getOrderList(url);
+      // @ts-ignore
+      const res: TypeRootLiveOrderList = await orderService.getOrderList(url);
 
+      console.log(url, res);
       if (res.data) {
-        orderStore.setSourceForTable('orderHistoryListData', res.data);
+        setData(res.data);
+        setSourceForTable('orderHistoryListData', res.data);
       }
-      setNextSetItemsToken(res.count! < page ? null : true);
-      setIsLoading(false);
-    } catch (err: any) {
+
       setIsLoading(false);
 
-      // Replace `this.sharedService.showServerMessage` and `this.sharedService.logError`
+      setNextSetItemsToken(res.data.length < page ? null : true);
+    } catch (err) {
       const errorMessage =
-        err.error?.message ||
-        err.message ||
-        'An unknown error occurred while fetching orders.';
+        err || 'An unknown error occurred while fetching orders.';
 
       console.log('Error in fetchOrderDetails:', errorMessage);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    page,
     date?.from,
     date?.to,
-    nextSetItemsToken,
-    orderStore,
-    page,
-    searchCustomer,
     searchOrder,
+    searchCustomer,
     selectedAccountManager,
     selectedDriver,
     selectedSorting,
+    vendorId,
+    branchId,
   ]);
 
   useEffect(() => {
@@ -155,14 +145,14 @@ export default function OrderTrackingDashboard() {
     { id: 'delivery_fee', name: 'Delivery fee ( Z - A )' },
   ];
 
-  console.log(orderStore?.orderHistoryListData);
+  if (isLoading) return <TableFallback />;
   return (
     <Dashboard className="h-auto">
       <DashboardHeader>
         <DashboardHeaderRight />
 
         {/* Search and Filter */}
-        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-sm:flex-wrap">
+        <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-md:flex-wrap">
           <div className="relative max-sm:w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -174,10 +164,29 @@ export default function OrderTrackingDashboard() {
             />
           </div>
 
+          {isEditDetails && (
+            <div className="relative max-sm:w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder={'Search Customer ..'}
+                value={searchCustomer}
+                onChange={(e) => setSearchCustomer(e.target.value)}
+                className="pl-10 !border-none !outline-none !ring-0 "
+              />
+            </div>
+          )}
+
           {showDriversFilter && (
             <DriverSelect
               value={selectedDriver!}
               onChangeAction={setSelectedDriver}
+            />
+          )}
+          {isEditDetails && (
+            <AccountManagerSelect
+              value={selectedAccountManager}
+              onChangeAction={setSelectedAccountManager}
             />
           )}
           {isEditDetails && (
@@ -193,10 +202,7 @@ export default function OrderTrackingDashboard() {
           <DateSelect value={date} onChangeAction={setDate} />
           <Button
             onClick={() =>
-              exportOrdersToCSV(
-                orderStore.orderHistoryListData!,
-                'order history'
-              )
+              exportOrdersToCSV(orderHistoryListData!, 'order history')
             }
             className=" max-sm:w-full"
           >
@@ -205,10 +211,10 @@ export default function OrderTrackingDashboard() {
         </div>
       </DashboardHeader>
       <DashboardContent>
-        {orderStore?.orderHistoryListData?.length ? (
+        {data?.length ? (
           <Table>
             <TableLists>
-              {orderStore?.orderHistoryListData!.map((item, idx) => (
+              {orderHistoryListData!.map((item, idx) => (
                 <TableSingleList key={idx}>
                   <TableSingleListHeader className="">
                     <TableSingleListHeaderRight>
@@ -352,10 +358,15 @@ export default function OrderTrackingDashboard() {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemsToken!}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          <>no data</>
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

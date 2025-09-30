@@ -75,9 +75,10 @@ import { paymentMap } from '@/features/orders/constants';
 import EditPayment from '@/features/orders/components/ui/EditPayment';
 import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { DateRange } from 'react-day-picker';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 export default function BulkInsightsDashboard() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [submitted, setSubmitted] = useState(false);
   const [date, setDate] = useState<DateRange>({
@@ -153,15 +154,6 @@ export default function BulkInsightsDashboard() {
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';
 
-  const updateBulkOrder = (order, action) => {
-    setSubmitted(true);
-    // Handle dispatch/cancel logic here
-    console.log(`${action} order:`, order);
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 1000);
-  };
-
   const getStatusBadgeVariant = (status) => {
     const variants = {
       new: 'secondary',
@@ -192,6 +184,7 @@ export default function BulkInsightsDashboard() {
 
       setBulkInsightsData(res.data.insights);
       setOrdersList(res.data.orders_list);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching bulk insights data:', error);
       // Handle error appropriately, e.g., display an error message to the user.
@@ -238,7 +231,7 @@ export default function BulkInsightsDashboard() {
     },
   ];
 
-  const t = useTranslations();
+  if (loading) return <InsightsFallback />;
 
   return (
     <Dashboard className="">
@@ -288,9 +281,9 @@ export default function BulkInsightsDashboard() {
                     <TableSingleListHeader className="">
                       <TableSingleListHeaderRight>
                         <span className="font-semibold text-primary-blue flex">
-                          <p className="ltr:hidden">Mashkor #</p>
+                          <p className="ltr:hidden">FleetX #</p>
                           {order.mashkor_order_number}
-                          <p className="rtl:hidden"># Mashkor</p>
+                          <p className="rtl:hidden"># FleetX</p>
                         </span>
                         <Badge
                           variant={

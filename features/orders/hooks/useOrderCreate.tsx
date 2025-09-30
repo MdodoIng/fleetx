@@ -1,3 +1,4 @@
+/** eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,6 +14,8 @@ import {
 import { vendorService } from '@/shared/services/vendor';
 import { orderService } from '@/shared/services/orders';
 import {
+  DeliverySummary,
+  TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
@@ -29,7 +32,7 @@ import { hasValue } from '@/shared/lib/helpers/index';
 import {
   emptyDropOff,
   usedropOffFormValuesForDropffs,
-  usePickUpFormValuesForPickUp,
+  usepickUpFormValuesForPickUp,
 } from '../libs/helpers';
 import { toast } from 'sonner';
 
@@ -44,7 +47,7 @@ export default function useOrderCreate(
 ) {
   const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const { currentStatusZoneETPTrend } = useSharedStore();
+  const { currentStatusZoneETPTrend, appConstants } = useSharedStore();
   const { branchId, vendorId, selectedVendorName } = useVendorStore();
 
   const pickUpFormValues = pickUpForm.watch();
@@ -62,6 +65,7 @@ export default function useOrderCreate(
       const dropOffFieldsValid =
         isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
 
+      console.log(dropOffForm.formState.errors);
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
       );
@@ -76,11 +80,12 @@ export default function useOrderCreate(
   ): Promise<TypeEstimatedDeliveryReturnFromApi | undefined> => {
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
-      useOrderStore.setState({
-        estimatedDeliveryReturnFromApi: res.data,
-      });
-      console.log(res.data, 'EstimatedDeliveryReturnFromApi');
-      return res.data;
+      if (res) {
+        useOrderStore.getState().setEstimatedDeliveryReturnFromApi(res.data);
+
+        console.log(res.data, 'EstimatedDeliveryReturnFromApi');
+        return res.data;
+      }
     } catch (error) {
       console.log(error, 'sgfdsg');
       return undefined;
@@ -95,7 +100,7 @@ export default function useOrderCreate(
       drop_offs: newDropOffs,
       delivery_model: orderStore.deliveryModel.key,
       order_session_id: orderStore.estimatedDelivery?.order_session_id || null,
-      pickup: usePickUpFormValuesForPickUp({
+      pickup: usepickUpFormValuesForPickUp({
         pickUpFormValues: pickUpFormValues,
       }),
     };
@@ -110,7 +115,7 @@ export default function useOrderCreate(
               vendorId: vendorId!,
               isCOD: isCOD,
             }),
-          } as any;
+          };
 
           return {
             ...state,
@@ -142,6 +147,14 @@ export default function useOrderCreate(
   ) => {
     const isFormValid = await validateFormsAsync();
 
+    if (!vendorId) {
+      toast.message('Please Select a vender');
+      return;
+    }
+    if (!branchId) {
+      toast.message('Please Select a brach');
+      return;
+    }
     if (!isFormValid && type !== 'deleteDropOff' && type !== 'cancel') {
       console.warn(
         'Please complete all required fields before adding drop-off'
@@ -160,7 +173,7 @@ export default function useOrderCreate(
 
           const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          const updatedPickUp = usePickUpFormValuesForPickUp({
+          const updatedPickUp = usepickUpFormValuesForPickUp({
             pickUpFormValues: pickUpFormValues,
           });
 
@@ -170,7 +183,7 @@ export default function useOrderCreate(
             drop_offs: newDropOffs,
             delivery_model: orderStore.deliveryModel.key,
             order_session_id:
-              orderStore.estimatedDeliveryReturnFromApi?.order_session_id! ||
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
               null,
             pickup: updatedPickUp,
           };
@@ -184,6 +197,7 @@ export default function useOrderCreate(
               const updatedDropOffs = [...state.dropOffs];
               if (state.dropOffs === undefined || state.dropOffs.length === 0) {
                 updatedDropOffs.push(newDropOff);
+
                 updatedDropOffs.push(emptyDropOff as any);
               } else {
                 updatedDropOffs.length - 1 <= isDropIndex
@@ -201,7 +215,7 @@ export default function useOrderCreate(
               };
             });
 
-            setIsCOD(1);
+            setIsCOD(2);
             dropOffForm.reset(emptyDropOff);
             dropOffForm.clearErrors();
             console.log(
@@ -333,7 +347,7 @@ export default function useOrderCreate(
 
           const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          const updatedPickUp = usePickUpFormValuesForPickUp({
+          const updatedPickUp = usepickUpFormValuesForPickUp({
             pickUpFormValues: pickUpFormValues,
           });
 
@@ -368,14 +382,8 @@ export default function useOrderCreate(
               //TODO: Show success alert message and clear form fields
               console.log(createOrderRes, 'orders');
 
-              toast.message(
-                'Successfully added and calculated estimate for new drop-off'
-              );
+              toast.message('Successfully added Your Order');
               functionsDropoffs('cancel');
-
-              console.log(
-                'Successfully added and calculated estimate for new drop-off'
-              );
             } catch (error) {
               console.log(error);
             }
@@ -393,7 +401,7 @@ export default function useOrderCreate(
         });
         dropOffForm.reset(emptyDropOff);
         dropOffForm.clearErrors();
-        setIsCOD(1);
+        setIsCOD(2);
 
         break;
 

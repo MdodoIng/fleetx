@@ -56,6 +56,10 @@ import {
 import { OperationType } from '@/shared/types/orders';
 import LoadingPage from '../../loading';
 import DateSelect from '@/shared/components/selectors/DateSelect';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import { DateRange } from 'react-day-picker';
+import NoData from '@/shared/components/fetch/NoData';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,27 +68,31 @@ export default function OrderTrackingDashboard() {
 
   const [searchOrder, setSearchOrder] = useState('');
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
-  const [nextSetItemTotal, setNextSetItemTotal] = useState<string | null>();
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<boolean | null>(
+    null
+  );
 
-  const [date, setDate] = useState<{ from: Date; to: Date }>();
+  const [date, setDate] = useState<DateRange>({
+    from: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    to: new Date(),
+  });
 
   const [walletHistory, setWalletHistory] = useState<
     (TypeWalletTransactionHistoryRes['data'][number] & {
       branch: TypeBranch | undefined;
     })[]
   >();
-  const vendorStore = useVendorStore();
+  const { branchId, vendorId } = useVendorStore();
 
   const fetchVendorWalletReport = useCallback(async () => {
-    setIsLoading(true);
     try {
       const walletHistoryUrl = reportService.getWalletHistoryUrl(
         page,
         searchOrder,
-        date?.from,
-        date?.to,
+        date.from!,
+        date.to!,
         null
       );
       const walletHistoryRes =
@@ -99,7 +107,7 @@ export default function OrderTrackingDashboard() {
         })
       );
       setWalletHistory(walletHistorydata);
-      setNextSetItemTotal(walletHistoryRes.NEXT_SET_ITEMS_TOKEN);
+      setNextSetItemTotal(walletHistorydata.length < page ? null : true);
     } catch (err: unknown) {
       const errorMessage =
         (err as { error?: { message?: string }; message?: string }).error
@@ -110,7 +118,8 @@ export default function OrderTrackingDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, searchOrder, date?.from, date?.to]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchOrder, date?.from, date?.to, branchId, vendorId]);
 
   useEffect(() => {
     const loadInitialWalletReport = async () => {
@@ -122,6 +131,8 @@ export default function OrderTrackingDashboard() {
   const { exportOrdersToCSV } = useTableExport();
 
   const t = useTranslations();
+
+  if (isLoading) return <TableFallback />;
 
   return (
     <Dashboard className="">
@@ -230,12 +241,15 @@ export default function OrderTrackingDashboard() {
                 </TableSingleList>
               );
             })}
+            <LoadMore
+              setPage={setPage}
+              nextSetItemTotal={nextSetItemTotal}
+              type="table"
+            />
           </TableLists>
         </Table>
-      ) : isLoading ? (
-        <LoadingPage hideHead />
       ) : (
-        <p>no data</p>
+        <NoData />
       )}
     </Dashboard>
   );

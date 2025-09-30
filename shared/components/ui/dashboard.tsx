@@ -1,22 +1,68 @@
-import * as React from 'react';
+'use client';
 
 import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
 import { useGetSidebarMeta } from '@/shared/lib/helpers';
 import { iconMap } from '../icons/layout';
 import { useTranslations } from 'next-intl';
+import { ArrowUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from './button';
 
 function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const scrollContainerId = 'dashboard-scroll-container';
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return; // Exit if the ref isn't attached yet
+
+    const handleScroll = () => {
+      // Read the scroll position directly from the container element
+      const scrollY = element.scrollTop;
+
+      // Check if scroll is beyond 400px
+      setShowScrollTop(scrollY > 400);
+    };
+
+    // Add listener to the specific div element, not the window
+    element.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => element.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    // Scroll the specific element to the top smoothly
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div
+      ref={scrollRef}
+      id={scrollContainerId}
       data-slot="dashboard"
       className={cn(
-        'bg-off-white text-black flex flex-col gap-6 py-6',
+        'bg-off-white text-black flex flex-col gap-6 py-6 relative overflow-y-auto',
         main_padding.dashboard.x,
         className
       )}
       {...props}
-    />
+    >
+      {props.children}
+      {showScrollTop && (
+        <Button
+          variant={'outline'}
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 !p-2 size-auto aspect-square rounded-full shadow transition-all bg-white starting:opacity-0 starting:bottom-0 duration-500 hover:text-dark-grey hover:border-dark-grey"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="size-5" />
+        </Button>
+      )}
+    </div>
   );
 }
 
@@ -25,7 +71,7 @@ function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="dashboard-header"
       className={cn(
-        'flex items-start justify-between max-xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full  ',
+        'flex items-start justify-between max-2xl:flex-wrap sm:gap-x-10 gap-x-6 gap-y-4 w-full  ',
         className
       )}
       {...props}

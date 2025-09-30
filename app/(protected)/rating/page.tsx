@@ -1,15 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
 import { Eye, Star, Smartphone, Truck, Users } from 'lucide-react';
-
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
 import {
@@ -19,42 +15,24 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Button } from '@/shared/components/ui/button';
+import { rateService } from '@/shared/services/rate';
+import RatingPageSkeleton from './RatingPageSkeleton'; // Replace RatingFallback with Skeleton
+import {
+  OverallRatingType,
+  TypeGetDashBoardResponce,
+} from '@/shared/types/rate';
 import { cn } from '@/shared/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
+import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
+import { toast } from 'sonner';
+import { RatingFallback } from '@/shared/components/fetch/fallback';
 
-// Mock data types based on your Angular component
-interface RatingData {
-  overall_rating_type: string;
-  value: number;
-}
-
-// Rating dashboard constants (similar to your Angular rateDashBoardValue)
-const RATING_TYPES = {
-  mashkorRating: 'mashkor_rating',
-  mashkorRatingCount: 'mashkor_rating_count',
-  courierDashboard: 'courier_dashboard',
-  courierDashboardCount: 'courier_dashboard_count',
-  courierDashboardPickup: 'courier_dashboard_pickup',
-  courierDashboardPickupCount: 'courier_dashboard_pickup_count',
-  courierDashboardDelivery: 'courier_dashboard_delivery',
-  courierDashboardDeliveryCount: 'courier_dashboard_delivery_count',
-  mobileApp: 'mobile_app',
-  mobileAppCount: 'mobile_app_count',
-  mobileAppPickup: 'mobile_app_pickup',
-  mobileAppPickupCount: 'mobile_app_pickup_count',
-  mobileAppBuy: 'mobile_app_buy',
-  mobileAppBuyCount: 'mobile_app_buy_count',
-  sellerDashboard: 'seller_dashboard',
-  sellerDashboardCount: 'seller_dashboard_count',
-  sellerDashboardPickup: 'seller_dashboard_pickup',
-  sellerDashboardPickupCount: 'seller_dashboard_pickup_count',
-  sellerDashboardDelivery: 'seller_dashboard_delivery',
-  sellerDashboardDeliveryCount: 'seller_dashboard_delivery_count',
-  improvementType_1: 'improvement_type_1',
-  improvementType_2: 'improvement_type_2',
-  improvementType_3: 'improvement_type_3',
-  improvementType_4: 'improvement_type_4',
-};
-
+// Improvement categories
 const IMPROVEMENT_CATEGORIES = [
   { id: 1, name: "BUDDY'S HYGIENE" },
   { id: 2, name: 'LATE PICKUP' },
@@ -63,78 +41,37 @@ const IMPROVEMENT_CATEGORIES = [
 ];
 
 export default function RatingPage() {
-  const t = useTranslations();
-
-  // State for all rating data
-  const [ratingData, setRatingData] = useState<RatingData[]>([]);
+  const [ratingData, setRatingData] = useState<
+    TypeGetDashBoardResponce['data']
+  >([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    improvementType: number;
+    resBuddyList: { data: any[]; count: number };
+  } | null>(null);
 
-  // Helper function to find rating value
-  const findRatingValue = (type: string): number => {
-    return (
-      ratingData.find((item) => item.overall_rating_type === type)?.value || 0
-    );
+  // Helper function to find rating value and convert to number
+  const findRatingValue = (type: OverallRatingType): number => {
+    const item = ratingData.find((item) => item.overall_rating_type === type);
+    return item ? parseFloat(item.value) || 0 : 0;
   };
 
-  // Mock API call - replace with your actual service
+  // Fetch rating data
   const fetchRatingData = useCallback(async () => {
-    setLoading(true);
+    setError(null);
     try {
-      // Replace this with your actual API call
-      // const response = await rateService.getDashboardData();
-
-      // Mock data for demo
-      const mockData: RatingData[] = [
-        { overall_rating_type: RATING_TYPES.mashkorRating, value: 4.8 },
-        { overall_rating_type: RATING_TYPES.mashkorRatingCount, value: 1250 },
-        { overall_rating_type: RATING_TYPES.courierDashboard, value: 4.5 },
-        { overall_rating_type: RATING_TYPES.courierDashboardCount, value: 890 },
-        {
-          overall_rating_type: RATING_TYPES.courierDashboardPickup,
-          value: 4.7,
-        },
-        {
-          overall_rating_type: RATING_TYPES.courierDashboardPickupCount,
-          value: 445,
-        },
-        {
-          overall_rating_type: RATING_TYPES.courierDashboardDelivery,
-          value: 4.3,
-        },
-        {
-          overall_rating_type: RATING_TYPES.courierDashboardDeliveryCount,
-          value: 445,
-        },
-        { overall_rating_type: RATING_TYPES.mobileApp, value: 4.6 },
-        { overall_rating_type: RATING_TYPES.mobileAppCount, value: 756 },
-        { overall_rating_type: RATING_TYPES.mobileAppPickup, value: 4.4 },
-        { overall_rating_type: RATING_TYPES.mobileAppPickupCount, value: 378 },
-        { overall_rating_type: RATING_TYPES.mobileAppBuy, value: 4.8 },
-        { overall_rating_type: RATING_TYPES.mobileAppBuyCount, value: 378 },
-        { overall_rating_type: RATING_TYPES.sellerDashboard, value: 4.2 },
-        { overall_rating_type: RATING_TYPES.sellerDashboardCount, value: 634 },
-        { overall_rating_type: RATING_TYPES.sellerDashboardPickup, value: 4.1 },
-        {
-          overall_rating_type: RATING_TYPES.sellerDashboardPickupCount,
-          value: 317,
-        },
-        {
-          overall_rating_type: RATING_TYPES.sellerDashboardDelivery,
-          value: 4.3,
-        },
-        {
-          overall_rating_type: RATING_TYPES.sellerDashboardDeliveryCount,
-          value: 317,
-        },
-        { overall_rating_type: RATING_TYPES.improvementType_1, value: 85 },
-        { overall_rating_type: RATING_TYPES.improvementType_2, value: 92 },
-        { overall_rating_type: RATING_TYPES.improvementType_3, value: 78 },
-        { overall_rating_type: RATING_TYPES.improvementType_4, value: 88 },
-      ];
-
-      setRatingData(mockData);
-    } catch (error) {
-      console.error('Error fetching rating data:', error);
+      const response = await rateService.getDashBoard();
+      console.log('API Response:', response); // Debug log
+      if (response.data) {
+        setRatingData(response.data);
+      } else {
+        setError('No data returned from API');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch rating data');
+      console.error('Error fetching rating data:', err);
     } finally {
       setLoading(false);
     }
@@ -144,34 +81,31 @@ export default function RatingPage() {
     fetchRatingData();
   }, [fetchRatingData]);
 
-  // Show details modal - replace with your actual modal implementation
-  const showDetails = (improvementType: number) => {
-    console.log('Show details for improvement type:', improvementType);
-    // Implement your modal logic here
-    // You can use a state to control modal visibility and pass improvementType
+  // Show details modal
+  const handleShowDetails = async (improvementType: number) => {
+    try {
+      const res = await rateService.getBuddiesDetailedList(
+        improvementType,
+        1,
+        10
+      );
+      setModalData({ improvementType, resBuddyList: res });
+      setModalOpen(true);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to fetch detailed list');
+      console.error('Error in showDetails:', err);
+    }
   };
 
   const formatRating = (value: number): string => {
     return value ? value.toFixed(1) : '0.0';
   };
 
-  if (loading) {
-    return (
-      <Dashboard className="h-auto sm:h-full">
-        <DashboardHeader>
-          <DashboardHeaderRight />
-        </DashboardHeader>
-        <DashboardContent>
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg">Loading...</div>
-          </div>
-        </DashboardContent>
-      </Dashboard>
-    );
-  }
+  if (loading) return <RatingFallback />;
+  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
   return (
-    <Dashboard className="">
+    <Dashboard className="h-auto sm:h-full">
       <DashboardHeader>
         <DashboardHeaderRight />
       </DashboardHeader>
@@ -186,7 +120,7 @@ export default function RatingPage() {
                 <div className="space-y-3">
                   {IMPROVEMENT_CATEGORIES.map((category, index) => {
                     const value = findRatingValue(
-                      `improvement_type_${category.id}`
+                      `ImprovementType_${category.id}` as OverallRatingType
                     );
                     return (
                       <div
@@ -210,7 +144,7 @@ export default function RatingPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => showDetails(category.id)}
+                            onClick={() => handleShowDetails(category.id)}
                             className="bg-slate-800 text-white border-slate-800 hover:bg-slate-700 px-5 py-2 h-9"
                           >
                             <Eye className="w-4 h-4 mr-2" />
@@ -231,17 +165,16 @@ export default function RatingPage() {
             </Card>
           </div>
 
-          <Card className="lg:col-span-1  bg-gradient-to-br from-primary-blue to-purple-600 text-white relative overflow-hidden h-full">
+          <Card className="lg:col-span-1 bg-gradient-to-br from-primary-blue to-purple-600 text-white relative overflow-hidden h-full">
             <CardContent className="items-center justify-center flex flex-col text-center h-full">
               <h3 className="text-2xl font-bold tracking-wider mb-4">
-                MASHKOR <span className="font-light">RATING</span>
+                FleetX <span className="font-light">RATING</span>
               </h3>
-
-              <Button variant={'outline'} className="bg-white border-none">
+              <Button variant="outline" className="bg-white border-none">
                 <div className="text-2xl font-bold tracking-widest">
-                  {formatRating(findRatingValue(RATING_TYPES.mashkorRating))}
+                  {formatRating(findRatingValue('MashkorRating'))}
                   <span className="text-lg ml-2">
-                    ({findRatingValue(RATING_TYPES.mashkorRatingCount)})
+                    ({findRatingValue('MashkorRatingCount')})
                   </span>
                 </div>
               </Button>
@@ -256,9 +189,7 @@ export default function RatingPage() {
             <CardHeader className="border-b-0 pb-2">
               <CardTitle className="flex items-center justify-between text-sm font-bold text-slate-700 tracking-wider uppercase">
                 <div className="flex items-center gap-2">
-                  <CardIcon>
-                    <Truck />
-                  </CardIcon>
+                  <Truck />
                   Courier Dashboard
                 </div>
                 <div className="bg-slate-800 text-white px-4 py-2 rounded-2xl text-sm flex items-center">
@@ -266,9 +197,9 @@ export default function RatingPage() {
                     className="w-4 h-4 mr-2 text-green-400"
                     fill="currentColor"
                   />
-                  {formatRating(findRatingValue(RATING_TYPES.courierDashboard))}
+                  {formatRating(findRatingValue('CourierDashboard'))}
                   <span className="ml-1">
-                    ({findRatingValue(RATING_TYPES.courierDashboardCount)})
+                    ({findRatingValue('CourierDashboardCount')})
                   </span>
                 </div>
               </CardTitle>
@@ -285,20 +216,13 @@ export default function RatingPage() {
                       fill="currentColor"
                     />
                     <span className="font-bold text-slate-700">
-                      {formatRating(
-                        findRatingValue(RATING_TYPES.courierDashboardPickup)
-                      )}
+                      {formatRating(findRatingValue('CourierDashboardPickup'))}
                     </span>
                     <span className="ml-1 text-xs">
-                      (
-                      {findRatingValue(
-                        RATING_TYPES.courierDashboardPickupCount
-                      )}
-                      )
+                      ({findRatingValue('CourierDashboardPickupCount')})
                     </span>
                   </div>
                 </div>
-
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-700 tracking-wider">
                     DELIVERY
@@ -310,15 +234,11 @@ export default function RatingPage() {
                     />
                     <span className="font-bold text-slate-700">
                       {formatRating(
-                        findRatingValue(RATING_TYPES.courierDashboardDelivery)
+                        findRatingValue('CourierDashboardDelivery')
                       )}
                     </span>
                     <span className="ml-1 text-xs">
-                      (
-                      {findRatingValue(
-                        RATING_TYPES.courierDashboardDeliveryCount
-                      )}
-                      )
+                      ({findRatingValue('CourierDashboardDeliveryCount')})
                     </span>
                   </div>
                 </div>
@@ -331,9 +251,7 @@ export default function RatingPage() {
             <CardHeader className="border-b-0 pb-2">
               <CardTitle className="flex items-center justify-between text-sm font-bold text-slate-700 tracking-wider uppercase">
                 <div className="flex items-center gap-2">
-                  <CardIcon>
-                    <Smartphone />
-                  </CardIcon>
+                  <Smartphone />
                   Mobile App
                 </div>
                 <div className="bg-slate-800 text-white px-4 py-2 rounded-2xl text-sm flex items-center">
@@ -341,9 +259,9 @@ export default function RatingPage() {
                     className="w-4 h-4 mr-2 text-green-400"
                     fill="currentColor"
                   />
-                  {formatRating(findRatingValue(RATING_TYPES.mobileApp))}
+                  {formatRating(findRatingValue('MobileApp'))}
                   <span className="ml-1">
-                    ({findRatingValue(RATING_TYPES.mobileAppCount)})
+                    ({findRatingValue('MobileAppCount')})
                   </span>
                 </div>
               </CardTitle>
@@ -360,16 +278,13 @@ export default function RatingPage() {
                       fill="currentColor"
                     />
                     <span className="font-bold text-slate-700">
-                      {formatRating(
-                        findRatingValue(RATING_TYPES.mobileAppPickup)
-                      )}
+                      {formatRating(findRatingValue('MobileAppPickup'))}
                     </span>
                     <span className="ml-1 text-xs">
-                      ({findRatingValue(RATING_TYPES.mobileAppPickupCount)})
+                      ({findRatingValue('MobileAppPickupCount')})
                     </span>
                   </div>
                 </div>
-
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-700 tracking-wider">
                     BUY
@@ -380,10 +295,10 @@ export default function RatingPage() {
                       fill="currentColor"
                     />
                     <span className="font-bold text-slate-700">
-                      {formatRating(findRatingValue(RATING_TYPES.mobileAppBuy))}
+                      {formatRating(findRatingValue('MobileAppBuy'))}
                     </span>
                     <span className="ml-1 text-xs">
-                      ({findRatingValue(RATING_TYPES.mobileAppBuyCount)})
+                      ({findRatingValue('MobileAppBuyCount')})
                     </span>
                   </div>
                 </div>
@@ -396,9 +311,7 @@ export default function RatingPage() {
             <CardHeader className="border-b-0 pb-2">
               <CardTitle className="flex items-center justify-between text-sm font-bold text-slate-700 tracking-wider uppercase">
                 <div className="flex items-center gap-2">
-                  <CardIcon>
-                    <Users />
-                  </CardIcon>
+                  <Users />
                   Seller Dashboard
                 </div>
                 <div className="bg-slate-800 text-white px-4 py-2 rounded-2xl text-sm flex items-center">
@@ -406,9 +319,9 @@ export default function RatingPage() {
                     className="w-4 h-4 mr-2 text-green-400"
                     fill="currentColor"
                   />
-                  {formatRating(findRatingValue(RATING_TYPES.sellerDashboard))}
+                  {formatRating(findRatingValue('SellerDashboard'))}
                   <span className="ml-1">
-                    ({findRatingValue(RATING_TYPES.sellerDashboardCount)})
+                    ({findRatingValue('SellerDashboardCount')})
                   </span>
                 </div>
               </CardTitle>
@@ -425,18 +338,13 @@ export default function RatingPage() {
                       fill="currentColor"
                     />
                     <span className="font-bold text-slate-700">
-                      {formatRating(
-                        findRatingValue(RATING_TYPES.sellerDashboardPickup)
-                      )}
+                      {formatRating(findRatingValue('SellerDashboardPickup'))}
                     </span>
                     <span className="ml-1 text-xs">
-                      (
-                      {findRatingValue(RATING_TYPES.sellerDashboardPickupCount)}
-                      )
+                      ({findRatingValue('SellerDashboardPickupCount')})
                     </span>
                   </div>
                 </div>
-
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-700 tracking-wider">
                     DELIVERY
@@ -447,16 +355,10 @@ export default function RatingPage() {
                       fill="currentColor"
                     />
                     <span className="font-bold text-slate-700">
-                      {formatRating(
-                        findRatingValue(RATING_TYPES.sellerDashboardDelivery)
-                      )}
+                      {formatRating(findRatingValue('SellerDashboardDelivery'))}
                     </span>
                     <span className="ml-1 text-xs">
-                      (
-                      {findRatingValue(
-                        RATING_TYPES.sellerDashboardDeliveryCount
-                      )}
-                      )
+                      ({findRatingValue('SellerDashboardDeliveryCount')})
                     </span>
                   </div>
                 </div>
@@ -465,6 +367,21 @@ export default function RatingPage() {
           </Card>
         </div>
       </DashboardContent>
+
+      {modalData && (
+        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+          <DialogContent className="w-max sm:max-w-full  bg-white">
+            <DialogHeader>
+              <DialogTitle>Buddy Details</DialogTitle>
+            </DialogHeader>
+            <RateImproveBuddies
+              improvementType={modalData.improvementType}
+              resBuddyList={modalData.resBuddyList}
+              isDetailedPopup={true}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Dashboard>
   );
 }

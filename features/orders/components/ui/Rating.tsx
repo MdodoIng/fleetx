@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { Star, Check } from 'lucide-react';
 import { TypeOrderHistoryList } from '@/shared/types/orders';
-import { typePostRating } from '@/shared/types/rating';
 import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
 import { cn } from '@/shared/lib/utils';
 
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import { toast } from 'sonner';
+import { typePostRating } from '@/shared/types/rate';
 
 // Constants
 const MAX_RATE = 5;
@@ -52,7 +52,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [rating, setRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState<number|null>();
   const [isFeedback, setIsFeedback] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isShowSuccess, setIsShowSuccess] = useState(false);
@@ -61,8 +61,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [canRate, setCanRate] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
   const [improvements, setImprovements] = useState<string[]>([]);
-  
-  console.log(order)
+
 
   const checkRatingEligibility = () => {
     // Check if order is completed
@@ -126,19 +125,19 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
 
   const handleRatingClick = (value: number) => {
     setSelectedRating(value);
-    setErrorMessage('');
+    setErrorMessage(null);
 
     if (value < MIN_RATE_FOR_FEEDBACK) {
       setIsFeedback(true);
     } else {
       setIsFeedback(false);
-      setFeedback('');
+      setFeedback(null);
     }
   };
 
-  const handleFeedbackChange = (value: string) => {
+  const handleFeedbackChange = (value: number) => {
     setFeedback(value);
-    setErrorMessage('');
+    setErrorMessage(null);
   };
 
   const validateAndSubmit = () => {
@@ -162,7 +161,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
     const request: typePostRating = {
       order_number: order.fleetx_order_number,
       rating: selectedRating,
-      improvment_item: feedback || '',
+      improvment_item: feedback || null,
     };
 
     try {

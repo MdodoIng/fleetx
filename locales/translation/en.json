@@ -289,7 +289,7 @@
     "API_ALREADY_ACTIVATED": "This is already activated",
     "ORDER_DELIVERED_OR_CANCELLED": "Sorry, You cannot edit this order as this order is already closed.",
     "PHONE_ALREADY_EXIST": "Phone already exists.",
-    "BRANCH_NAME_ALREADY_EXIST": "Branch name already exists. Please contact Mashkor support team",
+    "BRANCH_NAME_ALREADY_EXIST": "Branch name already exists. Please contact FleetX support team",
     "ADDRESS_ALREADY_VERIFIED": "Customer already varified the address",
     "ORDER_STATUS_BEYOND_ADDR_UPDATE_BY_CUSTOMER": "Delivery already started or canceled",
     "VENDOR_BRANCH_INVOICE_NOT_GENERATED": "Invoice is not generated",

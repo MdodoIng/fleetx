@@ -33,9 +33,12 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 function BalanceReport(): JSX.Element {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
   const vendorStore = useVendorStore();
@@ -72,9 +75,9 @@ function BalanceReport(): JSX.Element {
     try {
       const url = reportService.getBranchWalletBalanceUrl(
         page,
-        vendorStore.selectedVendor?.id!,
-        vendorStore.selectedBranch?.id!,
-        nextSetItemTotal
+        vendorStore.selectedVendor?.id ?? '',
+        vendorStore.selectedBranch?.id ?? '',
+        null
       );
       const res = await reportService.getBranchWalletBalanceReport(url);
 
@@ -114,8 +117,6 @@ function BalanceReport(): JSX.Element {
 
   // Updated main function
   const fetchBalanceReport = async (): Promise<void> => {
-    setIsLoading(true);
-
     try {
       let data: BalanceReportItem[];
 
@@ -128,6 +129,7 @@ function BalanceReport(): JSX.Element {
       }
 
       setData(data!);
+      setNextSetItemTotal(data.length < page ? null : true);
       console.log(`Successfully fetched ${data.length} balance records`);
     } catch (err: any) {
       const errorMessage =
@@ -149,14 +151,13 @@ function BalanceReport(): JSX.Element {
       await fetchBalanceReport();
     };
     loadFetchBalanceReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     vendorStore.selectedVendor?.id,
     vendorStore.selectedBranch?.id,
     page,
     isCentralWallet,
   ]);
-
-  console.log(data, 'aeefeafsafaaf');
 
   const tableData = data?.map((item) => {
     return [
@@ -186,16 +187,15 @@ function BalanceReport(): JSX.Element {
 
   const { exportOrdersToCSV } = useTableExport();
 
+  if (isLoading) return <TableFallback />;
+
   return (
     <Dashboard className="">
       <DashboardHeader>
         <DashboardHeaderRight />
         <div className="flex gap-1.5">
           <div className="flex items-center justify-center gap-1.5">
-            <Button
-              onClick={() => setIsCentralWallet(!isCentralWallet)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
+            <Button onClick={() => setIsCentralWallet(!isCentralWallet)}>
               <Wallet className="w-5 h-5" />{' '}
               {isCentralWallet ? 'Central Wallet' : 'Branch Wallet'}
             </Button>
@@ -203,7 +203,6 @@ function BalanceReport(): JSX.Element {
           <div className="flex items-center justify-center gap-1.5">
             <Button
               onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <Download className="w-5 h-5" /> Export
             </Button>
@@ -231,10 +230,15 @@ function BalanceReport(): JSX.Element {
                   </TableSingleListContents>
                 </TableSingleList>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          ''
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

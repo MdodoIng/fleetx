@@ -1,84 +1,54 @@
 'use client';
 
 import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
+    Dispatch,
+    SetStateAction
 } from 'react';
 import {
-  MapPin,
-  User,
-  Phone,
-  CreditCard,
-  Clock,
-  Truck,
-  Navigation,
-  Info,
-  Receipt,
-  Dot,
+    MapPin,
+    User,
+    Phone,
+    CreditCard,
+    Clock,
+    Truck,
+    Navigation,
+    Info,
+    Receipt,
+    Dot,
 } from 'lucide-react';
 import { paymentMap } from '@/features/orders/constants';
-import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
-import EditResiver from '../../ui/EditResiver';
-import EditPayment from '../../ui/EditPayment';
+import { useOrderStore, useSharedStore } from '@/store';
+import EditResiver from '../ui/EditResiver';
+import EditPayment from '../ui/EditPayment';
 import {
-  Table,
-  TableLists,
-  TableSingleList,
-  TableSingleListContent,
-  TableSingleListContentDetailsItem,
-  TableSingleListContentDetailsTitle,
-  TableSingleListContents,
-  TableSingleListContentTitle,
-  TableSingleListHeader,
-  TableSingleListHeaderLeft,
-  TableSingleListHeaderRight,
+    Table,
+    TableLists,
+    TableSingleList,
+    TableSingleListContent,
+    TableSingleListContentDetailsItem,
+    TableSingleListContentDetailsTitle,
+    TableSingleListContents,
+    TableSingleListContentTitle,
+    TableSingleListHeader,
+    TableSingleListHeaderLeft,
+    TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { useTranslations } from 'next-intl';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 
 interface OrdersPageProps {
-  page: number;
   setPage: Dispatch<SetStateAction<number>>;
-  nextSetItemTotal: any;
+  nextSetItemTotal: unknown;
   fetchOrderDetails: () => Promise<void>;
 }
 
 export default function TableComponent({
-  page,
   setPage,
   nextSetItemTotal,
   fetchOrderDetails,
 }: OrdersPageProps) {
   const { appConstants } = useSharedStore();
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const orderStore = useOrderStore();
-  const { isEditDetails } = useVendorStore();
-
-  const handleLoadMore = useCallback(() => {
-    setPage((prev) => prev + 10); // load 10 more items
-  }, [setPage]);
-
-  useEffect(() => {
-    if (!loadMoreRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          handleLoadMore();
-        }
-      },
-      { threshold: 1 }
-    );
-
-    observer.observe(loadMoreRef.current);
-
-    return () => {
-      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
-    };
-  }, [handleLoadMore]);
 
   const t = useTranslations();
   return (
@@ -213,7 +183,7 @@ export default function TableComponent({
                   {paymentMap[item.payment_type] || 'Unknown'}
                 </TableSingleListContentDetailsTitle>
 
-                {item.is_delivery_address_edit_enabled &&  (
+                {item.is_delivery_address_edit_enabled && (
                   <EditPayment
                     data={item}
                     fetchOrderDetails={fetchOrderDetails}
@@ -223,6 +193,11 @@ export default function TableComponent({
             </TableSingleListContents>
           </TableSingleList>
         ))}
+        <LoadMore
+          setPage={setPage}
+          nextSetItemTotal={nextSetItemTotal!}
+          type="table"
+        />
       </TableLists>
     </Table>
   );
