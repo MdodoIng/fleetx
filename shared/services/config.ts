@@ -1,3 +1,4 @@
+import { useSharedStore } from '@/store';
 import { apiFetch } from '../lib/utils';
 import { TypeOperationTimeApiResponse } from '../types/notification';
 import { appConfig } from './app-config';
@@ -13,7 +14,7 @@ export const configService = {
     );
   },
 
-  getBusyModeHistory(url: any) {
+  getBusyModeHistory(url: any): Promise<TypeBusyModeHistoryResponse> {
     return apiFetch(
       appConfig.orderServiceApiUrl() + '/config/busy-mode/list' + url,
       {
@@ -65,5 +66,35 @@ export const configService = {
       method: 'GET',
     });
     return Promise.all([history, zone]);
+  },
+
+  getBusyModeHistoryUrl(
+    page: number,
+    perPage: number,
+    fromDate?: Date,
+    toDate?: Date
+  ): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url: string = `?page=${page}&page_size=${perPage}`;
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return url;
+  },
+
+  getZoneBusyModeHistoryUrl(
+    page: number,
+    perPage: number,
+    zoneId?: string,
+    fromDate?: Date,
+    toDate?: Date
+  ): string {
+    const { getFormattedDate } = useSharedStore.getState();
+    let url: string = `?page=${page}&page_size=${perPage}`;
+    if (zoneId) {
+      url = url + '&zone_id=' + zoneId;
+    }
+    url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
+    url = toDate ? url + '&to_date=' + getFormattedDate(toDate) : url;
+    return url;
   },
 };

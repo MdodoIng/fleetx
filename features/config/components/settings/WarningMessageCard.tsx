@@ -104,25 +104,6 @@ export default function WarningMessageCard() {
 
           <CardContent className="flex flex-col gap-4 flex-1">
             {/* Enable Toggle */}
-
-            {/* Warning Message textarea */}
-            <FormField
-              control={form.control}
-              name="warningMessage"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Message</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter warning message..."
-                      {...field}
-                      disabled={!form.watch('isEnable')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="isEnable"
@@ -144,6 +125,24 @@ export default function WarningMessageCard() {
                       }
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* Warning Message textarea */}
+            <FormField
+              control={form.control}
+              name="warningMessage"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter warning message..."
+                      {...field}
+                      disabled={!form.watch('isEnable')}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

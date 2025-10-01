@@ -173,6 +173,14 @@
       "setting": {
         "title": "Settings",
         "subtitle": "Adjust your profile settings"
+      },
+      "busyMode": {
+        "title": "Busy Mode History",
+        "subtitle": "View and manage busy mode logs"
+      },
+      "zoneBusyMode": {
+        "title": "Zone Busy Mode History",
+        "subtitle": "Track zone-specific busy mode activity"
       }
     }
   },

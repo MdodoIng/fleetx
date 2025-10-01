@@ -235,10 +235,25 @@ export const routes: Routes = {
     icon: 'password',
   },
   CONFIG_SETTINGS: {
-    path: '/config/settings',
+    path: '/config',
     title: 'layout.profile.setting.title',
     subtitle: 'layout.profile.setting.subtitle',
     icon: 'settings',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+  },
+
+  BUSY_MODE_HISTORY: {
+    path: '/busy-mode/history',
+    title: 'layout.profile.busyMode.title',
+    subtitle: 'layout.profile.busyMode.subtitle',
+    icon: 'history',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+  },
+  ZONE_BUSY_MODE_HISTORY: {
+    path: '/busy-mode/zone-history',
+    title: 'layout.profile.zoneBusyMode.title',
+    subtitle: 'layout.profile.zoneBusyMode.subtitle',
+    icon: 'history',
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
 };
@@ -421,6 +436,18 @@ export const APP_PROFILE_MENU: MenuItem[] = [
     route: routes.BILLING_EDIT_PROFILE.path,
     icon: routes.BILLING_EDIT_PROFILE.icon,
     roles: routes.BILLING_EDIT_PROFILE.roles,
+  },
+  {
+    labelKey: routes.BUSY_MODE_HISTORY.title,
+    route: routes.BUSY_MODE_HISTORY.path,
+    icon: routes.BUSY_MODE_HISTORY.icon,
+    roles: routes.BUSY_MODE_HISTORY.roles,
+  },
+  {
+    labelKey: routes.ZONE_BUSY_MODE_HISTORY.title,
+    route: routes.ZONE_BUSY_MODE_HISTORY.path,
+    icon: routes.ZONE_BUSY_MODE_HISTORY.icon,
+    roles: routes.ZONE_BUSY_MODE_HISTORY.roles,
   },
   {
     labelKey: routes.CONFIG_SETTINGS.title,

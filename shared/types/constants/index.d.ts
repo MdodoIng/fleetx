@@ -11,8 +11,8 @@ export interface MenuItem {
 
 interface RouteConfig {
   path: string;
-  title: string;
-  subtitle: string;
+  title: any;
+  subtitle: any;
   icon: SidebarIconType;
   roles?: UserRole[];
 }
