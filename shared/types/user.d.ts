@@ -116,3 +116,22 @@ export interface TypeChangePasswordRequest {
 export interface TypeChangePasswordResponse {
   data: string;
 }
+
+export interface TypeAreaRestrictionResponse {
+  data: {
+    id: string;
+    created_at: string;
+    updated_at: string;
+    deleted: boolean;
+    restriction_type: number;
+    vendor_id: string;
+    branch_id: string;
+    enabled: boolean;
+    start_time: string;
+    end_time: string;
+    full_day_restriction: boolean;
+    next_day: boolean;
+    area_radius: number;
+    current_status: boolean;
+  };
+}

@@ -234,6 +234,13 @@ export const routes: Routes = {
     subtitle: 'layout.profile.changePassword.subtitle',
     icon: 'password',
   },
+  CONFIG_SETTINGS: {
+    path: '/config/settings',
+    title: 'layout.profile.setting.title',
+    subtitle: 'layout.profile.setting.subtitle',
+    icon: 'settings',
+    roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
+  },
 };
 
 export const APP_SIDEBAR_MENU: MenuItem[] = [
@@ -413,5 +420,12 @@ export const APP_PROFILE_MENU: MenuItem[] = [
     labelKey: routes.BILLING_EDIT_PROFILE.title,
     route: routes.BILLING_EDIT_PROFILE.path,
     icon: routes.BILLING_EDIT_PROFILE.icon,
+    roles: routes.BILLING_EDIT_PROFILE.roles,
+  },
+  {
+    labelKey: routes.CONFIG_SETTINGS.title,
+    route: routes.CONFIG_SETTINGS.path,
+    icon: routes.CONFIG_SETTINGS.icon,
+    roles: routes.CONFIG_SETTINGS.roles,
   },
 ] as const;

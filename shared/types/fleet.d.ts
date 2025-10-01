@@ -8,3 +8,23 @@ interface TypeFleetDriverResponse {
     }>;
   };
 }
+
+interface TypeGeofenceResponse {
+  data: [
+    {
+      name: 'COURIERS_GEOFENCE_ENABLED';
+      value: '1';
+    },
+    {
+      name: 'MASHKOR_APP_GEOFENCE_ENABLED';
+      value: '1';
+    },
+  ];
+}
+
+interface TypeBlockActivationResponse {
+  data: {
+    enabled: false;
+    message: string;
+  };
+}

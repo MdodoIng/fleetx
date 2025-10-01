@@ -169,6 +169,10 @@
       "logout": {
         "title": "Logout",
         "subtitle": "Sign out from your profile"
+      },
+      "setting": {
+        "title": "Settings",
+        "subtitle": "Adjust your profile settings"
       }
     }
   },
@@ -618,7 +622,7 @@
             "confirmed": "Confirmed",
             "urgent": "Urgent",
             "dateRange": "From Date - To Date",
-            "clear":"Clear"
+            "clear": "Clear"
           }
         },
 

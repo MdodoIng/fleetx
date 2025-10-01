@@ -35,6 +35,13 @@ export async function apiFetch<T>(
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      const { refreshToken, user } = useAuthStore.getState();
+      const token = user?.token;
+      await refreshToken(token || '');
+      // Retry the original request
+      return await apiFetch<T>(url, options);
+    }
     const errorText = await res.text();
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
