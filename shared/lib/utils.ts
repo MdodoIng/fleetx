@@ -10,39 +10,47 @@ export function cn(...inputs: ClassValue[]) {
 
 export async function apiFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retry = true
 ): Promise<T> {
-  const { user, getDecodedAccessToken } = useAuthStore.getState();
+  const { user, getDecodedAccessToken, triggerRefreshToken, logout } =
+    useAuthStore.getState();
   const { getLocalStorage } = useSharedStore.getState();
-  const tokenPayload = getDecodedAccessToken(
-    getLocalStorage(storageKeys.authAppToken)
-  );
+
+  const storedToken = getLocalStorage(storageKeys.authAppToken);
+  const tokenPayload = getDecodedAccessToken(storedToken);
   const token = user?.token || tokenPayload?.token;
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  };
 
   const headers = {
-    ...defaultHeaders,
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
     ...(options.headers || {}),
   };
 
   const res = await fetch(url, {
     ...options,
-    headers: headers,
-    cache: 'no-store', // prevents Next.js caching
+    headers,
+    cache: 'no-store',
   });
 
   if (!res.ok) {
-    if (res.status === 401) {
-      const { refreshToken, user } = useAuthStore.getState();
-      const token = user?.token;
-      await refreshToken(token || '');
-      // Retry the original request
-      return await apiFetch<T>(url, options);
-    }
     const errorText = await res.text();
+
+    if (res.status === 401 && retry) {
+      try {
+        await triggerRefreshToken();
+        return await apiFetch<T>(url, options, false); // prevent infinite loop
+      } catch (error: any) {
+        if (
+          error.message?.includes('Signature has expired') ||
+          error.message?.includes('Refresh has expired')
+        ) {
+          logout();
+        }
+        throw new Error(`Auth error: ${error.message || errorText}`);
+      }
+    }
+
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
 
