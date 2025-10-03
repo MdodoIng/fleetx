@@ -25,10 +25,9 @@ export default function OrderTrackingModel({
   selectedOrder: TypeOrderHistoryList;
   statusHistory: TypeStatusHistoryForUi[];
 }) {
-  
-  const t = useTranslations()
-  const { appConstants} = useSharedStore()
-  
+  const t = useTranslations();
+  const { appConstants } = useSharedStore();
+
   if (!selectedOrder) return null;
 
   return (
@@ -122,7 +121,9 @@ export default function OrderTrackingModel({
           <CardTitle className="text-sm font-medium">
             {t('component.features.orders.live.tracking.title')}
           </CardTitle>
-          <CardDescription>{t('component.features.orders.live.tracking.subtitle')}</CardDescription>
+          <CardDescription>
+            {t('component.features.orders.live.tracking.subtitle')}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex  flex-col gap-4">
           <div className="flex justify-between items-start">

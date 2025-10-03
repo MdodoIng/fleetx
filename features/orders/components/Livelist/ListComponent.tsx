@@ -3,20 +3,22 @@
 import React, { SetStateAction } from 'react';
 import { MapPin, Clock } from 'lucide-react';
 import {
-    TypeOrderHistoryList,
-    TypeStatusHistoryForUi,
+  TypeOrderHistoryList,
+  TypeStatusHistoryForUi,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import {
-    Dialog, DialogContent, DialogTitle
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
 import GridComponent from './GridComponent';
@@ -68,7 +70,6 @@ const ListComponent: React.FC<{
     },
     {}
   );
-
 
   return (
     <>

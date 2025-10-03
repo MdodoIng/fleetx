@@ -1,9 +1,7 @@
 'use client';
 import {
-  CalendarIcon,
   Download,
   Search,
-  ListFilter,
   CreditCard,
   Clock,
   DollarSign,
@@ -16,13 +14,6 @@ import { format } from 'date-fns';
 import { useVendorStore, useSharedStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { Calendar } from '@/shared/components/ui/calendar';
-import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { vendorService } from '@/shared/services/vendor';
@@ -33,13 +24,6 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import { useTranslations } from 'next-intl';
 import {
   Table,
@@ -54,7 +38,6 @@ import {
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { OperationType } from '@/shared/types/orders';
-import LoadingPage from '../../loading';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import { DateRange } from 'react-day-picker';

@@ -18,12 +18,8 @@ export function withAuth<P extends object>(
   if (!isMounted) <LoadingPage />;
 
   return function AuthenticatedComponent(props: P) {
-    const {
-      isAuthenticated,
-      isLoading,
-      hasAnyRole,
-      isAuthenticatedCheck,
-    } = useAuthStore();
+    const { isAuthenticated, isLoading, hasAnyRole, isAuthenticatedCheck } =
+      useAuthStore();
 
     const { setValue } = useSharedStore();
     const { push } = useRouter();

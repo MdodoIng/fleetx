@@ -84,8 +84,8 @@ export function AlertSettings() {
         setAlertValue(
           res.data.alert_on_amount
             ? parseFloat(
-              parseFloat(res.data.alert_on_amount).toFixed(2)
-            ).toString()
+                parseFloat(res.data.alert_on_amount).toFixed(2)
+              ).toString()
             : '0'
         );
 

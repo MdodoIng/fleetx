@@ -1,37 +1,34 @@
 'use client';
 
+import { Dispatch, SetStateAction } from 'react';
 import {
-    Dispatch,
-    SetStateAction
-} from 'react';
-import {
-    MapPin,
-    User,
-    Phone,
-    CreditCard,
-    Clock,
-    Truck,
-    Navigation,
-    Info,
-    Receipt,
-    Dot,
+  MapPin,
+  User,
+  Phone,
+  CreditCard,
+  Clock,
+  Truck,
+  Navigation,
+  Info,
+  Receipt,
+  Dot,
 } from 'lucide-react';
 import { paymentMap } from '@/features/orders/constants';
 import { useOrderStore, useSharedStore } from '@/store';
 import EditResiver from '../ui/EditResiver';
 import EditPayment from '../ui/EditPayment';
 import {
-    Table,
-    TableLists,
-    TableSingleList,
-    TableSingleListContent,
-    TableSingleListContentDetailsItem,
-    TableSingleListContentDetailsTitle,
-    TableSingleListContents,
-    TableSingleListContentTitle,
-    TableSingleListHeader,
-    TableSingleListHeaderLeft,
-    TableSingleListHeaderRight,
+  Table,
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { useTranslations } from 'next-intl';
 import LoadMore from '@/shared/components/fetch/LoadMore';

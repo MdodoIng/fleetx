@@ -16,7 +16,6 @@ import {
 } from '@/shared/components/ui/dashboard';
 import { Button } from '@/shared/components/ui/button';
 import { rateService } from '@/shared/services/rate';
-import RatingPageSkeleton from './RatingPageSkeleton'; // Replace RatingFallback with Skeleton
 import {
   OverallRatingType,
   TypeGetDashBoardResponce,

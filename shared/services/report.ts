@@ -130,12 +130,11 @@ export const reportService = {
   }: {
     selectedFromDate?: Date;
     selectedToDate?: Date;
-    searchDriver?: string,
+    searchDriver?: string;
   }): string {
     const { getFormattedDate } = useSharedStore.getState();
     const { user } = useAuthStore.getState();
     const { vendorId, branchId } = useVendorStore.getState();
-
 
     const from = selectedFromDate ? getFormattedDate(selectedFromDate) : '';
     const to = selectedToDate ? getFormattedDate(selectedToDate) : '';
@@ -303,7 +302,7 @@ export const reportService = {
   getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
-      '/funnel/retention/no-order-has-wallet/users',
+        '/funnel/retention/no-order-has-wallet/users',
       {
         method: 'GET',
       }
@@ -339,7 +338,7 @@ export const reportService = {
   getSalesFunnelRetention2Insight(): Promise<any> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
-      '/funnel/retention/no-order-has-wallet/insights',
+        '/funnel/retention/no-order-has-wallet/insights',
       {
         method: 'GET',
       }

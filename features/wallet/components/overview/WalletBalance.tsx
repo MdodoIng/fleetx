@@ -35,7 +35,6 @@ export function WalletBalance({
 
   const t = useTranslations('component.features.wallet');
 
-
   return (
     <Card className=" bg-gradient-to-r from-primary-blue to-purple-600 text-white w-full shrink flex ">
       <CardHeader className="flex md:flex-row flex-col gap-10  justify-between items-center">

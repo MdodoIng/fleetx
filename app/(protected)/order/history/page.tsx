@@ -5,18 +5,20 @@ import {
   CreditCard,
   Dot,
   Download,
-  Info, MapPin,
+  Info,
+  MapPin,
   Navigation,
   Phone,
   Receipt,
   Search,
   Truck,
-  User
+  User,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import {
-  TypeLiveOrderItem, TypeRootLiveOrderList
+  TypeLiveOrderItem,
+  TypeRootLiveOrderList,
 } from '@/shared/types/orders';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useSharedStore, useVendorStore } from '@/store';
@@ -31,7 +33,8 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { useTranslations } from 'next-intl';
 import {
-  Table, TableLists,
+  Table,
+  TableLists,
   TableSingleListContent,
   TableSingleListContentDetailsItem,
   TableSingleListContentDetailsTitle,
@@ -40,7 +43,7 @@ import {
   TableSingleListHeader,
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
-  TableSingleList
+  TableSingleList,
 } from '@/shared/components/ui/tableList';
 import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
@@ -118,7 +121,7 @@ export default function OrderTrackingDashboard() {
     } finally {
       setIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     page,
     date?.from,

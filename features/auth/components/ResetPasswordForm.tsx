@@ -28,8 +28,9 @@ import {
 import { useRouter } from 'next/navigation';
 
 const ResetPasswordForm = () => {
-  const { isLoading, resetPassword, getDecodedAccessToken } = useAuthStore();
-  const { push } = useRouter();
+  const { isLoading, resetPassword, getDecodedAccessToken, login } =
+    useAuthStore();
+  const redirectToHome = useRedirectToHome();
 
   const form = useForm<TypeResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema),
@@ -51,16 +52,19 @@ const ResetPasswordForm = () => {
       );
       if (success) {
         toast.success('Password reset successful!', {});
-        push('/auth/login');
-      } else {
-        toast.error('An unexpected error occurred. Please try again.', {});
+        const loginRes = await login(token.user.email, data.password);
+
+        if (loginRes) {
+          redirectToHome();
+        } else {
+          toast.error('An unexpected error occurred. Please try again.', {});
+        }
       }
     } catch (err: unknown) {
       toast.error(
         err instanceof Error ? err.message : 'An unexpected error occurred.',
         {}
       );
-    } finally {
     }
   };
 

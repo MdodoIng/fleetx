@@ -15,11 +15,7 @@ import type {
   UserRole,
 } from '@/shared/types/user';
 import { clearAllStore, useSharedStore, useVendorStore } from '.';
-import { appConfig } from '@/shared/services/app-config';
 import userService from '@/shared/services/user';
-import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
-
-const userApiUrl = appConfig.userServiceApiUrl();
 
 type AuthState = {
   user: AuthRoot['data'] | null;
@@ -29,7 +25,7 @@ type AuthState = {
   tokenForRest: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  refreshToken: () => Promise<void>;
+  refreshToken: () => Promise<any>;
   resetPassword: (
     password: string,
     confirmPassword: string,
@@ -222,12 +218,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   refreshToken: async () => {
-    const currentToken =
-      get().user?.token ||
-      JSON.parse(localStorage.getItem(storageKeys.userContext) || '{}')?.token;
-    if (!currentToken) return;
-
-    const tokenPayload = get().getDecodedAccessToken(currentToken);
+    const tokenPayload = get().getDecodedAccessToken();
     if (!tokenPayload) return;
 
     try {
@@ -252,6 +243,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
 
       localStorage.setItem(storageKeys.refreshTime, new Date().toString());
+      return true;
     } catch (error) {
       console.error('Refresh token failed:', error);
       get().logout();
@@ -260,7 +252,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   getDecodedAccessToken: (token) => {
     if (!token) {
-      const userStr = localStorage.getItem(storageKeys.authAppToken);
+      const userStr =
+        get().user?.token || localStorage.getItem(storageKeys.authAppToken);
       if (!userStr) {
         get().logout();
         return;
@@ -332,47 +325,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   ) => {
     set({ isLoading: true });
     try {
-      const res = await userService.restUserPassword({
+      await userService.restUserPassword({
         password,
         confirm_password: confirmPassword,
         user_id: userId,
       });
-      if (res.data) {
-        localStorage.setItem(storageKeys.authAppToken, res.data.token);
 
-        const tokenPayload = get().getDecodedAccessToken(res.data.token);
-        if (tokenPayload?.roles[0] === 'VENDOR_USER') {
-          if (!tokenPayload.user.vendor?.sla_accepted) {
-            set({ isLoading: false, tokenForRest: true });
-            return false;
-          } else {
-            useVendorStore.setState({
-              vendorId: tokenPayload.user.vendor?.vendor_id,
-              branchId: tokenPayload.user.vendor?.branch_id,
-            });
-          }
-        }
-
-        localStorage.setItem(
-          storageKeys.userContext,
-          JSON.stringify({ token: res.data.token })
-        );
-        localStorage.setItem(storageKeys.refreshTime, new Date().toString());
-
-        if (Cookies.get(COOKIE_AFF_REF_CODE)) {
-          Cookies.remove(COOKIE_AFF_REF_CODE);
-        }
-
-        set({
-          user: res.data,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-
-        return true;
-      }
-
-      set({ isLoading: false });
       return false;
     } catch (err) {
       console.error('Login error:', err);

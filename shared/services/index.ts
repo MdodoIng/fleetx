@@ -14,9 +14,7 @@ import { Locale, useTranslations } from 'next-intl';
 import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
-import {
-  TypeFirstOrderInsightResponse,
-} from '../types';
+import { TypeFirstOrderInsightResponse } from '../types';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
@@ -133,8 +131,8 @@ export const getZone = (request: any) =>
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
     appConfig.orderServiceApiUrl() +
-    '/get-customer-bulk-order/' +
-    encryptedOrderNo
+      '/get-customer-bulk-order/' +
+      encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
@@ -213,7 +211,9 @@ export const showServerMessage = (status: ToastStatus, resMessage: string) => {
   let realMessage: string;
 
   if (message) {
-    realMessage = t(`apiMessages.${resMessage}` as any, { defaultValue: message.value });
+    realMessage = t(`apiMessages.${resMessage}` as any, {
+      defaultValue: message.value,
+    });
   } else {
     realMessage = t('commonMessages.errorMessage');
   }

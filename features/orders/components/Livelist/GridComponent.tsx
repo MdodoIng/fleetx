@@ -32,7 +32,6 @@ interface GridComponentProps {
   setSelectedOrder: Dispatch<SetStateAction<any>>;
   statusHistory: TypeStatusHistoryForUi[];
   isModel?: boolean;
-
 }
 
 const GridComponent: React.FC<GridComponentProps> = ({
@@ -40,7 +39,6 @@ const GridComponent: React.FC<GridComponentProps> = ({
   setSelectedOrder,
   statusHistory,
   isModel: toggleModel = false,
-
 }) => {
   const { orderStatusListData } = useOrderStore();
   const t = useTranslations('component.features.orders.live');

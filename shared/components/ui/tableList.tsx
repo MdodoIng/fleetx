@@ -154,7 +154,10 @@ function TableSingleListContentDetailsItem({
   return (
     <div
       data-slot="table-single-list-content-details-item"
-      className={cn('text-xs text-[#1D1B20] flex items-center gap-1', className)}
+      className={cn(
+        'text-xs text-[#1D1B20] flex items-center gap-1',
+        className
+      )}
       {...props}
     />
   );
@@ -172,5 +175,5 @@ export {
   TableSingleListContent,
   TableSingleListContentTitle,
   TableSingleListContentDetailsTitle,
-  TableSingleListContentDetailsItem
+  TableSingleListContentDetailsItem,
 };

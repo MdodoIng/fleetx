@@ -49,5 +49,3 @@ export const appConfig = {
     return environment.GOOGLE_KEY;
   },
 };
-
-

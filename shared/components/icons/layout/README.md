@@ -31,24 +31,23 @@ A collection of customizable TSX icon components converted from SVG files. These
 ### Individual Icon Usage
 
 ```tsx
-import { ActiveOrdersIcon, NewOrderIcon } from '@/shared/components/icons/sidebar';
+import {
+  ActiveOrdersIcon,
+  NewOrderIcon,
+} from '@/shared/components/icons/sidebar';
 
 function MyComponent() {
   return (
     <div>
       {/* Default usage */}
       <ActiveOrdersIcon />
-      
+
       {/* Custom size and color */}
-      <NewOrderIcon 
-        width={32} 
-        height={32} 
-        color="#3B82F6" 
-      />
-      
+      <NewOrderIcon width={32} height={32} color="#3B82F6" />
+
       {/* With CSS classes */}
-      <MyWalletIcon 
-        className="hover:scale-110 transition-transform" 
+      <MyWalletIcon
+        className="hover:scale-110 transition-transform"
         color="#10B981"
       />
     </div>
@@ -82,7 +81,7 @@ function NavigationMenu() {
         const IconComponent = iconMap[item.icon];
         return (
           <div key={item.id} className="nav-item">
-            <IconComponent 
+            <IconComponent
               color={item.isActive ? '#004CF7' : '#6B7280'}
               width={24}
               height={24}
@@ -101,28 +100,28 @@ function NavigationMenu() {
 ### Using Icon Utilities
 
 ```tsx
-import { 
-  renderSidebarIcon, 
+import {
+  renderSidebarIcon,
   renderSidebarIconWithDefaults,
   getColorFromScheme,
-  colorSchemes 
+  colorSchemes,
 } from '@/shared/components/icons/sidebar';
 
 function UtilityExample() {
   return (
     <div>
       {/* Render icon dynamically */}
-      {renderSidebarIcon('newOrder', { 
-        color: '#10B981', 
-        width: 20, 
-        height: 20 
+      {renderSidebarIcon('newOrder', {
+        color: '#10B981',
+        width: 20,
+        height: 20,
       })}
-      
+
       {/* Render with default props */}
-      {renderSidebarIconWithDefaults('activeOrders', { 
-        color: getColorFromScheme('success') 
+      {renderSidebarIconWithDefaults('activeOrders', {
+        color: getColorFromScheme('success'),
       })}
-      
+
       {/* Using color schemes */}
       <NewOrderIcon color={colorSchemes.active} />
       <HistoryIcon color={colorSchemes.warning} />
@@ -134,21 +133,24 @@ function UtilityExample() {
 ### Dynamic Icon Rendering
 
 ```tsx
-import { getIconComponent, isValidIconType } from '@/shared/components/icons/sidebar';
+import {
+  getIconComponent,
+  isValidIconType,
+} from '@/shared/components/icons/sidebar';
 
 function DynamicIconRenderer({ iconType, ...props }) {
   // Validate icon type
   if (!isValidIconType(iconType)) {
     return <div>Invalid icon type</div>;
   }
-  
+
   // Get and render component
   const IconComponent = getIconComponent(iconType);
   return IconComponent ? <IconComponent {...props} /> : null;
 }
 
 // Usage
-<DynamicIconRenderer iconType="myWallet" color="#8B5CF6" />
+<DynamicIconRenderer iconType="myWallet" color="#8B5CF6" />;
 ```
 
 ## Advanced Examples
@@ -157,7 +159,11 @@ function DynamicIconRenderer({ iconType, ...props }) {
 
 ```tsx
 import React, { useState } from 'react';
-import { iconMap, SidebarIconType, colorSchemes } from '@/shared/components/icons/sidebar';
+import {
+  iconMap,
+  SidebarIconType,
+  colorSchemes,
+} from '@/shared/components/icons/sidebar';
 
 interface SidebarItem {
   id: string;
@@ -168,7 +174,12 @@ interface SidebarItem {
 
 const sidebarItems: SidebarItem[] = [
   { id: 'new-order', label: 'New Order', icon: 'newOrder' },
-  { id: 'active-orders', label: 'Active Orders', icon: 'activeOrders', badge: 5 },
+  {
+    id: 'active-orders',
+    label: 'Active Orders',
+    icon: 'activeOrders',
+    badge: 5,
+  },
   { id: 'history', label: 'History', icon: 'history' },
   { id: 'wallet', label: 'My Wallet', icon: 'myWallet' },
   { id: 'insights', label: 'Bulk Insights', icon: 'bulkInsights' },
@@ -184,7 +195,7 @@ function Sidebar() {
         {sidebarItems.map((item) => {
           const IconComponent = iconMap[item.icon];
           const isActive = activeItem === item.id;
-          
+
           return (
             <button
               key={item.id}
@@ -192,9 +203,10 @@ function Sidebar() {
               className={`
                 w-full flex items-center gap-3 px-3 py-2 rounded-lg mb-2
                 transition-all duration-200
-                ${isActive 
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                  : 'text-gray-600 hover:bg-gray-50'
+                ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                    : 'text-gray-600 hover:bg-gray-50'
                 }
               `}
             >
@@ -222,7 +234,10 @@ function Sidebar() {
 ### Theme-based Icon Colors
 
 ```tsx
-import { colorSchemes, getColorFromScheme } from '@/shared/components/icons/sidebar';
+import {
+  colorSchemes,
+  getColorFromScheme,
+} from '@/shared/components/icons/sidebar';
 
 // Define your theme
 const theme = {
@@ -241,14 +256,8 @@ const theme = {
 function ThemedIcon({ iconType, state = 'default', isDark = false }) {
   const IconComponent = iconMap[iconType];
   const colors = isDark ? theme.dark : theme.light;
-  
-  return (
-    <IconComponent 
-      color={colors[state]}
-      width={24}
-      height={24}
-    />
-  );
+
+  return <IconComponent color={colors[state]} width={24} height={24} />;
 }
 ```
 
@@ -256,10 +265,10 @@ function ThemedIcon({ iconType, state = 'default', isDark = false }) {
 
 ```tsx
 interface SidebarIconProps {
-  width?: number;        // Default varies by icon (18 or 24)
-  height?: number;       // Default varies by icon (18 or 24)
-  color?: string;        // Default varies by icon
-  className?: string;    // Additional CSS classes
+  width?: number; // Default varies by icon (18 or 24)
+  height?: number; // Default varies by icon (18 or 24)
+  color?: string; // Default varies by icon
+  className?: string; // Additional CSS classes
 }
 ```
 
@@ -281,7 +290,10 @@ Available color schemes via `colorSchemes`:
 All components and utilities are fully typed:
 
 ```tsx
-import type { SidebarIconType, SidebarIconProps } from '@/shared/components/icons/sidebar';
+import type {
+  SidebarIconType,
+  SidebarIconProps,
+} from '@/shared/components/icons/sidebar';
 
 // Type-safe icon selection
 const iconType: SidebarIconType = 'newOrder'; // ✅ Valid

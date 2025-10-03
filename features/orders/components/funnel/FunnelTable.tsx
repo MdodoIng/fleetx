@@ -3,7 +3,12 @@
 import clsx from 'clsx';
 import { FunnelRow } from '../../types/useSalesFunnel';
 import { Button } from '@/shared/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from '@/shared/components/ui/dialog';
 import { useState } from 'react';
 import { funnelStage } from '@/shared/constants/storageConstants';
 
@@ -39,7 +44,13 @@ export default function FunnelTable({
   const headersMap: Record<string, string[]> = {
     '1': ['NO RECHARGE', 'FOLLOW UP1', 'RECHARGED', 'FOLLOW UP2', 'ACTIVATED'],
     '2': ['NO RECHARGE', 'FOLLOW UP1', 'RECHARGED', 'FOLLOW UP2', 'RETENTION'],
-    '3': ['HAS WALLET', 'FOLLOW UP1', 'FOLLOW UP2', 'RETAINED', 'REPEATED CHURN'],
+    '3': [
+      'HAS WALLET',
+      'FOLLOW UP1',
+      'FOLLOW UP2',
+      'RETAINED',
+      'REPEATED CHURN',
+    ],
     '4': ['CHURNED', 'CONTACTED', 'RE-ACTIVATING', 'RE-ACTIVATED', 'DORMANT'],
   };
 
@@ -49,7 +60,11 @@ export default function FunnelTable({
   if (isNoData) {
     return (
       <div className="text-center py-10">
-        <img src="/images/nodata.png" alt="No data" className="mx-auto mb-4 w-24" />
+        <img
+          src="/images/nodata.png"
+          alt="No data"
+          className="mx-auto mb-4 w-24"
+        />
         <p className="text-gray-600">Whoops! No data found</p>
       </div>
     );
@@ -99,7 +114,12 @@ export default function FunnelTable({
           </Button>
         )}
         {!isNoData && (
-          <Button variant="ghost" onClick={moveToTop} className="text-xl p-2" aria-label="Scroll to top">
+          <Button
+            variant="ghost"
+            onClick={moveToTop}
+            className="text-xl p-2"
+            aria-label="Scroll to top"
+          >
             ↑
           </Button>
         )}
@@ -110,7 +130,9 @@ export default function FunnelTable({
           <div className="flex items-center justify-between">
             <DialogTitle>User Note</DialogTitle>
             <DialogClose asChild>
-              <Button variant="ghost" aria-label="Close note dialog">&times;</Button>
+              <Button variant="ghost" aria-label="Close note dialog">
+                &times;
+              </Button>
             </DialogClose>
           </div>
           <div className="mt-4">

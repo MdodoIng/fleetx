@@ -130,9 +130,9 @@ export const useAddUpdateVendor = (
         return vendorStore.isEditVendorBranchId
           ? vendorBranchValid
           : true &&
-          vendorNameValid &&
-          vendorBranchFieldsValid &&
-          vendorFieldsValid;
+              vendorNameValid &&
+              vendorBranchFieldsValid &&
+              vendorFieldsValid;
       } catch (error) {
         console.error('Validation error:', error);
         return false;
@@ -241,17 +241,17 @@ export const useAddUpdateVendor = (
 
     const formFixBrach = branch
       ? mapBranchDynamic(
-        branch as Partial<TypeEditVendorReq['branches'][number]>,
-        branchTemplate,
-        isCreateNewBranch,
-        resVendor
-      )
+          branch as Partial<TypeEditVendorReq['branches'][number]>,
+          branchTemplate,
+          isCreateNewBranch,
+          resVendor
+        )
       : mapBranchDynamic(
-        editVendorBranchFormValues! as any,
-        newVendorBranchTemplate! as any,
-        isCreateNewBranch,
-        resVendor
-      );
+          editVendorBranchFormValues! as any,
+          newVendorBranchTemplate! as any,
+          isCreateNewBranch,
+          resVendor
+        );
 
     console.log(formFixBrach, 'editVendorBranchFormValues');
     const formFixBrachVal = formFixBrach
@@ -357,9 +357,9 @@ export const useAddUpdateVendor = (
               street_id: item.address.street_id,
               ...(item.address.building
                 ? {
-                  building: item.address.building ?? '',
-                  building_id: item.address.building_id ?? null,
-                }
+                    building: item.address.building ?? '',
+                    building_id: item.address.building_id ?? null,
+                  }
                 : {}),
               paci_number: item.address.paci_number,
               landmark: item.address.landmark,

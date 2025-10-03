@@ -4,13 +4,6 @@ import DateSelect from '@/shared/components/selectors/DateSelect';
 import { Button } from '@/shared/components/ui/button';
 import { Search } from 'lucide-react';
 import { Input } from '@/shared/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { paymentService } from '@/shared/services/payment';
 import { vendorService } from '@/shared/services/vendor';
@@ -26,7 +19,6 @@ import {
   ReceiptPoundSterling,
   ServerCrash,
   Type,
-  X,
 } from 'lucide-react';
 import { useEffect, useState, type JSX } from 'react';
 import {
@@ -48,9 +40,6 @@ import {
   TableSingleListContentDetailsTitle,
   TableSingleListContentDetailsItem,
 } from '@/shared/components/ui/tableList';
-import { useTranslations } from 'next-intl';
-import SearchableSelect from '@/shared/components/selectors';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import VendorSelector from '@/shared/components/selectors/VendorSelector';
 import { DateRange } from 'react-day-picker';
 import { TableFallback } from '@/shared/components/fetch/fallback';
@@ -58,8 +47,6 @@ import LoadMore from '@/shared/components/fetch/LoadMore';
 import NoData from '@/shared/components/fetch/NoData';
 
 function PaymentHistory(): JSX.Element {
-  const t = useTranslations();
-  const vendorStore = useVendorStore();
   const { exportOrdersToCSV } = useTableExport();
 
   const [searchTerm, setSearchTerm] = useState('');

@@ -65,7 +65,10 @@ export default function RatingFallback() {
               <CardContent>
                 <div className="space-y-4">
                   {Array.from({ length: 2 }).map((_, itemIndex) => (
-                    <div key={itemIndex} className="flex items-center justify-between">
+                    <div
+                      key={itemIndex}
+                      className="flex items-center justify-between"
+                    >
                       <Skeleton className="h-6 w-20" />
                       <Skeleton className="h-9 w-32 rounded-lg" />
                     </div>

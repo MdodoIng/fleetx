@@ -1,4 +1,3 @@
-
 export interface TypeVendorPricingRuleRes {
   data: {
     id: string;

@@ -55,7 +55,7 @@ function DriverSelect({ value, onChangeAction }: Props) {
     <SearchableSelect
       options={options}
       value={value}
-      classNameFroInput='border-none'
+      classNameFroInput="border-none"
       onChangeAction={onChangeAction}
       placeholder={t('component.features.orders.live.search.driver')}
     />

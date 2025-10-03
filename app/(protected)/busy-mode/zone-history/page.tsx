@@ -1,9 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
-import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Table,

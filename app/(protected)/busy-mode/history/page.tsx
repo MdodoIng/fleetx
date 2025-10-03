@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Calendar, Download, Search } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
 import {
   Dashboard,
   DashboardHeader,
@@ -25,7 +24,6 @@ import {
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import NoData from '@/shared/components/fetch/NoData';
 import LoadMore from '@/shared/components/fetch/LoadMore';
-import { useSharedStore } from '@/store';
 import { configService } from '@/shared/services/config';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { DateRange } from 'react-day-picker';
