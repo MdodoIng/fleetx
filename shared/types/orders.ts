@@ -643,3 +643,123 @@ export type TypeAddressByMobileItem = {
 export type TypeAddressByMobileResponse = {
   data: TypeAddressByMobileItem[];
 };
+
+export interface TypeOrderInfoResponse {
+  data: {
+    order: {
+      id: string;
+      fulfill: TypeLiveOrderFulfill | null;
+      status_change_reason: {
+        reason: string;
+      } | null;
+      updated_address: {
+        is_addr_last_updated_by_customer: string | undefined;
+      } | null;
+      created_at: string;
+      updated_at: string;
+      deleted: boolean;
+      order_number: string;
+      customer_name: string;
+      mobile_number: string;
+      vendor_id: string;
+      branch_id: string;
+      vendor_order_id: string | null;
+      store_id: string | null;
+      pick_up: TypeLiveOrderPickup;
+      drop_off: TypeLiveOrderDropOff;
+      order_meta: TypeLiveOrderMeta;
+      payment_type: number;
+      status: number;
+      primary_status: number;
+      order_ever_rescheduled: boolean;
+      amount_to_collect: string;
+      created_from_vendor_api: boolean;
+      source: number;
+      delivery_fee: string;
+      delivery_distance: string;
+      delivery_duration: string;
+      driver_id: number | null;
+      driver_ever_reached_destination: boolean;
+      pushed_to_report: boolean;
+      order_index: number;
+      added_to_wallet: boolean;
+      trip_type: number;
+      oms_agent_id: string | null;
+      fresh_chat_restore_id: string | null;
+      estimated_delivery_at: string;
+      estimated_pickup_at: string;
+      ref_bonus_type: number;
+      ref_bonus_to: any | null;
+      zone_region_id: string;
+      account_manager_id: string | null;
+      order_group: TypeLiveOrderGroup;
+      trip_ref_order: any | null;
+      re_order_ref: any | null;
+      status_history: TypeOrderStatusHistoryHistory['status_history'];
+      branch_name: string;
+      vendor_name: string;
+      vendor_official_name: string;
+      created_by: string;
+      created_from: string;
+      delivery_model: number;
+      cod_counter_type: number;
+      counter_barcode: string | null;
+      order_type: number;
+      is_high_priveleged_vendor_order: boolean;
+      bike_order: boolean;
+    };
+    vendor_branch: {
+      id: string;
+      name: string;
+      name_ar: string;
+      code: string | null;
+      mobile_number: string;
+      main_branch: boolean;
+      address: {
+        area: string;
+        block: string;
+        street: string;
+        area_id: number;
+        block_id: number;
+        landmark: string;
+        latitude: string;
+        longitude: string;
+        street_id: number;
+        paci_number: string;
+        customer_name: string;
+        mobile_number: string;
+      };
+      vendor: {
+        id: string;
+        name: string;
+        name_ar: string;
+        cod_counter_type: number;
+        code: string | null;
+        vendor_affiliation: string | null;
+        official_name: string | null;
+        ref_type: number;
+        ref_by: string | null;
+        is_vendor_central_wallet_enabled: boolean;
+        required_min_wallet_balance: string;
+        account_manager_id: string | null;
+        is_strategic_vendor: boolean;
+        strategic_vendor_fee_share: number;
+      };
+      required_min_wallet_balance: string;
+      branch_zone: {
+        tookan_region: {
+          region_id: string;
+        };
+      }[];
+    };
+    user_info: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      phone: string;
+      vendor: any | null;
+      source: number;
+    };
+    ratings: any[];
+  };
+}

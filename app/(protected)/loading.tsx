@@ -2,7 +2,7 @@
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import React from 'react';
 
-const LoadingPage: React.FC<{ hideHead?: boolean }> = ({ hideHead }) => {
+const LoadingPage = () => {
   return <TableFallback />;
 };
 

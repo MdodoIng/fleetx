@@ -47,13 +47,13 @@ import { commonConstants } from '@/shared/constants/storageConstants';
 // Define interfaces for bulk drop-off data and driver
 interface BulkDropOff {
   id: number;
-  vendorOrderId: string;
-  customerName: string;
-  mobileNumber: string;
+  vendor_order_id: string;
+  customer_name: string;
+  mobile_number: string;
   address: string;
-  driverInstructions: string;
-  amountToCollect: number;
-  paymentDisplayType: string;
+  driver_instructions: string;
+  amount_to_collect: number;
+  payment_display_type: string;
   enableChecked: boolean;
 }
 
@@ -64,7 +64,7 @@ export default function BulkOrderPage() {
   const [loading, setLoading] = useState(true);
   const [bulkDropOffs, setBulkDropOffs] = useState<BulkDropOff[]>([]);
   const [selectedDropOffs, setSelectedDropOffs] = useState<BulkDropOff[]>([]);
-  const [selectedDriver, setSelectedDriver] = useState();
+  const [selectedDriver, setSelectedDriver] = useState<any>();
   const [enableHeaderChecked, setEnableHeaderChecked] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -137,19 +137,23 @@ export default function BulkOrderPage() {
         }
 
         const dropOffs: BulkDropOff[] = jsonData.map(
-          (row: any, index: number) => ({
-            id: index + 1,
-            vendorOrderId: row['Order Id'] || `Order_${index + 1}`,
-            customerName: row['Customer Name'] || '',
-            mobileNumber: row['Mobile Number'] || '',
-            address: row['Address'] || '',
-            driverInstructions: row['Driver Instructions'] || '',
-            amountToCollect: parseFloat(row['COD']) || 0,
-            paymentDisplayType:
-              row['Payment Type'] ||
-              (parseFloat(row['COD']) > 0 ? 'COD' : 'Prepaid'),
-            enableChecked: false,
-          })
+          (row: any, index: number) => {
+            const amountToCollect = parseFloat(row['COD']) || 0;
+            const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
+            const address =
+              `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
+            return {
+              id: index + 1,
+              vendor_order_id: row['Num'] || `Order_${index + 1}`,
+              customer_name: row['Customer Name'] || '',
+              mobile_number: row['Phone Number'] || '',
+              address: address,
+              driver_instructions: row['Note'] || '',
+              amount_to_collect: amountToCollect,
+              payment_display_type: paymentDisplayType,
+              enableChecked: false,
+            };
+          }
         );
 
         setBulkDropOffs(dropOffs);
@@ -219,28 +223,14 @@ export default function BulkOrderPage() {
       });
 
       const dropOffs = selectedDropOffs.map((dropOff) => ({
-        order_index: dropOff.vendorOrderId,
-        customer_name: dropOff.customerName,
-        mobile_number: dropOff.mobileNumber,
+        order_index: dropOff.vendor_order_id,
+        customer_name: dropOff.customer_name,
+        mobile_number: dropOff.mobile_number,
         address: dropOff.address,
-        specific_driver_instructions: dropOff.driverInstructions,
-        amount_to_collect: dropOff.amountToCollect,
-        payment_type: dropOff.amountToCollect > 0 ? 1 : 2,
+        specific_driver_instructions: dropOff.driver_instructions,
+        amount_to_collect: dropOff.amount_to_collect,
+        payment_type: dropOff.amount_to_collect > 0 ? 1 : 2,
         vendor_id: vendorId!,
-        address: dropOff.display_address,
-        area: '',
-        area_id: '',
-        block: '',
-        block_id: '',
-        street: '',
-        street_id: '',
-        building: '',
-        building_id: '',
-        latitude: '',
-        longitude: '',
-        apartment_no: '',
-        floor: '',
-        additional_address: '',
       }));
 
       const orders = {
@@ -346,13 +336,13 @@ export default function BulkOrderPage() {
                                 }
                               />
                             </TableCell>
-                            <TableCell>{drop.vendorOrderId}</TableCell>
-                            <TableCell>{drop.customerName}</TableCell>
-                            <TableCell>{drop.mobileNumber}</TableCell>
+                            <TableCell>{drop.vendor_order_id}</TableCell>
+                            <TableCell>{drop.customer_name}</TableCell>
+                            <TableCell>{drop.mobile_number}</TableCell>
                             <TableCell>{drop.address}</TableCell>
-                            <TableCell>{drop.driverInstructions}</TableCell>
-                            <TableCell>{drop.amountToCollect}</TableCell>
-                            <TableCell>{drop.paymentDisplayType}</TableCell>
+                            <TableCell>{drop.driver_instructions}</TableCell>
+                            <TableCell>{drop.amount_to_collect}</TableCell>
+                            <TableCell>{drop.payment_display_type}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -363,7 +353,7 @@ export default function BulkOrderPage() {
             )}
           </div>
         </DashboardContent>
-        <DashboardFooter className="md:relative">
+        <DashboardFooter>
           <Card className="w-full max-md:hidden bg-white py-4 ">
             <CardContent className="sm:rounded-[8px]  bg-white   flex  items-center justify-end   text-sm flex-wrap gap-x-10 gap-y-4 ">
               <div className="flex justify-end space-x-4">
