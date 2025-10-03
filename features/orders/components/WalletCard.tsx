@@ -1,7 +1,7 @@
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
-import { useSharedStore, useWalletStore } from '@/store';
+import { useSharedStore, useVendorStore, useWalletStore } from '@/store';
 import { getVendorWalletBalanceInit } from '@/store/useWalletStore';
 import { Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -15,10 +15,11 @@ export default function WalletCard({
   const t = useTranslations('component.features.orders.walletCard');
   const { appConstants } = useSharedStore();
   const { walletBalance } = useWalletStore();
+  const { vendorId, branchId } = useVendorStore();
 
   useEffect(() => {
     getVendorWalletBalanceInit();
-  }, []);
+  }, [vendorId, branchId]);
 
   return (
     <div

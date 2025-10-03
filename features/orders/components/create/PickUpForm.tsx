@@ -44,7 +44,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
   return (
     <Form {...senderForm}>
       <form onSubmit={(e) => e.preventDefault()} className="space-y-6 h-full ">
-        <Card className="rounded-[8px] bg-white h-full border-[#2828281A] flex w-full">
+        <Card className=" h-full flex w-full">
           <CardHeader className="flex w-full justify-between items-center">
             <div className="flex gap-2  text-dark-grey">
               <CardIcon>

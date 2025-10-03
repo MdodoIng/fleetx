@@ -26,7 +26,7 @@ import { vendorService } from '@/shared/services/vendor';
 
 import { CreateFallback } from '@/shared/components/fetch/fallback';
 
-export default function ShippingForm() {
+export default function OrderCreatePage() {
   const orderStore = useOrderStore();
   const [isDropIndex, setIsDropofIndex] = useState<number>(
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
