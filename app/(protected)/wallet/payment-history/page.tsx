@@ -51,7 +51,7 @@ import {
 import { useTranslations } from 'next-intl';
 import SearchableSelect from '@/shared/components/selectors';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import VendorSelecter from '@/shared/components/selectors/VendorSelecter';
+import VendorSelector from '@/shared/components/selectors/VendorSelector';
 import { DateRange } from 'react-day-picker';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import LoadMore from '@/shared/components/fetch/LoadMore';
@@ -193,7 +193,7 @@ function PaymentHistory(): JSX.Element {
             />
           </div>
 
-          <VendorSelecter
+          <VendorSelector
             classNameFroInput="border-none"
             selectedVendorValue={selectedVendor}
             handleChangeVendor={setSelectedVendor}

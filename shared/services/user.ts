@@ -1,4 +1,3 @@
-import { User } from '@/features/orders/types/useSalesFunnel';
 import { apiFetch } from '../lib/utils';
 import { appConfig } from './app-config';
 import {
@@ -6,7 +5,9 @@ import {
   TypeAreaRestrictionResponse,
   TypeChangePasswordRequest,
   TypeChangePasswordResponse,
+  TypeResetPasswordRequest,
   TypeSingUpRequest,
+  User,
   UserLogin,
 } from '../types/user';
 
@@ -26,7 +27,7 @@ export const userService = {
       body: JSON.stringify(token),
     }),
 
-  restUserPassword: (user: User) =>
+  restUserPassword: (user: TypeResetPasswordRequest): Promise<AuthRoot> =>
     apiFetch(`${getUserServiceApiUrl}/vendor-password-reset`, {
       method: 'POST',
       body: JSON.stringify(user),

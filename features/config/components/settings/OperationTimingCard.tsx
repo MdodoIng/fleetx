@@ -292,11 +292,7 @@ export default function OperationTimingCard() {
             )}
           </CardContent>
           <CardFooter className="w-full">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={submitted || !form.formState.isValid}
-            >
+            <Button type="submit" className="w-full" disabled={submitted}>
               Save
             </Button>
           </CardFooter>

@@ -14,11 +14,12 @@ export type TypeSearchableSelectOption = {
 type Props = ComponentProps<'div'> & {
   options: TypeSearchableSelectOption[] | undefined;
   value?: string | number;
-  onChangeAction: (e: string) => void;
+  onChangeAction: (e: any) => void;
   placeholder?: string;
   classNameFroInput?: string;
   onChangeValue?: (e: string) => void;
   loading?: boolean;
+  isHideWhenNotHaveData?: boolean;
 };
 
 export default function SearchableSelect({
@@ -30,6 +31,7 @@ export default function SearchableSelect({
   classNameFroInput = 'border-none',
   className,
   loading,
+  isHideWhenNotHaveData = true,
 
   ...props
 }: Props) {
@@ -58,9 +60,9 @@ export default function SearchableSelect({
       return () =>
         document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [open]);
+  }, [onChangeValue, open]);
 
-  if (!filtered) return;
+  if (isHideWhenNotHaveData ? !filtered : false) return;
 
   return (
     <div
@@ -109,7 +111,7 @@ export default function SearchableSelect({
         />
       )}
 
-      {open && filtered?.length > 0 && (
+      {open && filtered && filtered.length > 0 && (
         <div className="absolute z-10 mt-1 left-1/2 -translate-x-1/2 rounded-md border border-dark-grey/10 shadow bg-white p-2 w-max max-h-[300px] snap-x snap-mandatory min-w-full overflow-auto">
           {filtered?.map((opt) => (
             <div

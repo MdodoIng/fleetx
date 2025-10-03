@@ -63,8 +63,8 @@ export function handleFullDayToggle(
 
   if (newValue) {
     // clear/disable values like Angular
-    form.setValue('startTime', '12:00');
-    form.setValue('endTime', '12:00');
+    form.setValue('start_time', '12:00');
+    form.setValue('end_time', '12:00');
     form.setValue('startTimeAMPM', '0');
     form.setValue('endTimeAMPM', '0');
     form.clearErrors();

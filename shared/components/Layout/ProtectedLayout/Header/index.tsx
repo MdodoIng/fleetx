@@ -12,7 +12,7 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import hamburgerIon from '@/assets/icons/hamburger.svg';
 
 import Image from 'next/image';
-import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
+import UserAndBranchSelector from '@/shared/components/selectors/UserAndBranchSelector';
 
 const Header: React.FC = () => {
   const { user } = useAuthStore();
@@ -60,15 +60,13 @@ const Header: React.FC = () => {
       )}
     >
       {isAccess ? (
-        <UserAndBranchSelecter
+        <UserAndBranchSelector
           handleChangeBranch={handleClickBranch}
           handleChangeVendor={handleChangeVendor}
           handleClear={handleClear}
-          classNameFroInput='border'
-          type='header'
-          
+          classNameFroInput="border"
+          type="header"
         />
-
       ) : (
         <p className="font-medium max-lg:hidden">{t('title')}</p>
       )}

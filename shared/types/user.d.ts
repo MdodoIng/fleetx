@@ -55,7 +55,7 @@ type UserLogin = {
   oldPassword: string;
 };
 
-type ResetPassword = {
+type TypeResetPasswordRequest = {
   password: string;
   confirm_password: string;
   user_id: string;

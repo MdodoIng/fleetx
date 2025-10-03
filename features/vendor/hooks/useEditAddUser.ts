@@ -111,7 +111,7 @@ export const useEditAddUser = ({
     setIsLoadingForm(false);
   };
 
-  const requst: TypeUpdateVendorUserReq = {
+  const request: TypeUpdateVendorUserReq = {
     vendor_id: isBranch?.vendor ? isBranch?.vendor.id : '',
     branch_id: isBranch?.branch ? isBranch?.branch.id : '',
     cod_counter_type: isEditUser ? isEditUser.vendor.cod_counter_type! : 2,
@@ -124,7 +124,7 @@ export const useEditAddUser = ({
     }),
   };
 
-  const handelSumbit = async (fetchVendorUserList: () => Promise<void>) => {
+  const handleSubmit = async (fetchVendorUserList: () => Promise<void>) => {
     const isFormValid = await validateFormsAsync(
       isAdd === false ? 'Add' : undefined
     );
@@ -136,7 +136,7 @@ export const useEditAddUser = ({
     }
     if (isAdd === true) {
       try {
-        const res = await vendorService.createVendorUser(requst as any);
+        const res = await vendorService.createVendorUser(request as any);
 
         if (res.data) {
           editUserForm.clearErrors();
@@ -151,7 +151,7 @@ export const useEditAddUser = ({
       try {
         const res = await vendorService.updateVendorUser(
           isEditUser?.vendor.user!,
-          requst
+          request
         );
 
         editUserForm.clearErrors();
@@ -168,7 +168,7 @@ export const useEditAddUser = ({
   return {
     validateFormsAsync,
     updateUserDetailsForFromApi,
-    handelSumbit,
+    handleSubmit,
     isLoadingForm,
   };
 };

@@ -340,7 +340,8 @@
       "forgotPassword": "Forgot Password?",
       "submit": "Sign In",
       "error": "Invalid email or password",
-      "loading": "Signing in..."
+      "loading": "Signing in...",
+      "change-password": "Change Password"
     },
     "passwordReset": {
       "dialogTitle": "Enter Email",
