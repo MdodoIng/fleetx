@@ -19,9 +19,7 @@ export default function NoData({
   size = 'larg',
 }: NoDataProps) {
   return (
-    <Card
-      className={cn('w-full ', size === 'small' && 'py-2', className)}
-    >
+    <Card className={cn('w-full ', size === 'small' && 'py-2', className)}>
       <CardContent
         className={cn(
           'flex flex-col items-center justify-center  h-full ',

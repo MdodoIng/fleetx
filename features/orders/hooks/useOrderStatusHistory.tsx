@@ -24,6 +24,7 @@ export function useOrderStatusHistory(order: TypeLiveOrderItem) {
       setLoading(true);
       setError(null);
       const res = await orderService.getOrderStatusById(order.id);
+      console.log(res);
       setOrderHistorys(res.data);
     } catch (err) {
       console.error('Error fetching order status history:', err);
@@ -53,7 +54,6 @@ export function useOrderStatusHistory(order: TypeLiveOrderItem) {
 function BuildStatusHistory(
   order: TypeLiveOrderItem,
   orderHistorys: TypeOrderStatusHistoryHistory,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any
 ): TypeStatusHistoryForUi[] {
   const base = [

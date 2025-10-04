@@ -29,15 +29,16 @@ export default function DashboardFallback() {
         </div>
 
         {/* Analytics Blocks Skeleton */}
-        <div
-          className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]  h-full w-full gap-5"
-        >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]  h-full w-full gap-5">
           {Array.from({ length: 2 }).map((_, index) => (
             <Skeleton key={index} className="h-80 w-full rounded-lg">
               <div className="flex flex-col gap-3 p-4">
                 <Skeleton className="h-4 w-1/3" />
                 {Array.from({ length: 3 }).map((_, itemIndex) => (
-                  <div key={itemIndex} className="flex justify-between items-center">
+                  <div
+                    key={itemIndex}
+                    className="flex justify-between items-center"
+                  >
                     <Skeleton className="h-4 w-1/4" />
                     <Skeleton className="h-4 w-1/6" />
                   </div>

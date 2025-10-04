@@ -124,9 +124,9 @@ const EditResiver = ({
   const t = useTranslations();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
-      <form className='mt-auto'>
+      <form className="mt-auto">
         <DialogTrigger asChild>
-          <Button variant={"outline"} className={cn('h-auto  w-full mt-2')}>
+          <Button variant={'outline'} className={cn('h-auto  w-full mt-2')}>
             <Edit />
           </Button>
         </DialogTrigger>

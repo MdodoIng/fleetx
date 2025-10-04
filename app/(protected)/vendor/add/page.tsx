@@ -1,16 +1,7 @@
 'use client';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vendor';
-import {
-  TypeEditVendorReq,
-  TypeVendorList,
-  TypeVendorType,
-} from '@/shared/types/vendor';
+import { TypeVendorType } from '@/shared/types/vendor';
 import { useVendorStore } from '@/store';
-import { useEffect, useState, type JSX } from 'react';
-import VendorsList from '@/features/vendor/components/list/VendorsList';
-import EditVendor from '@/features/vendor/components/list/EditVendor';
+import { useState, type JSX } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   editVendorBranchSchema,
@@ -24,12 +15,10 @@ import { Button } from '@/shared/components/ui/button';
 import { Label } from '@/shared/components/ui/label';
 import { Input } from '@/shared/components/ui/input';
 import { Checkbox } from '@/shared/components/ui/checkbox';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
 import BranchEditForm from '@/features/vendor/components/BranchEditForm';
 import { Contact, MapPin, Trash, User2 } from 'lucide-react';
 import {
   Dashboard,
-  DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
@@ -43,7 +32,6 @@ import {
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
 import { Separator } from '@/shared/components/ui/separator';
-import { TableFallback } from '@/shared/components/fetch/fallback';
 
 function VendorAdd(): JSX.Element {
   const vendorStore = useVendorStore();

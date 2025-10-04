@@ -130,7 +130,6 @@ function DashboardFooter({ className, ...props }: React.ComponentProps<'div'>) {
       data-slot="dashboard-footer"
       className={cn(
         'flex items-center md:sticky bottom-0 left-0 w-full',
-        main_padding.dashboard.y,
         className
       )}
       {...props}

@@ -102,15 +102,9 @@ const EditPayment = ({
   const { dirState } = useDir();
   return (
     <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
-      <form className='mt-auto'>
+      <form className="mt-auto">
         <DialogTrigger asChild>
-          <Button
-            variant={"outline"}
-            className={cn(
-              'h-auto mt-2 w-full   ',
-           
-            )}
-          >
+          <Button variant={'outline'} className={cn('h-auto mt-2 w-full   ')}>
             <Edit />
           </Button>
         </DialogTrigger>

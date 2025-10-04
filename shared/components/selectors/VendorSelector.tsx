@@ -11,7 +11,7 @@ type Props = {
   type?: 'header';
 };
 
-const VendorSelecter: React.FC<Props> = ({
+const VendorSelector: React.FC<Props> = ({
   handleChangeVendor,
   selectedVendorValue,
   classNameFroInput = '',
@@ -52,4 +52,4 @@ const VendorSelecter: React.FC<Props> = ({
   );
 };
 
-export default VendorSelecter;
+export default VendorSelector;

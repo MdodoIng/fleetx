@@ -15,11 +15,7 @@ import type {
   UserRole,
 } from '@/shared/types/user';
 import { clearAllStore, useSharedStore, useVendorStore } from '.';
-import { appConfig } from '@/shared/services/app-config';
 import userService from '@/shared/services/user';
-import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
-
-const userApiUrl = appConfig.userServiceApiUrl();
 
 type AuthState = {
   user: AuthRoot['data'] | null;
@@ -29,7 +25,12 @@ type AuthState = {
   tokenForRest: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  refreshToken: (token?: string | null) => Promise<void>;
+  refreshToken: () => Promise<any>;
+  resetPassword: (
+    password: string,
+    confirmPassword: string,
+    userId: string
+  ) => Promise<boolean>;
   getDecodedAccessToken: (token?: string | null) => DecodedToken | undefined;
   triggerRefreshToken: () => Promise<void>;
   isAuthenticatedCheck: () => boolean;
@@ -60,7 +61,8 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     } else {
-      useAuthStore.getState().refreshToken();
+      console.log(' useAuthStore.getState().triggerRefreshToken();');
+      useAuthStore.getState().triggerRefreshToken();
     }
     useAuthStore.setState({ isLoading: false });
     return isTokenValid;
@@ -189,7 +191,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     userService.slaAccepted(request).then(
       () => {
         get()
-          .refreshToken(tokenPayload?.token)
+          .refreshToken()
           .then(() => {
             useSharedStore.setState({
               foodicsReference: null,
@@ -215,36 +217,48 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  refreshToken: async (token) => {
-    const tokenPayload = get().getDecodedAccessToken(token);
+  refreshToken: async () => {
+    const tokenPayload = get().getDecodedAccessToken();
     if (!tokenPayload) return;
 
-    const res = await userService.refreshToken({ token: tokenPayload.token });
+    try {
+      const res = await userService.refreshToken({ token: tokenPayload.token });
 
-    localStorage.setItem(
-      storageKeys.userContext,
-      JSON.stringify({ token: res.data.token })
-    );
-    const decoded: any = jwtDecode(res.data.token!);
+      const newToken = res.data.token;
+      if (!newToken) return;
 
-    set({
-      user: {
-        ...decoded,
-        token: res.data.token,
-      },
-      isAuthenticated: true,
-    });
-    localStorage.setItem(storageKeys.refreshTime, new Date().toString());
+      localStorage.setItem(
+        storageKeys.userContext,
+        JSON.stringify({ token: newToken })
+      );
+
+      const decoded: any = jwtDecode(newToken);
+
+      set({
+        user: {
+          ...decoded,
+          token: newToken,
+        },
+        isAuthenticated: true,
+      });
+
+      localStorage.setItem(storageKeys.refreshTime, new Date().toString());
+      return true;
+    } catch (error) {
+      console.error('Refresh token failed:', error);
+      get().logout();
+    }
   },
 
   getDecodedAccessToken: (token) => {
     if (!token) {
-      const userStr = localStorage.getItem(storageKeys.userContext);
+      const userStr =
+        get().user?.token || localStorage.getItem(storageKeys.authAppToken);
       if (!userStr) {
         get().logout();
         return;
       }
-      token = JSON.parse(userStr).token;
+      token = userStr;
     }
     try {
       const decoded: any = jwtDecode(token!);
@@ -282,6 +296,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const currentTime = new Date();
       const minute =
         Math.abs(currentTime.getTime() - refreshDate.getTime()) / 60000;
+
       if (Math.round(minute) >= 30) {
         try {
           await get().refreshToken();
@@ -302,5 +317,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isAuthenticated: isAuth });
     set({ isLoading: false });
     return isAuth;
+  },
+  resetPassword: async (
+    password: string,
+    confirmPassword: string,
+    userId: string
+  ) => {
+    set({ isLoading: true });
+    try {
+      await userService.restUserPassword({
+        password,
+        confirm_password: confirmPassword,
+        user_id: userId,
+      });
+
+      return false;
+    } catch (err) {
+      console.error('Login error:', err);
+      set({ isLoading: false });
+      return false;
+    }
   },
 }));

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export default function NotFound() {
   const { isAuthenticatedCheck } = useAuthStore();
   const redirectToHome = useRedirectToHome();
-  const { push, back } = useRouter();
+  const { push } = useRouter();
 
   useEffect(() => {
     const isAuthenticated = isAuthenticatedCheck();
@@ -16,5 +16,6 @@ export default function NotFound() {
     } else {
       push('/auth/login');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

@@ -169,6 +169,18 @@
       "logout": {
         "title": "Logout",
         "subtitle": "Sign out from your profile"
+      },
+      "setting": {
+        "title": "Settings",
+        "subtitle": "Adjust your profile settings"
+      },
+      "busyMode": {
+        "title": "Busy Mode History",
+        "subtitle": "View and manage busy mode logs"
+      },
+      "zoneBusyMode": {
+        "title": "Zone Busy Mode History",
+        "subtitle": "Track zone-specific busy mode activity"
       }
     }
   },
@@ -328,7 +340,8 @@
       "forgotPassword": "Forgot Password?",
       "submit": "Sign In",
       "error": "Invalid email or password",
-      "loading": "Signing in..."
+      "loading": "Signing in...",
+      "change-password": "Change Password"
     },
     "passwordReset": {
       "dialogTitle": "Enter Email",
@@ -618,7 +631,7 @@
             "confirmed": "Confirmed",
             "urgent": "Urgent",
             "dateRange": "From Date - To Date",
-            "clear":"Clear"
+            "clear": "Clear"
           }
         },
 

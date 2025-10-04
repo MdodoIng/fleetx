@@ -4,6 +4,7 @@ import { appConfig } from '@/shared/services/app-config';
 import {
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
+  TypeOrderInfoResponse,
   TypeOrders,
   TypeRootEstimatedDeliveryReturnFromApi,
   TypeRootLiveBuilkOrderListInsights,
@@ -247,7 +248,7 @@ export const orderService = {
       body: JSON.stringify(order),
     }),
 
-  getOrderInfo: (orderNumber: string) =>
+  getOrderInfo: (orderNumber: string): Promise<TypeOrderInfoResponse> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}/get-order-info/${orderNumber}`),
 
   getFormattedDate(date: Date) {

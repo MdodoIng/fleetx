@@ -3,7 +3,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { TypeEditVendorBranchSchema } from '../validations/editVendor';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Label } from '@/shared/components/ui/label';
-import { Input } from '@/shared/components/ui/input';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import {
   Form,
   FormControl,
@@ -90,7 +90,7 @@ const BranchEditForm = ({
             <FormItem>
               <FormLabel>Mobile</FormLabel>
               <FormControl>
-                <Input placeholder="mobile" {...field} />
+                <InputPhone {...field} />
               </FormControl>
 
               <FormMessage />

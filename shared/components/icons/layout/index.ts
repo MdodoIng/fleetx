@@ -39,7 +39,9 @@ export type SidebarIconType =
   | 'balanceReport'
   | 'overview'
   | 'chartBar'
-  | 'star' |"chartNoAxesGantt";
+  | 'star'
+  | 'chartNoAxesGantt'
+  | 'settings';
 
 export interface SidebarIconProps {
   width?: number;

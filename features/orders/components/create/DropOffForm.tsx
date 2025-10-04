@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { useEffect } from 'react';
 
@@ -80,19 +80,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
               <FormItem className="col-span-1 sm:col-span-2">
                 <FormLabel>{t('form.phone.label')}</FormLabel>
                 <FormControl>
-                  <div className="grid grid-cols-[80px_1fr] gap-2 w-full ">
-                    <Input
-                      disabled
-                      defaultValue={t('form.phone.placeholder1')}
-                      placeholder={t('form.phone.placeholder1')}
-                      className=""
-                    />
-                    <Input
-                      placeholder={t('form.phone.placeholder2')}
-                      {...field}
-                      className="w-full"
-                    />
-                  </div>
+                  <InputPhone {...field} />
                 </FormControl>
                 {field.value ? (
                   <FormMessage />

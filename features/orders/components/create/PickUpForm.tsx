@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 
 import { TypePickUpSchema } from '../../validations/order';
@@ -44,7 +44,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
   return (
     <Form {...senderForm}>
       <form onSubmit={(e) => e.preventDefault()} className="space-y-6 h-full ">
-        <Card className="rounded-[8px] bg-white h-full border-[#2828281A] flex w-full">
+        <Card className=" h-full flex w-full">
           <CardHeader className="flex w-full justify-between items-center">
             <div className="flex gap-2  text-dark-grey">
               <CardIcon>
@@ -106,19 +106,7 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
                 <FormItem className="col-span-1 sm:col-span-2 ">
                   <FormLabel> {t('form.phone.label')}</FormLabel>
                   <FormControl>
-                    <div className="grid grid-cols-[80px_1fr] gap-2 w-full ">
-                      <Input
-                        disabled
-                        defaultValue={t('form.phone.placeholder1')}
-                        placeholder={t('form.phone.placeholder1')}
-                        className=""
-                      />
-                      <Input
-                        placeholder={t('form.phone.placeholder2')}
-                        {...field}
-                        className="w-full"
-                      />
-                    </div>
+                    <InputPhone {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -136,7 +124,6 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
                   landmarkFieldName={t('form.address.label')}
                   isMap
                 />
-                
               )}
             />
 

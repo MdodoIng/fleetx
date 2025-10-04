@@ -1,10 +1,9 @@
-
 import main_padding from '@/styles/padding';
 import { Icon } from '@iconify/react';
 import { StarIcon } from 'lucide-react';
 import bgBox from '@/assets/images/promo banner box.webp';
 import Image from 'next/image';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
 
 export default function PromoBanner() {
@@ -22,7 +21,6 @@ export default function PromoBanner() {
     },
     { icon: 'charm:tick', text: t('features.noFees') },
   ];
-
 
   return (
     <div
@@ -46,7 +44,9 @@ export default function PromoBanner() {
           span: (chunks) => <span>{chunks}</span>,
         })}
       </h2>
-      <h3 className="text-off-white mt-2 max-md:max-w-[80%]">{t('subHeadline')}</h3>
+      <h3 className="text-off-white mt-2 max-md:max-w-[80%]">
+        {t('subHeadline')}
+      </h3>
 
       <ul className="pb-6 space-y-2 text-sm text-off-white my-auto max-md:hidden">
         {promoPoints.map((item, idx) => (

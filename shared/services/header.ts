@@ -89,7 +89,7 @@ export async function updateZoneAndSome() {
         'currentZoneId',
         branch.branch_zone.length > 0
           ? // @ts-ignore
-          parseInt(branch.branch_zone[0].tookan_region?.region_id as any)
+            parseInt(branch.branch_zone[0].tookan_region?.region_id as any)
           : undefined
       );
       sharedStore.setValue('defaultZoneId', sharedStore.currentZoneId);
@@ -109,10 +109,8 @@ export async function setHeadingForVendorBranch() {
     getWarningMessage,
   } = useNotificationStore.getState();
 
-  const {
-    readAppConstants,
-    setValue: setSharedValue,
-  } = useSharedStore.getState();
+  const { readAppConstants, setValue: setSharedValue } =
+    useSharedStore.getState();
 
   const { setValue: setVendorValue, branchDetails } = useVendorStore.getState();
 

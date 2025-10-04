@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import {
   changePasswordSchema,
   TypeChangePasswordForm,
-} from '@/features/config/validations/changePpassword';
+} from '@/features/config/validations/changePassword';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/shared/components/ui/card';
 import {

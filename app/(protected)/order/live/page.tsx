@@ -217,7 +217,6 @@ export default function OrderTrackingDashboard() {
         ) : (
           <NoData />
         )}
-
       </DashboardContent>
     </Dashboard>
   );

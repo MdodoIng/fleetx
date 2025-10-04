@@ -2,7 +2,7 @@
 
 import { cn } from '@/shared/lib/utils';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import { MapPin } from 'lucide-react';
+import { LoaderCircle, MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { Control } from 'react-hook-form';
@@ -11,41 +11,34 @@ import { classForInput } from '../../ui/input';
 import { Button } from '../../ui/button';
 
 const LandmarkInput = ({
-  control,
   fieldName,
   landmarkValues,
-  searchData,
   loading,
   isInputVal,
-  isInputBlur,
   isMapOpen,
   isMap,
   handleEnter,
-  handleAddressClick,
   handleRemoveAddress,
   setIsMapOpen,
   setIsInputBlur,
   setIsInputVal,
   fieldPlaceholder,
 
-  selectedItems,
   location,
 }: {
-  control: Control<any, any, any>;
   fieldName: string;
   fieldPlaceholder: string;
   setIsInputBlur: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedItems: Locs[] | undefined;
+
   handleRemoveAddress: (removed: any) => void;
   setIsInputVal: React.Dispatch<React.SetStateAction<string>>;
   isInputVal: string;
   landmarkValues: any;
   handleEnter: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setIsMapOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  searchData: Locs[] | undefined;
+
   loading: boolean;
-  handleAddressClick: (selected: any) => void;
-  isInputBlur: boolean;
+
   isMapOpen: boolean;
   isMap: boolean;
 
@@ -153,7 +146,13 @@ const LandmarkInput = ({
                 !isMapOpen && 'bg-white'
               )}
             >
-              {isMapOpen ? 'submit' : <MapPin />}
+              {loading ? (
+                <LoaderCircle className="animate-spin ease-in-out" />
+              ) : isMapOpen ? (
+                'submit'
+              ) : (
+                <MapPin />
+              )}
             </Button>
           )}
         </div>

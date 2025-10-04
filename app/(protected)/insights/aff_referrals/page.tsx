@@ -1,29 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import TableComponent from '@/features/vendor/components/list/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import { useState, useEffect } from 'react';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import { useAuthStore } from '@/store';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { Download, X } from 'lucide-react';
-import { vendorService } from '@/shared/services/vendor';
+import { startOfMonth, endOfMonth } from 'date-fns';
+import { Download } from 'lucide-react';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Dashboard,
@@ -38,7 +21,6 @@ import {
   Table,
   TableLists,
   TableSingleListHeader,
-  TableSingleListContent,
   TableSingleListContents,
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
@@ -137,8 +119,7 @@ const AffiliateReferrals = () => {
   useEffect(() => {
     fetchReferralDetails();
   }, [date, selectedAffiliator]);
-  
-  
+
   if (isLoading) return <TableFallback />;
 
   return (
@@ -231,9 +212,7 @@ const AffiliateReferrals = () => {
                 ))}
               </TableLists>
             </Table>
-          ) : (
-            null
-          )}
+          ) : null}
         </div>
       </DashboardContent>
     </Dashboard>

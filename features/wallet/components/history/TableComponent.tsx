@@ -77,8 +77,6 @@ export default function TableComponent({
     };
   }, [handleLoadMore]);
 
-
-
   return (
     <div className="p-6 bg-gray-50 w-full">
       <div className="space-y-6 w-full">
@@ -97,8 +95,9 @@ export default function TableComponent({
               <div className="flex justify-between items-center mb-3 w-full">
                 <div className="flex gap-2">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${operation_type?.color || 'bg-gray-100 text-gray-700'
-                      }`}
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      operation_type?.color || 'bg-gray-100 text-gray-700'
+                    }`}
                   >
                     {operation_type?.value}
                   </span>

@@ -306,7 +306,6 @@ export const useSharedStore = create<SharedState & SharedActions>()(
           set({ currentStatusZoneETPTrend: newTrend });
           // addGoogleTag();
         },
-
       };
     },
     {

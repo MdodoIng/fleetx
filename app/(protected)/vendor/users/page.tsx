@@ -97,7 +97,7 @@ function VendorUser() {
       onClick?: () => void;
     }[][]
   >([]);
-  const [frist, setFrist] = useState(true);
+  const [first, setFirst] = useState(true);
   const searchParams = useSearchParams();
 
   const search = searchParams.get('id');
@@ -106,7 +106,7 @@ function VendorUser() {
     try {
       const res = await vendorService.getVendorUserList(
         page,
-        frist ? (search ? searchValue : searchValue) : searchValue,
+        first ? (search ? searchValue : searchValue) : searchValue,
         selectedVendor?.id,
         selectedBranch?.id
       );
@@ -115,11 +115,11 @@ function VendorUser() {
     } catch (error) {
       console.log(error);
     } finally {
-      setFrist(false);
+      setFirst(false);
     }
   }, [
     page,
-    frist,
+    first,
     search,
     searchValue,
     selectedVendor?.id,
@@ -216,7 +216,7 @@ function VendorUser() {
     reValidateMode: 'onBlur',
   });
 
-  const { isLoadingForm, updateUserDetailsForFromApi, handelSumbit } =
+  const { isLoadingForm, updateUserDetailsForFromApi, handleSubmit } =
     useEditAddUser({
       editUserForm,
       data: data!,
@@ -314,10 +314,10 @@ function VendorUser() {
 
               <DialogFooter>
                 <Button
-                  onClick={async () => await handelSumbit(fetchVendorUserList)}
+                  onClick={async () => await handleSubmit(fetchVendorUserList)}
                   type="submit"
                 >
-                  Update Branch
+                  {isAdd ? 'Create Branch' : 'Update Branch'}
                 </Button>
               </DialogFooter>
             </DialogContent>

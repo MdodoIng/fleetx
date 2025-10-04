@@ -55,7 +55,7 @@ export default function DeliverySummaryFooter({
   return (
     <>
       <Card className="w-full max-md:hidden bg-white py-4 ">
-        <CardContent className=" sm:rounded-[8px]  bg-white   flex  items-center justify-between   text-sm text-gray-700  flex-wrap gap-x-10 gap-y-4 ">
+        <CardContent className=" sm:rounded-[8px]  bg-white   flex  items-center justify-between   text-sm   flex-wrap gap-x-10 gap-y-4 ">
           <div className="flex items-center space-x-6 max-sm:bg-whites ">
             <span className="font-medium text-primary-blue cursor-pointer">
               {t('orderDetails')}

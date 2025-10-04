@@ -1,10 +1,6 @@
 'use client';
 import { TypePickUpSchema } from '@/features/orders/validations/order';
-import { useOrderStore } from '@/store/useOrderStore';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { APP_SIDEBAR_MENU, routes } from '@/shared/constants/routes';
-import { UserRole } from '@/shared/types/user';
+import { routes } from '@/shared/constants/routes';
 import { MenuItem, RouteConfig } from '@/shared/types/constants';
 import { useAuthStore } from '@/store';
 import { usePathname } from 'next/navigation';

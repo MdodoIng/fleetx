@@ -1,13 +1,6 @@
 'use client';
 
-import React, {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 const MyMap = dynamic(() => import('@/shared/components/MyMap/Map'), {
@@ -48,7 +41,7 @@ export default function AddressLandmarkFields({
   const [parentId, setParentId] = useState<string | number | undefined>(
     undefined
   );
-  const [selectedItems, setSelcectItems] = useState<Locs[]>();
+
   const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
   const [mapValues, setMapValues] = useState<{
     lat: number;
@@ -62,159 +55,165 @@ export default function AddressLandmarkFields({
   const [isInputVal, setIsInputVal] = useState<string>('');
   const [isInputBlur, setIsInputBlur] = useState<boolean>(false);
 
-  const formVaues = form.watch();
+  const street = watch(location ? `${location}.street` : 'street');
+  const block = watch(location ? `${location}.block` : 'block');
+  const area = watch(location ? `${location}.area` : 'area');
 
   useEffect(() => {
-    if (watch(location ? `${location}.street` : 'street')) {
+    if (street) {
       setCurrentLevel('building');
-    } else if (watch(location ? `${location}.block` : 'block')) {
+    } else if (block) {
       setCurrentLevel('street');
-    } else if (watch(location ? `${location}.area` : 'area')) {
+    } else if (area) {
       setCurrentLevel('block');
     } else {
       setCurrentLevel('area');
     }
-  }, [formVaues, location, watch]);
+  }, [street, block, area, location]);
 
-  useMemo(async () => {
+  useEffect(() => {
     if (!isInputBlur) return;
-    try {
-      setLoading(true);
-      let data: any = null;
+    let cancelled = false;
 
-      switch (currentLevel) {
-        case 'area':
-          data = await getArea();
-          break;
-        case 'block':
-          if (parentId) {
-            data = await getBlock(String(parentId));
-          }
-          break;
-        case 'street':
-          if (parentId) {
-            data = await getStreet(String(parentId));
-          }
-          break;
-        case 'building':
-          if (parentId) {
-            data = await getBuildings(String(parentId));
-          }
-          break;
-      }
+    (async () => {
+      try {
+        setLoading(true);
+        let data: any = null;
 
-      if (!data?.data) {
-        setSearchData([]);
-        return;
-      }
-
-      const generateDisplayName = (item: any): string => {
         switch (currentLevel) {
           case 'area':
-            return item.name_en || item.area_name_en || `Area ${item.id}`;
-
+            data = await getArea();
+            break;
           case 'block':
-            return item.name_en ? `Block-${item.name_en}` : `Block ${item.id}`;
-
-          case 'street':
-            return item.name_en || item.street_name_en || `Street ${item.id}`;
-
-          case 'building':
-            const buildingName = item.building_name_en || item.name_en;
-            const houseNumber = item.house_en || item.house_ar;
-            const unitInfo = item.unit_no ? ` - Unit ${item.unit_no}` : '';
-            const floorInfo = item.floor_no ? ` - Floor ${item.floor_no}` : '';
-
-            if (buildingName && buildingName !== '0') {
-              return `${buildingName}${unitInfo}${floorInfo}`;
-            } else if (houseNumber && houseNumber !== '0') {
-              return `House ${houseNumber}${unitInfo}${floorInfo}`;
-            } else {
-              return `Building ${item.id}${unitInfo}${floorInfo}`;
+            if (parentId) {
+              data = await getBlock(String(parentId));
             }
-
-          default:
-            return item.name_en || `Item ${item.id}`;
-        }
-      };
-
-      const matchesSearch = (
-        item: any,
-        displayName: string,
-        searchTerm: string
-      ): boolean => {
-        if (!searchTerm.trim()) return true;
-
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        const lowerDisplayName = displayName.toLowerCase();
-
-        if (lowerDisplayName.includes(lowerSearchTerm)) return true;
-
-        if (currentLevel === 'building') {
-          const searchableFields = [
-            item.house_en,
-            item.house_ar,
-            item.unit_no,
-            item.floor_no,
-            item.building_name_en,
-            item.building_name_ar,
-          ].filter(Boolean); // Remove null/undefined values
-
-          return searchableFields.some((field) =>
-            field.toString().toLowerCase().includes(lowerSearchTerm)
-          );
+            break;
+          case 'street':
+            if (parentId) {
+              data = await getStreet(String(parentId));
+            }
+            break;
+          case 'building':
+            if (parentId) {
+              data = await getBuildings(String(parentId));
+            }
+            break;
         }
 
-        return false;
-      };
+        if (!data?.data) {
+          setSearchData([]);
+          return;
+        }
 
-      const items = data.data
-        .map((item: any) => {
-          const displayName = generateDisplayName(item);
-          return {
+        const generateDisplayName = (item: any): string => {
+          switch (currentLevel) {
+            case 'area':
+              return item.name_en || item.area_name_en || `Area ${item.id}`;
+
+            case 'block':
+              return item.name_en
+                ? `Block-${item.name_en}`
+                : `Block ${item.id}`;
+
+            case 'street':
+              return item.name_en || item.street_name_en || `Street ${item.id}`;
+
+            case 'building':
+              const buildingName = item.building_name_en || item.name_en;
+              const houseNumber = item.house_en || item.house_ar;
+              const unitInfo = item.unit_no ? ` - Unit ${item.unit_no}` : '';
+              const floorInfo = item.floor_no
+                ? ` - Floor ${item.floor_no}`
+                : '';
+
+              if (buildingName && buildingName !== '0') {
+                return `${buildingName}${unitInfo}${floorInfo}`;
+              } else if (houseNumber && houseNumber !== '0') {
+                return `House ${houseNumber}${unitInfo}${floorInfo}`;
+              } else {
+                return `Building ${item.id}${unitInfo}${floorInfo}`;
+              }
+
+            default:
+              return item.name_en || `Item ${item.id}`;
+          }
+        };
+
+        const matchesSearch = (
+          item: any,
+          displayName: string,
+          searchTerm: string
+        ): boolean => {
+          if (!searchTerm.trim()) return true;
+
+          const lowerSearchTerm = searchTerm.toLowerCase();
+          const lowerDisplayName = displayName.toLowerCase();
+
+          if (lowerDisplayName.includes(lowerSearchTerm)) return true;
+
+          if (currentLevel === 'building') {
+            const searchableFields = [
+              item.house_en,
+              item.house_ar,
+              item.unit_no,
+              item.floor_no,
+              item.building_name_en,
+              item.building_name_ar,
+            ].filter(Boolean); // Remove null/undefined values
+
+            return searchableFields.some((field) =>
+              field.toString().toLowerCase().includes(lowerSearchTerm)
+            );
+          }
+
+          return false;
+        };
+
+        const items = data.data
+          .map((item: any) => {
+            const displayName = generateDisplayName(item);
+            return {
+              ...item,
+              name_en: displayName,
+              type: currentLevel,
+            };
+          })
+          .filter((item: any) => matchesSearch(item, item.name_en, isInputVal))
+          .map((item: any) => ({
             ...item,
-            name_en: displayName,
-            type: currentLevel,
-          };
-        })
-        .filter((item: any) => matchesSearch(item, item.name_en, isInputVal))
-        .map((item: any) => ({
-          ...item,
-          value: item.id,
-          label: item.name_en,
-        }));
+            value: item.id,
+            label: item.name_en,
+          }));
 
-      setSearchData(items);
-    } catch (err) {
-      console.error('Error fetching location data:', err);
-      setSearchData([]);
-    } finally {
-      setLoading(false);
-    }
+        setSearchData(items);
+      } catch (err) {
+        if (!cancelled) setSearchData([]);
+        console.error('Error fetching location data:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [isInputVal, currentLevel, isInputBlur, parentId]);
 
-  useMemo(() => {
-    if (!isMap) return;
+  const lat = location
+    ? landmarkValues?.[location.replace('.', '') as keyof typeof landmarkValues]
+        ?.latitude
+    : landmarkValues?.latitude;
 
-    const center = {
-      lat: Number(
-        location
-          ? landmarkValues?.[
-              location?.replace('.', '') as keyof typeof landmarkValues
-            ]?.latitude
-          : landmarkValues?.latitude
-      ),
-      lng: Number(
-        location
-          ? landmarkValues?.[
-              location?.replace('.', '') as keyof typeof landmarkValues
-            ]?.longitude
-          : landmarkValues?.longitude
-      ),
-    };
+  const lng = location
+    ? landmarkValues?.[location.replace('.', '') as keyof typeof landmarkValues]
+        ?.longitude
+    : landmarkValues?.longitude;
 
-    setMapValues(center);
-  }, [landmarkValues.latitude, landmarkValues.longitude, isMap]);
+  useEffect(() => {
+    if (!isMap || !lat || !lng) return;
+
+    setMapValues({ lat: Number(lat), lng: Number(lng) });
+  }, [lat, lng, isMap]);
 
   const updateFormData = (data: Locs) => {
     const key = data.loc_type as 'area' | 'block' | 'street' | 'building';
@@ -320,22 +319,17 @@ export default function AddressLandmarkFields({
       >
         {/* Landmark Inputs */}
         <LandmarkInput
-          control={control}
           location={location}
           fieldName={landmarkFieldName!}
           fieldPlaceholder={landmarkFieldPlaceholder!}
-          handleAddressClick={handleAddressClick}
           handleEnter={handleEnter}
           handleRemoveAddress={handleRemoveAddress}
           isInputVal={isInputVal}
           landmarkValues={landmarkValues}
           loading={loading}
-          searchData={searchData}
-          selectedItems={selectedItems}
           setIsInputBlur={setIsInputBlur}
           setIsInputVal={setIsInputVal}
           setIsMapOpen={setIsMapOpen}
-          isInputBlur={isInputBlur}
           isMapOpen={false}
           isMap={isMap}
         />
@@ -354,22 +348,17 @@ export default function AddressLandmarkFields({
           <div className="w-[max(400px,50vw)] mx-auto flex flex-col  bg-white  rounded-[8px] relative z-0 ">
             {/* Landmark Inputs */}
             <LandmarkInput
-              control={control}
               location={location}
               fieldName={landmarkFieldName!}
               fieldPlaceholder={landmarkFieldPlaceholder!}
-              handleAddressClick={handleAddressClick}
               handleEnter={handleEnter}
               handleRemoveAddress={handleRemoveAddress}
               isInputVal={isInputVal}
               landmarkValues={landmarkValues}
               loading={loading}
-              searchData={searchData}
-              selectedItems={selectedItems}
               setIsInputBlur={setIsInputBlur}
               setIsInputVal={setIsInputVal}
               setIsMapOpen={setIsMapOpen}
-              isInputBlur={isInputBlur}
               isMapOpen={isMapOpen}
               isMap={isMap}
             />

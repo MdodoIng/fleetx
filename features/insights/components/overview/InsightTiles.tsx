@@ -28,7 +28,10 @@ export default function InsightTiles({
           <CardContent className="gap-6 flex flex-col px-4 h-full">
             <div className="flex items-center justify-between gap-2">
               <CardTitle
-                className={cn('text-sm opacity-70', highlight && 'text-white opacity-100')}
+                className={cn(
+                  'text-sm opacity-70',
+                  highlight && 'text-white opacity-100'
+                )}
               >
                 {title}
               </CardTitle>

@@ -1,18 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
-import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
+import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 import { CHURN_REASONS } from '@/shared/constants/storageConstants';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {

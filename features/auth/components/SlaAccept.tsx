@@ -8,14 +8,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/shared/components/ui/dialog';
 
-import { Input } from '@/shared/components/ui/input';
 import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
 import { useAuthStore } from '@/store';
 
-import { Icon } from '@iconify/react/dist/iconify.js';
 import { useTranslations } from 'next-intl';
 
 import { toast } from 'sonner';

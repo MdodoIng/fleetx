@@ -23,7 +23,6 @@ import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
 import { TypeZoneData } from '@/shared/types/orders';
 import { TypeZoneGrowth } from '@/shared/types/report';
-import { Loader2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 
 export default function ZoneGrowthPage() {
@@ -36,13 +35,12 @@ export default function ZoneGrowthPage() {
     new Date().getFullYear()
   );
   const [isLoading, setIsLoading] = useState(true);
- 
+
   const [error, setError] = useState<string | null>(null);
 
   // Fetch zones
   useEffect(() => {
     async function loadZones() {
-      
       setError(null);
       try {
         const zones = await orderService.getZone();
@@ -64,7 +62,7 @@ export default function ZoneGrowthPage() {
       console.log('Skipping growth fetch: zone or year not selected');
       return;
     }
-  
+
     setError(null);
     try {
       const data = await reportService.getZoneGrowth(
@@ -154,7 +152,7 @@ export default function ZoneGrowthPage() {
         </div>
       </DashboardHeader>
       <DashboardContent className="flex-col w-full items-center">
-        { orderData && orderData.length > 0 ? (
+        {orderData && orderData.length > 0 ? (
           <Card className="w-full">
             <CardContent>
               <Table className="w-full overflow-x-auto">

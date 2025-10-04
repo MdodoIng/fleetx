@@ -28,9 +28,9 @@ export const BillIcon: React.FC<IntegrationsIconProps> = ({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M5.625 11.625H12.375" stroke={color} strokeLinecap="round"/>
-      <path d="M5.625 9H12.375" stroke={color} strokeLinecap="round"/>
-      <path d="M5.625 6.375H12.375" stroke={color} strokeLinecap="round"/>
+      <path d="M5.625 11.625H12.375" stroke={color} strokeLinecap="round" />
+      <path d="M5.625 9H12.375" stroke={color} strokeLinecap="round" />
+      <path d="M5.625 6.375H12.375" stroke={color} strokeLinecap="round" />
     </svg>
   );
 };

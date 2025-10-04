@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface IconProps {
@@ -32,4 +31,3 @@ export const BalanceReportIcon: React.FC<IconProps> = ({
 };
 
 export default BalanceReportIcon;
-

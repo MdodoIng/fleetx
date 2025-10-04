@@ -5,9 +5,8 @@ import { FormControl } from './form';
 import { useTranslations } from 'next-intl';
 
 export const classForInput = [
-  'file:text-foreground placeholder:text-dark-grey/50  dark:bg-input/30  flex h-12 w-full min-w-0 px-3 py-4 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-dark-grey/25 rounded-[8px] border bg-white',
+  'placeholder:text-dark-grey/50  dark:bg-input/30 h-12  flex  w-full min-w-0 px-3 py-4 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex  file:border-0 file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-dark-grey/20 rounded-[8px] border bg-white file:mr-4 file:py-2 file:px-4 file:rounded  file:text-sm file:font-semibold file:bg-primary-blue/20 file:text-primary-blue hover:file:bg-blue-100',
   '!ring-0',
-  '',
 ];
 
 function Input({
@@ -18,6 +17,7 @@ function Input({
 }: ComponentProps<'input'> & { eyeBtnHide?: boolean }) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password' && !eyeBtnHide;
+  const isFile = type === 'file';
   return (
     <>
       {' '}
@@ -25,7 +25,7 @@ function Input({
         <input
           type={type}
           data-slot="input"
-          className={cn(classForInput, className)}
+          className={cn(classForInput, className, isFile && 'h-auto')}
           {...props}
         />
       ) : (

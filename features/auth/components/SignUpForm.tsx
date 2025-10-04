@@ -8,7 +8,7 @@ import {
   FormControl,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -163,7 +163,10 @@ export default function SignUpForm() {
       </div>
 
       <Form {...form}>
-        <form className="flex flex-col gap-6 w-full">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="flex flex-col gap-6 w-full"
+        >
           <AnimatePresence mode="wait">
             {step === 0 && (
               <motion.div
@@ -213,19 +216,9 @@ export default function SignUpForm() {
                     <FormItem>
                       <FormLabel>{t('fields.phone.label')}</FormLabel>
                       <FormControl>
-                        <div className="grid grid-cols-[80px_1fr] gap-2 w-full ">
-                          <Input
-                            disabled
-                            defaultValue={t('fields.phone.placeholder1')}
-                            placeholder={t('fields.phone.placeholder1')}
-                            className=""
-                          />
-                          <Input
-                            placeholder={t('fields.phone.placeholder2')}
-                            {...field}
-                            className="w-full"
-                          />
-                        </div>
+                        <FormControl>
+                          <InputPhone {...field} />
+                        </FormControl>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -347,9 +340,10 @@ export default function SignUpForm() {
                 <FormField
                   control={form.control}
                   name="area"
-                  render={({ field }) => (
+                  render={() => (
                     <AddressLandmarkFields
                       form={form}
+                      isMap
                       landmarkFieldName={t('fields.address.label')}
                     />
                   )}
@@ -382,7 +376,7 @@ export default function SignUpForm() {
               variant="ghost"
               className={cn(
                 'cursor-pointer bg-[#6750A414] text-[#1D1B20]',
-                step === 0 && 'w-0 px-0 border-0'
+                step === 0 && 'hidden'
               )}
               onClick={() => setStep((s) => s - 1)}
             >

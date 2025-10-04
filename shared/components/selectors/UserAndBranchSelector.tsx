@@ -1,27 +1,29 @@
 import { Button } from '@/shared/components/ui/button';
 
-import { TypeBranch, TypeVendorListItem } from '@/shared/types/vendor';
+import {
+  TypeBranch,
+  TypeVendor,
+  TypeVendorListItem,
+} from '@/shared/types/vendor';
 
 import { useVendorStore } from '@/store';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchableSelect, { TypeSearchableSelectOption } from '.';
 import { X } from 'lucide-react';
-import VendorSelecter from './VendorSelecter';
+import VendorSelector from './VendorSelector';
 import { vendorService } from '@/shared/services/vendor';
-import { setBranchDetails } from '@/shared/services/header';
 
 type Props = {
   handleChangeBranch: (e: string) => void;
   handleChangeVendor: (e: string) => void;
   classNameFroInput?: string;
   handleClear?: () => void;
-  selectedVendorValue?: TypeVendorListItem;
+  selectedVendorValue?: TypeVendorListItem | TypeVendor;
   selectedBranchValue?: TypeBranch;
   type?: 'header' | undefined;
-  optionsBranch?: TypeBranch[];
 };
 
-const UserAndBranchSelecter: React.FC<Props> = ({
+const UserAndBranchSelector: React.FC<Props> = ({
   handleChangeBranch,
   handleChangeVendor,
   handleClear,
@@ -29,15 +31,9 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   selectedBranchValue,
   classNameFroInput = '',
   type,
-  optionsBranch,
 }) => {
-  const {
-    selectedBranch,
-    isBranchAccess,
-    isVendorAccess,
-    selectedVendor,
-    branchDetails,
-  } = useVendorStore();
+  const { selectedBranch, isBranchAccess, isVendorAccess, selectedVendor } =
+    useVendorStore();
   const [optionsForBranch, setOptionsForBranch] =
     useState<TypeSearchableSelectOption[]>();
 
@@ -68,7 +64,7 @@ const UserAndBranchSelecter: React.FC<Props> = ({
     <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
       {isVendorAccess && (
         // <div className="relative z-0  border border-dark-grey/10 rounded-[8px] ">
-        <VendorSelecter
+        <VendorSelector
           handleChangeVendor={handleChangeVendor}
           classNameFroInput={classNameFroInput}
           selectedVendorValue={isSelectedVendor}
@@ -93,6 +89,7 @@ const UserAndBranchSelecter: React.FC<Props> = ({
           className="sm:w-auto"
           classNameFroInput={classNameFroInput}
           loading={isLoading}
+          isHideWhenNotHaveData={false}
         />
         //   <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
         //     <Icon
@@ -120,4 +117,4 @@ const UserAndBranchSelecter: React.FC<Props> = ({
   );
 };
 
-export default UserAndBranchSelecter;
+export default UserAndBranchSelector;

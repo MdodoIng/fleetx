@@ -17,6 +17,7 @@ import {
 import {
   ChartBar,
   ChartNoAxesGantt,
+  Settings,
   Star,
   UserPlus,
   Users,
@@ -43,6 +44,7 @@ export const iconMap: Record<
   chartBar: ChartBar,
   star: Star,
   chartNoAxesGantt: ChartNoAxesGantt,
+  settings: Settings,
 };
 
 // Get icon component by type

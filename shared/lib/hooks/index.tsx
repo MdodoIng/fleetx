@@ -2,8 +2,11 @@
 import { debounce } from 'lodash';
 import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { unstable_ViewTransition } from 'react';
 
 export const isMounted = typeof window !== 'undefined';
+
+export const ViewTransition = unstable_ViewTransition;
 
 export const useDebounce = (
   callback: (...args: any) => void,
