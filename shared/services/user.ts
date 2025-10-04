@@ -1,11 +1,14 @@
-import { User } from '@/features/orders/types/useSalesFunnel';
 import { apiFetch } from '../lib/utils';
-import { AuthRoot, UserLogin } from '../types/auth';
 import { appConfig } from './app-config';
 import {
+  AuthRoot,
+  TypeAreaRestrictionResponse,
   TypeChangePasswordRequest,
   TypeChangePasswordResponse,
+  TypeResetPasswordRequest,
   TypeSingUpRequest,
+  User,
+  UserLogin,
 } from '../types/user';
 
 const getUserServiceApiUrl = appConfig.userServiceApiUrl();
@@ -24,7 +27,7 @@ export const userService = {
       body: JSON.stringify(token),
     }),
 
-  restUserPassword: (user: User) =>
+  restUserPassword: (user: TypeResetPasswordRequest): Promise<AuthRoot> =>
     apiFetch(`${getUserServiceApiUrl}/vendor-password-reset`, {
       method: 'POST',
       body: JSON.stringify(user),
@@ -92,8 +95,10 @@ export const userService = {
       body: JSON.stringify(request),
     }),
 
-  getAreaRestriction: () =>
-    apiFetch(`${getUserServiceApiUrl}/areas/restriction/get`),
+  getAreaRestriction: (): Promise<TypeAreaRestrictionResponse> =>
+    apiFetch(`${getUserServiceApiUrl}/areas/restriction/get`, {
+      method: 'GET',
+    }),
 
   createAreaRestriction: (request: any) =>
     apiFetch(`${getUserServiceApiUrl}/areas/restriction/create`, {

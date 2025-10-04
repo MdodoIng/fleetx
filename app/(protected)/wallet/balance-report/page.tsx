@@ -1,18 +1,13 @@
 'use client';
 import { BalanceReportItem } from '@/features/wallet/type';
-import TableComponent from '@/features/wallet/components/balance-report/TableComponent';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { reportService } from '@/shared/services/report';
-import { vendorService } from '@/shared/services/vendor';
-import { TypeBranch } from '@/shared/types/vendor';
 import { useSharedStore, useVendorStore } from '@/store';
 import {
   BetweenVerticalEndIcon,
   Download,
   GitBranch,
-  PlusSquare,
   ServerCrash,
   User2,
   Wallet,

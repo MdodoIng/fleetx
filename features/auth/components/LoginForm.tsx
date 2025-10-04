@@ -1,3 +1,4 @@
+import logo from '@/assets/images/logo.webp';
 import { Button } from '@/shared/components/ui/button';
 import {
   Form,
@@ -7,27 +8,23 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import logo from '@/assets/images/logo.webp';
 import { Input } from '@/shared/components/ui/input';
 import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
 import { cn } from '@/shared/lib/utils';
 import { useAuthStore } from '@/store';
 import main_padding from '@/styles/padding';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import Image from 'next/image';
-import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import ForgotPassword from './ForgotPassword';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { loginSchema, TypeLoginSchema } from '../validations/auth';
-import { Eye, EyeOff } from 'lucide-react';
+import ForgotPassword from './ForgotPassword';
+import { Separator } from '@/shared/components/ui/separator';
 
 const LoginForm = () => {
-  const { isAuthenticated, isLoading, login } =
-    useAuthStore();
+  const { isLoading, login } = useAuthStore();
   const redirectToHome = useRedirectToHome();
 
   const form = useForm<TypeLoginSchema>({
@@ -44,11 +41,9 @@ const LoginForm = () => {
     if (success) {
       redirectToHome();
     } else {
-      toast.error('Invalid email or password', {});
+      // toast.error('Invalid email or password', {});
     }
   }
-
-
 
   const t = useTranslations('auth');
 
@@ -127,7 +122,7 @@ const LoginForm = () => {
         </form>
       </Form>
 
-      <span className="bg-black/50 w-full h-[1px] " />
+      <Separator />
 
       <div className="flex flex-col w-full items-center text-center gap-2">
         <p className="font-medium text-sm text-dark-grey">

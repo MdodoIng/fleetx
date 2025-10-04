@@ -15,7 +15,7 @@ import { DateRange } from 'react-day-picker';
 
 type Props = {
   value?: DateRange;
-  onChangeAction: Dispatch<SetStateAction<DateRange>>;
+  onChangeAction: Dispatch<SetStateAction<DateRange | any>>;
 };
 
 function DateSelect({ value, onChangeAction }: Props) {

@@ -101,14 +101,14 @@ export interface WalletState {
   deliveryRuleSlabs: any;
   isMultiplePayment: boolean;
   prepareMashkor:
-  | {
-    type: TypeAddCreditDebitformSchema['paymentType'] | undefined;
-    txnNumber: number;
-    amount: number;
-    branch: TypeBranch | undefined;
-    vendor: TypeVendor | undefined;
-  }
-  | undefined;
+    | {
+        type: TypeAddCreditDebitformSchema['paymentType'] | undefined;
+        txnNumber: number;
+        amount: number;
+        branch: TypeBranch | undefined;
+        vendor: TypeVendor | undefined;
+      }
+    | undefined;
 }
 
 export interface WalletActions {

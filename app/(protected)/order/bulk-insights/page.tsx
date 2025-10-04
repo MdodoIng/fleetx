@@ -1,6 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/shared/components/ui/button';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -8,28 +7,14 @@ import {
   CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Phone,
   User,
-  Calendar,
   MapPin,
   Truck,
   Clock,
-  Copy,
-  Edit2,
   CheckCircle,
-  Search,
-  CalendarIcon,
   Dot,
   Navigation,
   Info,
@@ -43,15 +28,7 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { useOrderStore, useVendorStore } from '@/store';
-import { fleetService } from '@/shared/services/fleet';
-import { useTranslations } from 'next-intl';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { format } from 'date-fns';
+import { useVendorStore } from '@/store';
 import { orderService } from '@/shared/services/orders';
 import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
@@ -59,7 +36,6 @@ import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Table,
-  TableHeader,
   TableLists,
   TableSingleList,
   TableSingleListContent,
@@ -72,7 +48,6 @@ import {
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
 import { paymentMap } from '@/features/orders/constants';
-import EditPayment from '@/features/orders/components/ui/EditPayment';
 import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { DateRange } from 'react-day-picker';
 import { InsightsFallback } from '@/shared/components/fetch/fallback';

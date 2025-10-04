@@ -5,7 +5,6 @@ import FunnelFilterHeader from '@/features/orders/components/funnel/FunnelFilter
 import FunnelTable from '@/features/orders/components/funnel/FunnelTable';
 import ShowSalesFunnel from '@/features/orders/components/funnel/ShowSalesFunnel';
 import { useSalesFunnel } from '@/features/orders/hooks/useSalesFunnel';
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
 import {
   Dialog,
   DialogClose,
@@ -19,7 +18,7 @@ function FunnelPage() {
   const {
     types,
     zones,
-  
+
     selectedType,
     selectedZone,
     selectedManager,

@@ -1,9 +1,7 @@
 'use client';
 
-import PromoBanner from "@/features/auth/components/PromoBanner";
-import SignUpForm from "@/features/auth/components/SignUpForm";
-
-
+import PromoBanner from '@/features/auth/components/PromoBanner';
+import SignUpForm from '@/features/auth/components/SignUpForm';
 
 export default function SignUp() {
   return (

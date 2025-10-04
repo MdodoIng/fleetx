@@ -60,7 +60,11 @@ export default function ModelBoxCredit({
     setIsOpen(undefined);
   };
 
-  const ballence = Number(walletBalance) + (prepareMashkor?.type === "credit" ? Number(prepareMashkor?.amount) : -Number(prepareMashkor?.amount));
+  const ballence =
+    Number(walletBalance) +
+    (prepareMashkor?.type === 'credit'
+      ? Number(prepareMashkor?.amount)
+      : -Number(prepareMashkor?.amount));
 
   return (
     <>

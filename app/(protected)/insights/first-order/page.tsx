@@ -18,7 +18,6 @@ import {
   Table,
   TableLists,
   TableSingleListHeader,
-  TableSingleListContent,
   TableSingleListContents,
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
@@ -65,7 +64,6 @@ function FirstOrderInsights() {
   }, [date?.from, date?.to]);
 
   const fetchTableData = useCallback(async () => {
-  
     try {
       const res = await getFirstOrderList(1, page, date?.from, date?.to);
       const transformed =

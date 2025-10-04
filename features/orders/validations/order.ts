@@ -19,8 +19,8 @@ export const pickUpSchema = z.object({
   building: z.string(),
   building_id: z.any(),
   apartment_no: z.any().optional(),
-  floor: z.string().optional(),
-  additional_address: z.string().optional(),
+  floor: z.any().optional(),
+  additional_address: z.any().optional(),
   latitude: z.any(),
   longitude: z.any(),
 });

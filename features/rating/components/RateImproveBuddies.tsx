@@ -47,8 +47,12 @@ export default function RateImproveBuddies({
         setBuddyList(resBuddyList.data || []);
         setTotalCount(resBuddyList.count || 0);
       } else {
-        const response = await rateService.getBuddyList(currentPage, perPage, search);
-        
+        const response = await rateService.getBuddyList(
+          currentPage,
+          perPage,
+          search
+        );
+
         setBuddyList(response.data || []);
         setTotalCount(response.count || 0);
       }
@@ -120,10 +124,18 @@ export default function RateImproveBuddies({
         <CardContent>
           <div className="bg-gray-200 p-2 rounded-t-md">
             <div className="grid grid-cols-4 gap-4 text-center">
-              <div className="bg-gray-500 text-white rounded-md p-2">Driver Name</div>
-              <div className="bg-gray-500 text-white rounded-md p-2">Driver Id</div>
-              <div className="bg-gray-500 text-white rounded-md p-2">Contact Number</div>
-              <div className="bg-gray-500 text-white rounded-md p-2">Rating</div>
+              <div className="bg-gray-500 text-white rounded-md p-2">
+                Driver Name
+              </div>
+              <div className="bg-gray-500 text-white rounded-md p-2">
+                Driver Id
+              </div>
+              <div className="bg-gray-500 text-white rounded-md p-2">
+                Contact Number
+              </div>
+              <div className="bg-gray-500 text-white rounded-md p-2">
+                Rating
+              </div>
             </div>
           </div>
 
@@ -156,10 +168,14 @@ export default function RateImproveBuddies({
                   </h4>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-800">{buddy.buddy_id}</h4>
+                  <h4 className="text-sm font-semibold text-gray-800">
+                    {buddy.buddy_id}
+                  </h4>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-800">{buddy.phone}</h4>
+                  <h4 className="text-sm font-semibold text-gray-800">
+                    {buddy.phone}
+                  </h4>
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold text-orange-500">

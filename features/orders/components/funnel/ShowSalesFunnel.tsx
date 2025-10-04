@@ -27,22 +27,26 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
   const [isNoOrderNoFirstText, setIsNoOrderNoFirstText] = useState(false);
 
   const [noOrderNoRechargeText, setNoOrderNoRechargeText] = useState('');
-  const [noOrderNoRechargePercentage, setNoOrderNoRechargePercentage] = useState('0%');
+  const [noOrderNoRechargePercentage, setNoOrderNoRechargePercentage] =
+    useState('0%');
   const [noOrderNoRechargeCount, setNoOrderNoRechargeCount] = useState(0);
   const [isNoOrderNoRechargeText, setIsNoOrderNoRechargeText] = useState(false);
 
   const [noOrderFollowUp1Text, setNoOrderFollowUp1Text] = useState('');
-  const [noOrderFollowUp1Percentage, setNoOrderFollowUp1Percentage] = useState('0%');
+  const [noOrderFollowUp1Percentage, setNoOrderFollowUp1Percentage] =
+    useState('0%');
   const [noOrderFollowUp1Count, setNoOrderFollowUp1Count] = useState(0);
   const [isNoOrderFollowUp1Text] = useState(false);
 
   const [noOrderRechargedText, setNoOrderRechargedText] = useState('');
-  const [noOrderRechargedPercentage, setNoOrderRechargedPercentage] = useState('0%');
+  const [noOrderRechargedPercentage, setNoOrderRechargedPercentage] =
+    useState('0%');
   const [noOrderRechargedCount, setNoOrderRechargedCount] = useState(0);
   const [isNoOrderRechargedText, setIsNoOrderRechargedText] = useState(false);
 
   const [noOrderFollowUp2Text, setNoOrderFollowUp2Text] = useState('');
-  const [noOrderFollowUp2Percentage, setNoOrderFollowUp2Percentage] = useState('0%');
+  const [noOrderFollowUp2Percentage, setNoOrderFollowUp2Percentage] =
+    useState('0%');
   const [noOrderFollowUp2Count, setNoOrderFollowUp2Count] = useState(0);
   const [isNoOrderFollowUp2Text] = useState(false);
 
@@ -54,19 +58,35 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
   // Stage 3 (Retention2)
   const [noOrderHasWalletText, setNoOrderHasWalletText] = useState('');
   const [noOrderHasWalletCount, setNoOrderHasWalletCount] = useState(0);
-  const [noOrderHasWalletPercentage, setNoOrderHasWalletPercentage] = useState('0%');
+  const [noOrderHasWalletPercentage, setNoOrderHasWalletPercentage] =
+    useState('0%');
 
-  const [noOrderHasWalletFollowUp1Text, setNoOrderHasWalletFollowUp1Text] = useState('');
-  const [noOrderHasWalletFollowUp1Count, setNoOrderHasWalletFollowUp1Count] = useState(0);
-  const [noOrderHasWalletFollowUp1Percentage, setNoOrderHasWalletFollowUp1Percentage] = useState('0%');
+  const [noOrderHasWalletFollowUp1Text, setNoOrderHasWalletFollowUp1Text] =
+    useState('');
+  const [noOrderHasWalletFollowUp1Count, setNoOrderHasWalletFollowUp1Count] =
+    useState(0);
+  const [
+    noOrderHasWalletFollowUp1Percentage,
+    setNoOrderHasWalletFollowUp1Percentage,
+  ] = useState('0%');
 
-  const [noOrderHasWalletFollowUp2Text, setNoOrderHasWalletFollowUp2Text] = useState('');
-  const [noOrderHasWalletFollowUp2Count, setNoOrderHasWalletFollowUp2Count] = useState(0);
-  const [noOrderHasWalletFollowUp2Percentage, setNoOrderHasWalletFollowUp2Percentage] = useState('0%');
+  const [noOrderHasWalletFollowUp2Text, setNoOrderHasWalletFollowUp2Text] =
+    useState('');
+  const [noOrderHasWalletFollowUp2Count, setNoOrderHasWalletFollowUp2Count] =
+    useState(0);
+  const [
+    noOrderHasWalletFollowUp2Percentage,
+    setNoOrderHasWalletFollowUp2Percentage,
+  ] = useState('0%');
 
-  const [noOrderHasWalletRetainedText, setNoOrderHasWalletRetainedText] = useState('');
-  const [noOrderHasWalletRetainedCount, setNoOrderHasWalletRetainedCount] = useState(0);
-  const [noOrderHasWalletRetainedPercentage, setNoOrderHasWalletRetainedPercentage] = useState('0%');
+  const [noOrderHasWalletRetainedText, setNoOrderHasWalletRetainedText] =
+    useState('');
+  const [noOrderHasWalletRetainedCount, setNoOrderHasWalletRetainedCount] =
+    useState(0);
+  const [
+    noOrderHasWalletRetainedPercentage,
+    setNoOrderHasWalletRetainedPercentage,
+  ] = useState('0%');
 
   // Stage 4 (Reactivation)
   const [firstText, setFirstText] = useState('');
@@ -84,12 +104,13 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const fetcherMap: Record<number, () => Promise<{ data: FunnelInsight[] }>> = {
-      1: reportService.getSalesFunnelActivationInsight,
-      2: reportService.getSalesFunnelRetentionInsight,
-      3: reportService.getSalesFunnelRetention2Insight,
-      4: reportService.getSalesFunnelReactivationInsight,
-    };
+    const fetcherMap: Record<number, () => Promise<{ data: FunnelInsight[] }>> =
+      {
+        1: reportService.getSalesFunnelActivationInsight,
+        2: reportService.getSalesFunnelRetentionInsight,
+        3: reportService.getSalesFunnelRetention2Insight,
+        4: reportService.getSalesFunnelReactivationInsight,
+      };
 
     const fetcher = fetcherMap[type];
 
@@ -234,7 +255,10 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
   function setReActivationValue(data: FunnelInsight[]) {
     let baseValue = 0;
     data.forEach((el) => {
-      if (el.stage !== funnelStage.ReActivationChurned && el.stage !== funnelStage.ReActivationDormant) {
+      if (
+        el.stage !== funnelStage.ReActivationChurned &&
+        el.stage !== funnelStage.ReActivationDormant
+      ) {
         const percentage = el.prev_stage_last_week_count
           ? `${((el.last_week_count / (baseValue || el.prev_stage_last_week_count)) * 100).toFixed(2)}%`
           : '0%';
@@ -268,11 +292,7 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
           <Loader2 className="animate-spin text-teal-500" size={48} />
         </div>
       )}
-      {error && (
-        <div className="text-center text-red-500 py-4">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-center text-red-500 py-4">{error}</div>}
       {!error && (
         <Card className="border-none shadow-lg">
           <CardContent className="p-0">

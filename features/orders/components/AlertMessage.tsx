@@ -11,11 +11,11 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
     operationalEndTime,
     warningMessage,
   } = useNotificationStore();
-  
+
   const t = useTranslations('component.features.orders');
 
-  const shouldShowMessage = 
-    !full_day_operational || 
+  const shouldShowMessage =
+    !full_day_operational ||
     (warningMessage && warningMessage.isEnableToggleButton);
 
   if (!shouldShowMessage) return null;
@@ -23,11 +23,12 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
   const MessageComp = () => (
     <>
       {!full_day_operational ? (
-      
         <>
           <Clock className="text-dark-grey/50 w-6 h-6 flex-shrink-0" />
           <div className="flex items-center gap-1 flex-wrap">
-            <p className="text-dark-grey/50 whitespace-nowrap">{t('service-hours')}:</p>
+            <p className="text-dark-grey/50 whitespace-nowrap">
+              {t('service-hours')}:
+            </p>
             <p className="text-dark-grey font-medium">
               {operationalStartTime} – {operationalEndTime}
             </p>
@@ -42,7 +43,6 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
           </div>
         </>
       ) : (
-      
         warningMessage?.message && (
           <p className="text-dark-grey text-center">
             {t('alertMessage')} {warningMessage.message}

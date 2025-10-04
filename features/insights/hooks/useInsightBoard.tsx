@@ -84,6 +84,6 @@ export default function useInsightBoard() {
     date,
     setDate,
     metrics,
-    isLoading
+    isLoading,
   };
 }

@@ -1,8 +1,7 @@
 'use client';
 
-
 import BaseLayout from '@/shared/components/Layout/BaseLayout';
-import { isMounted } from '@/shared/lib/hooks';
+import { isMounted, ViewTransition } from '@/shared/lib/hooks';
 import { useAuthStore } from '@/store';
 import { useEffect } from 'react';
 
@@ -14,7 +13,11 @@ function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticatedCheck]);
 
-  return <BaseLayout>{children}</BaseLayout>;
+  return (
+    <ViewTransition>
+      <BaseLayout>{children}</BaseLayout>
+    </ViewTransition>
+  );
 }
 
 export default Layout;

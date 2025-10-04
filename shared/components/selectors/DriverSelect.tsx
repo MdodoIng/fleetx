@@ -10,13 +10,21 @@ import {
 import { useTranslations } from 'next-intl';
 import { fleetService } from '@/shared/services/fleet';
 import SearchableSelect from '.';
+import { cn } from '@/shared/lib/utils';
 
 type Props = {
   value?: string;
   onChangeAction: Dispatch<SetStateAction<string | undefined>>;
+  className?: string;
+  classNameFroInput?: string;
 };
 
-function DriverSelect({ value, onChangeAction }: Props) {
+function DriverSelect({
+  value,
+  onChangeAction,
+  className,
+  classNameFroInput,
+}: Props) {
   const { showDriversFilter } = useVendorStore();
   const t = useTranslations();
 
@@ -55,7 +63,8 @@ function DriverSelect({ value, onChangeAction }: Props) {
     <SearchableSelect
       options={options}
       value={value}
-      classNameFroInput='border-none'
+      className={className}
+      classNameFroInput={cn('border-none', classNameFroInput)}
       onChangeAction={onChangeAction}
       placeholder={t('component.features.orders.live.search.driver')}
     />

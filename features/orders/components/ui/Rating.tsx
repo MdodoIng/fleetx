@@ -52,7 +52,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [rating, setRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [feedback, setFeedback] = useState<number|null>();
+  const [feedback, setFeedback] = useState<number | null>();
   const [isFeedback, setIsFeedback] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isShowSuccess, setIsShowSuccess] = useState(false);
@@ -61,7 +61,6 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [canRate, setCanRate] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
   const [improvements, setImprovements] = useState<string[]>([]);
-
 
   const checkRatingEligibility = () => {
     // Check if order is completed

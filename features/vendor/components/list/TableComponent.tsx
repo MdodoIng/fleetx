@@ -45,33 +45,33 @@ import { TypeVendorList } from '@/shared/types/vendor';
 
 interface OrdersPageProps {
   data:
-  | (
-    | {
-      icon: ForwardRefExoticComponent<
-        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-      >;
-      title: string;
-      value: string;
-      onClick?: undefined;
-    }
-    | {
-      icon: ForwardRefExoticComponent<
-        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-      >;
-      title: string;
-      value: JSX.Element;
-      onClick?: undefined;
-    }
-    | {
-      icon: ForwardRefExoticComponent<
-        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-      >;
-      title: string;
-      value: JSX.Element;
-      onClick: () => void;
-    }
-  )[][]
-  | undefined;
+    | (
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: string;
+            onClick?: undefined;
+          }
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: JSX.Element;
+            onClick?: undefined;
+          }
+        | {
+            icon: ForwardRefExoticComponent<
+              Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+            >;
+            title: string;
+            value: JSX.Element;
+            onClick: () => void;
+          }
+      )[][]
+    | undefined;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   nextSetItemTotal: any;

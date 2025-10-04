@@ -92,9 +92,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
             <Card key={idx}>
               <CardContent className="text-dark-grey">
                 <div className="flex justify-between  items-center">
-                  <span className="font-semibold ">
-                    {txn.txn_number}
-                  </span>
+                  <span className="font-semibold ">{txn.txn_number}</span>
                   <span
                     className={`px-3 py-1 rounded-full text-white text-xs font-medium ${operation_type?.color}`}
                   >
@@ -109,9 +107,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
                   {txn.txn_amount} {sharedStore.appConstants?.currency}
                 </div>
 
-                <div className="text-sm ">
-                  {formatDate(txn.txn_at)}
-                </div>
+                <div className="text-sm ">{formatDate(txn.txn_at)}</div>
               </CardContent>
             </Card>
           );

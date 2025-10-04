@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { useOrderStore, useSharedStore, useVendorStore } from '@/store';
+import { useSharedStore, useVendorStore } from '@/store';
 import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import {
@@ -19,7 +19,6 @@ import {
   Dashboard,
   DashboardContent,
 } from '@/shared/components/ui/dashboard';
-import { useTranslations } from 'next-intl';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';

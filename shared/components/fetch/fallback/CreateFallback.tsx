@@ -26,22 +26,23 @@ export default function CreateFallback() {
           {Array.from({ length: 2 }).map((_, index) => (
             <Skeleton key={index} className="w-full rounded-lg">
               <div className="flex flex-col gap-10 p-4">
-                <Skeleton className="h-10 w-8/12" /> {/* Card title placeholder */}
+                <Skeleton className="h-10 w-8/12" />{' '}
+                {/* Card title placeholder */}
                 {Array.from({ length: 3 }).map((_, itemIndex) => (
                   <div
                     key={itemIndex}
                     className="flex justify-between flex-col items-center space-y-10"
                   >
-                    <Skeleton className="h-60 w-full" /> {/* Value placeholder */}
-                    <Skeleton className="h-10 w-full" /> {/* Sub-value or icon placeholder */}
+                    <Skeleton className="h-60 w-full" />{' '}
+                    {/* Value placeholder */}
+                    <Skeleton className="h-10 w-full" />{' '}
+                    {/* Sub-value or icon placeholder */}
                   </div>
                 ))}
               </div>
             </Skeleton>
           ))}
         </div>
-
-
       </DashboardContent>
     </Dashboard>
   );

@@ -58,8 +58,8 @@ export default function ReferralDashboard() {
       name: item.first_name,
     };
   });
-  
-    if (loading) return <TableFallback />;
+
+  if (loading) return <TableFallback />;
 
   return (
     <Dashboard className="h-auto sm:h-full">

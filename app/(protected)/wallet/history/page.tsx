@@ -1,14 +1,17 @@
 'use client';
 import {
-  CalendarIcon,
   Download,
   Search,
-  ListFilter,
   CreditCard,
   Clock,
   DollarSign,
   Dot,
   User2,
+  Phone,
+  MapPin,
+  Info,
+  Navigation,
+  Truck,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
@@ -16,13 +19,6 @@ import { format } from 'date-fns';
 import { useVendorStore, useSharedStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
-import { Calendar } from '@/shared/components/ui/calendar';
-import { cn } from '@/shared/lib/utils';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { vendorService } from '@/shared/services/vendor';
@@ -33,19 +29,13 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import { useTranslations } from 'next-intl';
 import {
   Table,
   TableLists,
   TableSingleList,
   TableSingleListContent,
+  TableSingleListContentDetailsItem,
   TableSingleListContentDetailsTitle,
   TableSingleListContents,
   TableSingleListContentTitle,
@@ -53,13 +43,14 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import { OperationType } from '@/shared/types/orders';
-import LoadingPage from '../../loading';
+import { OperationType, TypeOrderInfoResponse } from '@/shared/types/orders';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import { DateRange } from 'react-day-picker';
 import NoData from '@/shared/components/fetch/NoData';
 import LoadMore from '@/shared/components/fetch/LoadMore';
+import { orderService } from '@/shared/services/orders';
+import { paymentMap } from '@/features/orders/constants';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,6 +73,7 @@ export default function OrderTrackingDashboard() {
   const [walletHistory, setWalletHistory] = useState<
     (TypeWalletTransactionHistoryRes['data'][number] & {
       branch: TypeBranch | undefined;
+      order: TypeOrderInfoResponse['data'] | undefined;
     })[]
   >();
   const { branchId, vendorId } = useVendorStore();
@@ -98,16 +90,20 @@ export default function OrderTrackingDashboard() {
       const walletHistoryRes =
         await reportService.getWalletHistory(walletHistoryUrl);
 
-      const walletHistorydata = await Promise.all(
+      console.log(walletHistoryRes);
+      const walletHistoryData = await Promise.all(
         walletHistoryRes.data.map(async (item) => {
           const branchRes = (
             await vendorService.getBranchDetails(item.vendor_id)
           ).data.find((x) => x.id === item.branch_id);
-          return { ...item, branch: branchRes };
+          const orderRes = item.delivery_model
+            ? (await orderService.getOrderInfo(item.txn_number)).data
+            : undefined;
+          return { ...item, branch: branchRes, order: orderRes };
         })
       );
-      setWalletHistory(walletHistorydata);
-      setNextSetItemTotal(walletHistorydata.length < page ? null : true);
+      setWalletHistory(walletHistoryData);
+      setNextSetItemTotal(walletHistoryData.length < page ? null : true);
     } catch (err: unknown) {
       const errorMessage =
         (err as { error?: { message?: string }; message?: string }).error
@@ -237,6 +233,32 @@ export default function OrderTrackingDashboard() {
                         {txn.balance.balance_amount} {appConstants?.currency}
                       </TableSingleListContentDetailsTitle>
                     </TableSingleListContent>
+                    {txn.order && (
+                      <>
+                        {/* Receiver */}
+                        <TableSingleListContent>
+                          <TableSingleListContentTitle>
+                            <User2 size={14} />
+                            {t(
+                              'component.features.orders.live.details.receiver'
+                            )}
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle>
+                            {txn.order.order.drop_off.customer_name}
+                          </TableSingleListContentDetailsTitle>
+                          <TableSingleListContentDetailsItem>
+                            <Phone size={12} />{' '}
+                            {txn.order.order.drop_off.mobile_number}
+                          </TableSingleListContentDetailsItem>
+                          <TableSingleListContentDetailsItem>
+                            <MapPin size={12} /> {txn.order.order.drop_off.area}{' '}
+                            {txn.order.order.drop_off.block}{' '}
+                            {txn.order.order.drop_off.street}{' '}
+                            {txn.order.order.drop_off.building}
+                          </TableSingleListContentDetailsItem>
+                        </TableSingleListContent>
+                      </>
+                    )}
                   </TableSingleListContents>
                 </TableSingleList>
               );

@@ -17,7 +17,8 @@ export default function OverviewFallback() {
         {/* Search and Filter Skeleton */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
           <Skeleton className="h-10 w-40" /> {/* DateSelect placeholder */}
-          <Skeleton className="h-10 w-24 rounded-lg" /> {/* Export Button placeholder */}
+          <Skeleton className="h-10 w-24 rounded-lg" />{' '}
+          {/* Export Button placeholder */}
         </div>
       </DashboardHeader>
 
@@ -29,7 +30,8 @@ export default function OverviewFallback() {
             <Card key={index} className="py-4">
               <CardContent className="flex flex-col h-full gap-4 px-4">
                 <Skeleton className="h-6 w-20" /> {/* Title placeholder */}
-                <Skeleton className="h-8 w-16 mt-auto" /> {/* Count placeholder */}
+                <Skeleton className="h-8 w-16 mt-auto" />{' '}
+                {/* Count placeholder */}
               </CardContent>
             </Card>
           ))}
@@ -47,7 +49,8 @@ export default function OverviewFallback() {
                   <Skeleton className="h-4 w-16" /> {/* Title placeholder */}
                   <Skeleton className="h-4 w-12" /> {/* Count placeholder */}
                 </div>
-                <Skeleton className="h-4 w-12 absolute right-0" /> {/* Percentage placeholder */}
+                <Skeleton className="h-4 w-12 absolute right-0" />{' '}
+                {/* Percentage placeholder */}
               </Skeleton>
             ))}
           </CardContent>

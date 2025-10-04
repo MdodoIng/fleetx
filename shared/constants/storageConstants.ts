@@ -216,7 +216,6 @@ export const businessTypes = [
   { id: 5, name: 'Other (أخرى)' },
 ];
 
-
 export const KUWAIT = 'kuwait';
 export const BAHRAIN = 'bahrain';
 export const QATAR = 'qatar';

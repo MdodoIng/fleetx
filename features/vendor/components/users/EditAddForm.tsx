@@ -1,5 +1,5 @@
 'use client';
-import { Input } from '@/shared/components/ui/input';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import {
   TypeBranch,
   TypeVendor,
@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { TypeEditUserSchema } from '../../validations/editAddForm';
-import UserAndBranchSelecter from '@/shared/components/selectors/UserAndBranchSelecter';
+import UserAndBranchSelector from '@/shared/components/selectors/UserAndBranchSelector';
 import { vendorService } from '@/shared/services/vendor';
 
 type Props = {
@@ -46,7 +46,7 @@ type Props = {
 const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
   const vendorStore = useVendorStore();
 
-  const handleSumbit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
@@ -81,9 +81,9 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSumbit} className="grid grid-cols-2 gap-5 w-full">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-5 w-full">
         <div className="col-span-2 flex justify-start ">
-          <UserAndBranchSelecter
+          <UserAndBranchSelector
             handleChangeBranch={handleChangeBranch}
             handleChangeVendor={handleChangeVendor}
             selectedVendorValue={isBranch?.vendor}
@@ -128,7 +128,7 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
             <FormItem>
               <FormLabel>Mobile</FormLabel>
               <FormControl>
-                <Input placeholder="mobile" {...field} />
+                <InputPhone placeholder="mobile" {...field} />
               </FormControl>
 
               <FormMessage />

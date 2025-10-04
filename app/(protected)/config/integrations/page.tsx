@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
 import {
@@ -26,7 +25,6 @@ import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Check, Copy, Eye, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import dummi from '@/assets/images/logo.webp';
 import { vendorService } from '@/shared/services/vendor';
 import { useAuthStore } from '@/store';
 import LoadingPage from '../../loading';
@@ -103,7 +101,6 @@ export default function PlatformGrid() {
         affilication_id: affiliationId,
       };
       const response = await vendorService.activateAffiliation(request);
-
 
       if (response.data) {
         setActivate(affiliationId);

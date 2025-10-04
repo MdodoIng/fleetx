@@ -1,12 +1,10 @@
-import { cn } from "@/shared/lib/utils";
-
-
+import { cn } from '@/shared/lib/utils';
 
 type SearchItem =
   | {
-    id: string;
-    name_en: string;
-  }
+      id: string;
+      name_en: string;
+    }
   | any;
 
 interface Props {
@@ -26,8 +24,8 @@ const SearchResults: React.FC<Props> = ({
     <div
       id="landmark-input-container"
       className={cn(
-        'mt-2 grid px-4 py-4 gap-2 absolute w-full bg-white border border-dark-grey/25 rounded-[8px]  z-50 left-0 max-h-[200px] overflow-y-auto',
-        isMapOpen ? 'top-14' : 'top-16'
+        'mt-2 grid px-4 py-4 gap-2 absolute w-full bg-white border border-dark-grey/25 rounded-[8px]  top-16 z-50 left-0 max-h-[200px] overflow-y-auto',
+        isMapOpen ? 'w-[97%] mx-[10px]' : ''
       )}
     >
       {searchData.map((item) => (

@@ -16,7 +16,6 @@ export function useSalesFunnel() {
   ]);
   const [zones, setZones] = useState<Zone[]>([]);
 
-
   // filters
   const [selectedType, setSelectedType] = useState<number>(1);
   const [selectedZone, setSelectedZone] = useState<string>('');

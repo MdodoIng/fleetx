@@ -23,4 +23,6 @@ export const addEditAccountManagerSchema = z.object({
     .optional(),
 });
 
-export type TypeAddEditAccountManagerSchema = z.infer<typeof addEditAccountManagerSchema>;
+export type TypeAddEditAccountManagerSchema = z.infer<
+  typeof addEditAccountManagerSchema
+>;

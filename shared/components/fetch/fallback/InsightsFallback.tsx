@@ -2,23 +2,23 @@
 
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import {
-    Dashboard,
-    DashboardContent,
-    DashboardHeader,
-    DashboardHeaderRight,
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import {
-    Table,
-    TableLists,
-    TableSingleList,
-    TableSingleListContent,
-    TableSingleListContents,
+  Table,
+  TableLists,
+  TableSingleList,
+  TableSingleListContent,
+  TableSingleListContents,
 } from '@/shared/components/ui/tableList';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardIcon
+  Card,
+  CardContent,
+  CardDescription,
+  CardIcon,
 } from '@/shared/components/ui/card';
 
 export default function InsightsFallback() {

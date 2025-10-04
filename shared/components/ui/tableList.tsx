@@ -127,7 +127,7 @@ function TableSingleListContentTitle({
     <div
       data-slot="table-single-list-content-title"
       className={cn(
-        'text-dark-grey/70 flex items-center gap-1 [&_svg]:text-primary-blue mb-2',
+        'text-dark-grey/70 flex items-center gap-1 [&_svg]:text-primary-blue mb-2 [&_svg]:shrink-0',
         className
       )}
       {...props}
@@ -142,7 +142,10 @@ function TableSingleListContentDetailsTitle({
   return (
     <div
       data-slot="table-single-list-content-details-title"
-      className={cn('text-sm font-medium text-dark-grey', className)}
+      className={cn(
+        'text-sm font-medium text-dark-grey [&_svg]:shrink-0',
+        className
+      )}
       {...props}
     />
   );
@@ -154,7 +157,10 @@ function TableSingleListContentDetailsItem({
   return (
     <div
       data-slot="table-single-list-content-details-item"
-      className={cn('text-xs text-[#1D1B20] flex items-center gap-1', className)}
+      className={cn(
+        'text-xs text-[#1D1B20] flex items-center gap-1 [&_svg]:shrink-0',
+        className
+      )}
       {...props}
     />
   );
@@ -172,5 +178,5 @@ export {
   TableSingleListContent,
   TableSingleListContentTitle,
   TableSingleListContentDetailsTitle,
-  TableSingleListContentDetailsItem
+  TableSingleListContentDetailsItem,
 };

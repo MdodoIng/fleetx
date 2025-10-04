@@ -124,12 +124,12 @@ const DropoffFormSection = ({
 
       {isSingle ? (
         <>
-        <DropoffForm
-          recipientForm={dropOffForm}
-          isCOD={isCOD}
-          setIsCOD={setIsCOD}
-          orderIndex={orderStore.dropOffs.length + 1}
-        />
+          <DropoffForm
+            recipientForm={dropOffForm}
+            isCOD={isCOD}
+            setIsCOD={setIsCOD}
+            orderIndex={orderStore.dropOffs.length + 1}
+          />
         </>
       ) : (
         isDropIndex === index && (
