@@ -42,7 +42,7 @@ export const vendorService = {
   getVendorInfo: (id: string): Promise<{ data: TypeVendor }> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/vendor-info/${id}`),
 
-  setVendorListurl: (
+  setVendorListUrl: (
     perPage: number | null,
     searchVendor?: string | null,
     NEXT_SET_ITEMS_TOKEN?: string[] | null

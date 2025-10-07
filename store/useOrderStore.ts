@@ -111,7 +111,6 @@ export const useOrderStore = create<OrderState>()(
         };
 
         set({
-          estimatedDeliveryReturnFromApi: data,
           deliverySummary: summary,
         });
       },

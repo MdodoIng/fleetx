@@ -64,7 +64,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
   );
 
   const [codType, setCodType] = useState<1 | 2>(2);
-  const [branchs, setBranchs] =
+  const [branchs, setbranches] =
     useState<TypeEditVendorReq['branches'][number][]>();
   const [accountManagerList, setAccountManagerList] = useState();
   const [isCreateNewBranch, setIsCreateNewBranch] = useState(false);

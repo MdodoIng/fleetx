@@ -36,7 +36,7 @@ function VendorList(): JSX.Element {
   const fetchVendorList = useCallback(async (): Promise<void> => {
     try {
       getVendorAccountManagerId();
-      const url = vendorService.setVendorListurl(page, searchValue, null);
+      const url = vendorService.setVendorListUrl(page, searchValue, null);
 
       try {
         const res = await vendorService.getVendorList(url);

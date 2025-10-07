@@ -9,7 +9,9 @@ export const addEditAccountManagerSchema = z.object({
     .string()
     .optional()
     .or(z.literal(''))
-    .refine((val) => val === '' || /^[^\s].*/.test(val), 'Invalid format'),
+    .refine((val: any) => val === '' || /^[^\s].*/.test(val), {
+      message: 'Invalid format',
+    }),
   email: z.string().email('Invalid email address').min(1, 'Email is required'),
   phone: z
     .string()

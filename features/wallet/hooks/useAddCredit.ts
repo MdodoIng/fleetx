@@ -100,13 +100,13 @@ export function useAddCredit() {
     }
 
     try {
-      const apiVenderId = vendorId || selectedVendor?.id;
-      const apibranchId = branchId || selectedBranch?.id;
+      const apiVendorId = vendorId || selectedVendor?.id;
+      const apiBranchId = branchId || selectedBranch?.id;
 
       if (user?.roles.includes('VENDOR_USER')) {
         const checkBlockActRes = await checkBlockActivation(
-          apiVenderId!,
-          apibranchId
+          apiVendorId!,
+          apiBranchId
         );
 
         if (checkBlockActRes.data.blocked) {
@@ -164,7 +164,7 @@ export function useAddCredit() {
       0
     );
 
-    const reqoust: TypeInitiateReq = isCentralWalletEnabled
+    const request: TypeInitiateReq = isCentralWalletEnabled
       ? {
           vendor_id: vendorId!,
           amount: parseFloat(
@@ -179,7 +179,7 @@ export function useAddCredit() {
           vendor_id: vendorId!,
         };
 
-    const res = await paymentService.initiate(reqoust);
+    const res = await paymentService.initiate(request);
     console.log(res);
 
     toast.success('Amount credited successfully');

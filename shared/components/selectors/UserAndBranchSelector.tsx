@@ -7,7 +7,7 @@ import {
 } from '@/shared/types/vendor';
 
 import { useVendorStore } from '@/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SearchableSelect, { TypeSearchableSelectOption } from '.';
 import { X } from 'lucide-react';
 import VendorSelector from './VendorSelector';
@@ -44,20 +44,21 @@ const UserAndBranchSelector: React.FC<Props> = ({
   const isAccess = isVendorAccess || isBranchAccess;
 
   useEffect(() => {
-    if (!isSelectedVendor?.id) return;
-    setIsLoading(true);
-    vendorService
-      .getBranchDetails(isSelectedVendor.id)
-      .then((res) => {
-        const options: TypeSearchableSelectOption[] =
-          res.data.map((item) => ({
-            id: item.id,
-            name: item.name,
-          })) || [];
+    if (!isSelectedVendor?.id) {
+      setOptionsForBranch(undefined);
+      return;
+    } else setIsLoading(true);
+    setOptionsForBranch(undefined);
+    vendorService.getBranchDetails(isSelectedVendor.id).then((res) => {
+      const options: TypeSearchableSelectOption[] =
+        res.data.map((item) => ({
+          id: item.id,
+          name: item.name,
+        })) || [];
 
-        setOptionsForBranch(options);
-      })
-      .finally(() => setIsLoading(true));
+      setOptionsForBranch(options);
+      setIsLoading(false);
+    });
   }, [isSelectedVendor?.id]);
 
   return (

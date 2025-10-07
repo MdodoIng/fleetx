@@ -10,7 +10,7 @@ import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import collapseIcon from '@/assets/icons/window collapse.svg';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { iconMap } from '../../icons/layout';
 import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
 import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
@@ -87,6 +87,7 @@ const SideBar = () => {
               <Link
                 hidden={isCollapsed && !item?.route}
                 href={item?.route || '#'}
+                title={t(item.labelKey)}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
                   item.labelKey === title &&
@@ -109,6 +110,7 @@ const SideBar = () => {
                         key={childIndex}
                         href={child?.route || '#'}
                         prefetch={true}
+                        title={t(child.labelKey)}
                         className={cn(
                           'flex items-center gap-2 px-3 rounded-[6px] py-2 bg-transparent hover:bg-dark-grey/40',
                           title === child.labelKey &&

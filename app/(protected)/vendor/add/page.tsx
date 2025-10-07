@@ -224,7 +224,7 @@ function VendorAdd(): JSX.Element {
               <div className=" space-y-4">
                 <BranchEditForm form={editVendorBranchForm} />
                 <Button onClick={() => handelAddBranch()} type="submit">
-                  Add Brach
+                  Add Branch
                 </Button>
               </div>
             </>

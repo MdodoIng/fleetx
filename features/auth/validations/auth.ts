@@ -1,12 +1,12 @@
 import z from 'zod';
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: z.string().email('Invalid email address'),
 });
 
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;

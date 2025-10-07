@@ -26,7 +26,7 @@ import { CreateFallback } from '@/shared/components/fetch/fallback';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
 import { TypeDropOffs } from '@/shared/types/orders';
-import { usepickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
+import { usePickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
 import { fleetService } from '@/shared/services/fleet';
 import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import {
@@ -218,7 +218,8 @@ export default function BulkOrderPage() {
     }
 
     try {
-      const updatedPickUp = usepickUpFormValuesForPickUp({
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const updatedPickUp = usePickUpFormValuesForPickUp({
         pickUpFormValues: pickUpForm.getValues(),
       });
 

@@ -1,8 +1,7 @@
-'use clinet';
 import { TypeDropOffs, TypePickUp } from '@/shared/types/orders';
 import { TypeDropOffSchema, TypePickUpSchema } from '../validations/order';
 
-export const usepickUpFormValuesForPickUp = ({
+export const usePickUpFormValuesForPickUp = ({
   pickUpFormValues,
 }: {
   pickUpFormValues: TypePickUpSchema;
@@ -39,7 +38,7 @@ export const usepickUpFormValuesForPickUp = ({
   return basePickUp;
 };
 
-export const usedropOffFormValuesForDropffs = ({
+export const useDropOffFormValuesForDropOffs = ({
   dropOffFormValues,
   vendorId,
   isCOD,

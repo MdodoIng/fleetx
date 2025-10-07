@@ -93,7 +93,7 @@ export const useAddUpdateVendor = (
 ) => {
   const vendorStore = useVendorStore.getState();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
-  const [branchs, setBranchs] = useState<
+  const [branchs, setbranches] = useState<
     TypeEditVendorReq['branches'][number][] | undefined
   >(undefined);
 
@@ -230,7 +230,7 @@ export const useAddUpdateVendor = (
     let branch = vendorData?.branches?.find(
       (item) => item.id === vendorStore.isEditVendorBranchId
     );
-    const formFixBrachs = vendorData?.branches.map((item) => {
+    const formFixbranches = vendorData?.branches.map((item) => {
       return mapBranchDynamic(
         item as Partial<TypeEditVendorReq['branches'][number]>,
         branchTemplate,
@@ -239,7 +239,7 @@ export const useAddUpdateVendor = (
       );
     });
 
-    const formFixBrach = branch
+    const formFixBranch = branch
       ? mapBranchDynamic(
           branch as Partial<TypeEditVendorReq['branches'][number]>,
           branchTemplate,
@@ -253,9 +253,9 @@ export const useAddUpdateVendor = (
           resVendor
         );
 
-    console.log(formFixBrach, 'editVendorBranchFormValues');
-    const formFixBrachVal = formFixBrach
-      ? mapBranchDynamic(editVendorBranchFormValues! as any, formFixBrach)
+    console.log(formFixBranch, 'editVendorBranchFormValues');
+    const formFixBranchVal = formFixBranch
+      ? mapBranchDynamic(editVendorBranchFormValues! as any, formFixBranch)
       : false;
 
     const editBranchIndex = vendorData?.branches.findIndex(
@@ -268,8 +268,8 @@ export const useAddUpdateVendor = (
       name: editVendorNameFormValues.name,
       name_ar: editVendorNameFormValues.name_ar!,
       branches: (type === 'updateAll'
-        ? formFixBrachs!
-        : [formFixBrachVal!]) as any,
+        ? formFixbranches!
+        : [formFixBranchVal!]) as any,
     };
     const res = await vendorService.update(req);
 
@@ -296,7 +296,7 @@ export const useAddUpdateVendor = (
     }
     setIsLoadingForm(true);
 
-    const formFixBrach = mapBranchDynamic(
+    const formFixBranch = mapBranchDynamic(
       editVendorBranchFormValues! as any,
       newVendorBranchTemplate as any,
       undefined,
@@ -305,17 +305,17 @@ export const useAddUpdateVendor = (
     );
 
     console.log(branchs);
-    setBranchs((prev) => [...(prev ?? ([] as any)), formFixBrach] as any);
+    setbranches((prev) => [...(prev ?? ([] as any)), formFixBranch] as any);
     editVendorBranchForm.reset();
     setIsLoadingForm(false);
   };
 
   const handleRemoveBranch = (index: number) => {
-    setBranchs((prev: any) => {
+    setbranches((prev: any) => {
       if (!prev) return prev;
-      const newBranchs = [...prev];
-      newBranchs.splice(index, 1);
-      return newBranchs;
+      const newbranches = [...prev];
+      newbranches.splice(index, 1);
+      return newbranches;
     });
   };
 
@@ -397,7 +397,7 @@ export const useAddUpdateVendor = (
           editVendorNameForm.clearErrors();
           editVendorNameForm.reset();
           editVendorBranchForm.reset();
-          setBranchs(undefined);
+          setbranches(undefined);
 
           console.log('Vendor created successfully');
           // Optionally, redirect or clear the form

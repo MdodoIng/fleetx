@@ -2,21 +2,13 @@
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
-import {
-  Delete,
-  Edit,
-  LocateFixed,
-  Plus,
-  PlusCircle,
-  Trash,
-} from 'lucide-react';
-import DropoffForm from '../create/DropOffForm';
+import { LocateFixed, PlusCircle } from 'lucide-react';
+import DropOffForm from '../create/DropOffForm';
 import { TypeDropOffs } from '@/shared/types/orders';
 import { Dispatch, SetStateAction } from 'react';
 import { UseFormReturn } from 'react-hook-form';
@@ -24,7 +16,6 @@ import { TypeDropOffSchema } from '../../validations/order';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
 import { useOrderStore } from '@/store';
-import { cn } from '@/shared/lib/utils';
 
 type Props = {
   index?: number;
@@ -34,25 +25,20 @@ type Props = {
   dropOffForm: UseFormReturn<TypeDropOffSchema>;
   isCOD: 1 | 2;
   setIsCOD: Dispatch<SetStateAction<1 | 2>>;
-  functionsDropoffs: (
-    type:
-      | 'addOneDropoff'
-      | 'editOneDropoff'
-      | 'saveCurrentDropOff'
-      | 'editDropOffWithSave'
-      | 'deleteDropOff',
+  functionsDropOffs: (
+    type: 'addOneDropOff' | 'editDropOffWithSave' | 'deleteDropOff',
     index?: any
   ) => Promise<void>;
 };
 
-const DropoffFormSection = ({
+const DropOffFormSection = ({
   index,
   isDropIndex,
   item,
   dropOffForm,
   isCOD,
   setIsCOD,
-  functionsDropoffs,
+  functionsDropOffs,
 }: Props) => {
   const isSingle = !index && !item;
   const t = useTranslations('component.features.orders.create');
@@ -90,7 +76,7 @@ const DropoffFormSection = ({
           <Button
             variant={'ghost'}
             className="cursor-pointer text-primary-blue gap-1"
-            onClick={() => functionsDropoffs('addOneDropoff')}
+            onClick={() => functionsDropOffs('addOneDropOff')}
           >
             <PlusCircle className="" />{' '}
             {t.rich('dropOffForm.add-dropoff', {
@@ -101,7 +87,7 @@ const DropoffFormSection = ({
         ) : (
           <div className="grid-cols-2 grid gap-3">
             <button
-              onClick={() => functionsDropoffs('deleteDropOff', index!)}
+              onClick={() => functionsDropOffs('deleteDropOff', index!)}
               className="cursor-pointer"
             >
               <Icon
@@ -110,7 +96,7 @@ const DropoffFormSection = ({
               />
             </button>
             <button
-              onClick={() => functionsDropoffs('editDropOffWithSave', index!)}
+              onClick={() => functionsDropOffs('editDropOffWithSave', index!)}
               className="cursor-pointer"
             >
               <Icon
@@ -124,7 +110,7 @@ const DropoffFormSection = ({
 
       {isSingle ? (
         <>
-          <DropoffForm
+          <DropOffForm
             recipientForm={dropOffForm}
             isCOD={isCOD}
             setIsCOD={setIsCOD}
@@ -133,7 +119,7 @@ const DropoffFormSection = ({
         </>
       ) : (
         isDropIndex === index && (
-          <DropoffForm
+          <DropOffForm
             recipientForm={dropOffForm}
             isCOD={isCOD}
             setIsCOD={setIsCOD}
@@ -145,4 +131,4 @@ const DropoffFormSection = ({
   );
 };
 
-export default DropoffFormSection;
+export default DropOffFormSection;

@@ -29,12 +29,18 @@ export function withAuth<P extends object>(
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
 
-    const handleClickToLogin = () => {
+    const handleRedirectToLogin = () => {
       setValue('lastPathname', pathname);
       push('/auth/login');
     };
 
     const { roles } = useGetSidebarMeta();
+
+    useEffect(() => {
+      if (!isAuthenticated && !isLoading) {
+        handleRedirectToLogin();
+      }
+    }, [isAuthenticated, isLoading]);
 
     if (isLoading) {
       return <LoadingPage />;
@@ -51,7 +57,7 @@ export function withAuth<P extends object>(
               Please log in to access this page.
             </p>
             <Button
-              onClick={() => handleClickToLogin()}
+              onClick={() => handleRedirectToLogin()}
               variant={'destructive'}
             >
               Go to Login
