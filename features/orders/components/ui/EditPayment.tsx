@@ -1,6 +1,6 @@
 import {
   paymentSchema,
-  TypepaymentSchema,
+  TypePaymentSchema,
 } from '@/features/orders/validations/editPayment';
 
 import { Button } from '@/shared/components/ui/button';
@@ -49,7 +49,7 @@ const EditPayment = ({
   const [isOpen, setIsOpen] = useState(false);
   const { appConstants } = useSharedStore();
 
-  const form = useForm<TypepaymentSchema>({
+  const form = useForm<TypePaymentSchema>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       amount_to_collect: data.amount_collected!,
@@ -143,7 +143,7 @@ const EditPayment = ({
                 <div className="flex items-center">
                   <RadioGroupItem value="2" id="2" />
                   <Label htmlFor="2" className="ml-2">
-                    KEKT
+                    KNET
                   </Label>
                 </div>
               </RadioGroup>

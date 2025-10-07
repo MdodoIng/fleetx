@@ -18,4 +18,4 @@ export const paymentSchema = z
     }
   );
 
-export type TypepaymentSchema = z.infer<typeof paymentSchema>;
+export type TypePaymentSchema = z.infer<typeof paymentSchema>;

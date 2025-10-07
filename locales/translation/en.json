@@ -328,7 +328,8 @@
     "pleaseSelectBranch": "Please select a branch",
     "pleaseSelectAVendor": "Please select a vendor",
     "newVersionIsAvailable": "New version is available.",
-    "pleaseClickHereToUpdate": "Please click here to update."
+    "pleaseClickHereToUpdate": "Please click here to update.",
+    "no_data_found": "Whoops! No data found"
   },
   "auth": {
     "login": {

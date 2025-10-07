@@ -1,11 +1,9 @@
 'use client';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vendor';
-import { TypeVendorList } from '@/shared/types/vendor';
-import { useVendorStore } from '@/store';
-import { useCallback, useEffect, useState, type JSX } from 'react';
-import VendorsList from '@/features/vendor/components/list/VendorsList';
 import EditVendor from '@/features/vendor/components/list/EditVendor';
+import VendorsList from '@/features/vendor/components/list/VendorsList';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dashboard,
   DashboardContent,
@@ -13,10 +11,12 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
+import useTableExport from '@/shared/lib/hooks/useTableExport';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeVendorList } from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
 import { Download, Search, X } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import NoData from '@/shared/components/fetch/NoData';
+import { useCallback, useEffect, useState, type JSX } from 'react';
 
 function VendorList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);

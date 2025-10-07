@@ -45,12 +45,7 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import {
-  OperationType,
-  TypeOrderHistoryList,
-  TypeOrderInfoResponse,
-  TypeRootLiveOrderList,
-} from '@/shared/types/orders';
+import { OperationType, TypeOrderHistoryList } from '@/shared/types/orders';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import { DateRange } from 'react-day-picker';
@@ -132,7 +127,7 @@ export default function OrderTrackingDashboard() {
               orderRes =
                 setSourceForTable(
                   'orderHistoryListData',
-                  orderListRes.data
+                  orderListRes.data as any
                 )[0] ?? undefined;
             }
 
@@ -149,7 +144,7 @@ export default function OrderTrackingDashboard() {
       );
 
       // 4️⃣ Update state
-      setWalletHistory(walletHistoryData);
+      setWalletHistory(walletHistoryData as any);
       setNextSetItemTotal(walletHistoryData.length < page ? null : true);
     } catch (err: unknown) {
       const errorMessage =

@@ -313,7 +313,8 @@
     "pleaseSelectBranch": "يرجى تحديد فرع",
     "pleaseSelectAVendor": "يرجى تحديد بائع",
     "newVersionIsAvailable": "نسخة جديدة متوفرة.",
-    "pleaseClickHereToUpdate": "يرجى النقر هنا للتحديث."
+    "pleaseClickHereToUpdate": "يرجى النقر هنا للتحديث.",
+    "no_data_found": "عفوًا!لم يتم العثور على بيانات"
   },
   "auth": {
     "login": {

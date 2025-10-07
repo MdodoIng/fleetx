@@ -15,6 +15,7 @@ import {
 } from '@/shared/types/vendor';
 import { vendorService } from '@/shared/services/vendor';
 import { hasValue } from '@/shared/lib/helpers';
+import { toast } from 'sonner';
 
 const branchTemplate: TypeEditVendorReq['branches'][number] = {
   id: '',
@@ -93,7 +94,7 @@ export const useAddUpdateVendor = (
 ) => {
   const vendorStore = useVendorStore.getState();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
-  const [branchs, setbranches] = useState<
+  const [branches, setBranches] = useState<
     TypeEditVendorReq['branches'][number][] | undefined
   >(undefined);
 
@@ -209,7 +210,7 @@ export const useAddUpdateVendor = (
     setIsLoadingForm(false);
   };
 
-  const handelUpdate = async (
+  const handleUpdate = async (
     type: 'updateAll' | 'updateBranch' = 'updateBranch',
     isCreateNewBranch: boolean,
     setIsCreateNewBranch: Dispatch<SetStateAction<boolean>>,
@@ -225,12 +226,12 @@ export const useAddUpdateVendor = (
       return;
     }
 
-    const resVendor = await vendorService.getVendorDetails(vendorData?.id!);
+    const resVendor = await vendorService.getVendorDetails(vendorData?.id);
 
-    let branch = vendorData?.branches?.find(
+    const isBranch = vendorData?.branches?.find(
       (item) => item.id === vendorStore.isEditVendorBranchId
     );
-    const formFixbranches = vendorData?.branches.map((item) => {
+    const formFixBranches = vendorData?.branches.map((item) => {
       return mapBranchDynamic(
         item as Partial<TypeEditVendorReq['branches'][number]>,
         branchTemplate,
@@ -239,9 +240,9 @@ export const useAddUpdateVendor = (
       );
     });
 
-    const formFixBranch = branch
+    const formFixBranch = isBranch
       ? mapBranchDynamic(
-          branch as Partial<TypeEditVendorReq['branches'][number]>,
+          isBranch as Partial<TypeEditVendorReq['branches'][number]>,
           branchTemplate,
           isCreateNewBranch,
           resVendor
@@ -253,7 +254,6 @@ export const useAddUpdateVendor = (
           resVendor
         );
 
-    console.log(formFixBranch, 'editVendorBranchFormValues');
     const formFixBranchVal = formFixBranch
       ? mapBranchDynamic(editVendorBranchFormValues! as any, formFixBranch)
       : false;
@@ -263,12 +263,12 @@ export const useAddUpdateVendor = (
     );
 
     const req: TypeEditVendorReq = {
-      id: vendorData?.id!,
+      id: vendorData?.id,
       cod_counter_type: codType,
       name: editVendorNameFormValues.name,
       name_ar: editVendorNameFormValues.name_ar!,
       branches: (type === 'updateAll'
-        ? formFixbranches!
+        ? formFixBranches!
         : [formFixBranchVal!]) as any,
     };
     const res = await vendorService.update(req);
@@ -282,11 +282,16 @@ export const useAddUpdateVendor = (
         ? vendorStore.setValue('isEditVendorId', undefined)
         : await fetchVendorDetails();
       vendorStore.setValue('isEditVendorBranchId', undefined);
+      toast.success(
+        type === 'updateAll'
+          ? 'Vendor Updated successfully'
+          : 'Branch Updated successfully'
+      );
       setIsCreateNewBranch(false);
     }
   };
 
-  const handelAddBranch = async () => {
+  const handleAddBranch = async () => {
     const isFormValid = await validateFormsAsync();
 
     if (!isFormValid) {
@@ -304,22 +309,22 @@ export const useAddUpdateVendor = (
       'add'
     );
 
-    console.log(branchs);
-    setbranches((prev) => [...(prev ?? ([] as any)), formFixBranch] as any);
+    console.log(branches);
+    setBranches((prev) => [...(prev ?? ([] as any)), formFixBranch] as any);
     editVendorBranchForm.reset();
     setIsLoadingForm(false);
   };
 
   const handleRemoveBranch = (index: number) => {
-    setbranches((prev: any) => {
+    setBranches((prev: any) => {
       if (!prev) return prev;
-      const newbranches = [...prev];
-      newbranches.splice(index, 1);
-      return newbranches;
+      const newBranches = [...prev];
+      newBranches.splice(index, 1);
+      return newBranches;
     });
   };
 
-  const handelSaveVendor = async (
+  const handleSaveVendor = async (
     isVendorType: (keyof typeof TypeVendorType)[]
   ) => {
     const isFormValid = await validateFormsAsync('save');
@@ -345,7 +350,7 @@ export const useAddUpdateVendor = (
         vendor_type = TypeVendorType.B2B_Vendor;
       }
 
-      const branchToPut: TypeAddVendorReq['branches'] = branchs?.map(
+      const branchToPut: TypeAddVendorReq['branches'] = branches?.map(
         (item, idx) => {
           return {
             address: {
@@ -371,7 +376,7 @@ export const useAddUpdateVendor = (
             code: item.code ?? null,
             mobile_number: item.mobile_number,
             main_branch:
-              branchs.filter((el) => el.main_branch).length > 0
+              branches.filter((el) => el.main_branch).length > 0
                 ? item.main_branch
                 : idx === 0
                   ? true
@@ -397,9 +402,10 @@ export const useAddUpdateVendor = (
           editVendorNameForm.clearErrors();
           editVendorNameForm.reset();
           editVendorBranchForm.reset();
-          setbranches(undefined);
+          setBranches(undefined);
 
           console.log('Vendor created successfully');
+          toast.success('Vendor created successfully');
           // Optionally, redirect or clear the form
         } else {
           console.error('Failed to create vendor');
@@ -416,11 +422,11 @@ export const useAddUpdateVendor = (
   return {
     validateFormsAsync,
     updateVendorDetailsForFromApi,
-    handelUpdate,
+    handleUpdate,
     isLoadingForm,
-    handelAddBranch,
-    branchs,
+    handleAddBranch,
+    branches,
     handleRemoveBranch,
-    handelSaveVendor,
+    handleSaveVendor,
   };
 };

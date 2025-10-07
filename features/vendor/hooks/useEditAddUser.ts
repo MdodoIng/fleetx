@@ -1,24 +1,18 @@
 'use client';
 
-import { useAuthStore, useVendorStore } from '@/store';
-import { UseFormReturn } from 'react-hook-form';
+import { hasValue } from '@/shared/lib/helpers';
+import { vendorService } from '@/shared/services/vendor';
 import {
-  TypeEditVendorBranchSchema,
-  TypeEditVendorNameSchema,
-} from '../validations/editVendor';
-import { Dispatch, SetStateAction, useState } from 'react';
-import {
-  TypeAddVendorReq,
   TypeBranch,
-  TypeEditVendorReq,
   TypeUpdateVendorUserReq,
   TypeVendor,
   TypeVendorListItem,
-  TypeVendorType,
   TypeVendorUserList,
 } from '@/shared/types/vendor';
-import { vendorService } from '@/shared/services/vendor';
-import { hasValue } from '@/shared/lib/helpers';
+import { useVendorStore } from '@/store';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { toast } from 'sonner';
 import { TypeEditUserSchema } from '../validations/editAddForm';
 
 type Props = {
@@ -49,15 +43,7 @@ export const useEditAddUser = ({
   isAdd,
   setIsAddAction,
 }: Props) => {
-  const {
-    setValue,
-    isEditUser,
-    branchDetails,
-    vendorList: vendorList,
-    selectedBranch,
-    selectedVendor,
-  } = useVendorStore.getState();
-  const { user } = useAuthStore.getState();
+  const { setValue, isEditUser } = useVendorStore.getState();
 
   const [isLoadingForm, setIsLoadingForm] = useState(false);
 
@@ -105,7 +91,7 @@ export const useEditAddUser = ({
 
     setIsLoadingForm(true);
     Object.entries(isEditUser!).forEach(([key, value]) => {
-      editUserForm.setValue(key as keyof TypeEditUserSchema, value);
+      editUserForm.setValue(key as keyof TypeEditUserSchema, value as any);
     });
 
     setIsLoadingForm(false);
@@ -143,6 +129,7 @@ export const useEditAddUser = ({
           editUserForm.reset();
           await fetchVendorUserList();
           setIsAddAction(false);
+          toast.success('User Added successfully');
         }
       } catch (error) {
         console.error(error);
@@ -150,7 +137,8 @@ export const useEditAddUser = ({
     } else {
       try {
         const res = await vendorService.updateVendorUser(
-          isEditUser?.vendor.user!,
+          // @ts-ignore
+          isEditUser?.vendor.user,
           request
         );
 
@@ -158,6 +146,7 @@ export const useEditAddUser = ({
         editUserForm.reset();
         setIsBranchAction(undefined);
         setValue('isEditUser', undefined);
+        toast.success('User Updated successfully');
         await fetchVendorUserList();
       } catch (error) {
         console.error(error);

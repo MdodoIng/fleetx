@@ -309,7 +309,7 @@ export default function useOrderCreate(
               //TODO: Show success alert message and clear form fields
               console.log(createOrderRes, 'orders');
 
-              toast.message('Successfully added Your Order');
+              toast.success('Successfully added Your Order');
               getVendorWalletBalanceInit();
               functionsDropOffs('cancel');
             } catch (error) {
