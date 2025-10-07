@@ -12,11 +12,13 @@ import {
   Info,
   Navigation,
   Truck,
+  Receipt,
+  User,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
-import { useVendorStore, useSharedStore } from '@/store';
+import { useVendorStore, useSharedStore, useOrderStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
 import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { reportService } from '@/shared/services/report';
@@ -43,7 +45,12 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import { OperationType, TypeOrderInfoResponse } from '@/shared/types/orders';
+import {
+  OperationType,
+  TypeOrderHistoryList,
+  TypeOrderInfoResponse,
+  TypeRootLiveOrderList,
+} from '@/shared/types/orders';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import { DateRange } from 'react-day-picker';
@@ -53,11 +60,10 @@ import { orderService } from '@/shared/services/orders';
 import { paymentMap } from '@/features/orders/constants';
 
 export default function OrderTrackingDashboard() {
+  const { setSourceForTable } = useOrderStore();
   const [searchTerm, setSearchTerm] = useState('');
 
   const { appConstants } = useSharedStore();
-
-  const [searchOrder, setSearchOrder] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
@@ -73,35 +79,76 @@ export default function OrderTrackingDashboard() {
   const [walletHistory, setWalletHistory] = useState<
     (TypeWalletTransactionHistoryRes['data'][number] & {
       branch: TypeBranch | undefined;
-      order: TypeOrderInfoResponse['data'] | undefined;
+      order: TypeOrderHistoryList | undefined;
     })[]
   >();
   const { branchId, vendorId } = useVendorStore();
 
   const fetchVendorWalletReport = useCallback(async () => {
+    console.log(searchTerm);
     try {
+      // 1️⃣ Build wallet history API URL
       const walletHistoryUrl = reportService.getWalletHistoryUrl(
         page,
-        searchOrder,
+        searchTerm,
         date.from!,
         date.to!,
         null
       );
+
+      // 2️⃣ Fetch wallet history
       const walletHistoryRes =
         await reportService.getWalletHistory(walletHistoryUrl);
+      const walletHistoryItems = walletHistoryRes?.data ?? [];
 
-      console.log(walletHistoryRes);
+      // 3️⃣ Fetch branch + order details for each wallet record in parallel
       const walletHistoryData = await Promise.all(
-        walletHistoryRes.data.map(async (item) => {
-          const branchRes = (
-            await vendorService.getBranchDetails(item.vendor_id)
-          ).data.find((x) => x.id === item.branch_id);
-          const orderRes = item.delivery_model
-            ? (await orderService.getOrderInfo(item.txn_number)).data
-            : undefined;
-          return { ...item, branch: branchRes, order: orderRes };
+        walletHistoryItems.map(async (item) => {
+          try {
+            // ✅ Fetch branch details for vendor/branch
+            const branchList = await vendorService.getBranchDetails(
+              item.vendor_id
+            );
+            const branchRes = branchList.data.find(
+              (x) => x.id === item.branch_id
+            );
+
+            // ✅ Fetch order details if delivery_model exists
+            let orderRes = null;
+            if (item.delivery_model) {
+              const url = orderService.getOrderHistoryUrl(
+                1,
+                undefined,
+                undefined,
+                item.txn_number,
+                undefined,
+                true,
+                null,
+                undefined,
+                undefined,
+                undefined
+              );
+              const orderListRes = await orderService.getOrderList(url);
+              orderRes =
+                setSourceForTable(
+                  'orderHistoryListData',
+                  orderListRes.data
+                )[0] ?? undefined;
+            }
+
+            return {
+              ...item,
+              branch: branchRes,
+              order: orderRes,
+            };
+          } catch (innerErr) {
+            console.warn('Error while mapping wallet record:', innerErr);
+            return { ...item, branch: null, order: null };
+          }
         })
       );
+
+      // 4️⃣ Update state
       setWalletHistory(walletHistoryData);
       setNextSetItemTotal(walletHistoryData.length < page ? null : true);
     } catch (err: unknown) {
@@ -110,18 +157,15 @@ export default function OrderTrackingDashboard() {
           ?.message ||
         (err as { message?: string }).message ||
         'An unknown error occurred while fetching wallet balance.';
-      console.error('Error in fetchVendorWalletBalance:', errorMessage);
+      console.error('❌ Error in fetchVendorWalletReport:', errorMessage);
     } finally {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchOrder, date?.from, date?.to, branchId, vendorId]);
+  }, [page, searchTerm, date?.from, date?.to, branchId, vendorId]);
 
   useEffect(() => {
-    const loadInitialWalletReport = async () => {
-      await fetchVendorWalletReport();
-    };
-    loadInitialWalletReport();
+    fetchVendorWalletReport();
   }, [fetchVendorWalletReport]);
 
   const { exportOrdersToCSV } = useTableExport();
@@ -201,7 +245,7 @@ export default function OrderTrackingDashboard() {
                     </TableSingleListHeaderLeft>
                   </TableSingleListHeader>
                   <TableSingleListContents>
-                    <TableSingleListContent>
+                    <TableSingleListContent hidden={!!txn?.order}>
                       <TableSingleListContentTitle>
                         <User2 size={14} />
                         {t('component.features.wallet.user')}
@@ -210,6 +254,109 @@ export default function OrderTrackingDashboard() {
                         {txn.branch?.vendor.name}
                       </TableSingleListContentDetailsTitle>
                     </TableSingleListContent>
+
+                    {txn?.order && (
+                      <>
+                        <TableSingleListContent>
+                          <TableSingleListContentTitle>
+                            <User size={14} />{' '}
+                            {t('component.features.orders.live.details.sender')}
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle>
+                            {txn.order.customer_name_sender}
+                          </TableSingleListContentDetailsTitle>
+                          <TableSingleListContentDetailsItem>
+                            <Phone size={12} />{' '}
+                            {txn.order.pick_up.mobile_number}
+                          </TableSingleListContentDetailsItem>
+                          <TableSingleListContentDetailsItem>
+                            <MapPin size={12} /> {txn.order.from}
+                          </TableSingleListContentDetailsItem>
+                        </TableSingleListContent>
+                        <TableSingleListContent>
+                          <TableSingleListContentTitle>
+                            <User size={14} />{' '}
+                            {t(
+                              'component.features.orders.live.details.receiver'
+                            )}
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle>
+                            {txn.order.customer_name}
+                          </TableSingleListContentDetailsTitle>
+                          <TableSingleListContentDetailsItem>
+                            <Phone size={12} />{' '}
+                            {txn.order.drop_off.mobile_number}
+                          </TableSingleListContentDetailsItem>
+                          <TableSingleListContentDetailsItem>
+                            <MapPin size={12} /> {txn.order.to}
+                          </TableSingleListContentDetailsItem>
+                        </TableSingleListContent>
+                        <TableSingleListContent
+                          className={
+                            !txn.order.driver_name ? 'bg-[#F9F8714D]' : ''
+                          }
+                        >
+                          {txn.order.driver_name ? (
+                            <>
+                              <TableSingleListContentTitle>
+                                <Truck size={14} />{' '}
+                                {t(
+                                  'component.features.orders.live.tracking.driver.defult'
+                                )}
+                              </TableSingleListContentTitle>
+                              <TableSingleListContentDetailsTitle className="text-sm font-medium text-gray-800">
+                                {txn.order.driver_name}
+                              </TableSingleListContentDetailsTitle>
+                              <TableSingleListContentDetailsItem>
+                                <Phone size={12} /> {txn.order.driver_phone}
+                              </TableSingleListContentDetailsItem>
+                              <TableSingleListContentDetailsItem>
+                                <Navigation size={12} />{' '}
+                                {txn.order.delivery_distance} km
+                              </TableSingleListContentDetailsItem>
+                            </>
+                          ) : (
+                            <>
+                              <TableSingleListContentTitle className="text-[#915A0B]">
+                                <Clock size={14} className="!text-[#915A0B]" />
+                                {t(
+                                  'component.features.orders.live.details.noDriverAssigned'
+                                )}
+                              </TableSingleListContentTitle>
+                              <TableSingleListContentDetailsItem className="">
+                                {t(
+                                  'component.features.orders.live.details.driverQueued'
+                                )}
+                              </TableSingleListContentDetailsItem>
+                            </>
+                          )}
+                        </TableSingleListContent>
+                        <TableSingleListContent>
+                          <TableSingleListContentTitle>
+                            <Info size={14} />{' '}
+                            {t(
+                              'component.features.orders.live.details.delivery-fee'
+                            )}
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle>
+                            {' '}
+                            {txn.order.amount_collected}{' '}
+                            {appConstants?.currency}
+                          </TableSingleListContentDetailsTitle>
+                        </TableSingleListContent>
+                        <TableSingleListContent>
+                          <TableSingleListContentTitle>
+                            <CreditCard size={14} />{' '}
+                            {t(
+                              'component.features.orders.live.details.payment'
+                            )}
+                          </TableSingleListContentTitle>
+                          <TableSingleListContentDetailsTitle>
+                            {paymentMap[txn.order.payment_type] || 'Unknown'}
+                          </TableSingleListContentDetailsTitle>
+                        </TableSingleListContent>
+                      </>
+                    )}
                     <TableSingleListContent>
                       <TableSingleListContentTitle>
                         <DollarSign size={14} />
@@ -233,32 +380,6 @@ export default function OrderTrackingDashboard() {
                         {txn.balance.balance_amount} {appConstants?.currency}
                       </TableSingleListContentDetailsTitle>
                     </TableSingleListContent>
-                    {txn.order && (
-                      <>
-                        {/* Receiver */}
-                        <TableSingleListContent>
-                          <TableSingleListContentTitle>
-                            <User2 size={14} />
-                            {t(
-                              'component.features.orders.live.details.receiver'
-                            )}
-                          </TableSingleListContentTitle>
-                          <TableSingleListContentDetailsTitle>
-                            {txn.order.order.drop_off.customer_name}
-                          </TableSingleListContentDetailsTitle>
-                          <TableSingleListContentDetailsItem>
-                            <Phone size={12} />{' '}
-                            {txn.order.order.drop_off.mobile_number}
-                          </TableSingleListContentDetailsItem>
-                          <TableSingleListContentDetailsItem>
-                            <MapPin size={12} /> {txn.order.order.drop_off.area}{' '}
-                            {txn.order.order.drop_off.block}{' '}
-                            {txn.order.order.drop_off.street}{' '}
-                            {txn.order.order.drop_off.building}
-                          </TableSingleListContentDetailsItem>
-                        </TableSingleListContent>
-                      </>
-                    )}
                   </TableSingleListContents>
                 </TableSingleList>
               );

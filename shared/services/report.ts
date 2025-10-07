@@ -81,10 +81,10 @@ export const reportService = {
     nextSetItemTotal?.forEach((element: any) => {
       url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
     });
-    return this.getVenodrBarnchWalletUrl(url);
+    return this.getVendorBranchWalletUrl(url);
   },
 
-  getVenodrBarnchWalletUrl(url: string) {
+  getVendorBranchWalletUrl(url: string) {
     const { user } = useAuthStore.getState();
     const { vendorId, branchId } = useVendorStore.getState();
     switch (user?.roles[0]) {

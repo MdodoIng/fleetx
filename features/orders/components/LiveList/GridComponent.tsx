@@ -1,34 +1,33 @@
 'use client';
 
-import React, { Dispatch, Fragment, SetStateAction, useState } from 'react';
-import { MapPin, Clock, Phone, ShipWheel, LucideProps } from 'lucide-react';
-import {
-  TypeOrderHistoryList,
-  TypeStatusHistoryForUi,
-} from '@/shared/types/orders';
 import MyMap from '@/shared/components/MyMap/Map';
-import { paymentMap } from '../../constants';
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from '@/shared/components/ui/card';
-import { useTranslations } from 'next-intl';
-import { useOrderStore, useSharedStore } from '@/store';
-import { cn } from '@/shared/lib/utils';
-import StatusStep from './StatusStep';
-import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
+import { cn } from '@/shared/lib/utils';
+import {
+  TypeOrderHistoryList,
+  TypeStatusHistoryForUi,
+} from '@/shared/types/orders';
+import { useOrderStore, useSharedStore } from '@/store';
+import { Clock, LucideProps, MapPin, Phone, ShipWheel } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import React, { Dispatch, Fragment, SetStateAction, useState } from 'react';
+import { paymentMap } from '../../constants';
+import StatusStep from './StatusStep';
 
 interface GridComponentProps {
   selectedOrder: TypeOrderHistoryList | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setSelectedOrder: Dispatch<SetStateAction<any>>;
   statusHistory: TypeStatusHistoryForUi[];
   isModel?: boolean;
@@ -100,7 +99,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
     },
   ];
 
-  const Componet = () => (
+  const Component = () => (
     <div className="grid gap-4 grid-cols-12 w-full">
       <Card
         hidden={isModel}
@@ -152,8 +151,8 @@ const GridComponent: React.FC<GridComponentProps> = ({
                 </div>
               </div>
               <div className="flex w-full justify-between gap-1 mt-4   items-end ">
-                <p className="text-sm flex items-center max-w-[10ch] overflow-hidden ">
-                  <MapPin size={16} />
+                <p className="text-sm flex items-center max-w-[15ch] gap-1 line-clamp-2 overflow-hidden ">
+                  <MapPin size={16} className="shrink-0" />
                   {order.to.substring(0, 20) +
                     (order.to.length > 30 ? '...' : '')}
                 </p>
@@ -321,8 +320,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
 
   return (
     <>
-      <Componet />
-
+      <Component />
       {isMobile && isModel && (
         <Dialog
           open={!!selectedOrder}
@@ -334,7 +332,7 @@ const GridComponent: React.FC<GridComponentProps> = ({
           <DialogContent className="max-w-[90vw] max-h-[90vh] sm:max-w-max overflow-y-auto p-0 border-none">
             <DialogTitle asChild className="hidden"></DialogTitle>
 
-            {selectedOrder && <Componet />}
+            {selectedOrder && <Component />}
           </DialogContent>
         </Dialog>
       )}

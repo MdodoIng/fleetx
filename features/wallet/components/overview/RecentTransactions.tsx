@@ -30,7 +30,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     try {
       if (vendorStore.vendorId) {
         const walletHistoryUrl = reportService.getWalletHistoryUrl(
-          4,
+          5,
           null,
           null,
           null,
