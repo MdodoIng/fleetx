@@ -10,7 +10,7 @@ import {
 } from '../constants/storageConstants';
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'sonner';
-import { Locale, useTranslations } from 'next-intl';
+
 import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
 import { TypeCheckBlockActivationRes } from '../types/services';
@@ -195,27 +195,15 @@ export const showToast = (status: ToastStatus, message: string) => {
 };
 
 export const showServerMessage = (status: ToastStatus, resMessage: string) => {
-  const { getLocalStorage } = useSharedStore.getState();
-  const t = useTranslations();
-  const lang = getLocalStorage('lang') as Locale;
-  if (!lang) {
-    setUserLocale('en');
-  } else {
-    // @ts-ignore
-    setUserLocale(lang);
-  }
-
   if (!resMessage) return;
 
   const message = ErrorMessages.find((x) => x.key === resMessage);
   let realMessage: string;
 
   if (message) {
-    realMessage = t(`apiMessages.${resMessage}` as any, {
-      defaultValue: message.value,
-    });
+    realMessage = message.value;
   } else {
-    realMessage = t('commonMessages.errorMessage');
+    realMessage = 'Uh-oh, something went wrong.';
   }
 
   showToast(status, realMessage);

@@ -5,13 +5,14 @@ import {
   useVendorStore,
 } from '@/store';
 import { apiFetch } from '../lib/utils';
+
 import {
-  TypBranchWalletBalanceReportRes,
+  TypeBranchWalletBalanceReportRes,
   TypeDashboardDetailsResponse,
-  TypeDashboardInsightResponce,
-  TypeSalesFunnelRetentionRespose,
+  TypeDashboardInsightResponse,
+  TypeSalesFunnelRetentionResponse,
   TypeWalletTransactionHistoryRes,
-  TypeZoneGrowthResponce,
+  TypeZoneGrowthResponse,
 } from '../types/report';
 import { appConfig } from './app-config';
 
@@ -60,7 +61,7 @@ export const reportService = {
 
   getBranchWalletBalanceReport(
     url: string
-  ): Promise<TypBranchWalletBalanceReportRes> {
+  ): Promise<TypeBranchWalletBalanceReportRes> {
     return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
@@ -189,7 +190,7 @@ export const reportService = {
   getDashboardInsight(
     fromDate: Date | null,
     toDate: Date | null
-  ): Promise<TypeDashboardInsightResponce> {
+  ): Promise<TypeDashboardInsightResponse> {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/performance/dashboard/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
@@ -261,7 +262,7 @@ export const reportService = {
   getZoneGrowth(
     region_id: number,
     year: number
-  ): Promise<TypeZoneGrowthResponce> {
+  ): Promise<TypeZoneGrowthResponse> {
     let url = '/zone/growth/insight';
     const queryParams = [];
 
@@ -290,7 +291,7 @@ export const reportService = {
     );
   },
 
-  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionRespose> {
+  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionResponse> {
     return apiFetch(
       appConfig.reportServiceApiUrl() + '/funnel/retention/users',
       {
@@ -299,7 +300,7 @@ export const reportService = {
     );
   },
 
-  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
+  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionResponse> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
         '/funnel/retention/no-order-has-wallet/users',

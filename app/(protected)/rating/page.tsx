@@ -18,7 +18,7 @@ import { Button } from '@/shared/components/ui/button';
 import { rateService } from '@/shared/services/rate';
 import {
   OverallRatingType,
-  TypeGetDashBoardResponce,
+  TypeGetDashBoardResponse,
 } from '@/shared/types/rate';
 import { cn } from '@/shared/lib/utils';
 import {
@@ -41,7 +41,7 @@ const IMPROVEMENT_CATEGORIES = [
 
 export default function RatingPage() {
   const [ratingData, setRatingData] = useState<
-    TypeGetDashBoardResponce['data']
+    TypeGetDashBoardResponse['data']
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

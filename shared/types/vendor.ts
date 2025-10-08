@@ -74,7 +74,7 @@ export type TypeWallet = {
   is_vendor_central_wallet_enabled: boolean;
 };
 
-export type TypeWalletResponce = {
+export type TypeWalletResponse = {
   data: TypeWallet;
 };
 
@@ -277,7 +277,7 @@ export type TypeOpsFinUser = {
   created_by: null;
 };
 
-export interface TypeOpsFinUserResponce {
+export interface TypeOpsFinUserResponse {
   data: TypeOpsFinUser[];
 }
 
@@ -296,7 +296,7 @@ export type TypeUpdateCompanyBillingRequest = {
   tin?: string;
 };
 
-export type TypeAffiliationLisRespoese = {
+export type TypeAffiliationLisResponse = {
   data: {
     affiliation: unknown[];
     api_auth: null;

@@ -11,10 +11,6 @@ export const usePickUpFormValuesForPickUp = ({
     address: pickUpFormValues.additional_address,
     area: pickUpFormValues.area,
     area_id: pickUpFormValues.area_id as any,
-    block: pickUpFormValues.block,
-    block_id: pickUpFormValues.block_id as any,
-    street: pickUpFormValues.street,
-    street_id: pickUpFormValues.street_id as any,
     latitude: pickUpFormValues.latitude,
     longitude: pickUpFormValues.longitude,
     floor: pickUpFormValues.floor,
@@ -25,14 +21,20 @@ export const usePickUpFormValuesForPickUp = ({
     paci_number: '',
   };
 
-  // Conditionally add building and building_id only if building is not empty
-  if (
-    pickUpFormValues.building_id
-    // &&
-    // pickUpFormValues.building_id.trim() !== ''
-  ) {
+  // Conditionally add building, building_id, block, block_id, street, and street_id only if their respective IDs are not empty
+  if (pickUpFormValues.building_id) {
     basePickUp.building = pickUpFormValues.building;
     basePickUp.building_id = pickUpFormValues.building_id as any;
+  }
+
+  if (pickUpFormValues.block_id) {
+    basePickUp.block = pickUpFormValues.block;
+    basePickUp.block_id = pickUpFormValues.block_id as any;
+  }
+
+  if (pickUpFormValues.street_id) {
+    basePickUp.street = pickUpFormValues.street;
+    basePickUp.street_id = pickUpFormValues.street_id as any;
   }
 
   return basePickUp;
@@ -55,10 +57,6 @@ export const useDropOffFormValuesForDropOffs = ({
     customer_name: dropOffFormValues.customer_name,
     area: dropOffFormValues.area,
     area_id: dropOffFormValues.area_id,
-    block: dropOffFormValues.block,
-    block_id: dropOffFormValues.block_id,
-    street: dropOffFormValues.street,
-    street_id: dropOffFormValues.street_id,
     floor: dropOffFormValues.floor ?? '',
     room_number: dropOffFormValues.apartment_no ?? '',
     apartment_no: dropOffFormValues.apartment_no,
@@ -73,6 +71,21 @@ export const useDropOffFormValuesForDropOffs = ({
     paci_number: '',
     specific_driver_instructions: dropOffFormValues.additional_address!,
   };
+  // Conditionally add street and street_id only if street_id is not empty
+  if (dropOffFormValues.block_id) {
+    // @ts-ignore
+    baseDropOff.block = dropOffFormValues.block;
+    // @ts-ignore
+    baseDropOff.block_id = dropOffFormValues.block_id;
+  }
+
+  // Conditionally add street and street_id only if street_id is not empty
+  if (dropOffFormValues.street_id) {
+    // @ts-ignore
+    baseDropOff.street = dropOffFormValues.street;
+    // @ts-ignore
+    baseDropOff.street_id = dropOffFormValues.street_id;
+  }
 
   // Conditionally add building and building_id only if building is not empty
   if (
@@ -80,7 +93,9 @@ export const useDropOffFormValuesForDropOffs = ({
     // &&
     // dropOffFormValues.building_id?.trim() !== ''
   ) {
+    // @ts-ignore
     baseDropOff.building = dropOffFormValues.building;
+    // @ts-ignore
     baseDropOff.building_id = dropOffFormValues.building_id as any;
   }
 
@@ -88,9 +103,11 @@ export const useDropOffFormValuesForDropOffs = ({
   if (isCOD === 1 && dropOffFormValues.amount_to_collect) {
     // Convert to number if it's a valid string, otherwise use 0
     const amount = parseFloat(dropOffFormValues.amount_to_collect.toString());
+    // @ts-ignore
     baseDropOff.amount_to_collect = isNaN(amount) ? 0 : amount;
   }
 
+  // @ts-ignore
   return baseDropOff;
 };
 

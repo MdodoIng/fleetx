@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { storageKeys } from './storageKeys';
 import { useAuthStore, useSharedStore } from '@/store';
+import { showServerMessage } from '../services';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -51,6 +52,7 @@ export async function apiFetch<T>(
       }
     }
 
+    showServerMessage('error', errorText);
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
 

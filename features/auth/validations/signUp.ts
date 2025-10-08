@@ -9,8 +9,8 @@ export const signUpFormSchema = z.object({
   phone: z
     .string()
     .regex(/^\d+$/, 'Only numbers are allowed')
-    .min(7, 'Phone number must be at least 7 digits')
-    .max(7, 'Phone number cannot exceed 15 digits'),
+    .min(8, 'Phone number must be at least 7 digits')
+    .max(8, 'Phone number cannot exceed 15 digits'),
 
   address: z.string().min(5, 'Address must be at least 5 characters'),
   landmark: z.string().optional(),

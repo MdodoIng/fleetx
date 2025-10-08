@@ -517,7 +517,7 @@ export interface TypeUpdateAddressReq {
   street_id: number;
   address: string;
 }
-export type TypeUpdateAddressResponce = {
+export type TypeUpdateAddressResponse = {
   data: {
     order_number: string;
     status: number;
@@ -600,7 +600,7 @@ export interface TypeUpdatePaymentReq {
   amount_to_collect: number;
 }
 
-export interface TypeZoneResponce {
+export interface TypeZoneResponse {
   data: TypeZoneData[];
 }
 

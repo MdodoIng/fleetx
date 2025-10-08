@@ -8,7 +8,8 @@ export const pickUpSchema = z.object({
 
   mobile_number: z
     .string()
-    .min(7, 'Please enter mobile number')
+    .min(8, 'Please enter mobile number')
+    .max(8, 'Phone is required')
     .regex(/^[0-9]*$/, { message: 'Mobile number should contain only digits' }),
   area: z.string(),
   area_id: z.any(),
@@ -34,7 +35,8 @@ export const dropOffSchema = z.object({
     .regex(/^[^\s].*/, { message: 'Customer name cannot start with a space' }),
   mobile_number: z
     .string()
-    .min(7, 'Please enter mobile number')
+    .min(8, 'Please enter mobile number')
+    .max(8, 'Phone is required')
     .regex(/^[0-9]*$/, { message: 'Mobile number should contain only digits' }),
   area: z.string(),
   area_id: z.any(),

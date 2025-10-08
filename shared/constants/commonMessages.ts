@@ -22,16 +22,13 @@ export const ErrorMessages: Array<{ key: string; value: string }> = [
   { key: 'DATA_NOT_FOUND', value: 'Data not found for the specific record' },
   { key: 'INVALID_REQUEST', value: 'Invalid request' },
   { key: 'UPDATED_SUCCESSFULLY', value: 'Record updated successfully' },
-
   {
     key: 'ACTIVE_INACTIVE_NOT_FOUND',
     value: 'There is no record found for the operation(active/inactive)',
   },
-
   { key: 'BRANCH_NOT_FOUND', value: 'Branch for the Vendor is not found' },
   { key: 'VENDOR_CREATED', value: 'Vendor created successfully' },
   { key: 'VENDOR_NAME_ALREADY_EXIST', value: 'Vendor Name already exists' },
-
   { key: 'ORDER_CREATED', value: 'Order placed successfully' },
   { key: 'ORDER_CANNOT_BE_MODIFIED', value: 'Order cannot be modified' },
   { key: 'ORDER_NOT_FOUND', value: 'Order not found' },

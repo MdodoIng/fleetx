@@ -4,12 +4,12 @@ import { apiFetch } from '../lib/utils';
 import {
   RootTypeBranchByBranchId,
   TypeAddVendorReq,
-  TypeAffiliationLisRespoese,
+  TypeAffiliationLisResponse,
   TypeBranch,
   TypeCreateVendorUserReq,
   TypeEditVendorReq,
   TypeGetCompanyBillingResponse,
-  TypeOpsFinUserResponce,
+  TypeOpsFinUserResponse,
   TypeUpdateCompanyBillingRequest,
   TypeUpdateVendorUserReq,
   TypeVendor,
@@ -17,7 +17,7 @@ import {
   TypeVendorListRes,
   TypeVendorRes,
   TypeVendorUserListRes,
-  TypeWalletResponce,
+  TypeWalletResponse,
 } from '../types/vendor';
 import { TypeAddressByMobileResponse } from '../types/orders';
 import { appConfig } from './app-config';
@@ -89,7 +89,7 @@ export const vendorService = {
   getVendorWalletBalance: (
     vendorId: string,
     branchId?: string
-  ): Promise<TypeWalletResponce> => {
+  ): Promise<TypeWalletResponse> => {
     let url = `/${vendorId}`;
     if (branchId) url += `/branch/${branchId}`;
     return apiFetch(`${appConfig.vendorServiceApiUrl()}${url}/wallet/balance`);
@@ -134,7 +134,7 @@ export const vendorService = {
       }
     ),
 
-  getAffiliationList: (): Promise<TypeAffiliationLisRespoese> =>
+  getAffiliationList: (): Promise<TypeAffiliationLisResponse> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/list/`),
 
   activateAffiliation: (request: any) =>
@@ -193,7 +193,7 @@ export const vendorService = {
       method: 'GET',
     }),
 
-  getOpsFinUser: (): Promise<TypeOpsFinUserResponce> =>
+  getOpsFinUser: (): Promise<TypeOpsFinUserResponse> =>
     apiFetch(`${appConfig.userServiceApiUrl()}/all-ops-fin/users`),
 
   getCompanyBilling(vendorId: string): Promise<TypeGetCompanyBillingResponse> {
