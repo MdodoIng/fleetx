@@ -21,7 +21,13 @@ export default function NoData({
 }: NoDataProps) {
   const t = useTranslations();
   return (
-    <Card className={cn('w-full ', size === 'small' && 'py-2', className)}>
+    <Card
+      className={cn(
+        'w-full bg-transparent text-dark-grey/15 border-dark-grey/5',
+        size === 'small' && 'py-2',
+        className
+      )}
+    >
       <CardContent
         className={cn(
           'flex flex-col items-center justify-center  h-full ',
@@ -30,14 +36,14 @@ export default function NoData({
       >
         <AlertTriangle
           className={cn(
-            ' text-off-white ',
+            '',
             size === 'small' && 'size-8 mb-2',
             size === 'large' && 'size-16 mb-4'
           )}
         />
         <p
           className={cn(
-            'text-center text-dark-grey  font-medium ',
+            'text-center   font-medium ',
             size === 'large' && 'text-lg mb-4'
           )}
         >

@@ -61,7 +61,7 @@ export function AlertSettings() {
       const res = await paymentService.confirmWalletNotifyBalance(request);
 
       if (res) {
-        toast('✅ Wallet balance alert configured successfully!');
+        toast('Wallet balance alert configured successfully!');
       }
     } catch (err: any) {
       console.error(err.response?.data?.message || err.message);

@@ -1,11 +1,10 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/button';
-import { Download } from 'lucide-react';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import InsightTiles from '@/features/insights/components/overview/InsightTiles';
 import FunnelChart from '@/features/insights/components/overview/FunnelChart';
+import InsightTiles from '@/features/insights/components/overview/InsightTiles';
 import useInsightBoard from '@/features/insights/hooks/useInsightBoard';
+import Export from '@/shared/components/Export';
+import { OverviewFallback } from '@/shared/components/fetch/fallback';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Dashboard,
@@ -13,12 +12,9 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { OverviewFallback } from '@/shared/components/fetch/fallback';
 
 function Overview() {
   const { date, setDate, metrics, isLoading } = useInsightBoard();
-
-  const { exportOrdersToCSV } = useTableExport();
 
   const statisticsInsightTiles = [
     { title: 'Sign ups', count: metrics.totalSignups },
@@ -72,9 +68,11 @@ function Overview() {
         {/* Search and Filter */}
         <div className="flex sm:justify-center gap-1.5 max-sm:w-full justify-between">
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button className="p-2 hover:bg-gray-100 rounded-lg">
-            <Download className="w-5 h-5" /> Export
-          </Button>
+
+          <Export
+            data={[...statisticsInsightTiles, ...statisticsFunnelChart]}
+            title="summary of your key metrics"
+          />
         </div>
       </DashboardHeader>
 

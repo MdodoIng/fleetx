@@ -1,6 +1,7 @@
 'use client';
 
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';
@@ -23,7 +24,7 @@ import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
 import { TypeZoneData } from '@/shared/types/orders';
 import { TypeZoneGrowth } from '@/shared/types/report';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function ZoneGrowthPage() {
   const [zoneList, setZoneList] = useState<TypeZoneData[]>([]);
@@ -36,12 +37,9 @@ export default function ZoneGrowthPage() {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] = useState<string | null>(null);
-
   // Fetch zones
   useEffect(() => {
     async function loadZones() {
-      setError(null);
       try {
         const zones = await orderService.getZone();
         console.log('Zones response:', zones); // Debug log
@@ -49,7 +47,6 @@ export default function ZoneGrowthPage() {
       } catch (err: any) {
         const errorMessage = err.message || 'Failed to fetch zones';
         console.error('Error fetching zones:', errorMessage);
-        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -57,13 +54,12 @@ export default function ZoneGrowthPage() {
     loadZones();
   }, []);
 
-  const fecthGrowth = useCallback(async () => {
+  const fetchGrowth = useCallback(async () => {
     if (!selectedZone || !selectedYear) {
       console.log('Skipping growth fetch: zone or year not selected');
       return;
     }
 
-    setError(null);
     try {
       const data = await reportService.getZoneGrowth(
         selectedZone,
@@ -75,7 +71,6 @@ export default function ZoneGrowthPage() {
       // Consider a more specific error type if possible
       const errorMessage = err.message || 'Failed to fetch growth data';
       console.error('Error fetching growth data:', errorMessage);
-      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -84,10 +79,10 @@ export default function ZoneGrowthPage() {
   // Fetch growth data
   useEffect(() => {
     async function loadGrowth() {
-      await fecthGrowth();
+      await fetchGrowth();
     }
     loadGrowth();
-  }, [fecthGrowth]);
+  }, [fetchGrowth]);
 
   // Map zones to searchable select options
   const searchZoneOption: TypeSearchableSelectOption[] =
@@ -183,7 +178,7 @@ export default function ZoneGrowthPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="text-center text-gray-500">No data available</div>
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

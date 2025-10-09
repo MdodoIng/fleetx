@@ -22,7 +22,7 @@ import {
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
 import { RATE_REASONS_EN } from '@/shared/constants/storageConstants';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import tableExport from '@/shared/lib/hooks/tableExport';
 import { cn } from '@/shared/lib/utils';
 import { getFirstOrderInsight, getFirstOrderList } from '@/shared/services';
 import { useCallback, useEffect, useState } from 'react';
@@ -40,8 +40,6 @@ function FirstOrderInsights() {
   const [page, setPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { exportOrdersToCSV } = useTableExport();
 
   const fetchInsights = useCallback(async () => {
     try {

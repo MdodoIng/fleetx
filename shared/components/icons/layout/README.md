@@ -296,7 +296,7 @@ import type {
 } from '@/shared/components/icons/sidebar';
 
 // Type-safe icon selection
-const iconType: SidebarIconType = 'newOrder'; // ✅ Valid
+const iconType: SidebarIconType = 'newOrder'; //   Valid
 const invalidIcon: SidebarIconType = 'invalid'; // ❌ TypeScript error
 
 // Props are fully typed

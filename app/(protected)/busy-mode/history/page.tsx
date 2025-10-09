@@ -1,33 +1,31 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { Download } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Dashboard,
-  DashboardHeader,
   DashboardContent,
+  DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import {
   Table,
   TableLists,
   TableSingleList,
+  TableSingleListContent,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
   TableSingleListHeader,
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
-  TableSingleListContents,
-  TableSingleListContent,
-  TableSingleListContentTitle,
-  TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
-import DateSelect from '@/shared/components/selectors/DateSelect';
-import NoData from '@/shared/components/fetch/NoData';
-import LoadMore from '@/shared/components/fetch/LoadMore';
 import { configService } from '@/shared/services/config';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import { useCallback, useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { TableFallback } from '@/shared/components/fetch/fallback';
 
 export default function BusyModeHistoryDashboard() {
   const [data, setData] = useState<TypeBusyModeHistory[]>([]);
@@ -36,8 +34,6 @@ export default function BusyModeHistoryDashboard() {
 
   const [date, setDate] = useState<DateRange>();
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
-
-  const { exportOrdersToCSV } = useTableExport();
 
   const fetchBusyModeHistory = useCallback(async () => {
     try {
@@ -73,12 +69,8 @@ export default function BusyModeHistoryDashboard() {
         <div className="flex sm:justify-center gap-2 max-sm:w-full justify-between max-md:flex-wrap">
           {/* Date Filters */}
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            // onClick={() => exportOrdersToCSV(data!, 'busy-mode-history')}
-            className="max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+
+          <Export data={data} title="Busy mode history" />
         </div>
       </DashboardHeader>
       <DashboardContent>

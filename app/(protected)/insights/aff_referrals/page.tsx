@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/components/ui/button';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import tableExport from '@/shared/lib/hooks/tableExport';
 import { reportService } from '@/shared/services/report';
 import { useAuthStore } from '@/store';
 import { startOfMonth, endOfMonth } from 'date-fns';
@@ -25,6 +25,8 @@ import {
   TableSingleListContentDetailsTitle,
 } from '@/shared/components/ui/tableList';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import Export from '@/shared/components/Export';
+import NoData from '@/shared/components/fetch/NoData';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -55,8 +57,6 @@ const AffiliateReferrals = () => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState<number>(10);
-
-  const { exportOrdersToCSV } = useTableExport();
 
   const transformReferralData = (result: any[]) => {
     const mapped = result.map((element) => {
@@ -135,85 +135,74 @@ const AffiliateReferrals = () => {
           />
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-          // onClick={() =>
-          //   exportOrdersToCSV(
-          //     referralList,
-          //     'Affiliate Referrals',
-          //     `Affiliate Referrals ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-          //       date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-          //     }`
-          //   )
-          // }
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+
+          <Export data={referralList} title="Affiliate Referrals" />
         </div>
       </DashboardHeader>
 
       <DashboardContent className="flex-col w-full">
-        <div className="flex flex-col items-center bg-gray-50 p-4">
-          {referralList.length ? (
-            <Table>
-              <TableLists>
-                {referralList.map((item, idx) => (
-                  <TableSingleListHeader key={idx}>
+        {referralList.length ? (
+          <Table>
+            <TableLists>
+              {referralList.map((item, idx) => (
+                <TableSingleListHeader key={idx}>
+                  <TableSingleListContents>
                     <TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Order ID
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.orderNumber}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Order Date
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.orderDate}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Fee
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.fee}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Affiliator
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.affiliator}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Vendor Name
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.vendorName}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
-                      <TableSingleListContents>
-                        <TableSingleListContentDetailsTitle>
-                          Branch Name
-                        </TableSingleListContentDetailsTitle>
-                        <TableSingleListContentDetailsTitle>
-                          {item.branchName}
-                        </TableSingleListContentDetailsTitle>
-                      </TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Order ID
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.orderNumber}
+                      </TableSingleListContentDetailsTitle>
                     </TableSingleListContents>
-                  </TableSingleListHeader>
-                ))}
-              </TableLists>
-            </Table>
-          ) : null}
-        </div>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Order Date
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.orderDate}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Fee
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.fee}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Affiliator
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.affiliator}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Vendor Name
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.vendorName}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                    <TableSingleListContents>
+                      <TableSingleListContentDetailsTitle>
+                        Branch Name
+                      </TableSingleListContentDetailsTitle>
+                      <TableSingleListContentDetailsTitle>
+                        {item.branchName}
+                      </TableSingleListContentDetailsTitle>
+                    </TableSingleListContents>
+                  </TableSingleListContents>
+                </TableSingleListHeader>
+              ))}
+            </TableLists>
+          </Table>
+        ) : (
+          <NoData />
+        )}
       </DashboardContent>
     </Dashboard>
   );

@@ -474,6 +474,12 @@
       },
       "header": {
         "title": "👋 Hi, Welcome to FleetX"
+      },
+      "export": {
+        "default": "Export",
+        "excel": "Export to Excel",
+        "csv": "Export to CSV",
+        "invoice": "Download Invoice"
       }
     },
 

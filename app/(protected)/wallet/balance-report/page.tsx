@@ -1,18 +1,10 @@
 'use client';
 import { BalanceReportItem } from '@/features/wallet/type';
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import { Button } from '@/shared/components/ui/button';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { reportService } from '@/shared/services/report';
-import { useSharedStore, useVendorStore } from '@/store';
-import {
-  BetweenVerticalEndIcon,
-  Download,
-  GitBranch,
-  ServerCrash,
-  User2,
-  Wallet,
-} from 'lucide-react';
-import { useEffect, useState, type JSX } from 'react';
 import {
   Dashboard,
   DashboardContent,
@@ -28,9 +20,16 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import LoadMore from '@/shared/components/fetch/LoadMore';
-import NoData from '@/shared/components/fetch/NoData';
+import { reportService } from '@/shared/services/report';
+import { useSharedStore, useVendorStore } from '@/store';
+import {
+  BetweenVerticalEndIcon,
+  GitBranch,
+  ServerCrash,
+  User2,
+  Wallet,
+} from 'lucide-react';
+import { useEffect, useState, type JSX } from 'react';
 
 function BalanceReport(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +92,7 @@ function BalanceReport(): JSX.Element {
           return {
             vendor: r?.vendor.name,
             branch:
-              vendorStore.selectedBranch?.name! ||
+              vendorStore.selectedBranch?.name ||
               vendor?.main_branch.name ||
               'N/A',
             walletBalance: Number(r?.wallet_balance) || 0,
@@ -180,8 +179,6 @@ function BalanceReport(): JSX.Element {
     ];
   });
 
-  const { exportOrdersToCSV } = useTableExport();
-
   if (isLoading) return <TableFallback />;
 
   return (
@@ -196,11 +193,7 @@ function BalanceReport(): JSX.Element {
             </Button>
           </div>
           <div className="flex items-center justify-center gap-1.5">
-            <Button
-              onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
-            >
-              <Download className="w-5 h-5" /> Export
-            </Button>
+            <Export data={data!} title="balance-report" />
           </div>
         </div>
       </DashboardHeader>

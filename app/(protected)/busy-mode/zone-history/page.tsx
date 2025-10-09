@@ -43,9 +43,6 @@ type BusyModeItem = {
 };
 
 export default function ZoneBusyModeHistory() {
-  const [zoneList, setZoneList] = useState<
-    { id: string; region_name: string }[]
-  >([]);
   const [selectedZone, setSelectedZone] = useState<string>();
   const [date, setDate] = useState<DateRange>();
   const [busyModeList, setBusyModeList] = useState<BusyModeItem[]>([]);
@@ -53,7 +50,6 @@ export default function ZoneBusyModeHistory() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemsToken, setNextSetItemsToken] = useState<any>();
-  const [totalCount, setTotalCount] = useState(0);
 
   const fetchHistory = useCallback(async () => {
     const url = configService.getZoneBusyModeHistoryUrl(
@@ -67,11 +63,10 @@ export default function ZoneBusyModeHistory() {
     try {
       const res = await configService.getOnlyZoneBusyModeHistory(url);
 
-      console.log(res);
-
+      // @ts-ignore
       const dataList = res.data.data || [];
       setBusyModeList(dataList);
-      setTotalCount(res.data.count || 0);
+
       setNextSetItemsToken(dataList.length < page ? null : true);
       calculateTotalDuration(dataList);
     } catch (error) {

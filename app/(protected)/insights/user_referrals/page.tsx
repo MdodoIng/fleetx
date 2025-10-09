@@ -1,15 +1,13 @@
 'use client';
 
-import FilterHeader from '@/features/insights/components/user_referrals/FilterHeader';
-import NoData from '@/features/insights/components/user_referrals/NoData';
-import ReferralTable from '@/features/insights/components/user_referrals/ReferralTable';
 import useUserReferrals from '@/features/insights/hooks/useUserReferrals';
+import Export from '@/shared/components/Export';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
 import SearchableSelect, {
   TypeSearchableSelectOption,
 } from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import { Button } from '@/shared/components/ui/button';
 import {
   Dashboard,
   DashboardContent,
@@ -17,26 +15,21 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import {
-  TableLists,
   Table,
-  TableSingleListHeader,
-  TableSingleListContents,
+  TableLists,
   TableSingleListContentDetailsTitle,
-  TableSingleListContent,
+  TableSingleListContents,
+  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
-import { useAuthStore } from '@/store';
 import { format } from 'date-fns';
-import { Download, Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function ReferralDashboard() {
   const {
     referrals,
     loading,
-
     selectedUser,
     setSelectedUser,
-    setTrigger,
     users,
     fetchOpsFinUser,
     fetchReferrals,
@@ -76,13 +69,7 @@ export default function ReferralDashboard() {
             placeholder="Search User"
           />
 
-          <Button
-            // onClick={onExport}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <Export data={referrals} title="User Referrals" />
         </div>
       </DashboardHeader>
 
@@ -152,7 +139,7 @@ export default function ReferralDashboard() {
             </Table>
           </>
         ) : (
-          ''
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>

@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 
 import { useVendorStore, useSharedStore, useOrderStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import tableExport from '@/shared/lib/hooks/tableExport';
 import { reportService } from '@/shared/services/report';
 import { TypeWalletTransactionHistoryRes } from '@/shared/types/report';
 import { vendorService } from '@/shared/services/vendor';
@@ -53,6 +53,7 @@ import NoData from '@/shared/components/fetch/NoData';
 import LoadMore from '@/shared/components/fetch/LoadMore';
 import { orderService } from '@/shared/services/orders';
 import { paymentMap } from '@/features/orders/constants';
+import Export from '@/shared/components/Export';
 
 export default function OrderTrackingDashboard() {
   const { setSourceForTable } = useOrderStore();
@@ -100,7 +101,7 @@ export default function OrderTrackingDashboard() {
       const walletHistoryData = await Promise.all(
         walletHistoryItems.map(async (item) => {
           try {
-            // ✅ Fetch branch details for vendor/branch
+            //   Fetch branch details for vendor/branch
             const branchList = await vendorService.getBranchDetails(
               item.vendor_id
             );
@@ -108,7 +109,7 @@ export default function OrderTrackingDashboard() {
               (x) => x.id === item.branch_id
             );
 
-            // ✅ Fetch order details if delivery_model exists
+            //   Fetch order details if delivery_model exists
             let orderRes = null;
             if (item.delivery_model) {
               const url = orderService.getOrderHistoryUrl(
@@ -163,8 +164,6 @@ export default function OrderTrackingDashboard() {
     fetchVendorWalletReport();
   }, [fetchVendorWalletReport]);
 
-  const { exportOrdersToCSV } = useTableExport();
-
   const t = useTranslations();
 
   if (isLoading) return <TableFallback />;
@@ -188,20 +187,16 @@ export default function OrderTrackingDashboard() {
           </div>
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            onClick={() =>
-              exportOrdersToCSV(
-                walletHistory!,
-                'wallet history',
-                `wallet history ${date?.from ? format(date.from, 'yyyy-MM-dd') : ''} - ${
-                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-                }`
-              )
-            }
-            className="p-2 hover:bg-gray-100 rounded-lg max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+
+          <Export
+            data={walletHistory!}
+            title="wallet history"
+            exclude={[
+              'branch-vendor-is_vendor_central_wallet_enabled',
+              'order-isSyncShow',
+              'order-isOlderData',
+            ]}
+          />
         </div>
       </DashboardHeader>
 

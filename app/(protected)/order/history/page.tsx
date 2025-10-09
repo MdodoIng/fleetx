@@ -23,7 +23,7 @@ import {
 import { useOrderStore } from '@/store/useOrderStore';
 import { useSharedStore, useVendorStore } from '@/store';
 import { Button } from '@/shared/components/ui/button';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import tableExport from '@/shared/lib/hooks/tableExport';
 import {
   Dashboard,
   DashboardContent,
@@ -57,6 +57,7 @@ import { TableFallback } from '@/shared/components/fetch/fallback';
 import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
 import LoadMore from '@/shared/components/fetch/LoadMore';
 import NoData from '@/shared/components/fetch/NoData';
+import Export from '@/shared/components/Export';
 
 export default function OrderTrackingDashboard() {
   const { setSourceForTable, orderHistoryListData } = useOrderStore();
@@ -139,8 +140,6 @@ export default function OrderTrackingDashboard() {
     fetchOrderDetails();
   }, [fetchOrderDetails]);
 
-  const { exportOrdersToCSV } = useTableExport();
-
   const t = useTranslations();
 
   const sortOptions = [
@@ -203,14 +202,16 @@ export default function OrderTrackingDashboard() {
           )}
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            onClick={() =>
-              exportOrdersToCSV(orderHistoryListData!, 'order history')
-            }
-            className=" max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+          <Export
+            data={orderHistoryListData!}
+            title="order history"
+            exclude={[
+              'is_delivery_address_edit_enabled',
+              'is_addr_last_updated_by_customer',
+              'isSyncShow',
+              'class_status',
+            ]}
+          />
         </div>
       </DashboardHeader>
       <DashboardContent>
