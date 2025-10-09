@@ -55,14 +55,14 @@ export default function ZoneGrowthPage() {
   }, []);
 
   const fetchGrowth = useCallback(async () => {
-    if (!selectedZone || !selectedYear) {
-      console.log('Skipping growth fetch: zone or year not selected');
+    if (!selectedYear) {
+      console.log('Skipping growth fetch: year not selected');
       return;
     }
 
     try {
       const data = await reportService.getZoneGrowth(
-        selectedZone,
+        selectedZone!,
         selectedYear
       );
       console.log('Growth data response:', data); // Debug log

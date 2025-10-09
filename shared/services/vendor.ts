@@ -188,7 +188,7 @@ export const vendorService = {
       body: JSON.stringify(user),
     }),
 
-  getAffiliation: () =>
+  getAffiliation: (): Promise<any> =>
     apiFetch(`${appConfig.vendorServiceApiUrl()}/affiliation/get-all`, {
       method: 'GET',
     }),

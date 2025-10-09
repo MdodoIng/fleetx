@@ -3,6 +3,7 @@
 import useUserReferrals from '@/features/insights/hooks/useUserReferrals';
 import Export from '@/shared/components/Export';
 import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
 import NoData from '@/shared/components/fetch/NoData';
 import SearchableSelect, {
   TypeSearchableSelectOption,
@@ -35,6 +36,8 @@ export default function ReferralDashboard() {
     fetchReferrals,
     date,
     setDate,
+    setPage,
+    nextSetItemsToken,
   } = useUserReferrals();
 
   useEffect(() => {
@@ -135,6 +138,11 @@ export default function ReferralDashboard() {
                     </TableSingleListContents>
                   </TableSingleListHeader>
                 ))}
+                <LoadMore
+                  setPage={setPage}
+                  nextSetItemTotal={nextSetItemsToken}
+                  type="table"
+                />
               </TableLists>
             </Table>
           </>

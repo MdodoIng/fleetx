@@ -200,7 +200,10 @@ export const reportService = {
     });
   },
 
-  getChurnReasonsInsights(fromDate: Date | null, toDate: Date | null) {
+  getChurnReasonsInsights(
+    fromDate: Date | null,
+    toDate: Date | null
+  ): Promise<any> {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/funnel/retention/churn-reason/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;

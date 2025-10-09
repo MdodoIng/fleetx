@@ -100,7 +100,7 @@ export const getFirstOrderList = (
   perPage: number,
   fromDate: Date | undefined,
   toDate: Date | undefined
-) => {
+): Promise<any> => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
   url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;

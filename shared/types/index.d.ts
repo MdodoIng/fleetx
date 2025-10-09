@@ -21,6 +21,6 @@ export interface TypeVendorPricingRuleRes {
 export type TypeFirstOrderInsightResponse = {
   data: {
     avg_rating: number;
-    improvements: string[];
+    improvements: string[] | any;
   };
 };
