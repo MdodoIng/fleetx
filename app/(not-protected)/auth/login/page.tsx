@@ -20,11 +20,10 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Separator } from '@/shared/components/ui/separator';
-import { loginSchema, TypeLoginSchema } from '@/features/auth/validations/auth';
 import ForgotPassword from '@/features/auth/components/ForgotPassword';
+import { loginSchema, TypeLoginSchema } from '@/features/auth/validations/auth';
+import { Separator } from '@/shared/components/ui/separator';
 
 export default function Login() {
   const { isLoading, login } = useAuthStore();

@@ -90,6 +90,7 @@ function VendorList(): JSX.Element {
             // onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
             //   onClick={() => vendorStore.setValue('isEditVendorId', undefined)}
             variant={!isEditVendorId ? 'ghost' : 'default'}
+            suppressHydrationWarning
             onClick={() =>
               isEditVendorId ? setValue('isEditVendorId', undefined) : ''
             }

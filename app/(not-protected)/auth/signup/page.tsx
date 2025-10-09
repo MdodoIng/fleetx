@@ -1,24 +1,23 @@
 'use client';
 
+import logo from '@/assets/images/logo.webp';
+import { Button } from '@/shared/components/ui/button';
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input, InputPhone } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormEvent, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import logo from '@/assets/images/logo.webp';
+import { FormEvent, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import main_padding from '@/styles/padding';
-import Image from 'next/image';
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import {
   Select,
   SelectContent,
@@ -27,27 +26,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
-import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { businessTypes } from '@/shared/constants/storageConstants';
 import { TypeSingUpRequest } from '@/shared/types/user';
+import main_padding from '@/styles/padding';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import userService from '@/shared/services/user';
-import { cn } from '@/shared/lib/utils';
-import { useAuthStore } from '@/store';
-import { useRedirectToHome } from '@/shared/lib/hooks/useRedirectToHome';
-import { toast } from 'sonner';
+import ProgressBar from '@/features/auth/components/ProgressBar';
 import {
   signUpFormSchema,
   TypeSignUpForm,
 } from '@/features/auth/validations/signUp';
-import ProgressBar from '@/features/auth/components/ProgressBar';
+import { cn } from '@/shared/lib/utils';
+import userService from '@/shared/services/user';
+import { useAuthStore } from '@/store';
+import { toast } from 'sonner';
 
 const steps = ['Business Info', 'Personal Info', 'Location Info'];
 export default function SignUp() {
   const [step, setStep] = useState(0);
-  const { login, user } = useAuthStore();
+  const { login } = useAuthStore();
 
   const form = useForm<TypeSignUpForm>({
     resolver: zodResolver(signUpFormSchema),

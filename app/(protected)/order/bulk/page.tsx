@@ -1,5 +1,16 @@
 'use client';
+import AlertMessage from '@/features/orders/components/AlertMessage';
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
+import WalletCard from '@/features/orders/components/WalletCard';
+import { usePickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
+import {
+  pickUpSchema,
+  TypePickUpSchema,
+} from '@/features/orders/validations/order';
+import { CreateFallback } from '@/shared/components/fetch/fallback';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Dashboard,
   DashboardContent,
@@ -7,28 +18,7 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import AlertMessage from '@/features/orders/components/AlertMessage';
-import WalletCard from '@/features/orders/components/WalletCard';
-import { useOrderStore, useVendorStore, useSharedStore } from '@/store';
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  dropOffSchema,
-  pickUpSchema,
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '@/features/orders/validations/order';
-import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { vendorService } from '@/shared/services/vendor';
-import { orderService } from '@/shared/services/orders';
-import { CreateFallback } from '@/shared/components/fetch/fallback';
-import * as XLSX from 'xlsx';
-import { toast } from 'sonner';
-import { TypeDropOffs } from '@/shared/types/orders';
-import { usePickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
-import { fleetService } from '@/shared/services/fleet';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { Input } from '@/shared/components/ui/input';
 import {
   Table,
   TableBody,
@@ -37,12 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/table';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { classForInput, Input } from '@/shared/components/ui/input';
-import { Switch } from '@/shared/components/ui/switch';
-import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/components/ui/button';
 import { commonConstants } from '@/shared/constants/storageConstants';
+import { orderService } from '@/shared/services/orders';
+import { useVendorStore } from '@/store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 
 // Define interfaces for bulk drop-off data and driver
 interface BulkDropOff {

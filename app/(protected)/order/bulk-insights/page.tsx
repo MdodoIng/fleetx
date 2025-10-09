@@ -1,5 +1,10 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { paymentMap } from '@/features/orders/constants';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
+import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
+import DateSelect from '@/shared/components/selectors/DateSelect';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { Badge } from '@/shared/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -7,33 +12,12 @@ import {
   CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
-import {
-  Phone,
-  User,
-  MapPin,
-  Truck,
-  Clock,
-  CheckCircle,
-  Dot,
-  Navigation,
-  Info,
-  CreditCard,
-  Receipt,
-} from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
 import {
   Dashboard,
   DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { useVendorStore } from '@/store';
-import { orderService } from '@/shared/services/orders';
-import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
-import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Table,
   TableLists,
@@ -47,15 +31,29 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import { paymentMap } from '@/features/orders/constants';
-import EditResiver from '@/features/orders/components/ui/EditResiver';
+import { cn } from '@/shared/lib/utils';
+import { orderService } from '@/shared/services/orders';
+import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
+import { useVendorStore } from '@/store';
+import {
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Dot,
+  Info,
+  MapPin,
+  Navigation,
+  Phone,
+  Receipt,
+  Truck,
+  User,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 export default function BulkInsightsDashboard() {
   const [loading, setLoading] = useState(true);
 
-  const [submitted, setSubmitted] = useState(false);
   const [date, setDate] = useState<DateRange>({
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(),
@@ -124,7 +122,7 @@ export default function BulkInsightsDashboard() {
     },
   ]);
 
-  const { isEditDetails, showDriversFilter } = useVendorStore();
+  const { showDriversFilter } = useVendorStore();
 
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';

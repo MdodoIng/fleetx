@@ -174,7 +174,7 @@ function VendorUser() {
           return [
             { icon: User2, title: 'first_name', value: item.first_name },
             { icon: User2, title: 'last_name', value: item.last_name },
-            { icon: Mail, title: 'Email', value: item.email },
+            { icon: Mail, title: 'Branch', value: item.email },
             { icon: Phone, title: 'Phone', value: item.phone },
             {
               icon: Axis3dIcon,

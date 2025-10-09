@@ -1,5 +1,4 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -23,10 +22,11 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
-import { Check, Copy, Eye, Loader2 } from 'lucide-react';
-import Image from 'next/image';
 import { vendorService } from '@/shared/services/vendor';
 import { useAuthStore } from '@/store';
+import { Check, Copy, Eye, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 import LoadingPage from '../../loading';
 
 export default function PlatformGrid() {
@@ -80,6 +80,7 @@ export default function PlatformGrid() {
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -189,7 +190,7 @@ export default function PlatformGrid() {
     });
   };
 
-  const hasActivePlatform = platforms.some((p) => p.activate);
+  // const hasActivePlatform = platforms.some((p) => p.activate);
   const activePlatform = platforms.find((p) => p.activate);
 
   if (loading) return <LoadingPage />;

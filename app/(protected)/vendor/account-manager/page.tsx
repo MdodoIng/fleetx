@@ -2,10 +2,17 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { Pencil, User, Users, Dot, Phone, Mail, Search } from 'lucide-react';
-import { toast } from 'sonner';
-import { Input } from '@/shared/components/ui/input';
 import { AddEditAccountManagerForm } from '@/features/vendor/components/addEditAccountManagerForm';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
 import { Table } from '@/shared/components/ui/table';
 import {
   TableLists,
@@ -19,16 +26,9 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import {
-  Dashboard,
-  DashboardContent,
-  DashboardHeader,
-  DashboardHeaderRight,
-} from '@/shared/components/ui/dashboard';
 import userService from '@/shared/services/user';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import LoadMore from '@/shared/components/fetch/LoadMore';
-import NoData from '@/shared/components/fetch/NoData';
+import { Dot, Mail, Pencil, Phone, Search, User, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function AccountManagers() {
   const [data, setData] = useState([]);

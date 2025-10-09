@@ -1,12 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/shared/components/ui/button';
-import tableExport from '@/shared/lib/hooks/tableExport';
-import { reportService } from '@/shared/services/report';
-import { useAuthStore } from '@/store';
-import { startOfMonth, endOfMonth } from 'date-fns';
-import { Download } from 'lucide-react';
+import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Dashboard,
@@ -14,19 +8,23 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
+import { reportService } from '@/shared/services/report';
+import { useAuthStore } from '@/store';
+import { endOfMonth, startOfMonth } from 'date-fns';
+import { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import SearchableSelect from '@/shared/components/selectors';
 
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import {
   Table,
   TableLists,
-  TableSingleListHeader,
-  TableSingleListContents,
   TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import Export from '@/shared/components/Export';
-import NoData from '@/shared/components/fetch/NoData';
 
 interface AffiliateReferralData {
   orderNumber: string;
@@ -54,9 +52,9 @@ const AffiliateReferrals = () => {
   const [affiliators, setAffiliators] = useState<Affiliator[]>([]);
   const [vendorBranch, setVendorBranch] = useState<any[]>([]);
   const [referralList, setReferralList] = useState<AffiliateReferralData[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState<number>(10);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
 
   const transformReferralData = (result: any[]) => {
     const mapped = result.map((element) => {
@@ -107,7 +105,7 @@ const AffiliateReferrals = () => {
 
       const res = await reportService.getReferrals(url);
       transformReferralData(res.data);
-      setTotalCount(res.count || 0);
+      setNextSetItemTotal(res.count < page ? null : true);
     } catch (err: any) {
       console.error('Error fetching referral details:', err.message);
       console.error('Logged error:', err.message);
@@ -118,7 +116,7 @@ const AffiliateReferrals = () => {
 
   useEffect(() => {
     fetchReferralDetails();
-  }, [date, selectedAffiliator]);
+  }, [date, selectedAffiliator, date.from, date.to]);
 
   if (isLoading) return <TableFallback />;
 
@@ -131,7 +129,7 @@ const AffiliateReferrals = () => {
           <SearchableSelect
             onChangeAction={setSelectedAffiliator}
             options={affiliators}
-            placeholder="Selct a Affiliate"
+            placeholder="Select a Affiliate"
           />
 
           <DateSelect value={date} onChangeAction={setDate} />
@@ -198,6 +196,11 @@ const AffiliateReferrals = () => {
                   </TableSingleListContents>
                 </TableSingleListHeader>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
