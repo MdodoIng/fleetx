@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { notificationService } from '@/shared/services/notification';
-import { TypeNotificationItem } from '@/shared/types/notification';
-import { SendHorizontal } from 'lucide-react';
+import bellIcon from '@/assets/icons/notification.svg';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
-import Image from 'next/image';
-import bellIcon from '@/assets/icons/notification.svg';
 import { cn } from '@/shared/lib/utils';
-import { Icon } from '@iconify/react/dist/iconify.js';
+import { notificationService } from '@/shared/services/notification';
+import { TypeNotificationItem } from '@/shared/types/notification';
 import { OperationType } from '@/shared/types/orders';
+import { Icon } from '@iconify/react/dist/iconify.js';
 import { formatDate } from 'date-fns';
-import NoData from '@/shared/components/fetch/NoData';
-import LoadMore from '@/shared/components/fetch/LoadMore';
+import { SendHorizontal } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,6 +68,8 @@ export default function Notification() {
             <Image
               src={bellIcon}
               alt=""
+              width={20}
+              height={20}
               className={cn('size-6 max-lg:invert', isOpen && 'invert')}
             />{' '}
             {notificationCount > 0 && (

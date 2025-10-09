@@ -37,7 +37,7 @@ export const routes: Routes = {
     path: '/dashboard',
     title: 'layout.menuItems.dashboard.title',
     subtitle: 'layout.menuItems.dashboard.subtitle',
-    icon: 'activeOrders',
+    icon: 'layoutDashboard',
     roles: ['OPERATION_MANAGER', 'SALES_HEAD', 'FINANCE_MANAGER'],
   },
   VENDOR_LIST: {
@@ -104,21 +104,21 @@ export const routes: Routes = {
     path: '/wallet/payment-history',
     title: 'layout.menuItems.walletSubMenu.paymentHistory.title',
     subtitle: 'layout.menuItems.walletSubMenu.paymentHistory.subtitle',
-    icon: 'history',
+    icon: 'handCoins',
     roles: ['FINANCE_MANAGER'],
   },
   WALLET_MANUAL_PAYMENT: {
     path: '/wallet/manual-payment',
     title: 'layout.menuItems.walletSubMenu.manualPayment.title',
     subtitle: 'layout.menuItems.walletSubMenu.manualPayment.subtitle',
-    icon: 'myWallet',
+    icon: 'walletCards',
     roles: ['FINANCE_MANAGER'],
   },
   WALLET_BALANCE_REPORT: {
     path: '/wallet/balance-report',
     title: 'layout.menuItems.walletSubMenu.balanceReport.title',
     subtitle: 'layout.menuItems.walletSubMenu.balanceReport.subtitle',
-    icon: 'balanceReport',
+    icon: 'chartPie',
     roles: ['FINANCE_MANAGER', 'OPERATION_MANAGER', 'SALES_HEAD'],
   },
   BILLING_EDIT_PROFILE: {
@@ -139,7 +139,7 @@ export const routes: Routes = {
     path: '/insights/overview',
     title: 'layout.menuItems.insightsSubMenu.overview.title',
     subtitle: 'layout.menuItems.insightsSubMenu.overview.subtitle',
-    icon: 'overview',
+    icon: 'chartSpline',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -151,7 +151,7 @@ export const routes: Routes = {
     path: '/insights/churn-reasons',
     title: 'layout.menuItems.insightsSubMenu.churnReasons.title',
     subtitle: 'layout.menuItems.insightsSubMenu.churnReasons.subtitle',
-    icon: 'overview',
+    icon: 'fileChartColumn',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -163,7 +163,7 @@ export const routes: Routes = {
     path: '/insights/first-order',
     title: 'layout.menuItems.insightsSubMenu.firstOrder.title',
     subtitle: 'layout.menuItems.insightsSubMenu.firstOrder.subtitle',
-    icon: 'overview',
+    icon: 'chartScatter',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -175,7 +175,7 @@ export const routes: Routes = {
     path: '/insights/aff_referrals',
     title: 'layout.menuItems.insightsSubMenu.affReferrals.title',
     subtitle: 'layout.menuItems.insightsSubMenu.affReferrals.subtitle',
-    icon: 'overview',
+    icon: 'chartLine',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -187,7 +187,7 @@ export const routes: Routes = {
     path: '/insights/user_referrals',
     title: 'layout.menuItems.insightsSubMenu.userReferrals.title',
     subtitle: 'layout.menuItems.insightsSubMenu.userReferrals.subtitle',
-    icon: 'overview',
+    icon: 'chartCandlestick',
     roles: [
       'FINANCE_MANAGER',
       'OPERATION_MANAGER',
@@ -218,7 +218,7 @@ export const routes: Routes = {
     path: '/order/sales-funnel',
     title: 'layout.menuItems.salesFunnel.title',
     subtitle: 'layout.menuItems.salesFunnel.subtitle',
-    icon: 'history',
+    icon: 'funnel',
     roles: ['SALES_HEAD', 'OPERATION_MANAGER', 'FINANCE_MANAGER'],
   },
   RATING: {

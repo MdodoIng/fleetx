@@ -1,23 +1,22 @@
 'use client';
+import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
+import logo from '@/assets/images/logo white.webp';
 import { cn } from '@/shared/lib/utils';
-import { UserRole } from '@/shared/types/user';
-import { useAuthStore, useSharedStore } from '@/store';
+import { useSharedStore } from '@/store';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import logo from '@/assets/images/logo white.webp';
-import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 
 import collapseIcon from '@/assets/icons/window collapse.svg';
 
+import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
+import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
 import Link from 'next/link';
 import { useCallback, useEffect } from 'react';
 import { iconMap } from '../../icons/layout';
-import { filterMenuByRole, useGetSidebarMeta } from '@/shared/lib/helpers';
-import { APP_SIDEBAR_MENU } from '@/shared/constants/routes';
 
 const SideBar = () => {
   const { isCollapsed, setValue } = useSharedStore();
-  const { user } = useAuthStore();
+
   const t = useTranslations();
 
   const filteredMenu = filterMenuByRole(APP_SIDEBAR_MENU);
@@ -96,7 +95,7 @@ const SideBar = () => {
                     'hover:bg-dark-grey/40 px-3 py-2 pointer-events-auto'
                 )}
               >
-                <IconComponentMain />
+                <IconComponentMain width={20} height={20} />
                 <span hidden={isCollapsed}>{t(item.labelKey)}</span>
               </Link>
               {item.children && (
@@ -121,9 +120,11 @@ const SideBar = () => {
                         <IconComponentSub
                           className={
                             title === child.labelKey
-                              ? 'text-primary-blue'
-                              : 'text-white'
+                              ? '!text-primary-blue'
+                              : '!text-white'
                           }
+                          width={20}
+                          height={20}
                         />
                         <span hidden={isCollapsed}>{t(child.labelKey)}</span>
                       </Link>

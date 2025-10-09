@@ -14,7 +14,6 @@ A collection of customizable TSX icon components converted from SVG files. These
 
 - `ActiveOrdersIcon` - Active orders with checkmark
 - `NewOrderIcon` - Delivery truck icon
-- `MyWalletIcon` - Wallet/payment icon
 - `HistoryIcon` - Clock/time history icon
 - `BulkInsightsIcon` - Analytics chart icon
 - `IntegrationsIcon` - Integration/connection icon
