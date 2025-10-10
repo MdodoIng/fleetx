@@ -10,6 +10,7 @@ import {
   User,
   UserLogin,
 } from '../types/user';
+import { configService } from './config';
 
 const getUserServiceApiUrl = appConfig.userServiceApiUrl();
 const getVendorServiceApiUrl = appConfig.vendorServiceApiUrl();
@@ -116,7 +117,7 @@ export const userService = {
     page: number,
     perPage: number,
     search?: string | null
-  ) => {
+  ): Promise<any> => {
     let url = `/vendor-acount-manager/list?page=${page}&page_size=${perPage}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     return apiFetch(`${getUserServiceApiUrl}${url}`, {

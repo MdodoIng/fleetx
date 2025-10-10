@@ -151,10 +151,7 @@ export async function setHeadingForVendorBranch() {
     setVendorValue('showDriversFilter', true);
     setVendorValue('isBranchAccess', true);
     setVendorValue('isVendorAccess', true);
-    if (
-      user.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
-      user.roles.includes('SALES_HEAD')
-    ) {
+    if (user.roles.includes('VENDOR_ACCOUNT_MANAGER')) {
       setVendorValue('isEditDetails', false);
     }
   }

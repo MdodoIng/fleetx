@@ -91,15 +91,16 @@ function VendorList(): JSX.Element {
             //   onClick={() => vendorStore.setValue('isEditVendorId', undefined)}
             variant={!isEditVendorId ? 'ghost' : 'default'}
             suppressHydrationWarning
+            asChild
             onClick={() =>
               isEditVendorId ? setValue('isEditVendorId', undefined) : ''
             }
             className={cn(!isEditVendorId && 'p-0')}
           >
             {isEditVendorId ? (
-              <>
+              <div>
                 <X className="w-5 h-5" /> Close{' '}
-              </>
+              </div>
             ) : (
               <Export
                 data={data!}

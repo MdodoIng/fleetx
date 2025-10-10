@@ -1,20 +1,21 @@
+/* eslint-disable prefer-const */
 import { environment } from '@/environments/environment';
 import { apiFetch } from '../lib/utils';
-import { typePostRating, TypeRootRatingResponse } from '../types/rating';
-import { appConfig } from './app-config';
+
 import { useSharedStore } from '@/store';
-import { AuthData, DecodedToken } from '../types/user';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'sonner';
 import {
   commonConstants,
   storageConstants,
 } from '../constants/storageConstants';
-import { jwtDecode } from 'jwt-decode';
-import { toast } from 'sonner';
+import { AuthData, DecodedToken } from '../types/user';
+import { appConfig } from './app-config';
 
-import { setUserLocale } from './locale';
 import { ErrorMessages } from '../constants/commonMessages';
-import { TypeCheckBlockActivationRes } from '../types/services';
 import { TypeFirstOrderInsightResponse } from '../types';
+import { TypeCheckBlockActivationRes } from '../types/services';
+import { typePostRating, TypeRootRatingResponse } from '../types/rate';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 

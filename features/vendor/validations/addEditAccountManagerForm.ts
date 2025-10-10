@@ -17,7 +17,8 @@ export const addEditAccountManagerSchema = z.object({
     .string()
     .min(8, 'Phone is required')
     .max(8, 'Phone is required')
-    .regex(/^\d{9,15}$/, 'Invalid phone number'),
+    .regex(/^\d+$/, 'Invalid phone number'),
+
   password: z
     .string()
     .min(6, 'Password must be at least 6 characters')

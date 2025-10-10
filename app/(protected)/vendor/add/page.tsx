@@ -229,7 +229,7 @@ function VendorAdd(): JSX.Element {
           )}
         </CardContent>
       </Card>
-      {tableData.length && (
+      {tableData.length ? (
         <>
           <Table>
             <TableLists>
@@ -257,6 +257,8 @@ function VendorAdd(): JSX.Element {
             Save All
           </Button>
         </>
+      ) : (
+        ''
       )}
     </Dashboard>
   );

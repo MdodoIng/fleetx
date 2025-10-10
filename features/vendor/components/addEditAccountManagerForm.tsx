@@ -1,18 +1,9 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
-import { useEffect, useState } from 'react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/components/ui/form';
-import { Input, InputPhone } from '@/shared/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -22,23 +13,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Button } from '@/shared/components/ui/button';
-import z from 'zod';
-import { toast } from 'sonner';
-import { Pencil, Plus } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Input, InputPhone } from '@/shared/components/ui/input';
 import { Separator } from '@/shared/components/ui/separator';
+import userService from '@/shared/services/user';
+import { Pencil, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   addEditAccountManagerSchema,
   TypeAddEditAccountManagerSchema,
 } from '../validations/addEditAccountManagerForm';
-import userService from '@/shared/services/user';
 
 export function AddEditAccountManagerForm({
   editDetails,
-  onSave,
+  onSaveAction,
 }: {
   editDetails?: any;
-  onSave: () => void;
+  onSaveAction: () => void;
 }) {
   const isEditMode = !!editDetails;
   const [isOpen, setIsOpen] = useState(false);
@@ -60,16 +59,16 @@ export function AddEditAccountManagerForm({
     try {
       if (isEditMode) {
         await userService.updateAccountManager(values, editDetails.id);
-        toast.success('Account manager updated successfully.');
+        toast.success('Account manager Updated successfully.');
       } else {
         await userService.createAccountManager(values);
-        toast.success('Account manager saved successfully.');
+        toast.success('Account manager Created successfully.');
       }
-      onSave(); // Call the parent function to refresh the table
+      onSaveAction(); // Call the parent function to refresh the table
       // Close the dialog, assuming the component is within a Dialog component
-      document.getElementById('dialog-close-button')?.click();
+      setIsOpen(false);
     } catch (error: any) {
-      toast.error('Error', {
+      console.error('Error', {
         description: error.message || 'An error occurred.',
       });
     }

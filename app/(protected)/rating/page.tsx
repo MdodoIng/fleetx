@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Eye, Star, Smartphone, Truck, Users } from 'lucide-react';
+import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
+import { RatingFallback } from '@/shared/components/fetch/fallback';
+import { Button } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -14,22 +15,21 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { Button } from '@/shared/components/ui/button';
-import { rateService } from '@/shared/services/rate';
-import {
-  OverallRatingType,
-  TypeGetDashBoardResponse,
-} from '@/shared/types/rate';
-import { cn } from '@/shared/lib/utils';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
+import { cn } from '@/shared/lib/utils';
+import { rateService } from '@/shared/services/rate';
+import {
+  OverallRatingType,
+  TypeGetDashBoardResponse,
+} from '@/shared/types/rate';
+import { Eye, Smartphone, Star, Truck, Users } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { RatingFallback } from '@/shared/components/fetch/fallback';
 
 // Improvement categories
 const IMPROVEMENT_CATEGORIES = [

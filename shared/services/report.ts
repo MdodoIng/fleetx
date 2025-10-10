@@ -238,7 +238,7 @@ export const reportService = {
     ref_type = 1
   ): string {
     const { getFormattedDate } = useSharedStore.getState();
-    const { selectedAffiliator } = useOrderStore.getState();
+    const { selectedAffiliate } = useOrderStore.getState();
 
     let url = `/referral/report/orders?page_size=${perPage}&page=${page}&ref_type=${ref_type}`;
 
@@ -250,8 +250,8 @@ export const reportService = {
     }
     if (refBy) {
       url = url + '&ref_by=' + refBy;
-    } else if (selectedAffiliator) {
-      url = url + '&ref_by=' + selectedAffiliator;
+    } else if (selectedAffiliate) {
+      url = url + '&ref_by=' + selectedAffiliate;
     }
     return url;
   },

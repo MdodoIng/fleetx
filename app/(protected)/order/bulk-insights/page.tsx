@@ -33,7 +33,7 @@ import {
 } from '@/shared/components/ui/tableList';
 import { cn } from '@/shared/lib/utils';
 import { orderService } from '@/shared/services/orders';
-import { TypeRootLiveBuilkOrderListInsights } from '@/shared/types/orders';
+import { TypeRootLiveBulkOrderListInsights } from '@/shared/types/orders';
 import { useVendorStore } from '@/store';
 import {
   CheckCircle,
@@ -149,7 +149,7 @@ export default function BulkInsightsDashboard() {
         date?.to,
         selectedDriver
       );
-      const res: TypeRootLiveBuilkOrderListInsights =
+      const res: TypeRootLiveBulkOrderListInsights =
         await orderService.getOrderList(url);
       if (!res.data) {
         throw new Error(`HTTP error! status: ${res}`);

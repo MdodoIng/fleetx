@@ -69,7 +69,6 @@ export default function OrderTrackingDashboard() {
   ]);
 
   const fetchOrderDetails = useCallback(async () => {
-    setNextSetItemsToken(null);
     try {
       // @ts-ignore
       const res: TypeRootLiveOrderList = await orderService.getOrderList(url);

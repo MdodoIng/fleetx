@@ -273,7 +273,7 @@ export type TypeRootLiveOrderList = {
   NEXT_SET_ITEMS_TOKEN?: number[];
 };
 
-export type TypeRootLiveBuilkOrderListInsights = {
+export type TypeRootLiveBulkOrderListInsights = {
   data: {
     orders_list: any[];
     insights: {

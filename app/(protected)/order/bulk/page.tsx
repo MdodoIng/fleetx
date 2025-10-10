@@ -47,6 +47,11 @@ interface BulkDropOff {
   amount_to_collect: number;
   payment_display_type: string;
   enableChecked: boolean;
+  area: string;
+  block: string;
+  building: string;
+  street: string;
+  avenue: string;
 }
 
 export default function BulkOrderPage() {
@@ -100,7 +105,7 @@ export default function BulkOrderPage() {
   const handleFileChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!vendorId) {
-        toast.error('Please select a vendor');
+        toast.warning('Please select a vendor');
         return;
       }
       const file = event.target.files?.[0];
@@ -123,7 +128,7 @@ export default function BulkOrderPage() {
         const jsonData = XLSX.utils.sheet_to_json(sheet);
 
         if (jsonData.length === 0) {
-          toast.error('Uploaded file is empty');
+          toast.warning('Uploaded file is empty');
           if (fileInputRef.current) fileInputRef.current.value = '';
           return;
         }
@@ -144,6 +149,12 @@ export default function BulkOrderPage() {
               amount_to_collect: amountToCollect,
               payment_display_type: paymentDisplayType,
               enableChecked: false,
+              area: row['Area'],
+              block: row['Block'],
+              House: row['House'],
+              building: row['Building'],
+              street: row['Street'],
+              avenue: row['Avenue'],
             };
           }
         );
@@ -185,7 +196,7 @@ export default function BulkOrderPage() {
 
   // Place bulk order
   const placeOrder = async () => {
-    pickUpForm.trigger();
+    const isPickupFormValid = await pickUpForm.trigger();
     if (!vendorId) {
       toast.error('Please select a vendor');
       return;
@@ -194,7 +205,7 @@ export default function BulkOrderPage() {
       toast.error('Please select a branch');
       return;
     }
-    if (!pickUpForm.formState.isValid) {
+    if (!isPickupFormValid) {
       toast.error('Please fill in all required pickup fields');
       return;
     }
@@ -224,6 +235,11 @@ export default function BulkOrderPage() {
         amount_to_collect: dropOff.amount_to_collect,
         payment_type: dropOff.amount_to_collect > 0 ? 1 : 2,
         vendor_id: vendorId!,
+        ...(dropOff.area && { area: dropOff.area }),
+        ...(dropOff.block && { block: dropOff.block }),
+        ...(dropOff.building && { building: dropOff.building }),
+        ...(dropOff.street && { street: dropOff.street }),
+        ...(dropOff.avenue && { avenue: dropOff.avenue }),
       }));
 
       const orders = {
@@ -247,7 +263,6 @@ export default function BulkOrderPage() {
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
       console.error('Error placing bulk order:', error);
-      toast.error('Failed to place bulk order');
     }
   };
 

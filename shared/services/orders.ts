@@ -7,7 +7,7 @@ import {
   TypeOrderInfoResponse,
   TypeOrders,
   TypeRootEstimatedDeliveryReturnFromApi,
-  TypeRootLiveBuilkOrderListInsights,
+  TypeRootLiveBulkOrderListInsights,
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
   TypeUpdateAddressReq,
@@ -60,7 +60,7 @@ export const orderService = {
 
   getOrderList: (
     url: string
-  ): Promise<TypeRootLiveOrderList | TypeRootLiveBuilkOrderListInsights> =>
+  ): Promise<TypeRootLiveOrderList | TypeRootLiveBulkOrderListInsights> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}${url}`),
 
   getOrderStatusUrl(

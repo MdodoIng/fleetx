@@ -9,7 +9,7 @@ export default function useInsightBoard() {
 
     to: new Date(),
   });
-  const [isLoading, setIsloading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [metrics, setMetrics] = useState({
     totalSignups: 0,
@@ -72,7 +72,7 @@ export default function useInsightBoard() {
       );
       console.error(err);
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
   }, [date.from, date.to, setMetrics]);
 
