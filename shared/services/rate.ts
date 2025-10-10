@@ -6,8 +6,8 @@ export const rateService = {
   pickUpRate(request: any) {
     return apiFetch(
       appConfig.rateServiceApiUrl() +
-        '/order/pickup/rate/' +
-        request.order_number,
+      '/order/pickup/rate/' +
+      request.order_number,
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -18,8 +18,8 @@ export const rateService = {
   firstOrderPickUpRate(request: any) {
     return apiFetch(
       appConfig.rateServiceApiUrl() +
-        '/first/order/pickup/rate/' +
-        request.order_number,
+      '/first/order/pickup/rate/' +
+      request.order_number,
       {
         method: 'POST',
         body: JSON.stringify(request),
@@ -66,14 +66,14 @@ export const rateService = {
     });
   },
 
-  getBuddyList(page: any, perPage: any, search: any) {
+  getBuddyList(page: any, perPage: any, search: any): Promise<any> {
     return apiFetch(
       appConfig.rateServiceApiUrl() +
-        '/buddy/list?page=' +
-        page +
-        '&page_size=' +
-        perPage +
-        (search ? '&search=' + search : ''),
+      '/buddy/list?page=' +
+      page +
+      '&page_size=' +
+      perPage +
+      (search ? '&search=' + search : ''),
       {
         method: 'GET',
       }

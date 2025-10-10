@@ -16,7 +16,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 import EditPayment from '@/features/orders/components/ui/EditPayment';
-import EditResiver from '@/features/orders/components/ui/EditResiver';
+import EditReceiver from '@/features/orders/components/ui/EditReceiver';
 import Rating from '@/features/orders/components/ui/Rating';
 import { paymentMap } from '@/features/orders/constants';
 import Export from '@/shared/components/Export';
@@ -286,7 +286,7 @@ export default function OrderTrackingDashboard() {
                         <MapPin size={12} /> {item.to}
                       </TableSingleListContentDetailsItem>
                       {item.is_delivery_address_edit_enabled && (
-                        <EditResiver
+                        <EditReceiver
                           data={item}
                           fetchOrderDetails={fetchOrderDetails}
                         />

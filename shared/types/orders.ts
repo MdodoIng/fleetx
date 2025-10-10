@@ -763,3 +763,12 @@ export interface TypeOrderInfoResponse {
     ratings: any[];
   };
 }
+
+
+export type DeliverySummary = {
+  totalOrders: number;
+  totalDelivery: string;
+  totalKM: string;
+  deliveryModel: string;
+  estTime: number;
+}

@@ -168,7 +168,7 @@ const EditPayment = ({
                           {
                             value: appConstants?.currency || 'KD',
                           }
-                        )}
+                        ) as string}
                         {...field}
                         disabled={!isCOD}
                       />

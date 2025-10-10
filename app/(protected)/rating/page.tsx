@@ -49,7 +49,7 @@ export default function RatingPage() {
   const [modalData, setModalData] = useState<{
     improvementType: number;
     resBuddyList: { data: any[]; count: number };
-  } | null>(null);
+  } | any>(null);
 
   // Helper function to find rating value and convert to number
   const findRatingValue = (type: OverallRatingType): number => {
@@ -127,7 +127,7 @@ export default function RatingPage() {
                         className={cn(
                           'flex items-center justify-between p-4 rounded-2xl',
                           index % 2 === 1 &&
-                            'bg-gradient-to-r from-gray-50/40 to-blue-50/40'
+                          'bg-gradient-to-r from-gray-50/40 to-blue-50/40'
                         )}
                       >
                         <div className="flex items-center space-x-3 w-full">

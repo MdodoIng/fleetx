@@ -29,7 +29,7 @@ import {
 import userService from '@/shared/services/user';
 import { Dot, Mail, Pencil, Phone, Search, User, Users } from 'lucide-react';
 
-export function AccountManagers() {
+function AccountManagers() {
   const [data, setData] = useState([]);
 
   const [search, setSearch] = useState('');

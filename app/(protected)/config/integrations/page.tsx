@@ -34,19 +34,19 @@ export default function PlatformGrid() {
   const [loading, setLoading] = useState(true);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
-  const [integrationKeyDetails, setIntegrationKeyDetails] = useState(null);
-  const [platforms, setPlatforms] = useState([]);
+  const [pendingAction, setPendingAction] = useState<any>(null);
+  const [integrationKeyDetails, setIntegrationKeyDetails] = useState<any>(null);
+  const [platforms, setPlatforms] = useState<any[]>([]);
 
   const { user } = useAuthStore();
 
   const setKeys = useCallback(
-    (data, affiliationId) => {
+    (data: any, affiliationId: string) => {
       if (user?.roles.includes('VENDOR_USER')) {
         const activatedPlatform = platforms.find((p) => p.id === affiliationId);
         setIntegrationKeyDetails({
           id: affiliationId,
-          branchId: user?.vendor?.branch_id || 'BRANCH_001',
+          branchId: user.user.vendor?.branch_id || 'BRANCH_001',
           name: activatedPlatform?.name || '',
         });
       }
@@ -57,7 +57,7 @@ export default function PlatformGrid() {
   const getAffiliationList = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await vendorService.getAffiliationList();
+      const response: any = await vendorService.getAffiliationList();
 
       console.log(response, 'sfaf');
 
@@ -65,8 +65,8 @@ export default function PlatformGrid() {
         setPlatforms(response.data.affiliation || []);
 
         if (response.data.api_auth) {
-          setActivate(response.data.api_auth.affilication_id);
-          setKeys(response.data, response.data.api_auth.affilication_id);
+          setActivate(response.data.api_auth?.affilication_id);
+          setKeys(response.data, response.data.api_auth?.affilication_id);
         } else {
           setIntegrationKeyDetails(null);
         }
@@ -87,7 +87,7 @@ export default function PlatformGrid() {
     getAffiliationList();
   }, [getAffiliationList]);
 
-  const activate = async (affiliationId) => {
+  const activate = async (affiliationId: string) => {
     setSubmitted(true);
 
     const activePlatform = platforms.find((p) => p.activate);
@@ -101,7 +101,7 @@ export default function PlatformGrid() {
       const request = {
         affilication_id: affiliationId,
       };
-      const response = await vendorService.activateAffiliation(request);
+      const response: any = await vendorService.activateAffiliation(request);
 
       if (response.data) {
         setActivate(affiliationId);
@@ -117,12 +117,12 @@ export default function PlatformGrid() {
     }
   };
 
-  const deActivate = (affiliationId) => {
+  const deActivate = (affiliationId: string) => {
     setPendingAction({ type: 'deactivate', id: affiliationId });
     setShowConfirmDialog(true);
   };
 
-  const confirmDeActivate = async () => {
+  const confirmDeActivate = async (affiliationId: string) => {
     if (!pendingAction) return;
 
     setSubmitted(true);
@@ -132,10 +132,10 @@ export default function PlatformGrid() {
       const request = {
         affilication_id: affiliationId,
       };
-      const response = await vendorService.deactivateAffiliation(request);
+      const response: any = await vendorService.deactivateAffiliation(request);
 
       if (response.data) {
-        setDeactivate(response.data.id);
+        setDeactivate();
         setIntegrationKeyDetails(null);
         // Show success toast
         console.log('Deactivated successfully');
@@ -153,7 +153,7 @@ export default function PlatformGrid() {
     setShowDetailsDialog(true);
   };
 
-  const setActivate = (affiliationId) => {
+  const setActivate = (affiliationId: string) => {
     setPlatforms((prev) =>
       prev.map((platform) => ({
         ...platform,
@@ -171,12 +171,12 @@ export default function PlatformGrid() {
     );
   };
 
-  const setActivateKeys = (data, affiliationId) => {
+  const setActivateKeys = (data: any, affiliationId: string) => {
     if (user?.roles.includes('VENDOR_USER')) {
       const activatedPlatform = platforms.find((p) => p.id === affiliationId);
       setIntegrationKeyDetails({
         id: affiliationId,
-        branchId: currentUser.user?.vendor?.branch_id || 'BRANCH_001',
+        branchId: user.user?.vendor?.branch_id || 'BRANCH_001',
         xApiKey: data.x_api_key,
         authKey: data.auth_key,
         name: activatedPlatform?.name || '',
@@ -184,7 +184,7 @@ export default function PlatformGrid() {
     }
   };
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       console.log('Text copied to clipboard');
     });
@@ -328,7 +328,7 @@ export default function PlatformGrid() {
             </Button>
             <Button
               variant="destructive"
-              onClick={confirmDeActivate}
+              onClick={() => confirmDeActivate(pendingAction?.id)}
               disabled={submitted}
             >
               {submitted ? (

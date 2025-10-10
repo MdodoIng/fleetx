@@ -88,49 +88,7 @@ export const getIconComponent = (
 //   return <IconComponent {...props} />;
 // };
 
-// Default icon configurations
-export const defaultIconConfigs: Record<
-  SidebarIconType,
-  Partial<SidebarIconProps>
-> = {
-  activeOrders: {
-    width: 18,
-    height: 18,
-    color: 'currentColor',
-  },
-  newOrder: {
-    width: 24,
-    height: 24,
-    color: '#004CF7',
-  },
-  myWallet: {
-    width: 24,
-    height: 24,
-    color: '#F5F4F5',
-  },
-  history: {
-    width: 18,
-    height: 18,
-    color: '#F5F4F5',
-  },
-  bulkInsights: {
-    width: 24,
-    height: 24,
-    color: '#F5F4F5',
-  },
-  integrations: {
-    width: 24,
-    height: 24,
-    color: '#F5F4F5',
-  },
-};
 
-// Get default props for an icon
-export const getDefaultIconProps = (
-  iconType: SidebarIconType
-): Partial<SidebarIconProps> => {
-  return defaultIconConfigs[iconType] || {};
-};
 
 // Common color schemes
 export const colorSchemes = {

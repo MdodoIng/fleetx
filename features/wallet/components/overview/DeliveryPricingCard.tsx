@@ -40,7 +40,7 @@ export default function DeliveryPricingCard() {
             )}
           >
             {t.rich('flatDeliveryFee', {
-              value: appConstants?.currency,
+              value: appConstants?.currency!,
             })}
           </Badge>
         </div>
@@ -49,7 +49,7 @@ export default function DeliveryPricingCard() {
       <CardContent className="space-y-4">
         <Badge variant="default" className="text-xs  md:hidden">
           {t.rich('flatDeliveryFee', {
-            value: appConstants?.currency,
+            value: appConstants?.currency!,
           })}
         </Badge>
         {/* Breakdown */}
@@ -75,7 +75,7 @@ export default function DeliveryPricingCard() {
         {/* Example */}
         <p className="text-sm text-dark-grey font-medium">
           {t.rich('example', {
-            value: appConstants?.currency,
+            value: appConstants?.currency!,
           })}
         </p>
       </CardContent>

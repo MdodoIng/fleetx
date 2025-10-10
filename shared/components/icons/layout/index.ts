@@ -14,8 +14,6 @@ export { OverviewIcon } from './OverviewIcon';
 export {
   iconMap,
   getIconComponent,
-  defaultIconConfigs,
-  getDefaultIconProps,
   colorSchemes,
   getColorFromScheme,
   isValidIconType,

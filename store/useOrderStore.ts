@@ -1,3 +1,5 @@
+import { getDecodedAccessToken } from '@/shared/services';
+import { vendorService } from '@/shared/services/vendor';
 import {
   DeliverySummary,
   OrderStatus,
@@ -7,15 +9,11 @@ import {
   TypeEstimatedDeliveryReturnFromApi,
   TypeLiveOrderItem,
   TypeOrderHistoryList,
-  TypeOrderList,
   TypePickUp,
-  TypeRootLiveOrderList,
 } from '@/shared/types/orders';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useSharedStore } from './useSharedStore';
-import { getDecodedAccessToken } from '@/shared/services';
-import { vendorService } from '@/shared/services/vendor';
 
 interface OrderState {
   dropOffs: TypeDropOffs[];
@@ -86,6 +84,7 @@ export const useOrderStore = create<OrderState>()(
       setEstimatedDeliveryReturnFromApi: (data) => {
         const { appConstants } = useSharedStore.getState();
 
+        // eslint-disable-next-line prefer-const
         let totalOrders = data?.drop_offs?.length || 0;
         let totalKMs = 0;
         let totalDeliveryFee = 0;
@@ -102,7 +101,7 @@ export const useOrderStore = create<OrderState>()(
           estTime = element.delivery_duration;
         });
 
-        const summary: DeliverySummary = {
+        const summary = {
           totalOrders,
           totalDelivery: `${totalDeliveryFee.toFixed(2)} ${appConstants?.currency}`,
           totalKM: `${totalKMs.toFixed(2)} KM`,
@@ -128,6 +127,7 @@ export const useOrderStore = create<OrderState>()(
           data.forEach((element) => {
             const order: TypeOrderHistoryList = {} as TypeOrderHistoryList;
             Object.entries(element).forEach(([key, item]) => {
+              // @ts-ignore
               order[key] = item;
             });
             order.id = element.id;
@@ -151,6 +151,7 @@ export const useOrderStore = create<OrderState>()(
               (x) => x.key === element.primary_status
             );
 
+            // @ts-ignore
             order.status = statusObj ? statusObj.value : '';
 
             const status = statusObj ? statusObj.color : '';
@@ -203,6 +204,7 @@ export const useOrderStore = create<OrderState>()(
             order.payment_type = element.payment_type;
             order.drop_off = element.drop_off;
 
+            // @ts-ignore
             order.status_change_reason = element.status_change_reason
               ? element.status_change_reason.reason
               : undefined;

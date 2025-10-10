@@ -1,5 +1,5 @@
 'use client';
-import EditResiver from '@/features/orders/components/ui/EditResiver';
+import EditReceiver from '@/features/orders/components/ui/EditReceiver';
 import { paymentMap } from '@/features/orders/constants';
 import { InsightsFallback } from '@/shared/components/fetch/fallback';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
@@ -34,7 +34,6 @@ import {
 } from '@/shared/components/ui/tableList';
 import { cn } from '@/shared/lib/utils';
 import { orderService } from '@/shared/services/orders';
-import { TypeRootLiveBulkOrderListInsights } from '@/shared/types/orders';
 import { useVendorStore } from '@/store';
 import {
   CheckCircle,
@@ -128,7 +127,7 @@ export default function BulkInsightsDashboard() {
   const BUDDY_QUEUED = 15;
   const currencyCode = 'KWD';
 
-  const getStatusBadgeVariant = (status) => {
+  const getStatusBadgeVariant = (status: string) => {
     const variants = {
       new: 'secondary',
       confirmed: 'outline',
@@ -140,7 +139,7 @@ export default function BulkInsightsDashboard() {
       delivered: 'default',
       canceled: 'destructive',
     };
-    return variants[status] || 'secondary';
+    return variants[status as keyof typeof variants] || 'secondary';
   };
 
   const fetchBulkInsightsData = useCallback(async () => {
@@ -150,7 +149,7 @@ export default function BulkInsightsDashboard() {
         date?.to,
         selectedDriver
       );
-      const res: TypeRootLiveBulkOrderListInsights =
+      const res: any =
         await orderService.getOrderList(url);
       if (!res.data) {
         throw new Error(`HTTP error! status: ${res}`);
@@ -261,7 +260,7 @@ export default function BulkInsightsDashboard() {
                         </span>
                         <Badge
                           variant={
-                            getStatusBadgeVariant?.(order.class_status) ||
+                            getStatusBadgeVariant?.(order.class_status) as any ||
                             'default'
                           }
                           className="text-xs"
@@ -270,7 +269,7 @@ export default function BulkInsightsDashboard() {
                         </Badge>
                         <span className="text-xs text-primary-teal flex items-center">
                           <Dot />
-                          {order.branch_name || order.order_number}
+                          {order.order_number}
                         </span>
                       </TableSingleListHeaderRight>
                       <TableSingleListHeaderLeft className="flex items-center gap-2">
@@ -278,8 +277,7 @@ export default function BulkInsightsDashboard() {
                         <div className="flex items-center gap-1">
                           <Clock size={12} />
                           {order.delivered_date ||
-                            order.canceled_at ||
-                            order.creation_date}
+                            order.canceled_at}
                         </div>
                       </TableSingleListHeaderLeft>
                     </TableSingleListHeader>
@@ -342,9 +340,9 @@ export default function BulkInsightsDashboard() {
                           )}
                         </TableSingleListContentDetailsItem>
                         {order.is_delivery_address_edit_enabled && (
-                          <EditResiver data={order} />
+                          <EditReceiver data={order as any} fetchOrderDetails={fetchBulkInsightsData} />
                         )}
-                        {/* EditResiver component from prompt is omitted as it's not defined or imported */}
+                        {/* EditReceiver component from prompt is omitted as it's not defined or imported */}
                       </TableSingleListContent>
 
                       {/* Driver Info */}

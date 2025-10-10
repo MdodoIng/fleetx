@@ -131,8 +131,8 @@ export const getZone = (request: any) =>
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
     appConfig.orderServiceApiUrl() +
-      '/get-customer-bulk-order/' +
-      encryptedOrderNo
+    '/get-customer-bulk-order/' +
+    encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
@@ -214,7 +214,7 @@ export const logError = (message: string, ...optionalParams: any[]) => {
 };
 
 export const getUserEnteredRegionInConfig = (url: string): string => {
-  const region = JSON.parse(String(process.env.REGIONS)).find((element) =>
+  const region = JSON.parse(String(process.env.REGIONS)).find((element: any) =>
     url.includes(element.domain)
   );
   return region ? region.domain : '';
@@ -222,7 +222,7 @@ export const getUserEnteredRegionInConfig = (url: string): string => {
 
 export const getRegionBasedOnCountry = (country: string) => {
   return JSON.parse(String(process.env.REGIONS)).find(
-    (x) => x.country_code.toLowerCase() === country.toLowerCase()
+    (x: any) => x.country_code.toLowerCase() === country.toLowerCase()
   );
 };
 
