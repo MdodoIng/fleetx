@@ -1,5 +1,5 @@
 'use client';
-import { environment } from '@/environments/environment';
+
 import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { vendorService } from './vendor';
 import { useNotificationStore } from '@/store/useNotificationStore';
@@ -82,7 +82,7 @@ export async function updateZoneAndSome() {
   }
 
   const selectedBranchId = selectedBranch?.id || branchId;
-  if (selectedBranchId && environment.LOCAL_ADDRESS_ENABLED) {
+  if (selectedBranchId && process.env.LOCAL_ADDRESS_ENABLED) {
     const branch = branchDetails?.find((x) => x.id === selectedBranchId);
     if (branch) {
       sharedStore.setValue(
@@ -122,7 +122,7 @@ export async function setHeadingForVendorBranch() {
   readAppConstants();
   getWarningMessage();
 
-  if (environment.LOCAL_ADDRESS_ENABLED) {
+  if (process.env.LOCAL_ADDRESS_ENABLED) {
     // getFleetZonePickUpTrend();
 
     // Run every 12 hours

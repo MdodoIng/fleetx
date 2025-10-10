@@ -1,14 +1,14 @@
-import './globals.css';
+import { getDirection } from '@/shared/lib/helpers/getDirection';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
-import { getDirection } from '@/shared/lib/helpers/getDirection';
+import './globals.css';
 
-import { rHZak, montserrat } from '@/shared/lib/font';
 import { Toaster } from '@/shared/components/ui/sonner';
+import { montserrat, rHZak } from '@/shared/lib/font';
 
 export const metadata: Metadata = {
-  title: 'Fleetx Partner Hub',
+  title: 'FleetX Partner Hub',
   description:
     "Send your orders quickly and easily. Join Kuwait’s most trusted delivery network. Pick up in 30 to 90 minutes. Track every order live. Trained Professional Drivers. Order & Shipment support 24/7. No setup fees - start today. Questions? We're here to help! Our local team speaks Arabic & English.",
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Fleetx Partner Hub',
+    title: 'FleetX Partner Hub',
     description:
       "Send your orders quickly and easily. Join Kuwait’s most trusted delivery network. Pick up in 30 to 90 minutes. Track every order live. Trained Professional Drivers. Order & Shipment support 24/7. No setup fees - start today. Questions? We're here to help! Our local team speaks Arabic & English.",
     images: ['/images/og_image.png'],
@@ -40,6 +40,8 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const { setDir, dirState } = getDirection(locale);
+
+  console.log(process.env.API_GATEWAY_BASE_URL);
 
   return (
     <html

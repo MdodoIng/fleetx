@@ -1,5 +1,4 @@
 /* eslint-disable prefer-const */
-import { environment } from '@/environments/environment';
 import { apiFetch } from '../lib/utils';
 
 import { useSharedStore } from '@/store';
@@ -20,30 +19,30 @@ import { typePostRating, TypeRootRatingResponse } from '../types/rate';
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
 export const getArea = () =>
-  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas', {
+  apiFetch(process.env.API_GATEWAY_BASE_URL + '/locs/areas', {
     cache: 'force-cache',
   });
 export const getAreaByPickupAreaId = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
+    process.env.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
     {
       cache: 'force-cache',
     }
   );
 export const getBlock = (id: string) =>
-  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
+  apiFetch(process.env.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
     cache: 'force-cache',
   });
 export const getStreet = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
+    process.env.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
     {
       cache: 'force-cache',
     }
   );
 export const getBuildings = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
+    process.env.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
     {
       cache: 'force-cache',
     }
@@ -215,14 +214,14 @@ export const logError = (message: string, ...optionalParams: any[]) => {
 };
 
 export const getUserEnteredRegionInConfig = (url: string): string => {
-  const region = environment.REGIONS.find((element) =>
+  const region = JSON.parse(String(process.env.REGIONS)).find((element) =>
     url.includes(element.domain)
   );
   return region ? region.domain : '';
 };
 
 export const getRegionBasedOnCountry = (country: string) => {
-  return environment.REGIONS.find(
+  return JSON.parse(String(process.env.REGIONS)).find(
     (x) => x.country_code.toLowerCase() === country.toLowerCase()
   );
 };

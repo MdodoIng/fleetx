@@ -19,8 +19,6 @@ import {
   toValidateOperationalHours,
 } from '@/shared/services';
 
-import { environment } from '@/environments/environment';
-
 export interface SharedState {
   surveyCount: number;
   isOnline: boolean;
@@ -212,7 +210,7 @@ export const useSharedStore = create<SharedState & SharedActions>()(
           set({ foodicsIsAlreadyConnected: isConnected }),
 
         readAppConstants: async () => {
-          const country = environment.COUNTRY.toLowerCase();
+          const country = process.env.COUNTRY!.toLowerCase();
           let appConstants = null;
 
           switch (country) {
@@ -235,7 +233,7 @@ export const useSharedStore = create<SharedState & SharedActions>()(
         verifyAppVersionUpdate: (apiVersion: string) => {
           const { getLocalStorage, addLocalStorage, removeLocalStorage } =
             get();
-          if (apiVersion.trim() !== environment.APP_VERSION) {
+          if (apiVersion.trim() !== process.env.APP_VERSION) {
             const popupDisplayedVersion = getLocalStorage(
               storageConstants.app_version
             );

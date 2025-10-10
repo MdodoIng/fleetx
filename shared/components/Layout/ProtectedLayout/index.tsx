@@ -1,16 +1,16 @@
 'use client';
 
+import { ViewTransition } from '@/shared/lib/hooks';
+import {
+  getVendorList,
+  setBranchDetails,
+  setHeadingForVendorBranch,
+  updateZoneAndSome,
+} from '@/shared/services/header';
+import { useVendorStore } from '@/store';
+import { useEffect } from 'react';
 import Header from './Header';
 import SideBar from './Sidebar';
-import { useEffect } from 'react';
-import { useVendorStore } from '@/store';
-import {
-  setBranchDetails,
-  updateZoneAndSome,
-  setHeadingForVendorBranch,
-  getVendorList,
-} from '@/shared/services/header';
-import { ViewTransition } from '@/shared/lib/hooks';
 
 interface BaseLayoutProps {
   children: React.ReactNode;

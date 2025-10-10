@@ -1,4 +1,5 @@
 'use client';
+import EditResiver from '@/features/orders/components/ui/EditResiver';
 import { paymentMap } from '@/features/orders/constants';
 import { InsightsFallback } from '@/shared/components/fetch/fallback';
 import { ActiveOrdersIcon } from '@/shared/components/icons/layout';

@@ -35,7 +35,8 @@ export async function apiFetch<T>(
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
+    const errorResponse = await res.json();
+    const errorText = errorResponse.message || (await res.text());
 
     if (res.status === 401 && retry) {
       try {
@@ -53,6 +54,7 @@ export async function apiFetch<T>(
     }
 
     showServerMessage('error', errorText);
+    console.log(errorText);
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
 

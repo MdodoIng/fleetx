@@ -1,8 +1,6 @@
-import { environment } from '@/environments/environment';
-
 export const appConfig = {
   _getApiServiceUrl(path: string): string {
-    return `${environment.API_GATEWAY_BASE_URL}/${path}`;
+    return `${process.env.API_GATEWAY_BASE_URL}/${path}`;
   },
 
   userServiceApiUrl(): string {
@@ -46,6 +44,6 @@ export const appConfig = {
   },
 
   googleKey(): string {
-    return environment.GOOGLE_KEY;
+    return process.env.GOOGLE_KEY!;
   },
 };
