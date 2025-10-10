@@ -1,6 +1,16 @@
 'use client';
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
-import DropoffFormSection from '@/features/orders/components/ui/DropoffFormSection';
+
+import AlertMessage from '@/features/orders/components/AlertMessage';
+import WalletCard from '@/features/orders/components/WalletCard';
+import DeliverySummaryFooter from '@/features/orders/components/create/DeliverySummaryFooter';
+import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
+import {
+  dropOffSchema,
+  pickUpSchema,
+  TypeDropOffSchema,
+  TypePickUpSchema,
+} from '@/features/orders/validations/order';
 import {
   Dashboard,
   DashboardContent,
@@ -8,27 +18,18 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import AlertMessage from '@/features/orders/components/AlertMessage';
-import WalletCard from '@/features/orders/components/WalletCard';
-import DeliverySummaryFooter from '@/features/orders/components/create/DeliverySummaryFooter';
+import { vendorService } from '@/shared/services/vendor';
 import { useOrderStore, useVendorStore } from '@/store';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  dropOffSchema,
-  pickUpSchema,
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '@/features/orders/validations/order';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { vendorService } from '@/shared/services/vendor';
 
+import DropOffFormSection from '@/features/orders/components/ui/DropOffFormSection';
 import { CreateFallback } from '@/shared/components/fetch/fallback';
 
 export default function OrderCreatePage() {
   const orderStore = useOrderStore();
-  const [isDropIndex, setIsDropofIndex] = useState<number>(
+  const [isDropIndex, setIsDropOffIndex] = useState<number>(
     orderStore.dropOffs ? orderStore.dropOffs.length - 1 : 0
   );
 
@@ -57,7 +58,7 @@ export default function OrderCreatePage() {
       longitude: '',
     },
     mode: 'onChange',
-    reValidateMode: 'onBlur',
+    reValidateMode: 'onChange',
   });
   const dropOffForm = useForm<TypeDropOffSchema>({
     resolver: zodResolver(dropOffSchema),
@@ -85,13 +86,13 @@ export default function OrderCreatePage() {
     reValidateMode: 'onBlur',
   });
 
-  const { functionsDropoffs } = useOrderCreate(
+  const { functionsDropOffs } = useOrderCreate(
     pickUpForm,
     dropOffForm,
     isCOD,
     setIsCOD,
     isDropIndex,
-    setIsDropofIndex
+    setIsDropOffIndex
   );
 
   const updatePickUpDetailsForBranchUser = useCallback(async () => {
@@ -195,14 +196,13 @@ export default function OrderCreatePage() {
     return () => {};
   }, [updateDropOutDetailsForStore, updatePickUpDetailsForBranchUser]);
 
-  const isDropoffOne = orderStore.dropOffs
+  const isDropOffOne = orderStore.dropOffs
     ? orderStore.dropOffs.length
       ? true
       : false
     : false;
 
-  const isValid =
-    !dropOffForm.formState.isValid || !pickUpForm.formState.isValid;
+  const isValid = !dropOffForm.formState.isValid;
 
   if (loading) return <CreateFallback />;
 
@@ -221,9 +221,9 @@ export default function OrderCreatePage() {
 
           <div className="grid gap-4">
             {orderStore.dropOffs?.map((item, idx) => (
-              <DropoffFormSection
+              <DropOffFormSection
                 dropOffForm={dropOffForm}
-                functionsDropoffs={functionsDropoffs}
+                functionsDropOffs={functionsDropOffs}
                 index={idx}
                 isCOD={isCOD}
                 setIsCOD={setIsCOD}
@@ -233,11 +233,11 @@ export default function OrderCreatePage() {
               />
             ))}
 
-            {!isDropoffOne && (
+            {!isDropOffOne && (
               <>
-                <DropoffFormSection
+                <DropOffFormSection
                   dropOffForm={dropOffForm}
-                  functionsDropoffs={functionsDropoffs}
+                  functionsDropOffs={functionsDropOffs}
                   isCOD={isCOD}
                   setIsCOD={setIsCOD}
                   isDropIndex={isDropIndex}
@@ -249,8 +249,8 @@ export default function OrderCreatePage() {
 
         <DashboardFooter>
           <DeliverySummaryFooter
-            handleOrder={() => functionsDropoffs('order')}
-            handleCancel={() => functionsDropoffs('cancel')}
+            handleOrder={() => functionsDropOffs('order')}
+            handleCancel={() => functionsDropOffs('cancel')}
             isValid={isValid}
           />
         </DashboardFooter>

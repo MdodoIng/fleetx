@@ -1,5 +1,4 @@
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
 import { cn } from '@/shared/lib/utils';
 import { useSharedStore, useVendorStore, useWalletStore } from '@/store';
 import { getVendorWalletBalanceInit } from '@/store/useWalletStore';

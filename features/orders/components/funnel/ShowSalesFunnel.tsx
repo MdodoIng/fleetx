@@ -5,6 +5,7 @@ import { funnelStage } from '@/shared/constants/storageConstants';
 import { reportService } from '@/shared/services/report';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { any } from 'zod';
 
 interface ShowSalesFunnelProps {
   type: 1 | 2 | 3 | 4;
@@ -105,12 +106,12 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
     setLoading(true);
     setError(null);
     const fetcherMap: Record<number, () => Promise<{ data: FunnelInsight[] }>> =
-      {
-        1: reportService.getSalesFunnelActivationInsight,
-        2: reportService.getSalesFunnelRetentionInsight,
-        3: reportService.getSalesFunnelRetention2Insight,
-        4: reportService.getSalesFunnelReactivationInsight,
-      };
+    {
+      1: reportService.getSalesFunnelActivationInsight,
+      2: reportService.getSalesFunnelRetentionInsight,
+      3: reportService.getSalesFunnelRetention2Insight,
+      4: reportService.getSalesFunnelReactivationInsight,
+    };
 
     const fetcher = fetcherMap[type];
 
@@ -146,7 +147,7 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
         : '0%';
 
       if (type === 1) {
-        switch (el.stage) {
+        switch (el.stage as any) {
           case funnelStage.NoOrderNoRecharge:
             setIsNoOrderNoFirstText(true);
             setNoOrderNoFirstText('SIGNED UP');
@@ -181,7 +182,7 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
             break;
         }
       } else {
-        switch (el.stage) {
+        switch (el.stage as any) {
           case funnelStage.NoRecharge:
             setIsNoOrderNoFirstText(true);
             setNoOrderNoFirstText('WALLET ALERTED');
@@ -227,7 +228,7 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
         : '0%';
       if (baseValue === 0) baseValue = el.last_week_count;
 
-      switch (el.stage) {
+      switch (el.stage as any) {
         case funnelStage.NoOrderHasWallet:
           setNoOrderHasWalletText('POTENTIAL CHURN');
           setNoOrderHasWalletCount(el.last_week_count);
@@ -256,15 +257,15 @@ export default function ShowSalesFunnel({ type }: ShowSalesFunnelProps) {
     let baseValue = 0;
     data.forEach((el) => {
       if (
-        el.stage !== funnelStage.ReActivationChurned &&
-        el.stage !== funnelStage.ReActivationDormant
+        el.stage as any !== funnelStage.ReActivationChurned &&
+        el.stage as any !== funnelStage.ReActivationDormant
       ) {
         const percentage = el.prev_stage_last_week_count
           ? `${((el.last_week_count / (baseValue || el.prev_stage_last_week_count)) * 100).toFixed(2)}%`
           : '0%';
         if (baseValue === 0) baseValue = el.last_week_count;
 
-        switch (el.stage) {
+        switch (el.stage as any) {
           case funnelStage.ReActivationContacted:
             setFirstText('CONTACTED');
             setFirstCount(el.last_week_count);

@@ -1,28 +1,23 @@
 'use client';
-import { TypeVendorType } from '@/shared/types/vendor';
-import { useVendorStore } from '@/store';
-import { useState, type JSX } from 'react';
-import { useForm } from 'react-hook-form';
+import BranchEditForm from '@/features/vendor/components/BranchEditForm';
+import { useAddUpdateVendor } from '@/features/vendor/hooks/useAddUpdateVendor';
 import {
   editVendorBranchSchema,
   editVendorNameSchema,
   TypeEditVendorBranchSchema,
   TypeEditVendorNameSchema,
 } from '@/features/vendor/validations/editVendor';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAddUpdateVendor } from '@/features/vendor/hooks/useAddUpdateVendor';
 import { Button } from '@/shared/components/ui/button';
-import { Label } from '@/shared/components/ui/label';
-import { Input } from '@/shared/components/ui/input';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Checkbox } from '@/shared/components/ui/checkbox';
-import BranchEditForm from '@/features/vendor/components/BranchEditForm';
-import { Contact, MapPin, Trash, User2 } from 'lucide-react';
 import {
   Dashboard,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { Separator } from '@/shared/components/ui/separator';
 import {
   Table,
   TableLists,
@@ -31,10 +26,13 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
-import { Separator } from '@/shared/components/ui/separator';
+import { TypeVendorType } from '@/shared/types/vendor';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Contact, MapPin, Trash, User2 } from 'lucide-react';
+import { useState, type JSX } from 'react';
+import { useForm } from 'react-hook-form';
 
 function VendorAdd(): JSX.Element {
-  const vendorStore = useVendorStore();
   const [codType, setCodType] = useState<1 | 2>(2);
 
   const [isVendorType, setIsVendorType] = useState<
@@ -84,11 +82,11 @@ function VendorAdd(): JSX.Element {
   });
 
   const {
-    handelAddBranch,
-    branchs,
+    handleAddBranch,
+    branches,
     isLoadingForm,
     handleRemoveBranch,
-    handelSaveVendor,
+    handleSaveVendor,
   } = useAddUpdateVendor(
     editVendorNameForm,
     editVendorBranchForm,
@@ -96,8 +94,8 @@ function VendorAdd(): JSX.Element {
     codType
   );
 
-  const tableData = branchs
-    ? branchs?.map((item: any, idx) => {
+  const tableData = branches
+    ? branches?.map((item: any, idx) => {
         return [
           {
             icon: User2,
@@ -223,8 +221,8 @@ function VendorAdd(): JSX.Element {
               <Separator />
               <div className=" space-y-4">
                 <BranchEditForm form={editVendorBranchForm} />
-                <Button onClick={() => handelAddBranch()} type="submit">
-                  Add Brach
+                <Button onClick={() => handleAddBranch()} type="submit">
+                  Add Branch
                 </Button>
               </div>
             </>
@@ -255,7 +253,7 @@ function VendorAdd(): JSX.Element {
               ))}
             </TableLists>
           </Table>
-          <Button onClick={() => handelSaveVendor(isVendorType)} type="submit">
+          <Button onClick={() => handleSaveVendor(isVendorType)} type="submit">
             Save All
           </Button>
         </>

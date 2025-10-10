@@ -179,7 +179,7 @@ export const useWalletStore = create<WalletState & WalletActions>()(
         if (!selectedVendor?.id || !vendorId) return;
         try {
           const res = await vendorService.getVendorInfo(
-            selectedVendor?.id! || vendorId!
+            selectedVendor.id! || vendorId!
           );
 
           if (res.data) {

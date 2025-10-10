@@ -1,5 +1,5 @@
 'use client';
-import { environment } from '@/environments/environment';
+
 import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { vendorService } from './vendor';
 import { useNotificationStore } from '@/store/useNotificationStore';
@@ -32,7 +32,7 @@ export const getVendorList = async () => {
     user?.roles.includes('SALES_HEAD') ||
     user?.roles.includes('FINANCE_MANAGER')
   ) {
-    const url = vendorService.setVendorListurl(
+    const url = vendorService.setVendorListUrl(
       null,
       isSearchVendorParams,
       null
@@ -82,7 +82,7 @@ export async function updateZoneAndSome() {
   }
 
   const selectedBranchId = selectedBranch?.id || branchId;
-  if (selectedBranchId && environment.LOCAL_ADDRESS_ENABLED) {
+  if (selectedBranchId && process.env.LOCAL_ADDRESS_ENABLED) {
     const branch = branchDetails?.find((x) => x.id === selectedBranchId);
     if (branch) {
       sharedStore.setValue(
@@ -122,7 +122,7 @@ export async function setHeadingForVendorBranch() {
   readAppConstants();
   getWarningMessage();
 
-  if (environment.LOCAL_ADDRESS_ENABLED) {
+  if (process.env.LOCAL_ADDRESS_ENABLED) {
     // getFleetZonePickUpTrend();
 
     // Run every 12 hours
@@ -151,10 +151,7 @@ export async function setHeadingForVendorBranch() {
     setVendorValue('showDriversFilter', true);
     setVendorValue('isBranchAccess', true);
     setVendorValue('isVendorAccess', true);
-    if (
-      user.roles.includes('VENDOR_ACCOUNT_MANAGER') ||
-      user.roles.includes('SALES_HEAD')
-    ) {
+    if (user.roles.includes('VENDOR_ACCOUNT_MANAGER')) {
       setVendorValue('isEditDetails', false);
     }
   }
@@ -166,6 +163,7 @@ export async function setHeadingForVendorBranch() {
       const branches = branchDetails ?? [];
 
       const branch = branches.find((b) => b.id === user.user.vendor?.branch_id);
+      setVendorValue('vendorId', user.user.vendor?.vendor_id);
 
       if (branch) {
         setSharedValue(
@@ -183,6 +181,8 @@ export async function setHeadingForVendorBranch() {
 
         setVendorValue('branchName', branch.name);
         setVendorValue('selectedBranch', branch);
+        setVendorValue('branchId', branch.id);
+        setVendorValue('isBranchAccess', false);
       } else {
         setVendorValue('branchName', undefined);
         setSharedValue('currentZoneId', undefined);
@@ -192,6 +192,8 @@ export async function setHeadingForVendorBranch() {
         const mainBranch = branches.find((b: any) => b.main_branch === true);
         if (mainBranch) {
           setVendorValue('branchName', mainBranch.name);
+          setVendorValue('selectedBranch', mainBranch);
+          setVendorValue('branchId', mainBranch.id);
         }
       }
     } catch (err) {

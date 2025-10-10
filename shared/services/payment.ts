@@ -37,7 +37,7 @@ export const paymentService = {
 
   addFleetxCredit(request: TypePaymentAddReq & any) {
     return apiFetch(
-      AppappConfig.paymentServiceApiUrl() + '/add/mashkor-credit',
+      appConfig.paymentServiceApiUrl() + '/add/mashkor-credit',
       {
         method: 'POST',
         body: JSON.stringify(request),

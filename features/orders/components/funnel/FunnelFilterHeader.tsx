@@ -80,7 +80,7 @@ export default function FunnelFilterHeader({
       {/* Account Manager */}
       <AccountManagerSelect
         value={selectedManager}
-        onChangeAction={onManagerChange}
+        onChangeAction={onManagerChange as any}
       />
 
       {/* Search */}

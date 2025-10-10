@@ -61,7 +61,7 @@ export function AlertSettings() {
       const res = await paymentService.confirmWalletNotifyBalance(request);
 
       if (res) {
-        toast('✅ Wallet balance alert configured successfully!');
+        toast('Wallet balance alert configured successfully!');
       }
     } catch (err: any) {
       console.error(err.response?.data?.message || err.message);
@@ -148,9 +148,9 @@ export function AlertSettings() {
             placeholder={tD.rich(
               'component.features.orders.create.form.amount.placeholder',
               {
-                value: appConstants?.currency,
+                value: appConstants?.currency!,
               }
-            )}
+            ) as string}
             value={alertValue}
             onChange={(e) => setAlertValue(e.target.value)}
             className="w-full !ring-0"
@@ -185,7 +185,7 @@ export function AlertSettings() {
           {t.rich('notificationAlert', {
             methods: method.join(' & '),
             alertValue: alertValue,
-            value: appConstants?.currency,
+            value: appConstants?.currency!,
           })}
         </Badge>
 

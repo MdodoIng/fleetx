@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { paymentMap } from '@/features/orders/constants';
 import { useOrderStore, useSharedStore } from '@/store';
-import EditResiver from '../ui/EditResiver';
+import EditReceiver from '../ui/EditReceiver';
 import EditPayment from '../ui/EditPayment';
 import {
   Table,
@@ -120,7 +120,7 @@ export default function TableComponent({
                 </TableSingleListContentDetailsItem>
 
                 {item.is_delivery_address_edit_enabled && (
-                  <EditResiver
+                  <EditReceiver
                     data={item}
                     fetchOrderDetails={fetchOrderDetails}
                   />

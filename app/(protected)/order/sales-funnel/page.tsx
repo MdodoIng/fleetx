@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import FunnelFilterHeader from '@/features/orders/components/funnel/FunnelFilterHeader';
 import FunnelTable from '@/features/orders/components/funnel/FunnelTable';
 import ShowSalesFunnel from '@/features/orders/components/funnel/ShowSalesFunnel';
 import { useSalesFunnel } from '@/features/orders/hooks/useSalesFunnel';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Button } from '@/shared/components/ui/button';
+import { useCallback, useState } from 'react';
 
 function FunnelPage() {
   const {
@@ -41,7 +41,6 @@ function FunnelPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = useCallback(() => setIsModalOpen(true), []);
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return (
     <div className="p-6 space-y-6 relative">

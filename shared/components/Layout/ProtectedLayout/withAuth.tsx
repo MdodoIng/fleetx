@@ -1,3 +1,4 @@
+/** eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import LoadingPage from '@/app/loading';
 import { isMounted } from '@/shared/lib/hooks';
@@ -29,36 +30,22 @@ export function withAuth<P extends object>(
       isAuthenticatedCheck();
     }, [isAuthenticatedCheck]);
 
-    const handleClickToLogin = () => {
+    const handleRedirectToLogin = () => {
       setValue('lastPathname', pathname);
       push('/auth/login');
     };
 
     const { roles } = useGetSidebarMeta();
 
+    useEffect(() => {
+      if (!isAuthenticated && !isLoading) {
+        handleRedirectToLogin();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated, isLoading]);
+
     if (isLoading) {
       return <LoadingPage />;
-    }
-
-    if (!isAuthenticated) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Authentication Required
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 mb-8">
-              Please log in to access this page.
-            </p>
-            <Button
-              onClick={() => handleClickToLogin()}
-              variant={'destructive'}
-            >
-              Go to Login
-            </Button>
-          </div>
-        </div>
-      );
     }
 
     const effectiveRequiredRoles = requiredRoles || roles;

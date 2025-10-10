@@ -73,6 +73,7 @@ const EditAddForm = ({ form, isBranch, setIsBranchAction }: Props) => {
     } catch (error) {
       console.log(error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBranch?.vendor?.id]);
 
   useEffect(() => {

@@ -66,7 +66,7 @@ export default function Recommendation({
       {/* Footer Note */}
       <p className="mt-4 text-sm text-dark-grey/70 text-center">
         {t.rich('deliveryCharge', {
-          value: appConstants?.currency,
+          value: appConstants?.currency!,
         })}
       </p>
     </>

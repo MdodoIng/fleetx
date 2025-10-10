@@ -2,10 +2,17 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { Pencil, User, Users, Dot, Phone, Mail, Search } from 'lucide-react';
-import { toast } from 'sonner';
-import { Input } from '@/shared/components/ui/input';
 import { AddEditAccountManagerForm } from '@/features/vendor/components/addEditAccountManagerForm';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
 import { Table } from '@/shared/components/ui/table';
 import {
   TableLists,
@@ -19,34 +26,27 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import {
-  Dashboard,
-  DashboardContent,
-  DashboardHeader,
-  DashboardHeaderRight,
-} from '@/shared/components/ui/dashboard';
 import userService from '@/shared/services/user';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import LoadMore from '@/shared/components/fetch/LoadMore';
-import NoData from '@/shared/components/fetch/NoData';
+import { Dot, Mail, Pencil, Phone, Search, User, Users } from 'lucide-react';
 
-export function AccountManagers() {
+function AccountManagers() {
   const [data, setData] = useState([]);
 
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const newData = await userService.getAccountManagerList(1, page, search);
+      const res = await userService.getAccountManagerList(1, page, search);
+      console.log(res, 'data');
 
-      setData(newData.data);
+      setData(res.data);
 
       setNextSetItemTotal(res.data.length < page ? null : true);
     } catch (error) {
-      toast('Failed to refresh account managers.');
+      console.error('Failed to refresh account managers.', error);
     } finally {
       setIsLoading(false);
     }
@@ -68,14 +68,14 @@ export function AccountManagers() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder="Seacrh a Account Manager"
+              placeholder="Search a Account Manager"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 !border-none !outline-none !ring-0 "
             />
           </div>
 
-          <AddEditAccountManagerForm onSave={fetchData} />
+          <AddEditAccountManagerForm onSaveAction={fetchData} />
         </div>
       </DashboardHeader>
       <DashboardContent className="flex w-full flex-col items-center justify-start">
@@ -84,8 +84,8 @@ export function AccountManagers() {
           {data.length > 0 ? (
             <Table>
               <TableLists>
-                {data.map((manager, idx) => (
-                  <TableSingleList key={manager.id}>
+                {data.map((manager: any, idx) => (
+                  <TableSingleList key={idx}>
                     <TableSingleListHeader className="">
                       <TableSingleListHeaderRight>
                         <span className="font-semibold text-primary-blue flex">
@@ -169,7 +169,7 @@ export function AccountManagers() {
                         <TableSingleListContentDetailsItem>
                           <AddEditAccountManagerForm
                             editDetails={manager}
-                            onSave={fetchData}
+                            onSaveAction={fetchData}
                           />
                         </TableSingleListContentDetailsItem>
                       </TableSingleListContent>

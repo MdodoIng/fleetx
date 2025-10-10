@@ -7,13 +7,13 @@ import {
   TypeOrderInfoResponse,
   TypeOrders,
   TypeRootEstimatedDeliveryReturnFromApi,
-  TypeRootLiveBuilkOrderListInsights,
+  TypeRootLiveBulkOrderListInsights,
   TypeRootLiveOrderList,
   TypeRootOrderStatusHistoryHistory,
   TypeUpdateAddressReq,
-  TypeUpdateAddressResponce,
+  TypeUpdateAddressResponse,
   TypeUpdatePaymentReq,
-  TypeZoneResponce,
+  TypeZoneResponse,
 } from '@/shared/types/orders';
 import { useAuthStore, useOrderStore, useVendorStore } from '@/store';
 import { useSharedStore } from '@/store/useSharedStore';
@@ -52,7 +52,7 @@ export const orderService = {
   updateAddress: (
     address: TypeUpdateAddressReq,
     orderUuid: string
-  ): Promise<TypeUpdateAddressResponce> =>
+  ): Promise<TypeUpdateAddressResponse> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}/update/${orderUuid}/drop-off`, {
       method: 'PUT',
       body: JSON.stringify(address),
@@ -60,7 +60,7 @@ export const orderService = {
 
   getOrderList: (
     url: string
-  ): Promise<TypeRootLiveOrderList | TypeRootLiveBuilkOrderListInsights> =>
+  ): Promise<TypeRootLiveOrderList | TypeRootLiveBulkOrderListInsights> =>
     apiFetch(`${appConfig.orderServiceApiUrl()}${url}`),
 
   getOrderStatusUrl(
@@ -261,7 +261,7 @@ export const orderService = {
     );
   },
 
-  getZone(): Promise<TypeZoneResponce> {
+  getZone(): Promise<TypeZoneResponse> {
     return apiFetch(`${appConfig.orderServiceApiUrl()}/zone/list`, {
       method: 'GET',
     });

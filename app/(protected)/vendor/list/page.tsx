@@ -1,11 +1,10 @@
 'use client';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { vendorService } from '@/shared/services/vendor';
-import { TypeVendorList } from '@/shared/types/vendor';
-import { useVendorStore } from '@/store';
-import { useCallback, useEffect, useState, type JSX } from 'react';
-import VendorsList from '@/features/vendor/components/list/VendorsList';
 import EditVendor from '@/features/vendor/components/list/EditVendor';
+import VendorsList from '@/features/vendor/components/list/VendorsList';
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dashboard,
   DashboardContent,
@@ -13,10 +12,12 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
-import { Download, Search, X } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import NoData from '@/shared/components/fetch/NoData';
+import { cn } from '@/shared/lib/utils';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeVendorList } from '@/shared/types/vendor';
+import { useVendorStore } from '@/store';
+import { Search, X } from 'lucide-react';
+import { useCallback, useEffect, useState, type JSX } from 'react';
 
 function VendorList(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,7 @@ function VendorList(): JSX.Element {
   const fetchVendorList = useCallback(async (): Promise<void> => {
     try {
       getVendorAccountManagerId();
-      const url = vendorService.setVendorListurl(page, searchValue, null);
+      const url = vendorService.setVendorListUrl(page, searchValue, null);
 
       try {
         const res = await vendorService.getVendorList(url);
@@ -64,10 +65,6 @@ function VendorList(): JSX.Element {
     loadFetchVendorList();
   }, [fetchVendorList]);
 
-  console.log(data, 'aeefeafsafaaf');
-
-  const { exportOrdersToCSV } = useTableExport();
-
   if (isLoading) return <TableFallback />;
 
   return (
@@ -92,18 +89,24 @@ function VendorList(): JSX.Element {
           <Button
             // onClick={() => exportOrdersToCSV(data!, 'balance-report', ``)}
             //   onClick={() => vendorStore.setValue('isEditVendorId', undefined)}
+            variant={!isEditVendorId ? 'ghost' : 'default'}
+            suppressHydrationWarning
+            asChild
             onClick={() =>
               isEditVendorId ? setValue('isEditVendorId', undefined) : ''
             }
+            className={cn(!isEditVendorId && 'p-0')}
           >
             {isEditVendorId ? (
-              <>
+              <div>
                 <X className="w-5 h-5" /> Close{' '}
-              </>
+              </div>
             ) : (
-              <>
-                <Download className="w-5 h-5" /> Export
-              </>
+              <Export
+                data={data!}
+                title="Vendor List"
+                exclude={['main_branch-main_branch']}
+              />
             )}
           </Button>
         </div>

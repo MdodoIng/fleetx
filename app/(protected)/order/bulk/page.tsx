@@ -1,5 +1,16 @@
 'use client';
+import AlertMessage from '@/features/orders/components/AlertMessage';
 import PickUpForm from '@/features/orders/components/create/PickUpForm';
+import WalletCard from '@/features/orders/components/WalletCard';
+import { usePickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
+import {
+  pickUpSchema,
+  TypePickUpSchema,
+} from '@/features/orders/validations/order';
+import { CreateFallback } from '@/shared/components/fetch/fallback';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Dashboard,
   DashboardContent,
@@ -7,28 +18,7 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import AlertMessage from '@/features/orders/components/AlertMessage';
-import WalletCard from '@/features/orders/components/WalletCard';
-import { useOrderStore, useVendorStore, useSharedStore } from '@/store';
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  dropOffSchema,
-  pickUpSchema,
-  TypeDropOffSchema,
-  TypePickUpSchema,
-} from '@/features/orders/validations/order';
-import useOrderCreate from '@/features/orders/hooks/useOrderCreate';
-import { vendorService } from '@/shared/services/vendor';
-import { orderService } from '@/shared/services/orders';
-import { CreateFallback } from '@/shared/components/fetch/fallback';
-import * as XLSX from 'xlsx';
-import { toast } from 'sonner';
-import { TypeDropOffs } from '@/shared/types/orders';
-import { usepickUpFormValuesForPickUp } from '@/features/orders/libs/helpers';
-import { fleetService } from '@/shared/services/fleet';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
+import { Input } from '@/shared/components/ui/input';
 import {
   Table,
   TableBody,
@@ -37,12 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/table';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { classForInput, Input } from '@/shared/components/ui/input';
-import { Switch } from '@/shared/components/ui/switch';
-import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/components/ui/button';
 import { commonConstants } from '@/shared/constants/storageConstants';
+import { orderService } from '@/shared/services/orders';
+import { useVendorStore } from '@/store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 
 // Define interfaces for bulk drop-off data and driver
 interface BulkDropOff {
@@ -55,6 +47,11 @@ interface BulkDropOff {
   amount_to_collect: number;
   payment_display_type: string;
   enableChecked: boolean;
+  area: string;
+  block: string;
+  building: string;
+  street: string;
+  avenue: string;
 }
 
 export default function BulkOrderPage() {
@@ -108,7 +105,7 @@ export default function BulkOrderPage() {
   const handleFileChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!vendorId) {
-        toast.error('Please select a vendor');
+        toast.warning('Please select a vendor');
         return;
       }
       const file = event.target.files?.[0];
@@ -131,7 +128,7 @@ export default function BulkOrderPage() {
         const jsonData = XLSX.utils.sheet_to_json(sheet);
 
         if (jsonData.length === 0) {
-          toast.error('Uploaded file is empty');
+          toast.warning('Uploaded file is empty');
           if (fileInputRef.current) fileInputRef.current.value = '';
           return;
         }
@@ -152,6 +149,12 @@ export default function BulkOrderPage() {
               amount_to_collect: amountToCollect,
               payment_display_type: paymentDisplayType,
               enableChecked: false,
+              area: row['Area'],
+              block: row['Block'],
+              House: row['House'],
+              building: row['Building'],
+              street: row['Street'],
+              avenue: row['Avenue'],
             };
           }
         );
@@ -193,7 +196,7 @@ export default function BulkOrderPage() {
 
   // Place bulk order
   const placeOrder = async () => {
-    pickUpForm.trigger();
+    const isPickupFormValid = await pickUpForm.trigger();
     if (!vendorId) {
       toast.error('Please select a vendor');
       return;
@@ -202,7 +205,7 @@ export default function BulkOrderPage() {
       toast.error('Please select a branch');
       return;
     }
-    if (!pickUpForm.formState.isValid) {
+    if (!isPickupFormValid) {
       toast.error('Please fill in all required pickup fields');
       return;
     }
@@ -218,7 +221,8 @@ export default function BulkOrderPage() {
     }
 
     try {
-      const updatedPickUp = usepickUpFormValuesForPickUp({
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const updatedPickUp = usePickUpFormValuesForPickUp({
         pickUpFormValues: pickUpForm.getValues(),
       });
 
@@ -231,6 +235,11 @@ export default function BulkOrderPage() {
         amount_to_collect: dropOff.amount_to_collect,
         payment_type: dropOff.amount_to_collect > 0 ? 1 : 2,
         vendor_id: vendorId!,
+        ...(dropOff.area && { area: dropOff.area }),
+        ...(dropOff.block && { block: dropOff.block }),
+        ...(dropOff.building && { building: dropOff.building }),
+        ...(dropOff.street && { street: dropOff.street }),
+        ...(dropOff.avenue && { avenue: dropOff.avenue }),
       }));
 
       const orders = {
@@ -254,7 +263,6 @@ export default function BulkOrderPage() {
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
       console.error('Error placing bulk order:', error);
-      toast.error('Failed to place bulk order');
     }
   };
 

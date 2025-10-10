@@ -88,7 +88,7 @@ export default function FunnelTable({
           <div key={colIdx} className="flex-1 space-y-1">
             {col.map((row, idx) => (
               <div
-                key={row.id}
+                key={idx}
                 className={clsx(
                   'p-2 rounded cursor-pointer',
                   idx % 2 === 0 ? 'bg-gray-50' : 'bg-gray-100'

@@ -82,7 +82,7 @@ export default function RateImproveBuddies({
   // Export function (placeholder)
   const handleExport = () => {
     console.log('Export triggered');
-    // Implement export logic (e.g., using useTableExport or file download)
+    // Implement export logic (e.g., using tableExport or file download)
   };
 
   return (

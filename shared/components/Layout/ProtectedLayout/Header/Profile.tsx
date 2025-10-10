@@ -12,7 +12,7 @@ import { APP_PROFILE_MENU } from '@/shared/constants/routes';
 import { filterMenuByRole } from '@/shared/lib/helpers';
 import { cn } from '@/shared/lib/utils';
 import { useAuthStore, useVendorStore } from '@/store';
-import { User, ChevronDown } from 'lucide-react';
+import { ChevronDown, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -86,7 +86,11 @@ export default function Profile() {
               className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
             >
               <Link href={item.route!}>
-                <IconComponentMain className="text-dark-grey rtl:order-2" />
+                <IconComponentMain
+                  width={20}
+                  height={20}
+                  className="text-dark-grey rtl:order-2"
+                />
                 <span>{t(item.labelKey as any)}</span>
               </Link>
             </DropdownMenuItem>
@@ -97,7 +101,11 @@ export default function Profile() {
           onClick={() => logout()}
           className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
         >
-          <PasswordIcon className="text-dark-grey rtl:order-2" />
+          <PasswordIcon
+            width={20}
+            height={20}
+            className="text-dark-grey rtl:order-2"
+          />
           <span>{t('layout.profile.logout.title')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

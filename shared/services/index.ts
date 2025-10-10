@@ -1,48 +1,48 @@
-import { environment } from '@/environments/environment';
+/* eslint-disable prefer-const */
 import { apiFetch } from '../lib/utils';
-import { typePostRating, TypeRootRatingResponse } from '../types/rating';
-import { appConfig } from './app-config';
+
 import { useSharedStore } from '@/store';
-import { AuthData, DecodedToken } from '../types/user';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'sonner';
 import {
   commonConstants,
   storageConstants,
 } from '../constants/storageConstants';
-import { jwtDecode } from 'jwt-decode';
-import { toast } from 'sonner';
-import { Locale, useTranslations } from 'next-intl';
-import { setUserLocale } from './locale';
+import { AuthData, DecodedToken } from '../types/user';
+import { appConfig } from './app-config';
+
 import { ErrorMessages } from '../constants/commonMessages';
-import { TypeCheckBlockActivationRes } from '../types/services';
 import { TypeFirstOrderInsightResponse } from '../types';
+import { TypeCheckBlockActivationRes } from '../types/services';
+import { typePostRating, TypeRootRatingResponse } from '../types/rate';
 
 type ToastStatus = 'success' | 'info' | 'warning' | 'error' | 'default';
 
 export const getArea = () =>
-  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas', {
+  apiFetch(process.env.API_GATEWAY_BASE_URL + '/locs/areas', {
     cache: 'force-cache',
   });
 export const getAreaByPickupAreaId = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
+    process.env.API_GATEWAY_BASE_URL + '/locs/allowed/drop-off/areas/' + id,
     {
       cache: 'force-cache',
     }
   );
 export const getBlock = (id: string) =>
-  apiFetch(environment.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
+  apiFetch(process.env.API_GATEWAY_BASE_URL + '/locs/areas/' + id + '/blocks', {
     cache: 'force-cache',
   });
 export const getStreet = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
+    process.env.API_GATEWAY_BASE_URL + '/locs/blocks/' + id + '/streets',
     {
       cache: 'force-cache',
     }
   );
 export const getBuildings = (id: string) =>
   apiFetch(
-    environment.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
+    process.env.API_GATEWAY_BASE_URL + '/locs/streets/' + id + '/buildings',
     {
       cache: 'force-cache',
     }
@@ -100,7 +100,7 @@ export const getFirstOrderList = (
   perPage: number,
   fromDate: Date | undefined,
   toDate: Date | undefined
-) => {
+): Promise<any> => {
   const { getFormattedDate } = useSharedStore.getState();
   let url = '/first-orders/list?page_size=' + perPage + '&page=' + page;
   url = fromDate ? url + '&from_date=' + getFormattedDate(fromDate) : url;
@@ -131,8 +131,8 @@ export const getZone = (request: any) =>
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
     appConfig.orderServiceApiUrl() +
-      '/get-customer-bulk-order/' +
-      encryptedOrderNo
+    '/get-customer-bulk-order/' +
+    encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
@@ -195,27 +195,15 @@ export const showToast = (status: ToastStatus, message: string) => {
 };
 
 export const showServerMessage = (status: ToastStatus, resMessage: string) => {
-  const { getLocalStorage } = useSharedStore.getState();
-  const t = useTranslations();
-  const lang = getLocalStorage('lang') as Locale;
-  if (!lang) {
-    setUserLocale('en');
-  } else {
-    // @ts-ignore
-    setUserLocale(lang);
-  }
-
   if (!resMessage) return;
 
   const message = ErrorMessages.find((x) => x.key === resMessage);
   let realMessage: string;
 
   if (message) {
-    realMessage = t(`apiMessages.${resMessage}` as any, {
-      defaultValue: message.value,
-    });
+    realMessage = message.value;
   } else {
-    realMessage = t('commonMessages.errorMessage');
+    realMessage = 'Uh-oh, something went wrong.';
   }
 
   showToast(status, realMessage);
@@ -226,15 +214,15 @@ export const logError = (message: string, ...optionalParams: any[]) => {
 };
 
 export const getUserEnteredRegionInConfig = (url: string): string => {
-  const region = environment.REGIONS.find((element) =>
+  const region = JSON.parse(String(process.env.REGIONS)).find((element: any) =>
     url.includes(element.domain)
   );
   return region ? region.domain : '';
 };
 
 export const getRegionBasedOnCountry = (country: string) => {
-  return environment.REGIONS.find(
-    (x) => x.country_code.toLowerCase() === country.toLowerCase()
+  return JSON.parse(String(process.env.REGIONS)).find(
+    (x: any) => x.country_code.toLowerCase() === country.toLowerCase()
   );
 };
 

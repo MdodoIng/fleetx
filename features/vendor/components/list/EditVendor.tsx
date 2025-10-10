@@ -50,6 +50,7 @@ import {
   TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import NoData from '@/shared/components/fetch/NoData';
 
 type Props = {
   page: number;
@@ -64,7 +65,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
   );
 
   const [codType, setCodType] = useState<1 | 2>(2);
-  const [branchs, setBranchs] =
+  const [branchs, setbranches] =
     useState<TypeEditVendorReq['branches'][number][]>();
   const [accountManagerList, setAccountManagerList] = useState();
   const [isCreateNewBranch, setIsCreateNewBranch] = useState(false);
@@ -206,7 +207,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
     validateFormsAsync,
     updateVendorDetailsForFromApi,
     isLoadingForm,
-    handelUpdate,
+    handleUpdate,
   } = useAddUpdateVendor(
     editVendorNameForm,
     editVendorBranchForm,
@@ -281,7 +282,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
         </Button>
       </Card>
 
-      {tableData?.length ? (
+      {tableData?.length && (
         <>
           <Table>
             <TableLists>
@@ -309,7 +310,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
           </Table>
           <Button
             onClick={() =>
-              handelUpdate(
+              handleUpdate(
                 'updateAll',
                 isCreateNewBranch,
                 setIsCreateNewBranch,
@@ -321,8 +322,6 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
             Update All
           </Button>
         </>
-      ) : (
-        <>no data</>
       )}
 
       {!isLoadingForm && (
@@ -343,7 +342,7 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
             <DialogFooter>
               <Button
                 onClick={() =>
-                  handelUpdate(
+                  handleUpdate(
                     'updateBranch',
                     isCreateNewBranch,
                     setIsCreateNewBranch,

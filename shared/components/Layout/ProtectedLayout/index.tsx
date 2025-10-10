@@ -1,15 +1,16 @@
 'use client';
 
+import { ViewTransition } from '@/shared/lib/hooks';
+import {
+  getVendorList,
+  setBranchDetails,
+  setHeadingForVendorBranch,
+  updateZoneAndSome,
+} from '@/shared/services/header';
+import { useVendorStore } from '@/store';
+import { useEffect } from 'react';
 import Header from './Header';
 import SideBar from './Sidebar';
-import { useEffect } from 'react';
-import { useVendorStore } from '@/store';
-import {
-  setBranchDetails,
-  updateZoneAndSome,
-  setHeadingForVendorBranch,
-  getVendorList,
-} from '@/shared/services/header';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
@@ -34,9 +35,12 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
 
   return (
     <section className="flex items-start justify-start h-svh w-full">
-      <SideBar />
+      <ViewTransition>
+        <SideBar />
+      </ViewTransition>
       <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white">
         <Header />
+
         {children}
       </div>
     </section>

@@ -1,5 +1,7 @@
 'use client';
 
+import useEditProfile from '@/features/billing/hooks/useEditProfile';
+import { Button } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,23 +10,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/shared/components/ui/form';
-import useEditProfile from '@/features/billing/hooks/useEditProfile';
 import {
   Dashboard,
   DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 import { useTranslations } from 'next-intl';
 
 const EditProfilePage = () => {

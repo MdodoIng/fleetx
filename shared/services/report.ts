@@ -5,13 +5,14 @@ import {
   useVendorStore,
 } from '@/store';
 import { apiFetch } from '../lib/utils';
+
 import {
-  TypBranchWalletBalanceReportRes,
+  TypeBranchWalletBalanceReportRes,
   TypeDashboardDetailsResponse,
-  TypeDashboardInsightResponce,
-  TypeSalesFunnelRetentionRespose,
+  TypeDashboardInsightResponse,
+  TypeSalesFunnelRetentionResponse,
   TypeWalletTransactionHistoryRes,
-  TypeZoneGrowthResponce,
+  TypeZoneGrowthResponse,
 } from '../types/report';
 import { appConfig } from './app-config';
 
@@ -60,7 +61,7 @@ export const reportService = {
 
   getBranchWalletBalanceReport(
     url: string
-  ): Promise<TypBranchWalletBalanceReportRes> {
+  ): Promise<TypeBranchWalletBalanceReportRes> {
     return apiFetch(appConfig.reportServiceApiUrl() + url, {
       method: 'GET',
     });
@@ -81,10 +82,10 @@ export const reportService = {
     nextSetItemTotal?.forEach((element: any) => {
       url = url + '&NEXT_SET_ITEMS_TOKEN=' + element;
     });
-    return this.getVenodrBarnchWalletUrl(url);
+    return this.getVendorBranchWalletUrl(url);
   },
 
-  getVenodrBarnchWalletUrl(url: string) {
+  getVendorBranchWalletUrl(url: string) {
     const { user } = useAuthStore.getState();
     const { vendorId, branchId } = useVendorStore.getState();
     switch (user?.roles[0]) {
@@ -189,7 +190,7 @@ export const reportService = {
   getDashboardInsight(
     fromDate: Date | null,
     toDate: Date | null
-  ): Promise<TypeDashboardInsightResponce> {
+  ): Promise<TypeDashboardInsightResponse> {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/performance/dashboard/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
@@ -199,7 +200,10 @@ export const reportService = {
     });
   },
 
-  getChurnReasonsInsights(fromDate: Date | null, toDate: Date | null) {
+  getChurnReasonsInsights(
+    fromDate: Date | null,
+    toDate: Date | null
+  ): Promise<any> {
     const { getFormattedDate } = useSharedStore.getState();
     let url = '/funnel/retention/churn-reason/insights';
     url = fromDate ? url + '?from_date=' + getFormattedDate(fromDate) : url;
@@ -234,7 +238,7 @@ export const reportService = {
     ref_type = 1
   ): string {
     const { getFormattedDate } = useSharedStore.getState();
-    const { selectedAffiliator } = useOrderStore.getState();
+    const { selectedAffiliate } = useOrderStore.getState();
 
     let url = `/referral/report/orders?page_size=${perPage}&page=${page}&ref_type=${ref_type}`;
 
@@ -246,8 +250,8 @@ export const reportService = {
     }
     if (refBy) {
       url = url + '&ref_by=' + refBy;
-    } else if (selectedAffiliator) {
-      url = url + '&ref_by=' + selectedAffiliator;
+    } else if (selectedAffiliate) {
+      url = url + '&ref_by=' + selectedAffiliate;
     }
     return url;
   },
@@ -261,7 +265,7 @@ export const reportService = {
   getZoneGrowth(
     region_id: number,
     year: number
-  ): Promise<TypeZoneGrowthResponce> {
+  ): Promise<TypeZoneGrowthResponse> {
     let url = '/zone/growth/insight';
     const queryParams = [];
 
@@ -290,7 +294,7 @@ export const reportService = {
     );
   },
 
-  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionRespose> {
+  getSalesFunnelRetention(): Promise<TypeSalesFunnelRetentionResponse> {
     return apiFetch(
       appConfig.reportServiceApiUrl() + '/funnel/retention/users',
       {
@@ -299,7 +303,7 @@ export const reportService = {
     );
   },
 
-  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionRespose> {
+  getSalesFunnelRetention2(): Promise<TypeSalesFunnelRetentionResponse> {
     return apiFetch(
       appConfig.reportServiceApiUrl() +
         '/funnel/retention/no-order-has-wallet/users',

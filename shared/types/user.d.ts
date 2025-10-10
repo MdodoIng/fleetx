@@ -83,7 +83,7 @@ export interface TypeSingUpRequest {
   full_name: string;
   password?: string;
   confirm_password?: string;
-  is_business: boolean;
+  is_business?: boolean;
   aff_ref_code?: string;
   branches: {
     mobile_number: string;
@@ -103,7 +103,7 @@ export interface TypeSingUpRequest {
       paci_number: string;
     };
   };
-  reference: null;
+  reference?: null;
 }
 
 export interface TypeChangePasswordRequest {

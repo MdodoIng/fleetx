@@ -1,7 +1,7 @@
 import {
   addressSchema,
   TypeAddressSchema,
-} from '@/features/orders/validations/editResiver';
+} from '@/features/orders/validations/EditReceiver';
 import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
 import { Button } from '@/shared/components/ui/button';
 import {

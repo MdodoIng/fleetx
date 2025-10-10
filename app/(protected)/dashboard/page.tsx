@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useSharedStore, useVendorStore } from '@/store';
-import { cn } from '@/shared/lib/utils';
-import { reportService } from '@/shared/services/report';
+import { DashboardFallback } from '@/shared/components/fetch/fallback';
+import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
+import DateSelect from '@/shared/components/selectors/DateSelect';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import {
   Card,
   CardContent,
@@ -12,19 +13,18 @@ import {
   CardIcon,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { TypeDashboardDetailsResponse } from '@/shared/types/report';
 import {
-  DashboardHeader,
-  DashboardHeaderRight,
   Dashboard,
   DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { ActiveOrdersIcon } from '@/shared/components/icons/layout';
 import { Separator } from '@/shared/components/ui/separator';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import DateSelect from '@/shared/components/selectors/DateSelect';
+import { cn } from '@/shared/lib/utils';
+import { reportService } from '@/shared/services/report';
+import { TypeDashboardDetailsResponse } from '@/shared/types/report';
+import { useSharedStore, useVendorStore } from '@/store';
 import { DateRange } from 'react-day-picker';
-import { DashboardFallback } from '@/shared/components/fetch/fallback';
 
 const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   total_delivery_fees: 0,
@@ -34,8 +34,9 @@ const defaultDashboardData: TypeDashboardDetailsResponse['data'] = {
   payment_methods: { cod: 0, online: 0 },
 };
 
-function DashboardCompoent() {
+function DashboardComponent() {
   const { appConstants } = useSharedStore();
+  const { vendorId, branchId } = useVendorStore.getState();
   const { showDriversFilter } = useVendorStore();
   const [loading, setLoading] = useState(true);
 
@@ -78,14 +79,15 @@ function DashboardCompoent() {
       console.error('Error fetching dashboard data:', error);
       setDashboardData(defaultDashboardData);
     }
-  }, [date, selectedDriver]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date, selectedDriver, vendorId, branchId]);
 
   useEffect(() => {
-    const fetc = async () => {
+    const fetch = async () => {
       await fetchDashboardData();
       setLoading(false);
     };
-    fetc();
+    fetch();
   }, [fetchDashboardData]);
 
   const totalToPay = parseFloat(
@@ -251,4 +253,4 @@ function DashboardCompoent() {
   );
 }
 
-export default DashboardCompoent;
+export default DashboardComponent;

@@ -22,10 +22,10 @@ import {
   TableSingleListContentDetailsTitle,
   TableSingleListContents,
   TableSingleListContentTitle,
-  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
 import { useRouter } from 'next/navigation';
 import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 
 type Props = {
   data: TypeVendorList;
@@ -34,14 +34,14 @@ type Props = {
 };
 
 const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
-  const vedorStore = useVendorStore();
+  const vendorStore = useVendorStore();
   const { push } = useRouter();
   const handleEditClick = (item: TypeVendorListItem) => {
-    vedorStore.setValue('isEditVendorId', item.id);
+    vendorStore.setValue('isEditVendorId', item.id);
     console.log(item.id);
   };
 
-  const handleUserSearhClick = (item: TypeVendorListItem) => {
+  const handleUserSearchClick = (item: TypeVendorListItem) => {
     const searchParams = new URLSearchParams();
     searchParams.set('id', item.name.toString());
     push(`/vendor/users?${searchParams.toString()}`);
@@ -78,7 +78,7 @@ const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
         icon: User2,
         title: 'Users',
         value: <User />,
-        onClick: () => handleUserSearhClick(item),
+        onClick: () => handleUserSearchClick(item),
       },
       {
         icon: Edit,
@@ -121,7 +121,7 @@ const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
           </TableLists>
         </Table>
       ) : (
-        <>no data</>
+        <NoData />
       )}
     </>
   );

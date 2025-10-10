@@ -30,7 +30,7 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     try {
       if (vendorStore.vendorId) {
         const walletHistoryUrl = reportService.getWalletHistoryUrl(
-          4,
+          5,
           null,
           null,
           null,
@@ -54,14 +54,15 @@ export function RecentTransactions({ isOpen }: { isOpen: any }) {
     } finally {
       setIsLoading(false);
     }
-  }, [vendorStore.vendorId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorStore.vendorId, isOpen]);
 
   useEffect(() => {
     const loadInitialWalletBalance = async () => {
       await fetchVendorWalletBalance();
     };
     loadInitialWalletBalance();
-  }, [fetchVendorWalletBalance, isOpen]);
+  }, [fetchVendorWalletBalance]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
