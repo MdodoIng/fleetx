@@ -1,54 +1,49 @@
 'use client';
 
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import { Button } from '@/shared/components/ui/button';
-import { Search } from 'lucide-react';
-import { Input } from '@/shared/components/ui/input';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
-import { paymentService } from '@/shared/services/payment';
-import { vendorService } from '@/shared/services/vendor';
-import { TypeManualPaymentHistoryReportRes } from '@/shared/types/payment';
-import { useVendorStore } from '@/store';
-import { format } from 'date-fns';
-import {
-  Axis3dIcon,
-  Columns,
-  Download,
-  MagnetIcon,
-  Notebook,
-  ReceiptPoundSterling,
-  ServerCrash,
-  Type,
-} from 'lucide-react';
-import { useEffect, useState, type JSX } from 'react';
+import VendorSelector from '@/shared/components/selectors/VendorSelector';
 import {
   Dashboard,
   DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
+import { Input } from '@/shared/components/ui/input';
 import {
   Table,
   TableLists,
   TableSingleList,
-  TableSingleListHeader,
-  TableSingleListHeaderRight,
-  TableSingleListHeaderLeft,
-  TableSingleListContents,
   TableSingleListContent,
-  TableSingleListContentTitle,
-  TableSingleListContentDetailsTitle,
   TableSingleListContentDetailsItem,
+  TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListContentTitle,
+  TableSingleListHeader,
+  TableSingleListHeaderLeft,
+  TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
-import VendorSelector from '@/shared/components/selectors/VendorSelector';
+import { paymentService } from '@/shared/services/payment';
+import { vendorService } from '@/shared/services/vendor';
+import { TypeManualPaymentHistoryReportRes } from '@/shared/types/payment';
+import { format } from 'date-fns';
+import {
+  Axis3dIcon,
+  Columns,
+  MagnetIcon,
+  Notebook,
+  ReceiptPoundSterling,
+  Search,
+  ServerCrash,
+  Type,
+} from 'lucide-react';
+import { useEffect, useState, type JSX } from 'react';
 import { DateRange } from 'react-day-picker';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import LoadMore from '@/shared/components/fetch/LoadMore';
-import NoData from '@/shared/components/fetch/NoData';
 
 function PaymentHistory(): JSX.Element {
-  const { exportOrdersToCSV } = useTableExport();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVendor, setSelectedVendor] = useState<string | undefined>(
     undefined
@@ -187,20 +182,7 @@ function PaymentHistory(): JSX.Element {
           />
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            onClick={() =>
-              exportOrdersToCSV(
-                tableData,
-                'payment_history',
-                `payment_history_${date?.from ? format(date.from, 'yyyy-MM-dd') : ''}_${
-                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-                }`
-              )
-            }
-            className="max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+          <Export data={tableData!} title="payment_history" exclude={[]} />
         </div>
       </DashboardHeader>
       <DashboardContent>

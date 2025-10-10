@@ -1,29 +1,15 @@
 /** eslint-disable @typescript-eslint/no-unused-expressions */
-import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { debounce } from 'lodash';
 
-import {
-  useAuthStore,
-  useSharedStore,
-  useVendorStore,
-  useOrderStore,
-  useNotificationStore,
-} from '@/store';
-import { vendorService } from '@/shared/services/vendor';
+import { useVendorStore, useOrderStore } from '@/store';
 import { orderService } from '@/shared/services/orders';
 import {
-  DeliverySummary,
-  TypeDelivery,
   TypeDropOffs,
   TypeEstimatedDelivery,
   TypeEstimatedDeliveryReturnFromApi,
   TypeOrders,
 } from '@/shared/types/orders';
 import {
-  dropOffSchema,
-  pickUpSchema,
   TypeDropOffSchema,
   TypePickUpSchema,
 } from '@/features/orders/validations/order';
@@ -31,24 +17,23 @@ import {
 import { hasValue } from '@/shared/lib/helpers/index';
 import {
   emptyDropOff,
-  usedropOffFormValuesForDropffs,
-  usepickUpFormValuesForPickUp,
+  useDropOffFormValuesForDropOffs,
+  usePickUpFormValuesForPickUp,
 } from '../libs/helpers';
 import { toast } from 'sonner';
+import { getVendorWalletBalanceInit } from '@/store/useWalletStore';
 
-// Custom Hook: useFunctionsDropoffs
+// Custom Hook: useFunctionsDropOffs
 export default function useOrderCreate(
   pickUpForm: ReturnType<typeof useForm<TypePickUpSchema>>,
   dropOffForm: ReturnType<typeof useForm<TypeDropOffSchema>>,
   isCOD: 1 | 2,
   setIsCOD: (cod: 1 | 2) => void,
   isDropIndex: number,
-  setIsDropofIndex: (index: number) => void
+  setIsDropOffIndex: (index: number) => void
 ) {
-  const { user } = useAuthStore();
   const orderStore = useOrderStore();
-  const { currentStatusZoneETPTrend, appConstants } = useSharedStore();
-  const { branchId, vendorId, selectedVendorName } = useVendorStore();
+  const { branchId, vendorId } = useVendorStore();
 
   const pickUpFormValues = pickUpForm.watch();
   const dropOffFormValues = dropOffForm.watch();
@@ -86,8 +71,7 @@ export default function useOrderCreate(
         console.log(res.data, 'EstimatedDeliveryReturnFromApi');
         return res.data;
       }
-    } catch (error) {
-      console.log(error, 'sgfdsg');
+    } catch {
       return undefined;
     }
   };
@@ -100,7 +84,8 @@ export default function useOrderCreate(
       drop_offs: newDropOffs,
       delivery_model: orderStore.deliveryModel.key,
       order_session_id: orderStore.estimatedDelivery?.order_session_id || null,
-      pickup: usepickUpFormValuesForPickUp({
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      pickup: usePickUpFormValuesForPickUp({
         pickUpFormValues: pickUpFormValues,
       }),
     };
@@ -110,7 +95,8 @@ export default function useOrderCreate(
       if (res) {
         useOrderStore.setState((state) => {
           newDropOffs[isDropIndex] = {
-            ...usedropOffFormValuesForDropffs({
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            ...useDropOffFormValuesForDropOffs({
               dropOffFormValues: dropOffFormValues,
               vendorId: vendorId!,
               isCOD: isCOD,
@@ -126,19 +112,19 @@ export default function useOrderCreate(
         console.log(
           'Successfully added and calculated estimate for new drop-off'
         );
+
+        console.log(res.order_session_id);
       }
       return res;
     } catch (error) {
-      console.error('Error in handleAddOneDropoffImproved:', error);
+      console.error('Error in handleAddOneDropOffImproved:', error);
       return undefined;
     }
   };
 
-  const functionsDropoffs = async (
+  const functionsDropOffs = async (
     type:
-      | 'addOneDropoff'
-      | 'editOneDropoff'
-      | 'saveCurrentDropOff'
+      | 'addOneDropOff'
       | 'editDropOffWithSave'
       | 'deleteDropOff'
       | 'order'
@@ -148,11 +134,11 @@ export default function useOrderCreate(
     const isFormValid = await validateFormsAsync();
 
     if (!vendorId) {
-      toast.message('Please Select a vender');
+      toast.message('Please Select a vendor');
       return;
     }
     if (!branchId) {
-      toast.message('Please Select a brach');
+      toast.message('Please Select a branch');
       return;
     }
     if (!isFormValid && type !== 'deleteDropOff' && type !== 'cancel') {
@@ -163,9 +149,10 @@ export default function useOrderCreate(
     }
 
     switch (type) {
-      case 'addOneDropoff':
+      case 'addOneDropOff':
         try {
-          const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const newDropOff: TypeDropOffs = useDropOffFormValuesForDropOffs({
             dropOffFormValues: dropOffFormValues,
             vendorId: vendorId!,
             isCOD: isCOD,
@@ -173,7 +160,8 @@ export default function useOrderCreate(
 
           const newDropOffs = [...orderStore.dropOffs, newDropOff];
 
-          const updatedPickUp = usepickUpFormValuesForPickUp({
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const updatedPickUp = usePickUpFormValuesForPickUp({
             pickUpFormValues: pickUpFormValues,
           });
 
@@ -200,13 +188,14 @@ export default function useOrderCreate(
 
                 updatedDropOffs.push(emptyDropOff as any);
               } else {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 updatedDropOffs.length - 1 <= isDropIndex
                   ? ((updatedDropOffs[isDropIndex] = newDropOff),
                     updatedDropOffs.push(emptyDropOff as any))
                   : updatedDropOffs.push(newDropOff);
               }
 
-              setIsDropofIndex(updatedDropOffs.length - 1);
+              setIsDropOffIndex(updatedDropOffs.length - 1);
               return {
                 ...state,
                 dropOffs: updatedDropOffs,
@@ -223,34 +212,10 @@ export default function useOrderCreate(
             );
           }
         } catch (error) {
-          console.error('Error in handleAddOneDropoffImproved:', error);
+          console.error('Error in handleAddOneDropOffImproved:', error);
         }
         break;
-      case 'editOneDropoff':
-        if (
-          dropOffFormValues &&
-          index >= 0 &&
-          index < orderStore.dropOffs.length
-        ) {
-          const updatedDropOffs = [...orderStore.dropOffs];
 
-          updatedDropOffs[index] = {
-            ...usedropOffFormValuesForDropffs({
-              dropOffFormValues: dropOffFormValues,
-              vendorId: vendorId!,
-              isCOD: isCOD,
-            }),
-          } as any;
-
-          useOrderStore.setState((state) => ({
-            ...state,
-            dropOffs: updatedDropOffs,
-          }));
-        }
-        break;
-      case 'saveCurrentDropOff':
-        await handleSaveCurrentDropOff();
-        break;
       case 'editDropOffWithSave':
         try {
           if (typeof index !== 'number' || isNaN(index)) {
@@ -262,7 +227,7 @@ export default function useOrderCreate(
           const isCurrentFormValid = await validateFormsAsync(); // Validate the form before switching
 
           if (isDropIndex !== index && isCurrentFormValid) {
-            await handleSaveCurrentDropOff(); // Save changes to the currently active dropoff
+            await handleSaveCurrentDropOff(); // Save changes to the currently active dropOff
           }
 
           if (index < 0 || index >= orderStore.dropOffs.length) {
@@ -272,7 +237,7 @@ export default function useOrderCreate(
             return;
           }
 
-          setIsDropofIndex(index);
+          setIsDropOffIndex(index);
           const dropOffData = orderStore.dropOffs[index];
 
           if (!dropOffData) {
@@ -287,6 +252,75 @@ export default function useOrderCreate(
           console.error('Error loading drop-off for editing:', error);
         }
         break;
+
+      case 'order':
+        try {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const newDropOff: TypeDropOffs = useDropOffFormValuesForDropOffs({
+            dropOffFormValues: dropOffFormValues,
+            vendorId: vendorId!,
+            isCOD: isCOD,
+          });
+
+          const isSaved = orderStore.dropOffs.find(
+            (item) => item.order_index === newDropOff.order_index
+          );
+          const newDropOffs = isSaved
+            ? orderStore.dropOffs
+            : [...orderStore.dropOffs, newDropOff].filter(
+                (item) => item.customer_name
+              );
+
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const updatedPickUp = usePickUpFormValuesForPickUp({
+            pickUpFormValues: pickUpFormValues,
+          });
+
+          const estimatedDeliveryData: TypeEstimatedDelivery = {
+            branch_id: branchId!,
+            vendor_id: vendorId!,
+            drop_offs: newDropOffs,
+            delivery_model: orderStore.deliveryModel.key,
+            order_session_id:
+              orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
+              null,
+            pickup: updatedPickUp,
+          };
+
+          const res = await updateCalculateDeliveryEstimate(
+            estimatedDeliveryData!
+          );
+
+          if (res) {
+            const orders: TypeOrders = {
+              branch_id: res.branch_id,
+              vendor_id: res.vendor_id!,
+              order_session_id:
+                orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
+                res.order_session_id!,
+              pick_up: updatedPickUp,
+              drop_offs: newDropOffs,
+            };
+
+            try {
+              const createOrderRes =
+                await orderService.createOnDemandOrders(orders);
+
+              //TODO: Show success alert message and clear form fields
+              console.log(createOrderRes, 'orders');
+
+              toast.success('Successfully added Your Order');
+              getVendorWalletBalanceInit();
+              functionsDropOffs('cancel');
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        } catch (error) {
+          console.error(error, type);
+        }
+        break;
+
       case 'deleteDropOff':
         try {
           if (orderStore.dropOffs.length <= 1) {
@@ -323,73 +357,17 @@ export default function useOrderCreate(
 
           // Handle editing index adjustment
           if (isDropIndex === index) {
-            setIsDropofIndex(0); // If deleted current, switch to first
+            setIsDropOffIndex(0); // If deleted current, switch to first
             const firstDropOff = orderStore.dropOffs[0];
             if (firstDropOff) {
               dropOffForm.reset(firstDropOff);
             }
           } else if (isDropIndex > index) {
-            setIsDropofIndex(isDropIndex - 1);
+            setIsDropOffIndex(isDropIndex - 1);
           }
           console.log(`Successfully deleted drop-off at index ${index}`);
         } catch (error) {
           console.error('Error deleting drop-off:', error);
-        }
-        break;
-
-      case 'order':
-        try {
-          const newDropOff: TypeDropOffs = usedropOffFormValuesForDropffs({
-            dropOffFormValues: dropOffFormValues,
-            vendorId: vendorId!,
-            isCOD: isCOD,
-          });
-
-          const newDropOffs = [...orderStore.dropOffs, newDropOff];
-
-          const updatedPickUp = usepickUpFormValuesForPickUp({
-            pickUpFormValues: pickUpFormValues,
-          });
-
-          const estimatedDeliveryData: TypeEstimatedDelivery = {
-            branch_id: branchId!,
-            vendor_id: vendorId!,
-            drop_offs: newDropOffs,
-            delivery_model: orderStore.deliveryModel.key,
-            order_session_id:
-              orderStore.estimatedDeliveryReturnFromApi?.order_session_id ||
-              null,
-            pickup: updatedPickUp,
-          };
-
-          const res = await updateCalculateDeliveryEstimate(
-            estimatedDeliveryData!
-          );
-
-          if (res) {
-            const orders: TypeOrders = {
-              branch_id: res.branch_id!,
-              vendor_id: res.vendor_id!,
-              order_session_id: res.order_session_id!,
-              pick_up: res.pickup!,
-              drop_offs: res.drop_offs!,
-            };
-
-            try {
-              const createOrderRes =
-                await orderService.createOnDemandOrders(orders);
-
-              //TODO: Show success alert message and clear form fields
-              console.log(createOrderRes, 'orders');
-
-              toast.message('Successfully added Your Order');
-              functionsDropoffs('cancel');
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        } catch (error) {
-          console.error(error, type);
         }
         break;
 
@@ -398,6 +376,7 @@ export default function useOrderCreate(
           dropOffs: [],
           estimatedDelivery: undefined,
           deliverySummary: undefined,
+          estimatedDeliveryReturnFromApi: undefined,
         });
         dropOffForm.reset(emptyDropOff);
         dropOffForm.clearErrors();
@@ -412,5 +391,5 @@ export default function useOrderCreate(
     }
   };
 
-  return { functionsDropoffs, validateFormsAsync };
+  return { functionsDropOffs, validateFormsAsync };
 }

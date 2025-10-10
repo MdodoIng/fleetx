@@ -20,7 +20,7 @@ export function WalletBalance({
   const { vendorId, branchId, selectedBranch, selectedVendor } =
     useVendorStore();
 
-  const isLowBalence = Number(walletBalance) < 3;
+  const isLowBalance = Number(walletBalance) < 3;
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -43,7 +43,7 @@ export function WalletBalance({
           <p className="text-3xl font-bold mt-2">
             {walletBalance} {sharedStore.appConstants?.currency}
           </p>
-          {isLowBalence && (
+          {isLowBalance && (
             <p className="text-sm mt-1">
               {t.rich('lowBalanceAlert', {
                 br: () => <br />,

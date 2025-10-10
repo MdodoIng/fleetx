@@ -1,7 +1,6 @@
 // Icon components
 export { ActiveOrdersIcon } from './ActiveOrdersIcon';
 export { NewOrderIcon } from './NewOrderIcon';
-export { MyWalletIcon } from './MyWalletIcon';
 export { HistoryIcon } from './HistoryIcon';
 export { BulkInsightsIcon } from './BulkInsightsIcon';
 export { IntegrationsIcon } from './IntegrationsIcon';
@@ -15,8 +14,6 @@ export { OverviewIcon } from './OverviewIcon';
 export {
   iconMap,
   getIconComponent,
-  defaultIconConfigs,
-  getDefaultIconProps,
   colorSchemes,
   getColorFromScheme,
   isValidIconType,
@@ -41,7 +38,17 @@ export type SidebarIconType =
   | 'chartBar'
   | 'star'
   | 'chartNoAxesGantt'
-  | 'settings';
+  | 'settings'
+  | 'walletCards'
+  | 'chartPie'
+  | 'layoutDashboard'
+  | 'chartSpline'
+  | 'fileChartColumn'
+  | 'chartScatter'
+  | 'chartLine'
+  | 'chartCandlestick'
+  | 'funnel'
+  | 'handCoins';
 
 export interface SidebarIconProps {
   width?: number;

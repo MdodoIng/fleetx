@@ -1,11 +1,11 @@
 'use client';
 
-import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
-import ProtectedLayout from '@/shared/components/Layout/ProtectedLayout';
-import { useSharedStore } from '@/store';
-import { setUserLocale } from '@/shared/services/locale';
-import { useEffect } from 'react';
 import { defaultLocale } from '@/locales/config';
+import ProtectedLayout from '@/shared/components/Layout/ProtectedLayout';
+import { withAuth } from '@/shared/components/Layout/ProtectedLayout/withAuth';
+import { setUserLocale } from '@/shared/services/locale';
+import { useSharedStore } from '@/store';
+import { useEffect } from 'react';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { showLanguage } = useSharedStore();

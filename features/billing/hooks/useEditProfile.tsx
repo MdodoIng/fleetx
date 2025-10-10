@@ -50,8 +50,8 @@ export default function useEditProfile() {
             taxIdentificationNumber: res.data.tin || '',
           });
         }
-      } catch (err) {
-        toast.error(err.message || 'Failed to fetch billing information.');
+      } catch (err: any) {
+        console.log(err.message || 'Failed to fetch billing information.');
       }
     };
 

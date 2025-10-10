@@ -3,9 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { funnelStage } from '@/shared/constants/storageConstants';
 import { orderService } from '@/shared/services/orders';
 import { reportService } from '@/shared/services/report';
-import { FunnelRow, FunnelType, User, Zone } from '../types/useSalesFunnel';
-import { useFilterAndGroup } from './useFilterAndGroup';
-import userService from '@/shared/services/user';
+import { FunnelRow, FunnelType, Zone } from '../types/useSalesFunnel';
+
 
 export function useSalesFunnel() {
   const [types] = useState<FunnelType[]>([
@@ -136,18 +135,23 @@ export function useSalesFunnel() {
           (u) => u.funnel_stage === funnelStage.NoOrderHasWalletRetained
         );
         col5 = filtered.filter(
+          // @ts-ignore
           (u) => u.funnel_stage === funnelStage.PotentialChurn
         );
         break;
       case 4:
+        // @ts-ignore
         col1 = filtered.filter((u) => u.funnel_stage === funnelStage.Churned);
+        // @ts-ignore
         col2 = filtered.filter((u) => u.funnel_stage === funnelStage.Contacted);
         col3 = filtered.filter(
+          // @ts-ignore
           (u) => u.funnel_stage === funnelStage.ReActivating
         );
         col4 = filtered.filter(
           (u) => u.funnel_stage === funnelStage.ReActivated
         );
+        // @ts-ignore
         col5 = filtered.filter((u) => u.funnel_stage === funnelStage.Dormant);
         break;
     }

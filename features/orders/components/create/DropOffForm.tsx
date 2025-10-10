@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/card';
+import { CardContent } from '@/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -15,21 +10,18 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input, InputPhone } from '@/shared/components/ui/input';
-import { Control, useFieldArray, UseFormReturn } from 'react-hook-form';
 import { useEffect } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
+import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
+import BinaryToggle from '@/shared/components/ui/binaryToggle';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
-import { Dispatch, SetStateAction } from 'react';
-import { M_PLUS_1p } from 'next/font/google';
-import { TypeDropOffSchema } from '../../validations/order';
-import AddressLandmarkFields from '@/shared/components/selectors/InputSearch';
-import { useTranslations } from 'next-intl';
-import { DollarSign, Info } from 'lucide-react';
 import { useSharedStore } from '@/store';
-import { Switch } from '@/shared/components/ui/switch';
-import BinaryToggle from '@/shared/components/ui/binaryToggle';
-import { is } from 'zod/v4/locales';
+import { DollarSign, Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Dispatch, SetStateAction } from 'react';
+import { TypeDropOffSchema } from '../../validations/order';
 
 interface SenderFormProps {
   recipientForm: UseFormReturn<TypeDropOffSchema>;
@@ -38,7 +30,7 @@ interface SenderFormProps {
   orderIndex?: number;
 }
 
-const DropoffForm: React.FC<SenderFormProps> = ({
+const DropOffForm: React.FC<SenderFormProps> = ({
   recipientForm,
   isCOD,
   setIsCOD,
@@ -52,6 +44,7 @@ const DropoffForm: React.FC<SenderFormProps> = ({
     if (orderIndex !== undefined) {
       recipientForm.setValue('order_index', orderIndex.toString());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderIndex]);
   return (
     <Form {...recipientForm}>
@@ -233,4 +226,4 @@ const DropoffForm: React.FC<SenderFormProps> = ({
   );
 };
 
-export default DropoffForm;
+export default DropOffForm;

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Eye, Star, Smartphone, Truck, Users } from 'lucide-react';
+import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
+import { RatingFallback } from '@/shared/components/fetch/fallback';
+import { Button } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -14,22 +15,21 @@ import {
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { Button } from '@/shared/components/ui/button';
-import { rateService } from '@/shared/services/rate';
-import {
-  OverallRatingType,
-  TypeGetDashBoardResponce,
-} from '@/shared/types/rate';
-import { cn } from '@/shared/lib/utils';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import RateImproveBuddies from '@/features/rating/components/RateImproveBuddies';
+import { cn } from '@/shared/lib/utils';
+import { rateService } from '@/shared/services/rate';
+import {
+  OverallRatingType,
+  TypeGetDashBoardResponse,
+} from '@/shared/types/rate';
+import { Eye, Smartphone, Star, Truck, Users } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { RatingFallback } from '@/shared/components/fetch/fallback';
 
 // Improvement categories
 const IMPROVEMENT_CATEGORIES = [
@@ -41,7 +41,7 @@ const IMPROVEMENT_CATEGORIES = [
 
 export default function RatingPage() {
   const [ratingData, setRatingData] = useState<
-    TypeGetDashBoardResponce['data']
+    TypeGetDashBoardResponse['data']
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export default function RatingPage() {
   const [modalData, setModalData] = useState<{
     improvementType: number;
     resBuddyList: { data: any[]; count: number };
-  } | null>(null);
+  } | any>(null);
 
   // Helper function to find rating value and convert to number
   const findRatingValue = (type: OverallRatingType): number => {
@@ -127,7 +127,7 @@ export default function RatingPage() {
                         className={cn(
                           'flex items-center justify-between p-4 rounded-2xl',
                           index % 2 === 1 &&
-                            'bg-gradient-to-r from-gray-50/40 to-blue-50/40'
+                          'bg-gradient-to-r from-gray-50/40 to-blue-50/40'
                         )}
                       >
                         <div className="flex items-center space-x-3 w-full">

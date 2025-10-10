@@ -273,7 +273,7 @@ export type TypeRootLiveOrderList = {
   NEXT_SET_ITEMS_TOKEN?: number[];
 };
 
-export type TypeRootLiveBuilkOrderListInsights = {
+export type TypeRootLiveBulkOrderListInsights = {
   data: {
     orders_list: any[];
     insights: {
@@ -517,7 +517,7 @@ export interface TypeUpdateAddressReq {
   street_id: number;
   address: string;
 }
-export type TypeUpdateAddressResponce = {
+export type TypeUpdateAddressResponse = {
   data: {
     order_number: string;
     status: number;
@@ -600,7 +600,7 @@ export interface TypeUpdatePaymentReq {
   amount_to_collect: number;
 }
 
-export interface TypeZoneResponce {
+export interface TypeZoneResponse {
   data: TypeZoneData[];
 }
 
@@ -762,4 +762,13 @@ export interface TypeOrderInfoResponse {
     };
     ratings: any[];
   };
+}
+
+
+export type DeliverySummary = {
+  totalOrders: number;
+  totalDelivery: string;
+  totalKM: string;
+  deliveryModel: string;
+  estTime: number;
 }

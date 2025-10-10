@@ -1,10 +1,10 @@
 'use client';
+import Export from '@/shared/components/Export';
 import { TableFallback } from '@/shared/components/fetch/fallback';
 import LoadMore from '@/shared/components/fetch/LoadMore';
 import NoData from '@/shared/components/fetch/NoData';
 import SearchableSelect from '@/shared/components/selectors';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import { Button } from '@/shared/components/ui/button';
 import {
   Dashboard,
   DashboardContent,
@@ -21,7 +21,6 @@ import {
   TableSingleListContents,
   TableSingleListContentTitle,
 } from '@/shared/components/ui/tableList';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { paymentService } from '@/shared/services/payment';
 import { vendorService } from '@/shared/services/vendor';
 import {
@@ -33,7 +32,6 @@ import { format } from 'date-fns';
 import {
   Axis3dIcon,
   Columns,
-  Download,
   LucideProps,
   MagnetIcon,
   Notebook,
@@ -46,19 +44,6 @@ import { useEffect, useState, type JSX } from 'react';
 
 function ManualReport(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All Orders');
-  const [ordernNumber, setOrdernNumber] = useState('');
-
-  const [isEditDetails, setIsEditDetails] = useState(false);
-
-  const [searchOrder, setSearchOrder] = useState('');
-  const [searchCustomer, setSearchCustomer] = useState('');
-  const [searchDriver, setSearchDriver] = useState('');
-
-  const [selectedSorting, setSelectedSorting] = useState<string | undefined>(
-    undefined
-  );
-
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(10);
   const [nextSetItemTotal, setNextSetItemTotal] = useState<any>();
@@ -173,8 +158,6 @@ function ManualReport(): JSX.Element {
     return format(date, 'dd MMM yyyy hh:mm a');
   };
 
-  const { exportOrdersToCSV } = useTableExport();
-
   if (isLoading) return <TableFallback />;
 
   return (
@@ -193,26 +176,15 @@ function ManualReport(): JSX.Element {
             />
           </div>
           <SearchableSelect
+            // @ts-ignore
             options={TypePayment}
             value={paymentType}
             onChangeAction={setPaymentType}
           />
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            onClick={() =>
-              exportOrdersToCSV(
-                tableData,
-                'manual_payment_history',
-                `manual_payment_history_${date?.from ? format(date.from, 'yyyy-MM-dd') : ''}_${
-                  date?.to ? format(date.to, 'yyyy-MM-dd') : ''
-                }`
-              )
-            }
-            className="max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+
+          <Export data={data!} title="manual_payment_history" />
         </div>
       </DashboardHeader>
       <DashboardContent>

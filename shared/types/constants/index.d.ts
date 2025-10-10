@@ -2,7 +2,7 @@ import { SidebarIconType } from '@/shared/components/icons/layout';
 import { UserRole } from '../user';
 
 export interface MenuItem {
-  labelKey: string;
+  labelKey: any;
   route?: string;
   roles?: UserRole[];
   icon?: SidebarIconType;

@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { mashkorMap } from '@/shared/constants/mapStyle';
 import {
   GoogleMap,
   Marker,
-  useJsApiLoader,
   Polyline,
+  useJsApiLoader,
 } from '@react-google-maps/api';
-import { environment } from '@/environments/environment';
-import { mashkorMap } from '@/shared/constants/mapStyle';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const containerStyle = {
   width: '100%',
@@ -39,7 +38,7 @@ export default function MyMap({
   dropoffIcon = '/images/dropoffIcon.png',
 }: Props) {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: environment.GOOGLE_KEY!,
+    googleMapsApiKey: process.env.GOOGLE_KEY!,
   });
 
   const mapRef = useRef<google.maps.Map | null>(null);

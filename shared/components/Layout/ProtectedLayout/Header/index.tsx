@@ -3,16 +3,18 @@ import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { useTranslations } from 'next-intl';
 import LocaleSwitcher from '../../LocaleSwitcher';
 
-import Notification from './Notification';
+import hamburgerIon from '@/assets/icons/hamburger.svg';
+import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import main_padding from '@/styles/padding';
+import Notification from './Notification';
 import Profile from './Profile';
-import logoCollapsed from '@/assets/images/logo white Collapsed.webp';
-import hamburgerIon from '@/assets/icons/hamburger.svg';
 
-import Image from 'next/image';
 import UserAndBranchSelector from '@/shared/components/selectors/UserAndBranchSelector';
+import { routes } from '@/shared/constants/routes';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () => {
   const { user } = useAuthStore();
@@ -23,11 +25,28 @@ const Header: React.FC = () => {
     setValue: setValueVendorStore,
     vendorList: vendorList,
   } = useVendorStore();
+  const pathname = usePathname();
 
   const { setValue: setSharedStore } = useSharedStore();
+  const routesForHideUserAndBranchSelector = [
+    routes.VENDOR_ADD.path,
+    routes.VENDOR_ACCOUNT_MANAGER.path,
+    routes.INSIGHTS_OVERVIEW.path,
+    routes.INSIGHTS_CHURN_REASONS.path,
+    routes.INSIGHTS_FIRST_ORDER.path,
+    routes.INSIGHTS_AFF_REFERRALS.path,
+    routes.INSIGHTS_USER_REFERRALS.path,
+    routes.RATING.path,
+  ];
+
+  const hideUserAndBranchSelector = routesForHideUserAndBranchSelector.some(
+    (item) => pathname.startsWith(item) && pathname.endsWith(item)
+  );
 
   const t = useTranslations('component.common.header');
-  const isAccess = isVendorAccess || isBranchAccess;
+  const isAccess = hideUserAndBranchSelector
+    ? false
+    : isVendorAccess || isBranchAccess;
   const handleClickBranch = (e: string | undefined) => {
     const branch = branchDetails?.find((r) => r.id === e);
     setValueVendorStore('selectedBranch', branch);

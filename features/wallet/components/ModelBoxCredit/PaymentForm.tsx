@@ -159,7 +159,7 @@ const PaymentForm = ({
                   <FormItem>
                     <Label htmlFor="amount">
                       {t('component.features.orders.create.form.amount.label', {
-                        value: sheredStore.appConstants?.currency,
+                        value: sheredStore.appConstants?.currency!,
                       })}
                     </Label>
                     <FormControl>
@@ -168,9 +168,9 @@ const PaymentForm = ({
                         placeholder={t.rich(
                           'component.features.orders.create.form.amount.placeholder',
                           {
-                            value: sheredStore.appConstants?.currency,
+                            value: sheredStore.appConstants?.currency!,
                           }
-                        )}
+                        ) as string}
                         type="number"
                         {...field}
                         onChange={(e) => {
@@ -290,9 +290,9 @@ const PaymentForm = ({
                     placeholder={t.rich(
                       'component.features.orders.create.form.amount.placeholder',
                       {
-                        value: sheredStore.appConstants?.currency,
+                        Value: sheredStore.appConstants?.currency!,
                       }
-                    )}
+                    ) as string}
                     className="flex-1 border-blue-500 focus-visible:ring-blue-500"
                   />
                   <span className="text-sm font-semibold text-gray-600">
@@ -340,7 +340,7 @@ const PaymentForm = ({
       {/* Footer Note */}
       <p className="mt-4 text-sm text-dark-grey/70 text-center">
         {t.rich('component.features.wallet.deliveryCharge', {
-          value: sheredStore.appConstants?.currency,
+          value: sheredStore.appConstants?.currency!,
         })}
       </p>
 

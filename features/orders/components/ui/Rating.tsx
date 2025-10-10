@@ -38,7 +38,7 @@ const RATE_REASONS = [
 ];
 
 interface RatingProps {
-  order: TypeOrderHistoryList;
+  order: TypeOrderHistoryList & { completed_at?: any };
   onChange?: (rating: number) => void;
 }
 
@@ -54,7 +54,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [feedback, setFeedback] = useState<number | null>();
   const [isFeedback, setIsFeedback] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [isShowSuccess, setIsShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -124,7 +124,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
 
   const handleRatingClick = (value: number) => {
     setSelectedRating(value);
-    setErrorMessage(null);
+    setErrorMessage(undefined);
 
     if (value < MIN_RATE_FOR_FEEDBACK) {
       setIsFeedback(true);
@@ -136,7 +136,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
 
   const handleFeedbackChange = (value: number) => {
     setFeedback(value);
-    setErrorMessage(null);
+    setErrorMessage(undefined);
   };
 
   const validateAndSubmit = () => {
@@ -169,7 +169,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
       // Update local state and cache
       setRating(selectedRating);
       const improvementName = feedback
-        ? RATE_REASONS.find((r) => r.id.toString() === feedback)?.name
+        ? RATE_REASONS.find((r) => r.id === feedback)?.name
         : '';
       const newImprovements = improvementName ? [improvementName] : [];
       setImprovements(newImprovements);
@@ -204,9 +204,9 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const resetDialog = () => {
     setSelectedRating(0);
     setHoveredRating(0);
-    setFeedback('');
+    setFeedback(undefined);
     setIsFeedback(false);
-    setErrorMessage('');
+    setErrorMessage(undefined);
     setIsShowSuccess(false);
   };
 
@@ -363,7 +363,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
                     What can we improve?
                   </h5>
 
-                  <Select onValueChange={handleFeedbackChange} value={feedback}>
+                  <Select onValueChange={handleFeedbackChange as any} value={feedback?.toString()}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select feedback category" />
                     </SelectTrigger>

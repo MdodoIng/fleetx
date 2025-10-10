@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { environment } from '@/environments/environment';
 import { commonMessages } from '../constants/commonMessages';
 
 interface FCWidget {
@@ -34,7 +33,7 @@ export function useFreshChat(authUser: any, userDetails: any) {
 
   useEffect(() => {
     if (!scriptLoaded.current) {
-      const src = `${environment.FRESHCHAT_URL}/js/widget.js?t=${Date.now()}`;
+      const src = `${process.env.FRESHCHAT_URL}/js/widget.js?t=${Date.now()}`;
       const script = document.createElement('script');
       script.src = src;
       script.async = true;
@@ -55,8 +54,8 @@ export function useFreshChat(authUser: any, userDetails: any) {
 
   function initWidget() {
     const data: any = {
-      token: environment.FRESHCHAT_TOKEN,
-      host: environment.FRESHCHAT_URL,
+      token: process.env.FRESHCHAT_TOKEN,
+      host: process.env.FRESHCHAT_URL,
       locale:
         typeof window !== 'undefined' ? localStorage.getItem('lang') : 'en',
       config: {

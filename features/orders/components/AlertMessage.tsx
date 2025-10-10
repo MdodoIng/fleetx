@@ -1,7 +1,7 @@
-import { Clock } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import main_padding from '@/styles/padding';
 import { useNotificationStore } from '@/store';
+import main_padding from '@/styles/padding';
+import { Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
@@ -21,15 +21,15 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
   if (!shouldShowMessage) return null;
 
   const MessageComp = () => (
-    <>
+    <div className="shrink-0 flex items-center gap-3">
       {!full_day_operational ? (
         <>
-          <Clock className="text-dark-grey/50 w-6 h-6 flex-shrink-0" />
+          <Clock className="text-dark-grey/50 size-4 flex-shrink-0" />
           <div className="flex items-center gap-1 flex-wrap">
             <p className="text-dark-grey/50 whitespace-nowrap">
-              {t('service-hours')}:
+              {t('service-hours')}
             </p>
-            <p className="text-dark-grey font-medium">
+            <p className="text-dark-grey ">
               {operationalStartTime} – {operationalEndTime}
             </p>
             {warningMessage?.message && (
@@ -49,7 +49,7 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
           </p>
         )
       )}
-    </>
+    </div>
   );
 
   return (
@@ -57,7 +57,7 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
       {type === 'mobile' && (
         <div
           className={cn(
-            'w-full mx-auto lg:hidden bg-[#FDFDD4] py-3 flex items-center justify-center gap-2',
+            'w-full mx-auto lg:hidden bg-[#FDFDD4] py-3 flex items-center justify-center gap-2  overflow-x-auto  hide-scrollbar',
             main_padding.dashboard.x
           )}
         >
@@ -67,7 +67,7 @@ export default function AlertMessage({ type }: { type: 'laptop' | 'mobile' }) {
       {type === 'laptop' && (
         <div
           className={cn(
-            'max-lg:hidden bg-[#FDFDD4] py-1 px-2 rounded-full border border-[#2828281A] flex items-center justify-center gap-2 min-h-[32px]'
+            'max-lg:hidden bg-[#FDFDD4] py-1 px-2 rounded-full border border-[#2828281A] flex items-center justify-center gap-2 text-sm overflow-x-auto max-w-[600px] hide-scrollbar'
           )}
         >
           <MessageComp />

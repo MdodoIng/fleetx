@@ -1,24 +1,24 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { cn } from '@/shared/lib/utils';
-import { reportService } from '@/shared/services/report';
-import { CHURN_REASONS } from '@/shared/constants/storageConstants';
+import { InsightsFallback } from '@/shared/components/fetch/fallback';
 import DateSelect from '@/shared/components/selectors/DateSelect';
-import {
-  Dashboard,
-  DashboardContent,
-  DashboardHeader,
-  DashboardHeaderRight,
-} from '@/shared/components/ui/dashboard';
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
 } from '@/shared/components/ui/card';
+import {
+  Dashboard,
+  DashboardContent,
+  DashboardHeader,
+  DashboardHeaderRight,
+} from '@/shared/components/ui/dashboard';
+import { CHURN_REASONS } from '@/shared/constants/storageConstants';
+import { cn } from '@/shared/lib/utils';
+import { reportService } from '@/shared/services/report';
+import { useCallback, useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { InsightsFallback } from '@/shared/components/fetch/fallback';
 
 interface ChurnReason {
   reason: string;

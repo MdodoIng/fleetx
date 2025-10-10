@@ -23,7 +23,7 @@ export type TypeWalletTransactionHistoryRes = {
   NEXT_SET_ITEMS_TOKEN: [number, string] | null;
 };
 
-export type TypBranchWalletBalanceReportRes = {
+export type TypeBranchWalletBalanceReportRes = {
   data: [
     {
       created_at: string;
@@ -72,7 +72,7 @@ export interface TypeZoneGrowth {
   year: number;
 }
 
-export interface TypeZoneGrowthResponce {
+export interface TypeZoneGrowthResponse {
   data: TypeZoneGrowth[];
 }
 
@@ -91,11 +91,11 @@ export interface TypeDashboardInsight {
   reactivated_funnel_count: number;
 }
 
-export interface TypeDashboardInsightResponce {
+export interface TypeDashboardInsightResponse {
   data: TypeDashboardInsight;
 }
 
-export type TypeSalesFunnelRetentionRespose = {
+export type TypeSalesFunnelRetentionResponse = {
   data: {
     funnel_users: [];
     repeated_churn: [];

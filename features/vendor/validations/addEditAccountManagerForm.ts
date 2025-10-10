@@ -9,12 +9,16 @@ export const addEditAccountManagerSchema = z.object({
     .string()
     .optional()
     .or(z.literal(''))
-    .refine((val) => val === '' || /^[^\s].*/.test(val), 'Invalid format'),
+    .refine((val: any) => val === '' || /^[^\s].*/.test(val), {
+      message: 'Invalid format',
+    }),
   email: z.string().email('Invalid email address').min(1, 'Email is required'),
   phone: z
     .string()
-    .min(1, 'Phone is required')
-    .regex(/^\d{9,15}$/, 'Invalid phone number'),
+    .min(8, 'Phone is required')
+    .max(8, 'Phone is required')
+    .regex(/^\d+$/, 'Invalid phone number'),
+
   password: z
     .string()
     .min(6, 'Password must be at least 6 characters')

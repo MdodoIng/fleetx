@@ -39,7 +39,7 @@ export type OverallRatingType =
   | 'ImprovementType_3'
   | 'ImprovementType_4';
 
-export interface TypeGetDashBoardResponce {
+export interface TypeGetDashBoardResponse {
   data: {
     overall_rating_type: OverallRatingType;
     value: string;

@@ -1,17 +1,9 @@
-import {
-  MapPin,
-  Truck,
-  Clock,
-  Coins,
-  LocateFixed,
-  DollarSign,
-  MapPinned,
-} from 'lucide-react';
+import { Clock, DollarSign, LocateFixed, MapPinned } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { useOrderStore } from '@/store';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent } from '@/shared/components/ui/card';
 import { Fragment } from 'react';
 export default function DeliverySummaryFooter({
   handleOrder,
@@ -32,22 +24,22 @@ export default function DeliverySummaryFooter({
   const data = [
     {
       icon: <MapPinned className="w-4 h-4 text-gray-500" />,
-      text: totalKM,
+      text: totalKM || '0km',
       label: t('distance'),
     },
     {
       icon: <LocateFixed className="w-4 h-4 text-gray-500" />,
-      text: totalOrders,
+      text: totalOrders || 0,
       label: t('drop-off'),
     },
     {
       icon: <Clock className="w-4 h-4 text-gray-500" />,
-      text: estTime ? estTime + ' ' + t('min') : '',
+      text: estTime ? estTime + ' ' + t('min') : '0' + ' ' + t('min'),
       label: t('estTime'),
     },
     {
       icon: <DollarSign className="w-4 h-4 text-gray-500" />,
-      text: totalDelivery,
+      text: totalDelivery || 0,
       label: t('deliveryFee'),
     },
   ];

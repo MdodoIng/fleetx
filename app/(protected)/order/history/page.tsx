@@ -4,7 +4,6 @@ import {
   Clock,
   CreditCard,
   Dot,
-  Download,
   Info,
   MapPin,
   Navigation,
@@ -16,14 +15,18 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-  TypeLiveOrderItem,
-  TypeRootLiveOrderList,
-} from '@/shared/types/orders';
-import { useOrderStore } from '@/store/useOrderStore';
-import { useSharedStore, useVendorStore } from '@/store';
-import { Button } from '@/shared/components/ui/button';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
+import EditPayment from '@/features/orders/components/ui/EditPayment';
+import EditReceiver from '@/features/orders/components/ui/EditReceiver';
+import Rating from '@/features/orders/components/ui/Rating';
+import { paymentMap } from '@/features/orders/constants';
+import Export from '@/shared/components/Export';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
+import SearchableSelect from '@/shared/components/selectors';
+import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
+import DateSelect from '@/shared/components/selectors/DateSelect';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import {
   Dashboard,
   DashboardContent,
@@ -31,10 +34,10 @@ import {
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
 import { Input } from '@/shared/components/ui/input';
-import { useTranslations } from 'next-intl';
 import {
   Table,
   TableLists,
+  TableSingleList,
   TableSingleListContent,
   TableSingleListContentDetailsItem,
   TableSingleListContentDetailsTitle,
@@ -43,20 +46,15 @@ import {
   TableSingleListHeader,
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
-  TableSingleList,
 } from '@/shared/components/ui/tableList';
-import EditResiver from '@/features/orders/components/ui/EditResiver';
-import { paymentMap } from '@/features/orders/constants';
-import EditPayment from '@/features/orders/components/ui/EditPayment';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import SearchableSelect from '@/shared/components/selectors';
-import DateSelect from '@/shared/components/selectors/DateSelect';
+import {
+  TypeLiveOrderItem,
+  TypeRootLiveOrderList,
+} from '@/shared/types/orders';
+import { useSharedStore, useVendorStore } from '@/store';
+import { useOrderStore } from '@/store/useOrderStore';
+import { useTranslations } from 'next-intl';
 import { DateRange } from 'react-day-picker';
-import Rating from '@/features/orders/components/ui/Rating';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import AccountManagerSelect from '@/shared/components/selectors/AccountManagerSelect';
-import LoadMore from '@/shared/components/fetch/LoadMore';
-import NoData from '@/shared/components/fetch/NoData';
 
 export default function OrderTrackingDashboard() {
   const { setSourceForTable, orderHistoryListData } = useOrderStore();
@@ -139,8 +137,6 @@ export default function OrderTrackingDashboard() {
     fetchOrderDetails();
   }, [fetchOrderDetails]);
 
-  const { exportOrdersToCSV } = useTableExport();
-
   const t = useTranslations();
 
   const sortOptions = [
@@ -203,14 +199,16 @@ export default function OrderTrackingDashboard() {
           )}
 
           <DateSelect value={date} onChangeAction={setDate} />
-          <Button
-            onClick={() =>
-              exportOrdersToCSV(orderHistoryListData!, 'order history')
-            }
-            className=" max-sm:w-full"
-          >
-            <Download className="w-5 h-5" /> Export
-          </Button>
+          <Export
+            data={orderHistoryListData!}
+            title="order history"
+            exclude={[
+              'is_delivery_address_edit_enabled',
+              'is_addr_last_updated_by_customer',
+              'isSyncShow',
+              'class_status',
+            ]}
+          />
         </div>
       </DashboardHeader>
       <DashboardContent>
@@ -288,7 +286,7 @@ export default function OrderTrackingDashboard() {
                         <MapPin size={12} /> {item.to}
                       </TableSingleListContentDetailsItem>
                       {item.is_delivery_address_edit_enabled && (
-                        <EditResiver
+                        <EditReceiver
                           data={item}
                           fetchOrderDetails={fetchOrderDetails}
                         />

@@ -71,7 +71,7 @@ export default function SearchableSelect({
       className={cn(
         'relative sm:w-[180px]  max-sm:w-full  rounded-[8px] text-dark-grey',
         className,
-        isLoading && 'animate-pulse'
+        isLoading && 'animate-pulse pointer-events-none'
       )}
     >
       <Input

@@ -3,35 +3,35 @@ import { orderService } from '@/shared/services/orders';
 import { Grid, List, Search } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 
-import GridComponent from '@/features/orders/components/Livelist/GridComponent';
-import ListComponent from '@/features/orders/components/Livelist/ListComponent';
+import GridComponent from '@/features/orders/components/LiveList/GridComponent';
+import ListComponent from '@/features/orders/components/LiveList/ListComponent';
+import TableComponent from '@/features/orders/components/LiveList/TableComponent';
 import { useOrderStatusHistory } from '@/features/orders/hooks/useOrderStatusHistory';
-import {
-  TypeOrderHistoryList,
-  TypeRootLiveOrderList,
-} from '@/shared/types/orders';
-import { useOrderStore } from '@/store/useOrderStore';
-import { useAuthStore, useVendorStore } from '@/store';
-import TableComponent from '@/features/orders/components/Livelist/TableComponent';
-import { Input } from '@/shared/components/ui/input';
+import { TableFallback } from '@/shared/components/fetch/fallback';
+import NoData from '@/shared/components/fetch/NoData';
+import DriverSelect from '@/shared/components/selectors/DriverSelect';
 import {
   Dashboard,
   DashboardContent,
   DashboardHeader,
   DashboardHeaderRight,
 } from '@/shared/components/ui/dashboard';
-import { useTranslations } from 'next-intl';
-import { cn } from '@/shared/lib/utils';
+import { Input } from '@/shared/components/ui/input';
 import useMediaQuery from '@/shared/lib/hooks/useMediaQuery';
-import DriverSelect from '@/shared/components/selectors/DriverSelect';
-import { TableFallback } from '@/shared/components/fetch/fallback';
-import NoData from '@/shared/components/fetch/NoData';
+import { cn } from '@/shared/lib/utils';
+import {
+  TypeOrderHistoryList,
+  TypeRootLiveOrderList,
+} from '@/shared/types/orders';
+import { useAuthStore, useVendorStore } from '@/store';
+import { useOrderStore } from '@/store/useOrderStore';
+import { useTranslations } from 'next-intl';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [ordernNumber, setOrdernNumber] = useState('');
+  const [orderNumber, setOrderNumber] = useState('');
   const [page, setPage] = useState(10);
-  const [isStyleTabel, setIsStyleTabel] = useState<'grid' | 'list'>('grid');
+  const [isStyleTable, setIsStyleTable] = useState<'grid' | 'list'>('grid');
   const [nextSetItemsToken, setNextSetItemsToken] = useState<number | null>();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +51,7 @@ export default function OrderTrackingDashboard() {
     return orderService.getOrderStatusUrl(
       1,
       isEditDetails ? page : null,
-      ordernNumber,
+      orderNumber,
       searchTerm,
       selectedDriver!,
       authStore.user?.roles?.includes('VENDOR_USER') ? null : true
@@ -59,7 +59,7 @@ export default function OrderTrackingDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     page,
-    ordernNumber,
+    orderNumber,
     searchTerm,
     selectedDriver,
     authStore.user?.roles,
@@ -69,7 +69,6 @@ export default function OrderTrackingDashboard() {
   ]);
 
   const fetchOrderDetails = useCallback(async () => {
-    setNextSetItemsToken(null);
     try {
       // @ts-ignore
       const res: TypeRootLiveOrderList = await orderService.getOrderList(url);
@@ -112,7 +111,7 @@ export default function OrderTrackingDashboard() {
   }, [orderStore.orderStatusListData]);
 
   function handleTableChange(style: 'grid' | 'list') {
-    setIsStyleTabel(style);
+    setIsStyleTable(style);
     setSelectedOrder(undefined);
   }
 
@@ -130,8 +129,8 @@ export default function OrderTrackingDashboard() {
             <Input
               type="text"
               placeholder={t('search.order')}
-              value={ordernNumber}
-              onChange={(e) => setOrdernNumber(e.target.value)}
+              value={orderNumber}
+              onChange={(e) => setOrderNumber(e.target.value)}
               className="!border-none !outline-none !ring-0 pr-10"
             />
           </div>
@@ -167,11 +166,11 @@ export default function OrderTrackingDashboard() {
               <Fragment key={idx}>
                 <button
                   onClick={() =>
-                    handleTableChange(item.type as typeof isStyleTabel)
+                    handleTableChange(item.type as typeof isStyleTable)
                   }
                   className={cn(
                     'px-3 py-2 hover:bg-gray-100 rounded-lg flex items-center justify-center h-full',
-                    isStyleTabel === item.type
+                    isStyleTable === item.type
                       ? ' bg-[#EEF6FE] text-primary-blue'
                       : ' bg-transparent text-dark-grey'
                   )}
@@ -196,7 +195,7 @@ export default function OrderTrackingDashboard() {
               />
             ) : (
               <>
-                {isStyleTabel === 'grid' && (
+                {isStyleTable === 'grid' && (
                   <GridComponent
                     selectedOrder={selectedOrder!}
                     setSelectedOrder={setSelectedOrder}
@@ -204,7 +203,7 @@ export default function OrderTrackingDashboard() {
                   />
                 )}
 
-                {isStyleTabel === 'list' && (
+                {isStyleTable === 'list' && (
                   <ListComponent
                     selectedOrder={selectedOrder!}
                     setSelectedOrder={setSelectedOrder}

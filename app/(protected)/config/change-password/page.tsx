@@ -128,7 +128,7 @@ export default function ChangePasswordPage() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem className="w-full">
-                      <FormLabel> {t('changePassword')}</FormLabel>
+                      <FormLabel> {t('confirmPassword.label')}</FormLabel>
                       <FormControl>
                         <Input
                           eyeBtnHide

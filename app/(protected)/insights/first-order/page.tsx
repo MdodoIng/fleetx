@@ -1,6 +1,8 @@
 'use client';
 
 import { InsightsFallback } from '@/shared/components/fetch/fallback';
+import LoadMore from '@/shared/components/fetch/LoadMore';
+import NoData from '@/shared/components/fetch/NoData';
 import DateSelect from '@/shared/components/selectors/DateSelect';
 import {
   Card,
@@ -17,12 +19,11 @@ import {
 import {
   Table,
   TableLists,
-  TableSingleListHeader,
-  TableSingleListContents,
   TableSingleListContentDetailsTitle,
+  TableSingleListContents,
+  TableSingleListHeader,
 } from '@/shared/components/ui/tableList';
 import { RATE_REASONS_EN } from '@/shared/constants/storageConstants';
-import useTableExport from '@/shared/lib/hooks/useTableExport';
 import { cn } from '@/shared/lib/utils';
 import { getFirstOrderInsight, getFirstOrderList } from '@/shared/services';
 import { useCallback, useEffect, useState } from 'react';
@@ -33,15 +34,13 @@ function FirstOrderInsights() {
     from: undefined,
     to: undefined,
   });
-  const [selectedVendor, setSelectedVendor] = useState<string | undefined>();
+
   const [driverRating, setDriverRating] = useState<number>(0);
   const [insightTiles, setInsightTiles] = useState<any[]>([]);
   const [tableData, setTableData] = useState<any[]>([]);
-  const [page, setPage] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { exportOrdersToCSV } = useTableExport();
+  const [page, setPage] = useState<number>(10);
+  const [nextSetItemTotal, setNextSetItemTotal] = useState<any>(null);
 
   const fetchInsights = useCallback(async () => {
     try {
@@ -50,7 +49,7 @@ function FirstOrderInsights() {
       setDriverRating(res.data?.avg_rating || 0);
       const tiles = RATE_REASONS_EN.map((reason) => {
         const match = res.data?.improvements?.find(
-          (x) => x.improvement_type === reason.id
+          (x: any) => x.improvement_type === reason.id
         );
         return {
           type: reason.name,
@@ -78,7 +77,7 @@ function FirstOrderInsights() {
           orderNumbers: item.order_numbers?.join(', '),
         })) || [];
       setTableData(transformed);
-      setTotalCount(res.count || 0);
+      setNextSetItemTotal(res.count < page ? null : true);
     } catch (error) {
       console.error('Error fetching table data:', error);
     } finally {
@@ -195,10 +194,15 @@ function FirstOrderInsights() {
                   </TableSingleListContents>
                 </TableSingleListHeader>
               ))}
+              <LoadMore
+                setPage={setPage}
+                nextSetItemTotal={nextSetItemTotal}
+                type="table"
+              />
             </TableLists>
           </Table>
         ) : (
-          ''
+          <NoData />
         )}
       </DashboardContent>
     </Dashboard>
