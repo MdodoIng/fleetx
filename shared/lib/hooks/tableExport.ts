@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 type ExportType = 'xlsx' | 'csv';
 
@@ -55,23 +55,60 @@ export default function tableExport({
 
   // 5️⃣ Export logic
   if (type === 'xlsx') {
-    // Create a worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(exportData, { header: keys });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, title || 'Sheet1');
+    // Create a new workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(title || 'Sheet1');
 
-    // Adjust column width dynamically
-    const colWidths = keys.map((k) => ({
-      wch: Math.max(k.length, 15), // auto width
-    }));
-    worksheet['!cols'] = colWidths;
+    // Add headers
+    worksheet.addRow(keys);
+
+    // Add data rows
+    exportData.forEach((row) => {
+      const values = keys.map((key) => row[key] || '');
+      worksheet.addRow(values);
+    });
+
+    // Style the header row
+    const headerRow = worksheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE6E6E6' }
+    };
+
+    // Auto-fit columns
+    worksheet.columns.forEach((column) => {
+      column.width = Math.max(column.width || 10, 15);
+    });
 
     // Generate Excel file
-    XLSX.writeFile(workbook, `${title || 'export'}.xlsx`);
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${title || 'export'}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   } else if (type === 'csv') {
-    const worksheet = XLSX.utils.json_to_sheet(exportData, { header: keys });
-    const csvOutput = XLSX.utils.sheet_to_csv(worksheet);
-    const blob = new Blob([csvOutput], { type: 'text/csv;charset=utf-8;' });
+    // Create CSV content
+    const csvContent = [
+      keys.join(','),
+      ...exportData.map(row =>
+        keys.map(key => {
+          const value = row[key] || '';
+          // Escape commas and quotes in CSV
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `${title || 'export'}.csv`;

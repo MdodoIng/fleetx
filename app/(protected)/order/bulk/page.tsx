@@ -34,7 +34,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 // Define interfaces for bulk drop-off data and driver
 interface BulkDropOff {
@@ -120,49 +120,130 @@ export default function BulkOrderPage() {
       }
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(sheet);
+        if (!data) return;
 
-        if (jsonData.length === 0) {
-          toast.warning('Uploaded file is empty');
-          if (fileInputRef.current) fileInputRef.current.value = '';
-          return;
-        }
+        try {
+          const workbook = new ExcelJS.Workbook();
 
-        const dropOffs: BulkDropOff[] = jsonData.map(
-          (row: any, index: number) => {
-            const amountToCollect = parseFloat(row['COD']) || 0;
-            const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
-            const address =
-              `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
-            return {
-              id: index + 1,
-              vendor_order_id: row['Num'] || `Order_${index + 1}`,
-              customer_name: row['Customer Name'] || '',
-              mobile_number: row['Phone Number'] || '',
-              address: address,
-              driver_instructions: row['Note'] || '',
-              amount_to_collect: amountToCollect,
-              payment_display_type: paymentDisplayType,
-              enableChecked: false,
-              area: row['Area'],
-              block: row['Block'],
-              House: row['House'],
-              building: row['Building'],
-              street: row['Street'],
-              avenue: row['Avenue'],
-            };
+          if (ext === 'xlsx') {
+            await workbook.xlsx.load(data as ArrayBuffer);
+          } else if (ext === 'csv') {
+            // For CSV files, we'll read as text and parse manually
+            const text = new TextDecoder().decode(data as ArrayBuffer);
+            const lines = text.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const jsonData = lines.slice(1).map(line => {
+              const values = line.split(',');
+              const row: any = {};
+              headers.forEach((header, index) => {
+                row[header] = values[index]?.trim() || '';
+              });
+              return row;
+            });
+
+            if (jsonData.length === 0) {
+              toast.warning('Uploaded file is empty');
+              if (fileInputRef.current) fileInputRef.current.value = '';
+              return;
+            }
+
+            const dropOffs: BulkDropOff[] = jsonData.map(
+              (row: any, index: number) => {
+                const amountToCollect = parseFloat(row['COD']) || 0;
+                const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
+                const address =
+                  `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
+                return {
+                  id: index + 1,
+                  vendor_order_id: row['Num'] || `Order_${index + 1}`,
+                  customer_name: row['Customer Name'] || '',
+                  mobile_number: row['Phone Number'] || '',
+                  address: address,
+                  driver_instructions: row['Note'] || '',
+                  amount_to_collect: amountToCollect,
+                  payment_display_type: paymentDisplayType,
+                  enableChecked: false,
+                  area: row['Area'],
+                  block: row['Block'],
+                  House: row['House'],
+                  building: row['Building'],
+                  street: row['Street'],
+                  avenue: row['Avenue'],
+                };
+              }
+            );
+
+            setBulkDropOffs(dropOffs);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
           }
-        );
 
-        setBulkDropOffs(dropOffs);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+          const worksheet = workbook.worksheets[0];
+          if (!worksheet) {
+            toast.warning('No worksheet found in the file');
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+          }
+
+          const jsonData: any[] = [];
+          worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) return; // Skip header row
+            const rowData: any = {};
+            row.eachCell((cell, colNumber) => {
+              const header = worksheet.getRow(1).getCell(colNumber).value?.toString() || '';
+              rowData[header] = cell.value?.toString() || '';
+            });
+            jsonData.push(rowData);
+          });
+
+          if (jsonData.length === 0) {
+            toast.warning('Uploaded file is empty');
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+          }
+
+          const dropOffs: BulkDropOff[] = jsonData.map(
+            (row: any, index: number) => {
+              const amountToCollect = parseFloat(row['COD']) || 0;
+              const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
+              const address =
+                `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
+              return {
+                id: index + 1,
+                vendor_order_id: row['Num'] || `Order_${index + 1}`,
+                customer_name: row['Customer Name'] || '',
+                mobile_number: row['Phone Number'] || '',
+                address: address,
+                driver_instructions: row['Note'] || '',
+                amount_to_collect: amountToCollect,
+                payment_display_type: paymentDisplayType,
+                enableChecked: false,
+                area: row['Area'],
+                block: row['Block'],
+                House: row['House'],
+                building: row['Building'],
+                street: row['Street'],
+                avenue: row['Avenue'],
+              };
+            }
+          );
+
+          setBulkDropOffs(dropOffs);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        } catch (error) {
+          console.error('Error reading file:', error);
+          toast.error('Error reading file. Please check the file format.');
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
       };
-      reader.readAsBinaryString(file);
+
+      if (ext === 'xlsx') {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
     },
     [vendorId]
   );
@@ -190,7 +271,7 @@ export default function BulkOrderPage() {
     );
     setEnableHeaderChecked(
       updatedDropOffs.every((d) => d.enableChecked) &&
-        updatedDropOffs.length > 0
+      updatedDropOffs.length > 0
     );
   };
 
