@@ -20,13 +20,7 @@ import { useState } from 'react';
 export default function Profile() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuthStore();
-  const {
-    selectedBranch,
-    branchDetails,
-    branchId,
-    selectedVendor,
-    branchName,
-  } = useVendorStore();
+  const { branchName } = useVendorStore();
 
   const filteredMenu = filterMenuByRole(APP_PROFILE_MENU);
   const t = useTranslations();

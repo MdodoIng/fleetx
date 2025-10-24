@@ -31,15 +31,15 @@ import { commonConstants } from '@/shared/constants/storageConstants';
 import { orderService } from '@/shared/services/orders';
 import { useVendorStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as ExcelJS from 'exceljs';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as ExcelJS from 'exceljs';
 
 // Define interfaces for bulk drop-off data and driver
 interface BulkDropOff {
   id: number;
-  vendor_order_id: string;
+  vendor_order_id: string | null;
   customer_name: string;
   mobile_number: string;
   address: string;
@@ -133,8 +133,8 @@ export default function BulkOrderPage() {
             // For CSV files, we'll read as text and parse manually
             const text = new TextDecoder().decode(data as ArrayBuffer);
             const lines = text.split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            const jsonData = lines.slice(1).map(line => {
+            const headers = lines[0].split(',').map((h) => h.trim());
+            const jsonData = lines.slice(1).map((line) => {
               const values = line.split(',');
               const row: any = {};
               headers.forEach((header, index) => {
@@ -152,12 +152,13 @@ export default function BulkOrderPage() {
             const dropOffs: BulkDropOff[] = jsonData.map(
               (row: any, index: number) => {
                 const amountToCollect = parseFloat(row['COD']) || 0;
-                const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
+                const paymentDisplayType =
+                  amountToCollect > 0 ? 'COD' : 'Prepaid';
                 const address =
                   `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
                 return {
                   id: index + 1,
-                  vendor_order_id: row['Num'] || `Order_${index + 1}`,
+                  vendor_order_id: null,
                   customer_name: row['Customer Name'] || '',
                   mobile_number: row['Phone Number'] || '',
                   address: address,
@@ -192,7 +193,8 @@ export default function BulkOrderPage() {
             if (rowNumber === 1) return; // Skip header row
             const rowData: any = {};
             row.eachCell((cell, colNumber) => {
-              const header = worksheet.getRow(1).getCell(colNumber).value?.toString() || '';
+              const header =
+                worksheet.getRow(1).getCell(colNumber).value?.toString() || '';
               rowData[header] = cell.value?.toString() || '';
             });
             jsonData.push(rowData);
@@ -207,12 +209,13 @@ export default function BulkOrderPage() {
           const dropOffs: BulkDropOff[] = jsonData.map(
             (row: any, index: number) => {
               const amountToCollect = parseFloat(row['COD']) || 0;
-              const paymentDisplayType = amountToCollect > 0 ? 'COD' : 'Prepaid';
+              const paymentDisplayType =
+                amountToCollect > 0 ? 'COD' : 'Prepaid';
               const address =
                 `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
               return {
                 id: index + 1,
-                vendor_order_id: row['Num'] || `Order_${index + 1}`,
+                vendor_order_id: null,
                 customer_name: row['Customer Name'] || '',
                 mobile_number: row['Phone Number'] || '',
                 address: address,
@@ -271,7 +274,7 @@ export default function BulkOrderPage() {
     );
     setEnableHeaderChecked(
       updatedDropOffs.every((d) => d.enableChecked) &&
-      updatedDropOffs.length > 0
+        updatedDropOffs.length > 0
     );
   };
 

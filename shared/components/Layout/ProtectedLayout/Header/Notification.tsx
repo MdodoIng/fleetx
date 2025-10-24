@@ -79,7 +79,7 @@ export default function Notification() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="max-w-96 w-80  rounded-t-none" align="end">
+      <PopoverContent className="max-w-96 w-80 starting:translate-y-10  rounded-t-none">
         <div className="flex items-center justify-between">
           <p className="font-medium">
             Notifications{' '}
