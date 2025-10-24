@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { InvoiceFormData, invoiceFormSchema } from '../validations/invoice';
 import { reportService } from '@/shared/services/report';
@@ -67,7 +66,6 @@ export function useInvoiceForm() {
         }
         return 'Invoice download link opened successfully!';
       },
-      error: (err: any) => err.message || 'An unexpected error occurred.',
     });
   };
 

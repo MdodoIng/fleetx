@@ -53,7 +53,9 @@ export async function apiFetch<T>(
       }
     }
 
-    showServerMessage('error', errorText);
+    if (options.method === 'POST' || 'post') {
+      showServerMessage('error', errorText);
+    }
     console.log(errorText);
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
