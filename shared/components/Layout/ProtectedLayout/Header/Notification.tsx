@@ -123,7 +123,7 @@ export default function Notification() {
                     <div className="flex items-start gap-4">
                       <SendHorizontal
                         className={cn(
-                          'text-primary-blue size-8 bg-white p-2 border border-dark-grey shadow rounded-[7px] -rotate-90 aspect-square shrink-0',
+                          'text-primary-blue size-8 bg-white p-2 border border-dark-grey/30 shadow rounded-[7px] -rotate-90 aspect-square shrink-0',
                           operationDirection && 'rotate-90'
                         )}
                       />

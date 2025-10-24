@@ -26,7 +26,7 @@ import { loginSchema, TypeLoginSchema } from '@/features/auth/validations/auth';
 import { Separator } from '@/shared/components/ui/separator';
 
 export default function Login() {
-  const { isLoading, login } = useAuthStore();
+  const { login } = useAuthStore();
   const redirectToHome = useRedirectToHome();
 
   const form = useForm<TypeLoginSchema>({
@@ -119,7 +119,7 @@ export default function Login() {
             </div>
           </div>
           <Button type="submit" className="rounded-full">
-            {t(isLoading ? 'login.loading' : 'login.submit')}
+            {t('login.submit')}
           </Button>
         </form>
       </Form>
