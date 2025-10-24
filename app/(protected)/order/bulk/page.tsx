@@ -29,30 +29,13 @@ import {
 } from '@/shared/components/ui/table';
 import { commonConstants } from '@/shared/constants/storageConstants';
 import { orderService } from '@/shared/services/orders';
+import { BulkDropOff } from '@/shared/types/orders';
 import { useVendorStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as ExcelJS from 'exceljs';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-
-// Define interfaces for bulk drop-off data and driver
-interface BulkDropOff {
-  id: number;
-  vendor_order_id: string | null;
-  customer_name: string;
-  mobile_number: string;
-  address: string;
-  driver_instructions: string;
-  amount_to_collect: number;
-  payment_display_type: string;
-  enableChecked: boolean;
-  area: string;
-  block: string;
-  building: string;
-  street: string;
-  avenue: string;
-}
 
 export default function BulkOrderPage() {
   const { branchId, vendorId, selectedBranch, selectedVendor } =
@@ -158,7 +141,6 @@ export default function BulkOrderPage() {
                   `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
                 return {
                   id: index + 1,
-                  vendor_order_id: null,
                   customer_name: row['Customer Name'] || '',
                   mobile_number: row['Phone Number'] || '',
                   address: address,
@@ -215,7 +197,7 @@ export default function BulkOrderPage() {
                 `${row['Area'] || ''}, Block: ${row['Block'] || ''}, Street: ${row['Street'] || ''}, House: ${row['House'] || ''}, Avenue: ${row['Avenue'] || ''}`.trim();
               return {
                 id: index + 1,
-                vendor_order_id: null,
+
                 customer_name: row['Customer Name'] || '',
                 mobile_number: row['Phone Number'] || '',
                 address: address,
@@ -329,7 +311,7 @@ export default function BulkOrderPage() {
       const orders = {
         branch_id: branchId,
         vendor_id: vendorId,
-
+        vendor_order_id: null,
         pick_up: updatedPickUp,
         drop_offs: dropOffs,
         driver_id: selectedDriver ?? null,
@@ -402,7 +384,7 @@ export default function BulkOrderPage() {
                             />
                           </TableHead>
 
-                          <TableHead>Order ID</TableHead>
+                          {/*<TableHead>Order ID</TableHead>*/}
                           <TableHead>Customer Name</TableHead>
                           <TableHead>Mobile Number</TableHead>
                           <TableHead>Address</TableHead>
@@ -428,7 +410,7 @@ export default function BulkOrderPage() {
                                 }
                               />
                             </TableCell>
-                            <TableCell>{drop.vendor_order_id}</TableCell>
+                            {/*<TableCell>{drop.vendor_order_id}</TableCell>*/}
                             <TableCell>{drop.customer_name}</TableCell>
                             <TableCell>{drop.mobile_number}</TableCell>
                             <TableCell>{drop.address}</TableCell>

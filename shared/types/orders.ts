@@ -764,11 +764,26 @@ export interface TypeOrderInfoResponse {
   };
 }
 
-
 export type DeliverySummary = {
   totalOrders: number;
   totalDelivery: string;
   totalKM: string;
   deliveryModel: string;
   estTime: number;
+};
+
+export interface BulkDropOff {
+  id: number;
+  customer_name: string;
+  mobile_number: string;
+  address: string;
+  driver_instructions: string;
+  amount_to_collect: number;
+  payment_display_type: string;
+  enableChecked: boolean;
+  area: string;
+  block: string;
+  building: string;
+  street: string;
+  avenue: string;
 }
