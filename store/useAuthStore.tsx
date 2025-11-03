@@ -61,7 +61,6 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     } else {
-      console.log(' useAuthStore.getState().triggerRefreshToken();');
       useAuthStore.getState().triggerRefreshToken();
     }
     useAuthStore.setState({ isLoading: false });

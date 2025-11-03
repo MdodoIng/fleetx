@@ -181,7 +181,6 @@ export function useAddCredit() {
         };
 
     const res = await paymentService.initiate(request);
-    console.log(res);
 
     toast.success('Amount credited successfully');
   };
@@ -204,7 +203,6 @@ export function useAddCredit() {
         valuesForm.paymentType === 'credit'
           ? await paymentService.prepareMashkorCredit(reqoust)
           : await paymentService.prepareMashkorDebit(reqoust);
-      console.log(res);
 
       setValue('prepareMashkor', {
         type: valuesForm.paymentType,

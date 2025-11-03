@@ -41,7 +41,7 @@ export default async function RootLayout({
   const locale = await getLocale();
   const { setDir, dirState } = getDirection(locale);
 
-  console.log(process.env.API_GATEWAY_BASE_URL);
+  
 
   return (
     <html

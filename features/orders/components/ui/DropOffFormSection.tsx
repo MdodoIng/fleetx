@@ -45,7 +45,6 @@ const DropOffFormSection = ({
 
   const orderStore = useOrderStore();
 
-  console.log(orderStore.dropOffs.length);
 
   return (
     <Card

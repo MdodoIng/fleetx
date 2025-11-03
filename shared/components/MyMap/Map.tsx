@@ -67,12 +67,10 @@ export default function MyMap({
       setMapCenter({ lat: center.lat, lng: center.lng });
       setZoom(15);
     }
-    console.log(center);
   }, [center, isArray]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
-    console.log('Map Ready:', map);
   }, []);
 
   const onUnmount = useCallback(() => {

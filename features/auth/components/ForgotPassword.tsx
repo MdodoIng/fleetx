@@ -47,7 +47,6 @@ const ForgotPassword = () => {
     userService
       .forgotPassword({ email: data.email })
       .then((res) => {
-        console.log(res);
         setIsOpen(false);
       })
       .catch((err) => {

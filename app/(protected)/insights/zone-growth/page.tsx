@@ -42,7 +42,6 @@ export default function ZoneGrowthPage() {
     async function loadZones() {
       try {
         const zones = await orderService.getZone();
-        console.log('Zones response:', zones); // Debug log
         setZoneList(zones.data || []);
       } catch (err: any) {
         const errorMessage = err.message || 'Failed to fetch zones';
@@ -56,7 +55,6 @@ export default function ZoneGrowthPage() {
 
   const fetchGrowth = useCallback(async () => {
     if (!selectedYear) {
-      console.log('Skipping growth fetch: year not selected');
       return;
     }
 
@@ -65,7 +63,6 @@ export default function ZoneGrowthPage() {
         selectedZone!,
         selectedYear
       );
-      console.log('Growth data response:', data); // Debug log
       setGrowthData(data.data || []);
     } catch (err: any) {
       // Consider a more specific error type if possible

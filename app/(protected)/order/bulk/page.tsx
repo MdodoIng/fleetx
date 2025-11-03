@@ -319,7 +319,6 @@ export default function BulkOrderPage() {
       };
 
       const createOrderRes = await orderService.createBulkOrders(orders);
-      console.log(createOrderRes);
       toast.success('Bulk order placed successfully!');
       setBulkDropOffs(
         bulkDropOffs.filter((d) => !selectedDropOffs.includes(d))
@@ -338,7 +337,6 @@ export default function BulkOrderPage() {
 
   if (loading) return <CreateFallback />;
 
-  console.log(pickUpForm.formState.errors);
 
   return (
     <>

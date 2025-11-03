@@ -103,7 +103,6 @@ export const useNotificationStore = create<
       getWarningMessage: () => {
         notificationService.getWarningMessageApi().then(
           (res) => {
-            console.log(res, 'getWarningMessage');
             if (res.data && res.data.length > 0) {
               set({
                 warningMessage: {

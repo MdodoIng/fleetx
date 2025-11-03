@@ -13,7 +13,6 @@ export default function ZoneSelect({ value, onChangeAction }: Props) {
   const [data, setData] = useState<TypeZoneData[]>();
   useEffect(() => {
     orderService.getZone().then((res) => {
-      console.log(res);
       setData(res.data);
     });
   }, []);

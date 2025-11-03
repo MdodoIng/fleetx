@@ -62,7 +62,6 @@ export default function RatingPage() {
     setError(null);
     try {
       const response = await rateService.getDashBoard();
-      console.log('API Response:', response); // Debug log
       if (response.data) {
         setRatingData(response.data);
       } else {

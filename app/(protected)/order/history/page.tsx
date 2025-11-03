@@ -82,7 +82,7 @@ export default function OrderTrackingDashboard() {
   const [selectedDriver, setSelectedDriver] = useState<string>();
 
   const fetchOrderDetails = useCallback(async () => {
-    setNextSetItemsToken(null);
+   
     const searchAll = true;
     const url = orderService.getOrderHistoryUrl(
       page,
@@ -101,7 +101,6 @@ export default function OrderTrackingDashboard() {
       // @ts-ignore
       const res: TypeRootLiveOrderList = await orderService.getOrderList(url);
 
-      console.log(url, res);
       if (res.data) {
         setData(res.data);
         setSourceForTable('orderHistoryListData', res.data);

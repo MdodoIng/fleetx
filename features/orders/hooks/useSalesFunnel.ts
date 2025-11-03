@@ -54,7 +54,6 @@ export function useSalesFunnel() {
         res = await reportService.getSalesFunnelRetention2();
       else res = await reportService.getSalesFunnelReactivationUsers();
 
-      console.log(res);
       setSalesFunnelData(res.data);
       setPageCount(1);
     };

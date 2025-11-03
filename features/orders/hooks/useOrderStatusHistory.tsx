@@ -12,7 +12,7 @@ import { useTranslations } from 'next-intl';
 import { useVendorStore } from '@/store';
 
 export function useOrderStatusHistory(order: TypeLiveOrderItem) {
-  const [orderHistorys, setOrderHistorys] =
+  const [orderHistory, setOrderHistory] =
     useState<TypeOrderStatusHistoryHistory>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | unknown>(null);
@@ -24,8 +24,7 @@ export function useOrderStatusHistory(order: TypeLiveOrderItem) {
       setLoading(true);
       setError(null);
       const res = await orderService.getOrderStatusById(order.id);
-      console.log(res);
-      setOrderHistorys(res.data);
+      setOrderHistory(res.data);
     } catch (err) {
       console.error('Error fetching order status history:', err);
       setError(err || 'An unknown error occurred');
@@ -40,9 +39,9 @@ export function useOrderStatusHistory(order: TypeLiveOrderItem) {
   const t = useTranslations();
 
   const statusHistory: TypeStatusHistoryForUi[] = useMemo(() => {
-    if (!orderHistorys) return [];
-    return BuildStatusHistory(order, orderHistorys, t);
-  }, [order, orderHistorys, t]);
+    if (!orderHistory) return [];
+    return BuildStatusHistory(order, orderHistory, t);
+  }, [order, orderHistory, t]);
 
   return {
     statusHistory,
@@ -53,7 +52,7 @@ export function useOrderStatusHistory(order: TypeLiveOrderItem) {
 
 function BuildStatusHistory(
   order: TypeLiveOrderItem,
-  orderHistorys: TypeOrderStatusHistoryHistory,
+  orderHistory: TypeOrderStatusHistoryHistory,
   t: any
 ): TypeStatusHistoryForUi[] {
   const base = [
@@ -105,7 +104,7 @@ function BuildStatusHistory(
       text: t(OrderStatusValues.RESCHEDULED.label),
       time: null,
       subText: '',
-      display: orderHistorys?.status_history?.some(
+      display: orderHistory?.status_history?.some(
         (h) => h.primary_order_status === OrderStatusValues.RESCHEDULED.key
       ),
     },
@@ -136,7 +135,7 @@ function BuildStatusHistory(
     date ? new Date(date).toLocaleString() : null;
 
   const currentStatus =
-    orderHistorys?.status_history?.[orderHistorys.status_history.length - 1]
+    orderHistory?.status_history?.[orderHistory.status_history.length - 1]
       ?.primary_order_status;
 
   const currentIndex = base.findIndex((s) => Number(s.id) === currentStatus);
@@ -144,11 +143,11 @@ function BuildStatusHistory(
   return base
     .filter((item) => item.display)
     .map((step, index) => {
-      const history = orderHistorys?.status_history.find(
+      const history = orderHistory?.status_history.find(
         (h) => h.primary_order_status === step.id
       );
 
-      const previousHistory = orderHistorys?.status_history.filter(
+      const previousHistory = orderHistory?.status_history.filter(
         (h) => h.created_at < (history?.created_at || order?.created_at)
       );
 

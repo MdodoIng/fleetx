@@ -300,7 +300,6 @@ export default function AddressLandmarkFields({
       });
 
       if (!clickedInsideAny) {
-        console.log('sadaafa');
         setIsInputBlur(false);
       }
     };

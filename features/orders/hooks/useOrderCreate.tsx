@@ -50,7 +50,6 @@ export default function useOrderCreate(
       const dropOffFieldsValid =
         isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
 
-      console.log(dropOffForm.formState.errors);
       return (
         pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
       );
@@ -68,7 +67,6 @@ export default function useOrderCreate(
       if (res) {
         useOrderStore.getState().setEstimatedDeliveryReturnFromApi(res.data);
 
-        console.log(res.data, 'EstimatedDeliveryReturnFromApi');
         return res.data;
       }
     } catch {
@@ -113,7 +111,6 @@ export default function useOrderCreate(
           'Successfully added and calculated estimate for new drop-off'
         );
 
-        console.log(res.order_session_id);
       }
       return res;
     } catch (error) {
@@ -306,9 +303,7 @@ export default function useOrderCreate(
               const createOrderRes =
                 await orderService.createOnDemandOrders(orders);
 
-              //TODO: Show success alert message and clear form fields
-              console.log(createOrderRes, 'orders');
-
+        
               toast.success('Successfully added Your Order');
               getVendorWalletBalanceInit();
               functionsDropOffs('cancel');

@@ -57,7 +57,6 @@ export function useInvoiceForm() {
     toast.promise(promise, {
       loading: 'Downloading...',
       success: (res) => {
-        console.log(res);
         if (res.data?.invoice_file) {
           window.open(res.data.invoice_file, '_blank');
         }

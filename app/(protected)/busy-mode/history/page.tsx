@@ -44,7 +44,6 @@ export default function BusyModeHistoryDashboard() {
         date?.to
       );
       const res = await configService.getBusyModeHistory(url);
-      console.log(res);
       if (res.data) {
         setData(res.data);
       }

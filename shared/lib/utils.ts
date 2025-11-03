@@ -56,7 +56,7 @@ export async function apiFetch<T>(
     if (options.method === 'POST' || 'post') {
       showServerMessage('error', errorText);
     }
-    console.log(errorText);
+    
     throw new Error(`API error ${res.status}: ${errorText}`);
   }
 
