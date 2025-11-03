@@ -38,26 +38,52 @@ export default function useOrderCreate(
   const pickUpFormValues = pickUpForm.watch();
   const dropOffFormValues = dropOffForm.watch();
 
+  
+
   const validateFormsAsync = async (): Promise<boolean> => {
-    try {
-      const [pickUpValid, dropOffValid] = await Promise.all([
-        pickUpForm.trigger(),
-        dropOffForm.trigger(),
-      ]);
+  try {
+    const [pickUpValid, dropOffValid] = await Promise.all([
+      pickUpForm.trigger(),
+      dropOffForm.trigger(),
+    ]);
 
-      const pickUpFieldsValid = true;
+    const missingPickupFields: string[] = [];
+    if (!hasValue(pickUpFormValues.area)) missingPickupFields.push("area");
+    if (!hasValue(pickUpFormValues.block)) missingPickupFields.push("block");
+    if (!hasValue(pickUpFormValues.street)) missingPickupFields.push("street");
 
-      const dropOffFieldsValid =
-        isCOD === 1 ? hasValue(dropOffFormValues.amount_to_collect) : true;
-
-      return (
-        pickUpValid && dropOffValid && pickUpFieldsValid && dropOffFieldsValid
-      );
-    } catch (error) {
-      console.error('Validation error:', error);
-      return false;
+    const missingDropOffFields: string[] = [];
+    if (isCOD === 1 && !hasValue(dropOffFormValues.amount_to_collect)) {
+      missingDropOffFields.push("amount to collect");
     }
-  };
+    if (!hasValue(dropOffFormValues.area)) missingDropOffFields.push("area");
+    if (!hasValue(dropOffFormValues.block)) missingDropOffFields.push("block");
+    if (!hasValue(dropOffFormValues.street)) missingDropOffFields.push("street");
+
+    if (missingPickupFields.length > 0) {
+      toast.warning(
+        `Please select pickup ${missingPickupFields.join(", ")}`
+      );
+    }
+
+    if (missingDropOffFields.length > 0) {
+      toast.warning(
+        `Please select dropoff ${missingDropOffFields.join(", ")}`
+      );
+    }
+
+    return (
+      pickUpValid &&
+      dropOffValid &&
+      missingPickupFields.length === 0 &&
+      missingDropOffFields.length === 0
+    );
+  } catch (error) {
+    console.error("Validation error:", error);
+    toast.error("Validation failed. Please try again.");
+    return false;
+  }
+};
 
   const updateCalculateDeliveryEstimate = async (
     data: TypeEstimatedDelivery
@@ -65,7 +91,7 @@ export default function useOrderCreate(
     try {
       const res = await orderService.calculateDeliveryEstimate(data);
       if (res) {
-        useOrderStore.getState().setEstimatedDeliveryReturnFromApi(res.data);
+        orderStore.setEstimatedDeliveryReturnFromApi(res.data);
 
         return res.data;
       }
@@ -110,7 +136,6 @@ export default function useOrderCreate(
         console.log(
           'Successfully added and calculated estimate for new drop-off'
         );
-
       }
       return res;
     } catch (error) {
@@ -259,14 +284,20 @@ export default function useOrderCreate(
             isCOD: isCOD,
           });
 
-          const isSaved = orderStore.dropOffs.find(
+          const isSaved = orderStore.dropOffs.some(
             (item) => item.order_index === newDropOff.order_index
           );
+
           const newDropOffs = isSaved
             ? orderStore.dropOffs
-            : [...orderStore.dropOffs, newDropOff].filter(
-                (item) => item.customer_name
-              );
+            : [...orderStore.dropOffs, newDropOff]
+                .filter((item) => item.customer_name)
+                .flatMap((item, idx) => {
+                  return {
+                    ...item,
+                    order_index: idx + 1,
+                  };
+                });
 
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const updatedPickUp = usePickUpFormValuesForPickUp({
@@ -300,13 +331,11 @@ export default function useOrderCreate(
             };
 
             try {
-              const createOrderRes =
-                await orderService.createOnDemandOrders(orders);
-
-        
-              toast.success('Successfully added Your Order');
-              getVendorWalletBalanceInit();
-              functionsDropOffs('cancel');
+              orderService.createOnDemandOrders(orders).then(() => {
+                toast.success('Successfully added Your Order');
+                getVendorWalletBalanceInit();
+                functionsDropOffs('cancel');
+              });
             } catch (error) {
               console.log(error);
             }

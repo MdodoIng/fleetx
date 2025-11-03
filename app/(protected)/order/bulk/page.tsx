@@ -292,8 +292,8 @@ export default function BulkOrderPage() {
         pickUpFormValues: pickUpForm.getValues(),
       });
 
-      const dropOffs = selectedDropOffs.map((dropOff) => ({
-        order_index: dropOff.vendor_order_id,
+      const dropOffs = selectedDropOffs.map((dropOff, idx) => ({
+        order_index: idx,
         customer_name: dropOff.customer_name,
         mobile_number: dropOff.mobile_number,
         address: dropOff.address,
@@ -318,8 +318,9 @@ export default function BulkOrderPage() {
         order_meta: { vendor_name: selectedVendor?.name },
       };
 
-      const createOrderRes = await orderService.createBulkOrders(orders);
-      toast.success('Bulk order placed successfully!');
+      orderService.createBulkOrders(orders).then(() => {
+        toast.success('Bulk order placed successfully!');
+      });
       setBulkDropOffs(
         bulkDropOffs.filter((d) => !selectedDropOffs.includes(d))
       );
@@ -336,7 +337,6 @@ export default function BulkOrderPage() {
   }, [updatePickUpDetailsForBranchUser]);
 
   if (loading) return <CreateFallback />;
-
 
   return (
     <>

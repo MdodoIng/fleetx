@@ -45,7 +45,6 @@ const DropOffFormSection = ({
 
   const orderStore = useOrderStore();
 
-
   return (
     <Card
       key={index}
@@ -118,12 +117,14 @@ const DropOffFormSection = ({
         </>
       ) : (
         isDropIndex === index && (
-          <DropOffForm
-            recipientForm={dropOffForm}
-            isCOD={isCOD}
-            setIsCOD={setIsCOD}
-            orderIndex={index! + 1}
-          />
+          <>
+            <DropOffForm
+              recipientForm={dropOffForm}
+              isCOD={isCOD}
+              setIsCOD={setIsCOD}
+              orderIndex={index! + 1}
+            />
+          </>
         )
       )}
     </Card>
