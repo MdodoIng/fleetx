@@ -50,7 +50,7 @@ const ratingCache = new Map<
 
 const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [rating, setRating] = useState(0);
-  const [selectedRating, setSelectedRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState<any>(null);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [feedback, setFeedback] = useState<number | null>();
   const [isFeedback, setIsFeedback] = useState(false);
@@ -143,14 +143,12 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
     if (!selectedRating) {
       setErrorMessage('Please select a rating.');
       return;
-    }
-
-    if (selectedRating < MIN_RATE_FOR_FEEDBACK && !feedback) {
+    } else if (selectedRating < MIN_RATE_FOR_FEEDBACK && !feedback) {
       setErrorMessage('Please select your feedback for ratings below 4 stars.');
       return;
+    } else {
+      // submitRating();
     }
-
-    submitRating();
   };
 
   const submitRating = async () => {
@@ -363,7 +361,10 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
                     What can we improve?
                   </h5>
 
-                  <Select onValueChange={handleFeedbackChange as any} value={feedback?.toString()}>
+                  <Select
+                    onValueChange={handleFeedbackChange as any}
+                    value={feedback?.toString()}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select feedback category" />
                     </SelectTrigger>
@@ -399,7 +400,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
                 </Button>
 
                 <Button
-                  onClick={validateAndSubmit}
+                  onClick={() => validateAndSubmit()}
                   disabled={loading || !canRate}
                 >
                   {loading ? 'Submitting...' : 'Submit Rating'}

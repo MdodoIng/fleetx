@@ -66,7 +66,9 @@ export const vendorService = {
     apiFetch(`${appConfig.vendorServiceApiUrl()}${url}`),
 
   getBranchDetails: (id: string): Promise<{ data: TypeBranch[] }> =>
-    apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details?id=${id}`),
+    apiFetch(`${appConfig.vendorServiceApiUrl()}/branch-details?id=${id}`, {
+      method: 'GET',
+    }),
 
   getBranchDetailByBranchId: (branch: {
     vendor_id: string;
