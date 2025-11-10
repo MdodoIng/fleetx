@@ -47,6 +47,7 @@ import {
   TableSingleListHeaderLeft,
   TableSingleListHeaderRight,
 } from '@/shared/components/ui/tableList';
+import { vendorService } from '@/shared/services/vendor';
 import {
   TypeLiveOrderItem,
   TypeRootLiveOrderList,
@@ -55,7 +56,6 @@ import { useSharedStore, useVendorStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useTranslations } from 'next-intl';
 import { DateRange } from 'react-day-picker';
-import { vendorService } from '@/shared/services/vendor';
 
 export default function OrderTrackingDashboard() {
   const { setSourceForTable, orderHistoryListData } = useOrderStore();
@@ -154,7 +154,7 @@ export default function OrderTrackingDashboard() {
                 : `Branch ${branchName}`,
             };
           } catch (err) {
-            return { idx: item.id, name: 'Unknown Branch' };
+            return { idx: item.id, name: 'Unknown Branch', message: err };
           }
         })
       );

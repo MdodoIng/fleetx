@@ -49,7 +49,7 @@ const SideBar = () => {
   return (
     <aside
       className={cn(
-        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl',
+        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl will-change-auto',
         isCollapsed && 'max-lg:-left-full '
       )}
     >

@@ -26,7 +26,6 @@ import {
 import { useAuthStore, useVendorStore } from '@/store';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useTranslations } from 'next-intl';
-import { vendorService } from '@/shared/services/vendor';
 
 export default function OrderTrackingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,7 +46,6 @@ export default function OrderTrackingDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<
     TypeOrderHistoryList | undefined
   >(orderStore?.orderHistoryListData?.[0] ?? ({} as TypeOrderHistoryList));
-  
 
   const url = useMemo(() => {
     return orderService.getOrderStatusUrl(
@@ -110,8 +108,6 @@ export default function OrderTrackingDashboard() {
       setSelectedOrder(orderStore.orderStatusListData[0]);
     }
   }, [orderStore.orderStatusListData]);
-
-
 
   function handleTableChange(style: 'grid' | 'list') {
     setIsStyleTable(style);
