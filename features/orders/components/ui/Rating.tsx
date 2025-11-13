@@ -146,9 +146,10 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
     } else if (selectedRating < MIN_RATE_FOR_FEEDBACK && !feedback) {
       setErrorMessage('Please select your feedback for ratings below 4 stars.');
       return;
-    } else {
-      // submitRating();
     }
+
+    // Only submit after validation passes
+    submitRating();
   };
 
   const submitRating = async () => {

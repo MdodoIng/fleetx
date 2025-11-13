@@ -35,9 +35,14 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   }, [vendorStore.branchId, vendorStore.vendorId]);
 
   useEffect(() => {
-    setValue('isLoading', true);
-    getVendorList();
-    setValue('isLoading', false);
+    async function init() {
+      setValue('isLoading', true);
+      await getVendorList();
+      setValue('isLoading', false);
+    }
+
+    init();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorStore.isSearchVendorParams]);
 

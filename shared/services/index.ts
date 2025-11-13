@@ -131,8 +131,8 @@ export const getZone = (request: any) =>
 export const getBulkOrderDetails = (encryptedOrderNo: string) =>
   apiFetch(
     appConfig.orderServiceApiUrl() +
-    '/get-customer-bulk-order/' +
-    encryptedOrderNo
+      '/get-customer-bulk-order/' +
+      encryptedOrderNo
   );
 
 export const getCurrentUser = (): AuthData | undefined => {
