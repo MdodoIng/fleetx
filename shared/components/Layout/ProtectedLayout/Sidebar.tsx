@@ -49,7 +49,7 @@ const SideBar = () => {
   return (
     <aside
       className={cn(
-        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl',
+        'bg-primary-blue text-white flex flex-col gap-7 shrink-0 min-h-[-webkit-fill-available] h-full overflow-y-auto  px-4 pt-10 pb-10 transition-all duration-300 max-lg:fixed z-50 top-0 left-0 max-lg:rounded-r-2xl will-change-auto',
         isCollapsed && 'max-lg:-left-full '
       )}
     >
@@ -63,7 +63,7 @@ const SideBar = () => {
           width={200}
           height={40}
           className={cn(
-            ' w-auto object-contain ',
+            ' w-auto object-contain duration-300',
             !isCollapsed ? 'h-9' : 'h-6'
           )}
         />
@@ -87,6 +87,7 @@ const SideBar = () => {
                 hidden={isCollapsed && !item?.route}
                 href={item?.route || '#'}
                 title={t(item.labelKey)}
+                prefetch={true}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
                   item.labelKey === title &&

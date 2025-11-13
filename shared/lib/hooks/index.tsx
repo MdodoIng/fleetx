@@ -1,32 +1,11 @@
 'use client';
-import { debounce } from 'lodash';
 import { useLocale } from 'next-intl';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { unstable_ViewTransition } from 'react';
+import { unstable_ViewTransition, useMemo, useState } from 'react';
 
 export const isMounted = typeof window !== 'undefined';
 
 export const ViewTransition = unstable_ViewTransition;
 
-export const useDebounce = (
-  callback: (...args: any) => void,
-  delay: number
-) => {
-  const callbackRef = useRef(callback);
-
-  // Always keep the latest callback
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  const debouncedFn = useRef(
-    debounce((...args: any) => {
-      callbackRef.current(...args);
-    }, delay)
-  );
-
-  return debouncedFn.current;
-};
 export function useDir(): {
   dirState: boolean;
   setDir: 'rtl' | 'ltr';

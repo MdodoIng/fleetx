@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import './globals.css';
 
+import LoadingPage from '@/shared/components/Layout/Loading';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { montserrat, rHZak } from '@/shared/lib/font';
 
@@ -41,8 +42,6 @@ export default async function RootLayout({
   const locale = await getLocale();
   const { setDir, dirState } = getDirection(locale);
 
-  console.log(process.env.API_GATEWAY_BASE_URL);
-
   return (
     <html
       dir={setDir}
@@ -54,6 +53,7 @@ export default async function RootLayout({
       <body>
         <Toaster position="top-right" richColors />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <LoadingPage />
       </body>
     </html>
   );

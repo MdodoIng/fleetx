@@ -82,7 +82,6 @@ function ManualReport(): JSX.Element {
         paymentType!
       );
       const res = await paymentService.getManualPaymentHistoryReport(url);
-      console.log(res);
 
       setData(res.data!);
       setNextSetItemTotal(res.count < page ? null : true);

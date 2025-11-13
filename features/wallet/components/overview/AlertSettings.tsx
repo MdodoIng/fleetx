@@ -71,7 +71,6 @@ export function AlertSettings() {
   const fetchAlertLoader = useCallback(async () => {
     setIsLoading(true);
 
-    console.log(branchId);
     if (!branchId) return;
 
     try {

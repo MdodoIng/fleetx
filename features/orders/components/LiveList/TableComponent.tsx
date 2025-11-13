@@ -1,6 +1,6 @@
 'use client';
 
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
   MapPin,
   User,
@@ -32,6 +32,7 @@ import {
 } from '@/shared/components/ui/tableList';
 import { useTranslations } from 'next-intl';
 import LoadMore from '@/shared/components/fetch/LoadMore';
+import { vendorService } from '@/shared/services/vendor';
 
 interface OrdersPageProps {
   setPage: Dispatch<SetStateAction<number>>;
@@ -46,6 +47,36 @@ export default function TableComponent({
 }: OrdersPageProps) {
   const { appConstants } = useSharedStore();
   const orderStore = useOrderStore();
+  const [branchNames, setBranchNames] = useState<Record<any, string>>({});
+
+  useEffect(() => {
+    const fetchBranchNames = async () => {
+      const results = await Promise.all(
+        orderStore.orderStatusListData!.map(async (item) => {
+          try {
+            const res = await vendorService.getBranchDetails(item.vendor_id!);
+            const brand = res.data.find((b) => b.id === item.branch_id);
+            const branchName = brand?.name ?? 'Unnamed';
+            const isMain = brand?.main_branch;
+
+            return {
+              idx: item.id, // or item.order_id if unique
+              name: isMain
+                ? `Main Branch ${branchName}`
+                : `Branch ${branchName}`,
+            };
+          } catch (err) {
+            return { idx: item.id, name: 'Unknown Branch' };
+          }
+        })
+      );
+
+      const nameMap = Object.fromEntries(results.map((r) => [r.idx, r.name]));
+      setBranchNames(nameMap);
+    };
+
+    fetchBranchNames();
+  }, [orderStore.orderStatusListData]);
 
   const t = useTranslations();
   return (
@@ -56,9 +87,9 @@ export default function TableComponent({
             <TableSingleListHeader className="">
               <TableSingleListHeaderRight>
                 <span className="font-semibold text-primary-blue flex">
-                  <p className="ltr:hidden">FleetX #</p>{' '}
+                  <p className="ltr:hidden">#FleetX </p>{' '}
                   {item.fleetx_order_number}{' '}
-                  <p className="rtl:hidden"># FleetX</p>
+                  <p className="rtl:hidden">&nbsp; #FleetX</p>
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded-full text-xs ${
@@ -71,7 +102,7 @@ export default function TableComponent({
                   className={`text-xs text-primary-teal flex items-center `}
                 >
                   <Dot />
-                  {item.branch_name}
+                  {branchNames[item.id] ?? 'Loading...'}
                 </span>
               </TableSingleListHeaderRight>
               <TableSingleListHeaderLeft className="flex items-center gap-1">

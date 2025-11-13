@@ -28,6 +28,7 @@ import { Check, Copy, Eye, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LoadingPage from '../../loading';
+import { toast } from 'sonner';
 
 export default function PlatformGrid() {
   const [submitted, setSubmitted] = useState(false);
@@ -59,7 +60,6 @@ export default function PlatformGrid() {
     try {
       const response: any = await vendorService.getAffiliationList();
 
-      console.log(response, 'sfaf');
 
       if (response?.data) {
         setPlatforms(response.data.affiliation || []);
@@ -107,7 +107,7 @@ export default function PlatformGrid() {
         setActivate(affiliationId);
         setActivateKeys(response.data, affiliationId);
         // Show success toast
-        console.log('Activated successfully');
+        toast.success('Activated successfully');
       }
     } catch (error) {
       console.error('Activation failed:', error);
@@ -138,7 +138,7 @@ export default function PlatformGrid() {
         setDeactivate();
         setIntegrationKeyDetails(null);
         // Show success toast
-        console.log('Deactivated successfully');
+        toast.success('Deactivated successfully');
       }
     } catch (error) {
       console.error('Deactivation failed:', error);
@@ -186,7 +186,7 @@ export default function PlatformGrid() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      console.log('Text copied to clipboard');
+      toast.success('Text copied to clipboard');
     });
   };
 

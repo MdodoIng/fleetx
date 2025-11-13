@@ -35,7 +35,7 @@ export default function WalletCard({
           {appConstants?.currency}.{walletBalance}
         </p>
       </div>
-      <Link href="/wallet/overview">
+      <Link href="/wallet/overview" prefetch={true}>
         <Button variant="default" className="ml-auto">
           {t('button')}
         </Button>

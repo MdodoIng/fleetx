@@ -77,7 +77,6 @@ export default function OrderTrackingDashboard() {
   const { branchId, vendorId } = useVendorStore();
 
   const fetchVendorWalletReport = useCallback(async () => {
-    console.log(searchTerm);
     try {
       // 1️⃣ Build wallet history API URL
       const walletHistoryUrl = reportService.getWalletHistoryUrl(

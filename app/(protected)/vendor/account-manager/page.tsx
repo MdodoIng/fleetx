@@ -40,7 +40,6 @@ function AccountManagers() {
   const fetchData = useCallback(async () => {
     try {
       const res = await userService.getAccountManagerList(1, page, search);
-      console.log(res, 'data');
 
       setData(res.data);
 

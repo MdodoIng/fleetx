@@ -41,8 +41,8 @@ const DropOffForm: React.FC<SenderFormProps> = ({
 
   // Set the order_index value when orderIndex prop changes
   useEffect(() => {
-    if (orderIndex !== undefined) {
-      recipientForm.setValue('order_index', orderIndex.toString());
+    if (orderIndex) {
+      recipientForm.setValue('order_index', String(orderIndex));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderIndex]);

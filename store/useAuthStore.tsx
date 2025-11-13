@@ -8,6 +8,7 @@ import { COOKIE_AFF_REF_CODE } from '@/shared/constants/storageConstants';
 
 import { isMounted } from '@/shared/lib/hooks';
 
+import userService from '@/shared/services/user';
 import type {
   AuthRoot,
   DecodedToken,
@@ -15,7 +16,6 @@ import type {
   UserRole,
 } from '@/shared/types/user';
 import { clearAllStore, useSharedStore, useVendorStore } from '.';
-import userService from '@/shared/services/user';
 
 type AuthState = {
   user: AuthRoot['data'] | null;
@@ -61,7 +61,6 @@ function getInitialAuthState(): boolean {
         isAuthenticated: true,
       });
     } else {
-      console.log(' useAuthStore.getState().triggerRefreshToken();');
       useAuthStore.getState().triggerRefreshToken();
     }
     useAuthStore.setState({ isLoading: false });
@@ -211,10 +210,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: () => {
+    set({ user: null, isAuthenticated: false });
     Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
     clearAllStore();
-    set({ user: null, isAuthenticated: false });
   },
 
   refreshToken: async () => {

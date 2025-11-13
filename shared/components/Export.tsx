@@ -1,22 +1,21 @@
 import { Download } from 'lucide-react';
-import { Button } from './ui/button';
 import tableExport, { TableExportProps } from '../lib/hooks/tableExport';
+import { Button } from './ui/button';
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { User, ChevronDown, User as PasswordIcon } from 'lucide-react';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { cn } from '../lib/utils';
-import { Icon } from '@iconify/react';
-import { Separator } from './ui/separator';
-import { routes } from '../constants/routes';
 import { useAuthStore } from '@/store';
+import { Icon } from '@iconify/react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useState } from 'react';
+import { routes } from '../constants/routes';
+import { cn } from '../lib/utils';
+import { Separator } from './ui/separator';
 
 export default function Export({ data, exclude, title }: TableExportProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,7 +82,7 @@ export default function Export({ data, exclude, title }: TableExportProps) {
           hidden={!hideInvoice}
           className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
         >
-          <Link href={routes.BILLING_INVOICE.path}>
+          <Link href={routes.BILLING_INVOICE.path} prefetch={true}>
             <Icon
               icon="hugeicons:pdf-02"
               className="text-dark-grey rtl:order-2"

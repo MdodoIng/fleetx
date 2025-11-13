@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Star, Check } from 'lucide-react';
-import { TypeOrderHistoryList } from '@/shared/types/orders';
-import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
 import { cn } from '@/shared/lib/utils';
+import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
+import { TypeOrderHistoryList } from '@/shared/types/orders';
+import { Check, Star } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Button } from '@/shared/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { toast } from 'sonner';
 import { typePostRating } from '@/shared/types/rate';
+import { toast } from 'sonner';
 
 // Constants
 const MAX_RATE = 5;
@@ -50,7 +50,7 @@ const ratingCache = new Map<
 
 const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
   const [rating, setRating] = useState(0);
-  const [selectedRating, setSelectedRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState<any>(null);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [feedback, setFeedback] = useState<number | null>();
   const [isFeedback, setIsFeedback] = useState(false);
@@ -143,14 +143,12 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
     if (!selectedRating) {
       setErrorMessage('Please select a rating.');
       return;
-    }
-
-    if (selectedRating < MIN_RATE_FOR_FEEDBACK && !feedback) {
+    } else if (selectedRating < MIN_RATE_FOR_FEEDBACK && !feedback) {
       setErrorMessage('Please select your feedback for ratings below 4 stars.');
       return;
+    } else {
+      // submitRating();
     }
-
-    submitRating();
   };
 
   const submitRating = async () => {
@@ -363,7 +361,10 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
                     What can we improve?
                   </h5>
 
-                  <Select onValueChange={handleFeedbackChange as any} value={feedback?.toString()}>
+                  <Select
+                    onValueChange={handleFeedbackChange as any}
+                    value={feedback?.toString()}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select feedback category" />
                     </SelectTrigger>
@@ -399,7 +400,7 @@ const Rating: React.FC<RatingProps> = ({ order, onChange }) => {
                 </Button>
 
                 <Button
-                  onClick={validateAndSubmit}
+                  onClick={() => validateAndSubmit()}
                   disabled={loading || !canRate}
                 >
                   {loading ? 'Submitting...' : 'Submit Rating'}

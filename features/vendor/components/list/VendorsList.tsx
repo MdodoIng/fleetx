@@ -38,7 +38,6 @@ const VendorsList = ({ data, nextSetItemTotal, setPage }: Props) => {
   const { push } = useRouter();
   const handleEditClick = (item: TypeVendorListItem) => {
     vendorStore.setValue('isEditVendorId', item.id);
-    console.log(item.id);
   };
 
   const handleUserSearchClick = (item: TypeVendorListItem) => {

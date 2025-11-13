@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { InvoiceFormData, invoiceFormSchema } from '../validations/invoice';
 import { reportService } from '@/shared/services/report';
@@ -12,18 +10,16 @@ import { useVendorStore } from '@/store';
 export function useInvoiceForm() {
   const { branchId, selectedBranch, vendorId, selectedVendor } =
     useVendorStore();
+  const currentDate = new Date();
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceFormSchema),
-    mode: 'onChange',
-  });
-
-  useEffect(() => {
-    const currentDate = new Date();
-    form.reset({
-      year: currentDate.getFullYear().toString(),
+    values: {
       month: (currentDate.getMonth() + 1).toString(),
-    });
-  }, [form]);
+      year: currentDate.getFullYear().toString(),
+    },
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
   const onSubmit = async (data: InvoiceFormData) => {
     const { year, month } = data;
@@ -61,13 +57,11 @@ export function useInvoiceForm() {
     toast.promise(promise, {
       loading: 'Downloading...',
       success: (res) => {
-        console.log(res);
         if (res.data?.invoice_file) {
           window.open(res.data.invoice_file, '_blank');
         }
         return 'Invoice download link opened successfully!';
       },
-      error: (err: any) => err.message || 'An unexpected error occurred.',
     });
   };
 

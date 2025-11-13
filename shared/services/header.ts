@@ -184,17 +184,16 @@ export async function setHeadingForVendorBranch() {
         setVendorValue('branchId', branch.id);
         setVendorValue('isBranchAccess', false);
       } else {
-        setVendorValue('branchName', undefined);
-        setSharedValue('currentZoneId', undefined);
-        setSharedValue('defaultZoneId', undefined);
         setVendorValue('isBranchAccess', true);
-
-        const mainBranch = branches.find((b: any) => b.main_branch === true);
-        if (mainBranch) {
-          setVendorValue('branchName', mainBranch.name);
-          setVendorValue('selectedBranch', mainBranch);
-          setVendorValue('branchId', mainBranch.id);
-        }
+        // setVendorValue('branchName', undefined);
+        // setSharedValue('currentZoneId', undefined);
+        // setSharedValue('defaultZoneId', undefined);
+        // const mainBranch = branches.find((b: any) => b.main_branch === true);
+        // if (mainBranch) {
+        //   setVendorValue('branchName', mainBranch.name);
+        //   setVendorValue('selectedBranch', mainBranch);
+        //   setVendorValue('branchId', mainBranch.id);
+        // }
       }
     } catch (err) {
       console.error('Failed to fetch vendor details:', err);

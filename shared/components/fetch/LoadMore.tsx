@@ -29,7 +29,6 @@ export default function LoadMore({
   const observerRef = useRef<HTMLDivElement>(null);
   const hasMore = nextSetItemTotal !== null || count < loadMoreNumber;
 
-  console.log(nextSetItemTotal);
 
   const skeltons: Record<typeof type, JSX.Element> = {
     table: <TableSkeleton columns={4} rows={1} />,

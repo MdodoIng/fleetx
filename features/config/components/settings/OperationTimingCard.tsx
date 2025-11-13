@@ -104,7 +104,6 @@ export default function OperationTimingCard() {
   const onSubmit = async (data: TypeOperationTimingForm) => {
     setSubmitted(true);
     if (data.fullDayOperational) {
-      console.log(data.fullDayOperational);
       form.clearErrors();
     }
 
@@ -127,7 +126,6 @@ export default function OperationTimingCard() {
       // check if ID exists → update, else create
       if (data.id) {
         const res = await configService.update(payload, data.id);
-        console.log(res);
         if (res?.data) {
           toast.success('Operation Time updated successfully');
         }
