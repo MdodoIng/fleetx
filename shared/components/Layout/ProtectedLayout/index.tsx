@@ -22,8 +22,18 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   useEffect(() => {
     async function init() {
       setValue('isLoading', true);
-      await updateZoneAndSome();
       await setHeadingForVendorBranch();
+      setValue('isLoading', false);
+    }
+
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    async function init() {
+      setValue('isLoading', true);
+      await updateZoneAndSome();
       if (vendorStore.vendorId) {
         await setBranchDetails();
       }
