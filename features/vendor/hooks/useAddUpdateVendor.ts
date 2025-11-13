@@ -198,7 +198,6 @@ export const useAddUpdateVendor = (
 
     if (branch) {
       Object.entries(branch).forEach(([key, value]) => {
-        console.log(key);
 
         editVendorBranchForm.setValue(
           key as keyof TypeEditVendorBranchSchema,
@@ -309,7 +308,6 @@ export const useAddUpdateVendor = (
       'add'
     );
 
-    console.log(branches);
     setBranches((prev) => [...(prev ?? ([] as any)), formFixBranch] as any);
     editVendorBranchForm.reset();
     setIsLoadingForm(false);

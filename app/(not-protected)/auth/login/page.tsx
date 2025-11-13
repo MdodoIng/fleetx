@@ -26,7 +26,7 @@ import { loginSchema, TypeLoginSchema } from '@/features/auth/validations/auth';
 import { Separator } from '@/shared/components/ui/separator';
 
 export default function Login() {
-  const { isLoading, login } = useAuthStore();
+  const { login } = useAuthStore();
   const redirectToHome = useRedirectToHome();
 
   const form = useForm<TypeLoginSchema>({
@@ -119,7 +119,7 @@ export default function Login() {
             </div>
           </div>
           <Button type="submit" className="rounded-full">
-            {t(isLoading ? 'login.loading' : 'login.submit')}
+            {t('login.submit')}
           </Button>
         </form>
       </Form>
@@ -131,7 +131,10 @@ export default function Login() {
           {t('business.cta')}
         </p>
         <Button variant={'outline'} asChild className="w-full">
-          <Link href="/auth/signup"> {t('business.button')}</Link>
+          <Link href="/auth/signup" prefetch={true}>
+            {' '}
+            {t('business.button')}
+          </Link>
         </Button>
         <p className="text-xs">{t('business.promo')}</p>
       </div>

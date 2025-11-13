@@ -72,7 +72,6 @@ const EditVendor = ({ page, nextSetItemTotal, setPage }: Props) => {
 
   const handleEditBranchClick = (item: TypeVendor['branches'][number]) => {
     vendorStore.setValue('isEditVendorBranchId', item.id);
-    console.log(item.id);
   };
 
   const fetchVendorDetails = useCallback(async () => {

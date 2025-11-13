@@ -61,7 +61,7 @@ const initialState = {
   deliveryModel: TypeDelivery[0],
   estimatedDeliveryReturnFromApi: undefined,
   deliverySummary: null,
-  orderHistoryListData: undefined,
+  orderHistoryListData: [],
   OLDER_DATE: '2023-01-01',
   isEditDetails: false,
   selectedAffiliate: null,
@@ -216,17 +216,8 @@ export const useOrderStore = create<OrderState>()(
             order.isOlderData = isEditDetails
               ? isCreatedDateIsTooOlder(element.created_at)
               : true;
+
             orderList.push(order);
-            vendorService
-              .getBranchDetailByBranchId({
-                vendor_id: element.vendor_id!,
-                branch_id: element.branch_id!,
-              })
-              .then((res) => {
-                order.branch_name = res.data.main_branch
-                  ? 'Main Branch ' + res.data.name
-                  : 'Branch ' + res.data.name;
-              });
           });
         }
 

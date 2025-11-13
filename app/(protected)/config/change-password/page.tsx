@@ -47,7 +47,6 @@ export default function ChangePasswordPage() {
 
   const { handleSubmit } = form;
 
-  console.log(user?.user_id, '');
   const onSubmit = async (data: TypeChangePasswordForm) => {
     setSubmitted(true);
 
@@ -61,7 +60,6 @@ export default function ChangePasswordPage() {
 
       const res = await userService.changePassword(request);
 
-      console.log(res);
       toast(res.data);
       // logout();
     } catch (err: unknown) {

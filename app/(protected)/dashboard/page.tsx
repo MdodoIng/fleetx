@@ -72,7 +72,6 @@ function DashboardComponent() {
         await reportService.getDashboardDetails(dashboardUrl);
 
       if (dashboardResult.data) {
-        console.log(dashboardResult, 'dashboardResult');
         setDashboardData(dashboardResult.data);
       }
     } catch (error: unknown) {

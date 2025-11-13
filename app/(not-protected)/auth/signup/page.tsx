@@ -399,7 +399,7 @@ export default function SignUp() {
 
       <div className="text-center w-full text-dark-grey">
         {t('alreadyHaveAccount')}{' '}
-        <Link href="/auth/login" className="text-primary-blue">
+        <Link href="/auth/login" prefetch={true} className="text-primary-blue">
           {' '}
           {t('loginHere')}{' '}
         </Link>

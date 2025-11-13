@@ -86,8 +86,7 @@ function BalanceReport(): JSX.Element {
               r.vendor.name.toLocaleLowerCase() ===
               item.name.toLocaleLowerCase()
           );
-          // console.clear();
-          console.log(vendor);
+      
 
           return {
             vendor: r?.vendor.name,

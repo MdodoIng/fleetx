@@ -77,7 +77,6 @@ export default function OrderTrackingDashboard() {
         // @ts-ignore
         setSelectedOrder(res.data[0]);
       }
-      console.log(res);
 
       setIsLoading(false);
       setTimeout(() => {

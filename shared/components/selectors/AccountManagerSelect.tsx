@@ -27,7 +27,6 @@ export default function AccountManagerSelect({ value, onChangeAction }: Props) {
       .then((res) => setManagers(res.data));
   }, []);
 
-  console.log(managers);
 
   if (!managers || managers.length <= 1) return;
 

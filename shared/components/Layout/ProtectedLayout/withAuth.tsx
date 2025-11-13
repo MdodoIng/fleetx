@@ -4,12 +4,11 @@ import LoadingPage from '@/app/loading';
 import { isMounted } from '@/shared/lib/hooks';
 import { UserRole } from '@/shared/types/user';
 
+import { useGetSidebarMeta } from '@/shared/lib/helpers';
 import { useAuthStore, useSharedStore } from '@/store';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button } from '../../ui/button';
-import { useGetSidebarMeta } from '@/shared/lib/helpers';
 
 // HOC for role-based access control
 export function withAuth<P extends object>(
@@ -44,10 +43,6 @@ export function withAuth<P extends object>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, isLoading]);
 
-    if (isLoading) {
-      return <LoadingPage />;
-    }
-
     const effectiveRequiredRoles = requiredRoles || roles;
     if (effectiveRequiredRoles && !hasAnyRole(effectiveRequiredRoles)) {
       return (
@@ -61,6 +56,7 @@ export function withAuth<P extends object>(
             </p>
             <Link
               href="/order/create"
+              prefetch={true}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
             >
               Go Order

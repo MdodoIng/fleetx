@@ -2,15 +2,6 @@ import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
-  // typescript: {
-  //   ignoreBuildErrors: true,
-  // },
-  // eslint: {
-  //   ignoreDuringBuilds: true,
-  // },
-  experimental: {
-    viewTransition: true,
-  },
   env: {
     APP_VERSION: process.env.APP_VERSION || '1.0.0',
     API_GATEWAY_BASE_URL: process.env.API_GATEWAY_BASE_URL,

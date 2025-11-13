@@ -39,7 +39,6 @@ const PickUpForm: React.FC<SenderFormProps> = ({ senderForm }) => {
 
   const t = useTranslations('component.features.orders.create');
 
-  console.log(isMobile);
 
   return (
     <Form {...senderForm}>

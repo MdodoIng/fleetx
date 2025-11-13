@@ -79,7 +79,7 @@ export default function Notification() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="max-w-96 w-80  rounded-t-none" align="end">
+      <PopoverContent className="max-w-96 w-80 starting:translate-y-10  rounded-t-none">
         <div className="flex items-center justify-between">
           <p className="font-medium">
             Notifications{' '}
@@ -123,7 +123,7 @@ export default function Notification() {
                     <div className="flex items-start gap-4">
                       <SendHorizontal
                         className={cn(
-                          'text-primary-blue size-8 bg-white p-2 border border-dark-grey shadow rounded-[7px] -rotate-90 aspect-square shrink-0',
+                          'text-primary-blue size-8 bg-white p-2 border border-dark-grey/30 shadow rounded-[7px] -rotate-90 aspect-square shrink-0',
                           operationDirection && 'rotate-90'
                         )}
                       />

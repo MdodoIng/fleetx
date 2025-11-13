@@ -62,7 +62,6 @@ export default function AreaRestrictionCard() {
     userService
       .getAreaRestriction()
       .then((res) => {
-        console.log(res);
         if (res) {
           form.setValue('id', res.data.id);
           form.setValue('isEnable', res.data.enabled);

@@ -110,8 +110,9 @@ export function useAddCredit() {
         );
 
         if (checkBlockActRes.data.blocked) {
-          toast.error('Blocked by system policy');
+          console.log('Add create Blocked by system policy');
           setValue('isShowAddCreditButton', false);
+          setValue('isDisableAddCredit', false);
           return false;
         }
         return true;
@@ -180,7 +181,6 @@ export function useAddCredit() {
         };
 
     const res = await paymentService.initiate(request);
-    console.log(res);
 
     toast.success('Amount credited successfully');
   };
@@ -203,7 +203,6 @@ export function useAddCredit() {
         valuesForm.paymentType === 'credit'
           ? await paymentService.prepareMashkorCredit(reqoust)
           : await paymentService.prepareMashkorDebit(reqoust);
-      console.log(res);
 
       setValue('prepareMashkor', {
         type: valuesForm.paymentType,

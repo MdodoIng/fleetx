@@ -116,7 +116,7 @@ export interface WalletActions {
     key: K,
     value: WalletState[K]
   ) => void;
-  getCentralWalletEnabled: () => {};
+  getCentralWalletEnabled: () => void;
   clearAll: () => void;
   checkWallet: () => void;
   setTabBasedOnRole: () => Promise<void>;
