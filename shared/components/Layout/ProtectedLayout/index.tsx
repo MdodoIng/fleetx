@@ -20,12 +20,13 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   const { setValue } = useAuthStore();
 
   useEffect(() => {
-    if (!vendorStore.vendorId) return;
     async function init() {
       setValue('isLoading', true);
       await updateZoneAndSome();
-      await setBranchDetails();
       await setHeadingForVendorBranch();
+      if (vendorStore.vendorId) {
+        await setBranchDetails();
+      }
       setValue('isLoading', false);
     }
 

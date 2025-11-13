@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Star, Check } from 'lucide-react';
-import { TypeOrderHistoryList } from '@/shared/types/orders';
-import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
 import { cn } from '@/shared/lib/utils';
+import { getDeliveryRate, setDeliveryRate } from '@/shared/services';
+import { TypeOrderHistoryList } from '@/shared/types/orders';
+import { Check, Star } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Button } from '@/shared/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { toast } from 'sonner';
 import { typePostRating } from '@/shared/types/rate';
+import { toast } from 'sonner';
 
 // Constants
 const MAX_RATE = 5;
