@@ -6,7 +6,7 @@ import {
   setHeadingForVendorBranch,
   updateZoneAndSome,
 } from '@/shared/services/header';
-import { useVendorStore } from '@/store';
+import { useAuthStore, useVendorStore } from '@/store';
 import { useEffect } from 'react';
 import Header from './Header';
 import SideBar from './Sidebar';
@@ -17,26 +17,34 @@ interface BaseLayoutProps {
 
 const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   const vendorStore = useVendorStore();
+  const { setValue } = useAuthStore();
 
   useEffect(() => {
+    if (!vendorStore.vendorId) return;
     async function init() {
+      setValue('isLoading', true);
       await updateZoneAndSome();
       await setBranchDetails();
       await setHeadingForVendorBranch();
+      setValue('isLoading', false);
     }
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorStore.branchId, vendorStore.vendorId]);
 
   useEffect(() => {
+    setValue('isLoading', true);
     getVendorList();
+    setValue('isLoading', false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorStore.isSearchVendorParams]);
 
   return (
     <section className="flex items-start justify-start h-svh w-full">
       <SideBar />
 
-      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white">
+      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white will-change-auto">
         <Header />
 
         {children}

@@ -63,7 +63,7 @@ const SideBar = () => {
           width={200}
           height={40}
           className={cn(
-            ' w-auto object-contain ',
+            ' w-auto object-contain duration-300',
             !isCollapsed ? 'h-9' : 'h-6'
           )}
         />
@@ -87,6 +87,7 @@ const SideBar = () => {
                 hidden={isCollapsed && !item?.route}
                 href={item?.route || '#'}
                 title={t(item.labelKey)}
+                prefetch={true}
                 className={cn(
                   'flex items-center gap-2 rounded-[6px]  bg-transparent pointer-events-none',
                   item.labelKey === title &&

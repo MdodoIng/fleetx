@@ -47,6 +47,7 @@ const Header: React.FC = () => {
   const isAccess = hideUserAndBranchSelector
     ? false
     : isVendorAccess || isBranchAccess;
+
   const handleClickBranch = (e: string | undefined) => {
     const branch = branchDetails?.find((r) => r.id === e);
     setValueVendorStore('selectedBranch', branch);

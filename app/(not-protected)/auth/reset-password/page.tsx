@@ -159,7 +159,10 @@ export default function ResetPassword() {
           {t('business.cta')}
         </p>
         <Button variant={'outline'} asChild className="w-full">
-          <Link href="/auth/signup"> {t('business.button')}</Link>
+          <Link href="/auth/signup" prefetch={true}>
+            {' '}
+            {t('business.button')}
+          </Link>
         </Button>
         <p className="text-xs">{t('business.promo')}</p>
       </div>

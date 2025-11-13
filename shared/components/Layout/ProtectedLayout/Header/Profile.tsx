@@ -79,7 +79,7 @@ export default function Profile() {
               key={index}
               className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
             >
-              <Link href={item.route!}>
+              <Link prefetch={true} href={item.route!}>
                 <IconComponentMain
                   width={20}
                   height={20}
@@ -91,16 +91,20 @@ export default function Profile() {
           );
         })}
 
-        <DropdownMenuItem
-          onClick={() => logout()}
-          className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
-        >
-          <PasswordIcon
-            width={20}
-            height={20}
-            className="text-dark-grey rtl:order-2"
-          />
-          <span>{t('layout.profile.logout.title')}</span>
+        <DropdownMenuItem asChild>
+          <Link
+            href={'/auth/login'}
+            prefetch={true}
+            onClick={() => logout()}
+            className="flex items-center gap-2 px-2 py-3 cursor-pointer rtl:justify-end"
+          >
+            <PasswordIcon
+              width={20}
+              height={20}
+              className="text-dark-grey rtl:order-2"
+            />
+            <span>{t('layout.profile.logout.title')}</span>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

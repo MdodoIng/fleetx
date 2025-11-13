@@ -61,7 +61,7 @@ const initialState = {
   deliveryModel: TypeDelivery[0],
   estimatedDeliveryReturnFromApi: undefined,
   deliverySummary: null,
-  orderHistoryListData: undefined,
+  orderHistoryListData: [],
   OLDER_DATE: '2023-01-01',
   isEditDetails: false,
   selectedAffiliate: null,

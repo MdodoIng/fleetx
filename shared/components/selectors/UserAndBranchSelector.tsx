@@ -6,12 +6,12 @@ import {
   TypeVendorListItem,
 } from '@/shared/types/vendor';
 
-import { useVendorStore } from '@/store';
-import React, { useEffect, useMemo, useState } from 'react';
-import SearchableSelect, { TypeSearchableSelectOption } from '.';
-import { X } from 'lucide-react';
-import VendorSelector from './VendorSelector';
 import { vendorService } from '@/shared/services/vendor';
+import { useVendorStore } from '@/store';
+import { X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import SearchableSelect, { TypeSearchableSelectOption } from '.';
+import VendorSelector from './VendorSelector';
 
 type Props = {
   handleChangeBranch: (e: string) => void;
@@ -64,24 +64,14 @@ const UserAndBranchSelector: React.FC<Props> = ({
   return (
     <div hidden={!isAccess} className="flex items-center justify-center gap-2 ">
       {isVendorAccess && (
-        // <div className="relative z-0  border border-dark-grey/10 rounded-[8px] ">
         <VendorSelector
           handleChangeVendor={handleChangeVendor}
           classNameFroInput={classNameFroInput}
           selectedVendorValue={isSelectedVendor}
           type={type}
         />
-        //   <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
-        //     <Store className="size-5 opacity-50" />
-        //     <span className="flex flex-col">
-        //       <p className="">{isSelectedVendor?.name ?? 'Select Vendor'}</p>
-        //       <small className="text-xs opacity-50">Restaurant Name</small>
-        //     </span>
-        //   </div>
-        // </div>
       )}
       {isBranchAccess && (
-        // <div className="relative z-0  border border-dark-grey/10 rounded-[8px] ">
         <SearchableSelect
           options={optionsForBranch}
           value={isSelectedBranch?.id}
@@ -92,18 +82,6 @@ const UserAndBranchSelector: React.FC<Props> = ({
           loading={isLoading}
           isHideWhenNotHaveData={false}
         />
-        //   <div className="absolute rounded-[8px] px-2  inset-0  w-max  text-dark-grey z-10 bg-white  flex items-center justify-strat gap-4 pointer-events-none">
-        //     <Icon
-        //       icon="mdi:office-building-location"
-        //       className="size-5 opacity-50"
-        //     />
-
-        //     <span className="flex flex-col">
-        //       <p className="">{isSelectedBranch?.name ?? 'Select Branch'}</p>
-        //       <small className="text-xs opacity-50">Branch Name</small>
-        //     </span>
-        //   </div>
-        // </div>
       )}
       {handleClear && (
         <Button
