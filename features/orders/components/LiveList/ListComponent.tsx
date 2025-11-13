@@ -87,7 +87,6 @@ const ListComponent: React.FC<{
                 <div
                   key={order.id}
                   style={{
-                    viewTransitionName: order.fleetx_order_number,
                     border: `1px solid ${selectedOrder?.id === order.id ? '#004CF7' : '#2828281A'}`,
                   }}
                   onClick={() => setSelectedOrder(order)}
