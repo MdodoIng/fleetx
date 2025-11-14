@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './button';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -40,29 +41,35 @@ function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      id={scrollContainerId}
-      data-slot="dashboard"
-      className={cn(
-        'bg-off-white text-black flex flex-col gap-6 py-6 relative overflow-y-auto',
-        main_padding.dashboard.x,
-        className
-      )}
-      {...props}
-    >
-      {props.children}
-      {showScrollTop && (
-        <Button
-          variant={'outline'}
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 !p-2 size-auto aspect-square rounded-full shadow transition-all bg-white starting:opacity-0 starting:bottom-0 duration-500 hover:text-dark-grey hover:border-dark-grey"
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="size-5" />
-        </Button>
-      )}
-    </div>
+    <AnimatePresence mode="wait">
+      {/* @ts-ignore */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        ref={scrollRef}
+        id={scrollContainerId}
+        data-slot="dashboard"
+        className={cn(
+          'bg-off-white text-black flex flex-col gap-6 py-6 relative overflow-y-auto',
+          main_padding.dashboard.x,
+          className
+        )}
+        {...props}
+      >
+        {props.children}
+        {showScrollTop && (
+          <Button
+            variant={'outline'}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 !p-2 size-auto aspect-square rounded-full shadow transition-all bg-white/50 starting:opacity-0 starting:bottom-0 duration-500 hover:text-dark-grey hover:border-dark-grey"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="size-5" />
+          </Button>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

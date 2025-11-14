@@ -10,6 +10,7 @@ import { useAuthStore, useVendorStore } from '@/store';
 import { useEffect } from 'react';
 import Header from './Header';
 import SideBar from './Sidebar';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
@@ -57,15 +58,22 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   }, [vendorStore.isSearchVendorParams]);
 
   return (
-    <section className="flex items-start justify-start h-svh w-full">
-      <SideBar />
+    <AnimatePresence mode="wait">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-start justify-start h-svh w-full"
+      >
+        <SideBar />
 
-      <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white will-change-auto">
-        <Header />
+        <div className="h-full overflow-y-auto w-full flex flex-col relative z-0 bg-off-white will-change-auto">
+          <Header />
 
-        {children}
-      </div>
-    </section>
+          {children}
+        </div>
+      </motion.section>
+    </AnimatePresence>
   );
 };
 
