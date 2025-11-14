@@ -1,10 +1,8 @@
 'use client';
 import { useLocale } from 'next-intl';
-import { unstable_ViewTransition, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export const isMounted = typeof window !== 'undefined';
-
-export const ViewTransition = unstable_ViewTransition;
 
 export function useDir(): {
   dirState: boolean;
