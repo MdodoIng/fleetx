@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 
 export default function OverviewFallback() {
   return (
-    <Dashboard className="h-auto sm:h-full">
+    <Dashboard transition={{ duration: 0.5 }} className="h-auto sm:h-full">
       <DashboardHeader>
         <DashboardHeaderRight />
         {/* Search and Filter Skeleton */}

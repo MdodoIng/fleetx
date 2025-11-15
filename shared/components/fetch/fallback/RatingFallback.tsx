@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 
 export default function RatingFallback() {
   return (
-    <Dashboard className="h-auto sm:h-full">
+    <Dashboard transition={{ duration: 0.5 }} className="h-auto sm:h-full">
       <DashboardHeader>
         <DashboardHeaderRight />
       </DashboardHeader>
