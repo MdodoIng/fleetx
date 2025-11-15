@@ -116,7 +116,7 @@ const initialState: SharedState = {
   encryptedBulkOrderNo: undefined,
   bulkOrderPrimaryStatus: undefined,
   isValidCancelOrReschedule: undefined,
-  isCollapsed: true,
+  isCollapsed: false,
   showLanguage: true,
   lastPathname: undefined,
 };
