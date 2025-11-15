@@ -10,7 +10,7 @@ import {
 
 export default function DashboardFallback() {
   return (
-    <Dashboard className="">
+    <Dashboard transition={{ duration: 0.5 }} className="">
       <DashboardHeader>
         <DashboardHeaderRight />
         {/* Search and Filter Skeleton */}

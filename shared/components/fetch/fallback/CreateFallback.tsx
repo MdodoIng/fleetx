@@ -10,7 +10,7 @@ import {
 
 export default function CreateFallback() {
   return (
-    <Dashboard className="h-auto sm:h-full">
+    <Dashboard  transition={{ duration: 0.5 }} className="h-auto sm:h-full">
       <DashboardHeader>
         <DashboardHeaderRight />
         {/* Search and Filter Skeleton */}

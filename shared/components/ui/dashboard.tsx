@@ -6,65 +6,87 @@ import { useGetSidebarMeta } from '@/shared/lib/helpers';
 import { iconMap } from '../icons/layout';
 import { useTranslations } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  forwardRef,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from './button';
+import {
+  AnimatePresence,
+  ForwardRefComponent,
+  HTMLMotionProps,
+  motion,
+} from 'framer-motion';
 
-function Dashboard({ className, ...props }: React.ComponentProps<'div'>) {
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const scrollContainerId = 'dashboard-scroll-container';
-  const scrollRef = useRef<HTMLDivElement>(null);
+type DashboardProps = HTMLMotionProps<'div'> & ComponentPropsWithoutRef<'div'>;
 
-  useEffect(() => {
-    const element = scrollRef.current;
-    if (!element) return; // Exit if the ref isn't attached yet
+const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(
+  ({ className, ...props }, ref) => {
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const scrollContainerId = 'dashboard-scroll-container';
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    const handleScroll = () => {
-      // Read the scroll position directly from the container element
-      const scrollY = element.scrollTop;
+    useEffect(() => {
+      const element = scrollRef.current;
+      if (!element) return; // Exit if the ref isn't attached yet
 
-      // Check if scroll is beyond 400px
-      setShowScrollTop(scrollY > 400);
+      const handleScroll = () => {
+        // Read the scroll position directly from the container element
+        const scrollY = element.scrollTop;
+
+        // Check if scroll is beyond 400px
+        setShowScrollTop(scrollY > 400);
+      };
+
+      // Add listener to the specific div element, not the window
+      element.addEventListener('scroll', handleScroll, { passive: true });
+
+      return () => element.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+      // Scroll the specific element to the top smoothly
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     };
 
-    // Add listener to the specific div element, not the window
-    element.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => element.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    // Scroll the specific element to the top smoothly
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <div
-      ref={scrollRef}
-      id={scrollContainerId}
-      data-slot="dashboard"
-      className={cn(
-        'bg-off-white text-black flex flex-col gap-6 py-6 relative overflow-y-auto',
-        main_padding.dashboard.x,
-        className
-      )}
-      {...props}
-    >
-      {props.children}
-      {showScrollTop && (
-        <Button
-          variant={'outline'}
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 !p-2 size-auto aspect-square rounded-full shadow transition-all bg-white starting:opacity-0 starting:bottom-0 duration-500 hover:text-dark-grey hover:border-dark-grey"
-          aria-label="Scroll to top"
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0 }}
+          ref={scrollRef}
+          id={scrollContainerId}
+          data-slot="dashboard"
+          className={cn(
+            'bg-off-white text-black flex flex-col gap-6 py-6 relative overflow-y-auto',
+            main_padding.dashboard.x,
+            className
+          )}
+          {...props}
         >
-          <ArrowUp className="size-5" />
-        </Button>
-      )}
-    </div>
-  );
-}
+          {props.children}
+          {showScrollTop && (
+            <Button
+              variant={'outline'}
+              onClick={scrollToTop}
+              className="fixed bottom-6 right-6 z-50 !p-2 size-auto aspect-square rounded-full shadow transition-all bg-white/50 starting:opacity-0 starting:bottom-0 duration-500 hover:text-dark-grey hover:border-dark-grey"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp className="size-5" />
+            </Button>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+);
+Dashboard.displayName = 'Dashboard';
 
 function DashboardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (

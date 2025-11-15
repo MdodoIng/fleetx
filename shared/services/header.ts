@@ -48,7 +48,6 @@ export const getVendorList = async () => {
       const updatedVendorList = [...(vendorList || []), ...newVendors];
 
       setValue('vendorList', updatedVendorList);
-      console.log(res);
     } catch (error) {
       console.log(error);
     }

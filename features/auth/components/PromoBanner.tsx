@@ -81,7 +81,7 @@ export default function PromoBanner() {
         src={bgBox}
         alt=""
         priority
-        placeholder="blur"
+        placeholder="empty"
         className="absolute md:h-[50%] h-[200px]  w-auto object-contain top-1/2 ltr:-translate-y-1/2 -z-10 ltr:right-0 rtl:left-0 rtl:-translate-y-1/2"
       />
     </div>

@@ -38,6 +38,7 @@ export default function Login() {
   });
 
   async function onSubmit(values: TypeLoginSchema) {
+    if (!values.email || !values.password) return;
     const success = await login(values.email, values.password);
 
     if (success) {
