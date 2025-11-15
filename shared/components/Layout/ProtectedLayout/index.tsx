@@ -6,7 +6,7 @@ import {
   setHeadingForVendorBranch,
   updateZoneAndSome,
 } from '@/shared/services/header';
-import { useAuthStore, useVendorStore } from '@/store';
+import { useAuthStore, useSharedStore, useVendorStore } from '@/store';
 import { useEffect } from 'react';
 import Header from './Header';
 import SideBar from './Sidebar';
@@ -18,13 +18,14 @@ interface BaseLayoutProps {
 
 const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   const vendorStore = useVendorStore();
-  const { setValue } = useAuthStore();
+  const { setValue: setValueAuthStore } = useAuthStore();
+  const { setValue: setValueSharedStore } = useSharedStore();
 
   useEffect(() => {
     async function init() {
-      setValue('isLoading', true);
+      setValueAuthStore('isLoading', true);
       await setHeadingForVendorBranch();
-      setValue('isLoading', false);
+      setValueAuthStore('isLoading', false);
     }
 
     init();
@@ -33,12 +34,12 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
 
   useEffect(() => {
     async function init() {
-      setValue('isLoading', true);
+      setValueAuthStore('isLoading', true);
       await updateZoneAndSome();
       if (vendorStore.vendorId) {
         await setBranchDetails();
       }
-      setValue('isLoading', false);
+      setValueAuthStore('isLoading', false);
     }
 
     init();
@@ -47,15 +48,23 @@ const ProtectedLayout: React.FC<BaseLayoutProps> = ({ children }) => {
 
   useEffect(() => {
     async function init() {
-      setValue('isLoading', true);
+      setValueAuthStore('isLoading', true);
       await getVendorList();
-      setValue('isLoading', false);
+      setValueAuthStore('isLoading', false);
     }
 
     init();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vendorStore.isSearchVendorParams]);
+
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setValueSharedStore('isCollapsed', true);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AnimatePresence mode="wait">
